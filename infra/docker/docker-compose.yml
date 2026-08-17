@@ -1,0 +1,120 @@
+# Sinaaty — local development infrastructure
+# Usage:  docker compose -f infra/docker/docker-compose.yml up -d
+# Credentials match root .env.example.
+name: sinaaty
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: sinaaty-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sinaaty
+      POSTGRES_PASSWORD: sinaaty
+      POSTGRES_DB: sinaaty
+      TZ: UTC
+      PGTZ: UTC
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - max_connections=200
+      - -c
+      - timezone=UTC
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sinaaty -d sinaaty']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: sinaaty-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: sinaaty-minio
+    restart: unless-stopped
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: sinaaty
+      MINIO_ROOT_PASSWORD: sinaaty-secret
+      MINIO_REGION: me-central-1
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # Console
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: create buckets used by the API (media + docs) then exit.
+  minio-init:
+    image: minio/mc:latest
+    container_name: sinaaty-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 sinaaty sinaaty-secret &&
+      mc mb --ignore-existing local/sinaaty-media &&
+      mc mb --ignore-existing local/sinaaty-docs &&
+      mc anonymous set download local/sinaaty-media &&
+      echo 'buckets ready' "
+    restart: 'no'
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.15
+    container_name: sinaaty-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: sinaaty-meili-master-key
+      MEILI_ENV: development
+      MEILI_NO_ANALYTICS: 'true'
+    ports:
+      - '7700:7700'
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fs http://localhost:7700/health || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: sinaaty-mailpit
+    restart: unless-stopped
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  meili_data:

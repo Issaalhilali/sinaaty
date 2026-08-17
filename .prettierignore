@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+.next
+.turbo
+coverage
+apps/mobile
+pnpm-lock.yaml
+docs/db/schema.sql

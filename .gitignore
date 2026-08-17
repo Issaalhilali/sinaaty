@@ -1,0 +1,87 @@
+# ---------- OS / editors ----------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.history/
+
+# ---------- Secrets / env ----------
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+
+# ---------- Node / TS (apps/api, apps/admin-web, packages/*) ----------
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+*.tsbuildinfo
+.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Prisma
+apps/api/prisma/*.db
+apps/api/generated/
+
+# ---------- Flutter / Dart (apps/mobile) ----------
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/.pub-cache/
+apps/mobile/.pub/
+apps/mobile/build/
+apps/mobile/coverage/
+apps/mobile/**/doc/api/
+apps/mobile/ios/Flutter/.last_build_id
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/
+apps/mobile/ios/Flutter/ephemeral/
+apps/mobile/macos/Flutter/ephemeral/
+apps/mobile/macos/Pods/
+apps/mobile/linux/flutter/ephemeral/
+apps/mobile/windows/flutter/ephemeral/
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+apps/mobile/android/app/debug/
+apps/mobile/android/app/profile/
+apps/mobile/android/app/release/
+apps/mobile/.widget_preview/
+apps/mobile/*.g.dart.bak
+app.*.symbols
+app.*.map.json
+migrate_working_dir/
+
+# ---------- Infra ----------
+infra/docker/data/
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+!infra/terraform/*.tfvars.example
+infra/k8s/**/charts/
+
+# ---------- Misc ----------
+*.log
+tmp/
+.tmp/
+.cache/

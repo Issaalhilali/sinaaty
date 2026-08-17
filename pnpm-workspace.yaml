@@ -1,0 +1,4 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+# apps/mobile is a Flutter project (no package.json) and is ignored by pnpm automatically.
