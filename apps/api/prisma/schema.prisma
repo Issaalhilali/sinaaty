@@ -1,0 +1,11 @@
+// Sinaaty — Prisma schema (Step 1: datasource + generator only).
+// Step 2 translates docs/db/schema.sql (79 tables) into models here. Keep both in sync.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}

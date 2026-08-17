@@ -31,5 +31,13 @@
     "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "turbo": "^2.5.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild"
+    ]
   }
 }

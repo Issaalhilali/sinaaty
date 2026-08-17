@@ -1,0 +1,25 @@
+{
+  "rootDir": "..",
+  "testEnvironment": "node",
+  "transform": {
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "tsconfig": "tsconfig.json",
+        "isolatedModules": true
+      }
+    ]
+  },
+  "moduleFileExtensions": [
+    "ts",
+    "js",
+    "json"
+  ],
+  "moduleNameMapper": {
+    "^@app/(.*)$": "<rootDir>/src/$1"
+  },
+  "testRegex": "test/.*\\.e2e-spec\\.ts$",
+  "setupFiles": [
+    "<rootDir>/test/setup-env.ts"
+  ]
+}
