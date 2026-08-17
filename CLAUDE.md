@@ -93,6 +93,21 @@ Until step 0 is done, the only working commands are the plain Flutter ones at re
 
 ## 5. Engineering rules (non-negotiable)
 
+### 5.0 Simplicity charter (overrides everything below when in conflict)
+
+The owner's directive: **no distraction, no complexity — simple flows, calm high-quality design, one integrated product.** The platform is large underneath; the surface must feel small.
+
+1. **One primary action per screen.** Every screen answers one question and has one big obvious button. Secondary actions go behind a "more" menu.
+2. **Three to four tabs, never more.** Customer app: `سياراتي · اطلب · محفظتي · حسابي`. Partner app: `اليوم · الأوامر · القطع · المحفظة` (role decides what's inside). Scrapyard sees only `طلبات · مبيعاتي · محفظتي`.
+3. **Progressive disclosure.** Advanced features (trade accounts, group buys, analytics, fleet policies, voice, AI) are hidden until the user actually needs them or their role/plan enables them. Default screens show only MVP essentials.
+4. **Two-tap rule for daily tasks:** create work order, update status, approve, pay, submit bid, scan QR — each reachable in ≤ 2 taps from the home tab.
+5. **Copy is short and human.** Arabic first, plain words, no jargon on screen (never "escrow"/"outbox"/"snapshot" — say "المبلغ محفوظ حتى تستلم"). One sentence of explanation max under any legal action.
+6. **Calm visuals.** One accent color (seal green) + one secondary (brass) used sparingly; semantic colors only for state; generous spacing; no decorative animation; no dense dashboards on mobile (charts live in web only).
+7. **Empty states teach**, errors say what to do next, loading never blocks the whole screen.
+8. **Consistency over cleverness.** Same components everywhere (`packages/ui-tokens` + a shared Flutter component library `lib/core/ui/`): cards, badges, buttons, timeline, list rows. No one-off widgets.
+9. **Cut before you add.** When a step asks for a feature, ship the minimal version that completes the flow end-to-end; log extras in `docs/backlog.md` instead of building them.
+10. **Design review gate:** each Flutter step must include screenshots (light/dark, RTL) and pass the checklist above before it is marked ✅.
+
 ### 5.1 Money, time, IDs, text
 - Money: DB `NUMERIC(14,2)`; TS `Decimal` (`decimal.js`); Dart `Decimal` (package `decimal`). **Never** `number`/`double` for amounts. Rates in basis points (`_bps`) or `NUMERIC(5,2)` percentages.
 - VAT default 15%; compute per line, round half-up to 2 dp per line, sum lines (ZATCA rule).
