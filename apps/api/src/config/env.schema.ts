@@ -41,6 +41,12 @@ export const envSchema = z.object({
   INTEGRATION_STORAGE: z.enum(['mock', 'live']).default('mock'),
   INTEGRATION_VIN: z.enum(['mock', 'live']).default('mock'),
 
+  PSP_PROVIDER: z.string().default('mock'),
+  PSP_WEBHOOK_SECRET: z.string().min(8).default('dev-psp-webhook-secret'),
+  ESCROW_AUTO_RELEASE_HOURS: z.coerce.number().int().positive().default(72),
+  VAT_RATE_PCT: z.coerce.number().min(0).max(100).default(15),
+  JOBS_ENABLED: z.coerce.boolean().default(true),
+
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
 

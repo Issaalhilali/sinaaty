@@ -25,6 +25,12 @@ export const ERROR_CODES = {
   INV_WO_NOT_INVOICEABLE: { status: 409, ar: 'لا يمكن إصدار فاتورة قبل جاهزية المركبة واعتماد العميل.', en: 'Work order must be approved and ready/delivered before invoicing.' },
   INV_ALREADY_ISSUED: { status: 409, ar: 'توجد فاتورة سارية لهذا الأمر.', en: 'An active invoice already exists for this work order.' },
   INV_NOT_VOIDABLE: { status: 409, ar: 'لا يمكن إلغاء فاتورة مدفوعة — أصدر إشعار دائن.', en: 'Paid invoices cannot be voided — issue a credit note.' },
+  // ---- payments / escrow ----
+  PAY_INVOICE_NOT_PAYABLE: { status: 409, ar: 'الفاتورة غير قابلة للدفع (ملغاة أو مدفوعة).', en: 'Invoice is not payable (void or already paid).' },
+  PAY_INTENT_PENDING: { status: 409, ar: 'توجد عملية دفع قيد التنفيذ لهذه الفاتورة.', en: 'A payment is already in progress for this invoice.' },
+  PAY_WEBHOOK_INVALID: { status: 401, ar: 'توقيع الإشعار غير صالح.', en: 'Invalid webhook signature.' },
+  ESCROW_NOT_RELEASABLE: { status: 409, ar: 'المبلغ غير قابل للإفراج في حالته الحالية.', en: 'Escrow hold is not releasable in its current state.' },
+  ESCROW_FROZEN: { status: 409, ar: 'المبلغ مجمّد بسبب نزاع.', en: 'Escrow hold is frozen due to a dispute.' },
   USER_SUSPENDED: { status: 403, ar: 'الحساب موقوف، تواصل مع الدعم.', en: 'Account suspended, contact support.' },
 } as const;
 

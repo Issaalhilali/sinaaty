@@ -1,0 +1,11 @@
+import { z } from 'zod';
+export const CreatePaymentDto = z.object({ invoice_id: z.string().uuid(), method: z.enum(['mada', 'apple_pay', 'visa', 'mastercard']).default('mada') });
+export type CreatePaymentDto = z.infer<typeof CreatePaymentDto>;
+export const CashInitDto = z.object({ invoice_id: z.string().uuid() });
+export type CashInitDto = z.infer<typeof CashInitDto>;
+export const CashConfirmDto = z.object({ invoice_id: z.string().uuid(), code: z.string().regex(/^\d{6}$/) });
+export type CashConfirmDto = z.infer<typeof CashConfirmDto>;
+export const RefundDto = z.object({ amount: z.union([z.string(), z.number()]).transform(String).optional(), reason_ar: z.string().min(3).max(1000) });
+export type RefundDto = z.infer<typeof RefundDto>;
+export const ReasonDto = z.object({ reason_ar: z.string().min(3).max(1000) });
+export type ReasonDto = z.infer<typeof ReasonDto>;

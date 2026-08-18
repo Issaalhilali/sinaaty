@@ -8,4 +8,5 @@ Object.assign(process.env, {
   INTEGRATION_SMS: 'mock',
   THROTTLE_LIMIT: '1000',
   OTP_MAX_REQUESTS_PER_10MIN: '25',
+  JOBS_ENABLED: 'false',
 });
