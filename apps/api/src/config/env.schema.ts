@@ -39,6 +39,7 @@ export const envSchema = z.object({
   S3_BUCKET_MEDIA: z.string().default('sinaaty-media'),
   S3_BUCKET_DOCS: z.string().default('sinaaty-docs'),
   INTEGRATION_STORAGE: z.enum(['mock', 'live']).default('mock'),
+  INTEGRATION_VIN: z.enum(['mock', 'live']).default('mock'),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
