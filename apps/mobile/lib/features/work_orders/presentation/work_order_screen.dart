@@ -26,11 +26,10 @@ class WorkOrderScreen extends ConsumerWidget {
     }
     return AppScaffold(title: order?.number == null ? l.workOrder : l.workOrderNumber(order!.number), primaryAction: primary,
       body: AsyncResultView<WorkOrder>(value: wo, onRetry: refresh, builder: (o) => RefreshIndicator(onRefresh: () async => refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
-        SectionCard(glow: true, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.headlineSmall)), StatusBadge(Labels.woStatus(l, o.status), tone: o.awaitingApproval ? BadgeTone.brass : BadgeTone.seal)]),
-          const SizedBox(height: 2), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true),
-          const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [StatusBadge(Labels.terms(l, o.paymentTerms)), if (o.paymentTerms == 'deferred') StatusBadge(l.securedByNote, tone: BadgeTone.brass, icon: Icons.verified_outlined), if (tl.value?.valueOrNull?.versions.any((v) => v.signed) ?? false) StatusBadge(l.signedByNafath, tone: BadgeTone.seal, icon: Icons.verified_user_outlined)]),
+        SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
+          const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
+          const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(Labels.terms(l, o.paymentTerms), icon: Icons.payments_outlined), if (o.paymentTerms == 'deferred') SealPill(l.securedByNote, icon: Icons.verified_outlined), if (tl.value?.valueOrNull?.versions.any((v) => v.signed) ?? false) SealPill(l.signedByNafath, icon: Icons.verified_user_outlined)]),
         ])),
         const SizedBox(height: SinaatySpace.xl), SectionTitle(l.timeline),
         SectionCard(child: _Timeline(order: o, timeline: tl.value?.valueOrNull, locale: locale)),

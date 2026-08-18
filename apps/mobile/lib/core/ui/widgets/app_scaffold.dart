@@ -11,6 +11,7 @@ class AppScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(leading: leading, title: subtitle == null ? Text(title) : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title), Text(subtitle!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: s.onSurfaceVariant))]),
         actions: [if (moreItems != null && moreItems!.isNotEmpty) Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: PopupMenuButton<String>(icon: const Icon(Icons.more_horiz), onSelected: onMore, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SinaatySpace.radius)), itemBuilder: (_) => moreItems!))]),
+      extendBody: bottom != null,
       body: SafeArea(bottom: bottom == null && bar == null, child: body),
       bottomNavigationBar: bottom != null ? Column(mainAxisSize: MainAxisSize.min, children: [?bar, bottom!]) : bar,
     );

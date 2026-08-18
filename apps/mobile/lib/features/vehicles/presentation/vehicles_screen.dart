@@ -19,7 +19,7 @@ class VehiclesScreen extends ConsumerWidget {
     return AsyncResultView<List<Vehicle>>(value: vehicles, onRetry: refresh, builder: (list) {
       if (list.isEmpty) return EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () => context.push('/vehicles/add'));
       final active = orders.value?.valueOrNull?.where((w) => w.isActive).toList() ?? const <WorkOrder>[];
-      return RefreshIndicator(onRefresh: refresh, child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
+      return RefreshIndicator(onRefresh: refresh, child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
         if (active.isNotEmpty) ...[
           SectionTitle(l.activeOrders),
           for (final w in active) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: WorkOrderCard(order: w, vehicle: list.where((v) => v.id == w.vehicleId).firstOrNull, onTap: () => context.push('/work-orders/${w.id}'))),
@@ -38,12 +38,19 @@ class WorkOrderCard extends StatelessWidget {
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final t = Theme.of(context).textTheme; final s = Theme.of(context).colorScheme;
     final tone = switch (order.status) { 'awaiting_approval' => BadgeTone.brass, 'ready' || 'delivered' => BadgeTone.seal, 'cancelled' || 'disputed' => BadgeTone.bad, _ => BadgeTone.plain };
-    final step = woFlow.indexOf(order.status == 'approved' || order.status == 'awaiting_parts' ? 'in_progress' : order.status);
-    return SectionCard(onTap: onTap, glow: order.awaitingApproval, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    final step = woFlow.indexOf(order.status == 'approved' || order.status == 'awaiting_parts' ? 'in_progress' : order.status); final locale = Localizations.localeOf(context).languageCode;
+    if (order.awaitingApproval || order.status == 'ready') {
+      return GestureDetector(onTap: onTap, child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text([vehicle?.title, order.number].whereType<String>().where((x) => x.isNotEmpty).join(' · '), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, order.status))]),
+        const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
+        const SizedBox(height: SinaatySpace.md), SealSteps(total: woFlow.length, current: step < 0 ? 0 : step),
+        const SizedBox(height: SinaatySpace.lg), SealButton(label: order.awaitingApproval ? l.approveNow : l.confirmReceipt, onPressed: onTap),
+      ])));
+    }
+    return SectionCard(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge, maxLines: 1, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text([vehicle?.title, order.number].whereType<String>().where((x) => x.isNotEmpty).join(' · '), style: t.bodySmall?.copyWith(color: s.onSurfaceVariant))])), const SizedBox(width: 8), StatusBadge(Labels.woStatus(l, order.status), tone: tone)]),
       const SizedBox(height: SinaatySpace.lg),
-      Row(children: [Expanded(child: ProgressDots(total: woFlow.length, done: step < 0 ? 0 : step + 1)), const SizedBox(width: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: Localizations.localeOf(context).languageCode))]),
-      if (order.awaitingApproval) ...[const SizedBox(height: SinaatySpace.lg), SizedBox(width: double.infinity, child: PrimaryButton(label: l.approveNow, icon: Icons.verified_user_outlined, onPressed: onTap))],
+      Row(children: [Expanded(child: ProgressDots(total: woFlow.length, done: step < 0 ? 0 : step + 1)), const SizedBox(width: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: locale))]),
     ]));
   }
 }

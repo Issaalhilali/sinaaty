@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 /// Design tokens (docs/design/sinaaty-visual-concept.html). One accent (seal), one secondary (brass), calm neutrals.
 abstract final class SinaatyColors {
-  static const seal = Color(0xFF0E6B54); static const sealInk = Color(0xFF0A4F3E); static const sealSoft = Color(0xFFDCEFE6);
+  static const seal = Color(0xFF0E6B54); static const sealInk = Color(0xFF0A4F3E); static const sealDeep = Color(0xFF083A2E); static const sealSoft = Color(0xFFDCEFE6);
   static const brass = Color(0xFFA97A22); static const brassSoft = Color(0xFFF4EAD3);
   static const ink = Color(0xFF12201C); static const ink2 = Color(0xFF3B4A45); static const muted = Color(0xFF66756F);
   static const ground = Color(0xFFEEF2EF); static const paper = Color(0xFFFFFFFF); static const paper2 = Color(0xFFF7F9F7); static const line = Color(0xFFD3DCD7);
