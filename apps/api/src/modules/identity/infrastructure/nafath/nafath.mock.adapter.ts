@@ -4,7 +4,7 @@ import { AppConfig } from '../../../../config';
 import { AppError } from '../../../../common/errors';
 import type { NafathInitiateResult, NafathPort, NafathStatusResult } from '../../application/ports/nafath.port';
 
-interface Tx { nationalId: string; random: string; createdAt: number; expiresAt: number; forced?: 'approved' | 'rejected' | 'expired' }
+interface Tx { nationalId: string; random: string; createdAt: number; expiresAt: number; forced?: 'approved' | 'rejected' | 'expired'; sub?: string; documentHash?: string }
 
 /**
  * Simulates نفاذ: initiate → 2-digit random → auto-approves after NAFATH_MOCK_AUTO_APPROVE_MS
@@ -22,13 +22,19 @@ export class NafathMockAdapter implements NafathPort {
     this.txs.set(id, tx);
     return Promise.resolve({ transactionId: id, random: tx.random, expiresAt: new Date(tx.expiresAt) });
   }
+  initiateSign(input: { userId: string; documentHash: string; purpose: string }): Promise<NafathInitiateResult> {
+    const id = randomUUID(); const now = Date.now();
+    const tx: Tx = { nationalId: '', random: String(randomInt(10, 100)), createdAt: now, expiresAt: now + 3 * 60_000, sub: `nafath:user:${input.userId}`, documentHash: input.documentHash };
+    this.txs.set(id, tx);
+    return Promise.resolve({ transactionId: id, random: tx.random, expiresAt: new Date(tx.expiresAt) });
+  }
   status(transactionId: string): Promise<NafathStatusResult> {
     const tx = this.txs.get(transactionId);
     if (!tx) throw new AppError('NAFATH_NOT_FOUND');
     const now = Date.now();
     const state = tx.forced ?? (now >= tx.expiresAt ? 'expired' : now - tx.createdAt >= this.config.get('NAFATH_MOCK_AUTO_APPROVE_MS') ? 'approved' : 'pending');
     if (state !== 'approved') return Promise.resolve({ status: state });
-    return Promise.resolve({ status: 'approved', claims: { nationalId: tx.nationalId, sub: `nafath:${tx.nationalId}`, fullNameAr: 'مستخدم نفاذ (تجريبي)', phone: undefined } });
+    return Promise.resolve({ status: 'approved', claims: { nationalId: tx.nationalId, sub: tx.sub ?? `nafath:${tx.nationalId}`, fullNameAr: 'مستخدم نفاذ (تجريبي)', phone: undefined } });
   }
   /** Test/dev hook. */
   force(transactionId: string, state: 'approved' | 'rejected' | 'expired'): boolean {

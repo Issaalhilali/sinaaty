@@ -19,7 +19,10 @@ export interface NafathStatusResult {
   claims?: NafathClaims; // present when approved
 }
 export interface NafathPort {
+  /** Login: identify by national id; the user confirms the 2-digit number in the Nafath app. */
   initiate(nationalId: string, purpose: 'login' | 'sign'): Promise<NafathInitiateResult>;
+  /** Sign a document as an already-identified user (document hash bound to the transaction). */
+  initiateSign(input: { userId: string; documentHash: string; purpose: string }): Promise<NafathInitiateResult>;
   status(transactionId: string): Promise<NafathStatusResult>;
 }
 export const NAFATH_PORT = Symbol('NAFATH_PORT');

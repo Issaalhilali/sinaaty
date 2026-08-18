@@ -49,6 +49,6 @@ const notImplemented = (name: string) => () => { throw new Error(`${name} live a
     { provide: OTP_SENDER_PORT, inject: [AppConfig, OtpSenderMockAdapter], useFactory: (c: AppConfig, mock: OtpSenderMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? mock : notImplemented('SMS')()) },
     OtpSenderMockAdapter,
   ],
-  exports: [JwtAuthGuard, RolesGuard, TOKEN_PORT, USER_REPOSITORY],
+  exports: [JwtAuthGuard, RolesGuard, TOKEN_PORT, USER_REPOSITORY, OTP_REPOSITORY, HASHER_PORT, NAFATH_PORT],
 })
 export class IdentityModule {}
