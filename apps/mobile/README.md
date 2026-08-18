@@ -20,5 +20,6 @@ flutter test --update-goldens test/rtl_scaffold_golden_test.dart   # regenerate 
 
 ## Layout
 - `core/` config (dart-define), theme (tokens from docs/design), l10n (ARB ar/en, `L10n`), routing (go_router + auth guard), api (dio + refresh interceptor + error envelope mapping), auth (secure token store), result (`Result<T>/Failure`), ui (shared components: AppScaffold, PrimaryButton, StatusBadge, SectionCard, EmptyState), di (Riverpod providers).
+- `features/vehicles`, `work_orders`, `billing`, `notifications`, `account` — customer MVP (Step 13). Realtime via `WorkOrderRealtime` port (Socket.IO impl in data/).
 - `features/auth` OTP login (phone → code), session restore, sign-out. `features/home` flavor tab shell (3–4 tabs).
 - `tool/gen_api.dart` → `core/api/generated/endpoints.dart` from OpenAPI (full model codegen tracked in docs/backlog.md).

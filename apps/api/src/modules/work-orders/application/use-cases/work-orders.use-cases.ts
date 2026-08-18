@@ -1,4 +1,4 @@
-import { Inject, Injectable, Optional } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
 import Decimal from 'decimal.js';
 import type { InspectionType, PartCondition, PaymentTerms, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
 import { AppError } from '../../../../common/errors';
@@ -23,6 +23,7 @@ import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../domain/re
 import { PDF_RENDERER_PORT, type PdfRendererPort } from '../ports/pdf-renderer.port';
 import { REALTIME_PUBLISHER, type RealtimePublisher } from '../ports/realtime.port';
 import { WoTransitionService } from '../wo-transition.service';
+import { ApprovalLinkService } from '../approval-link.service';
 import type { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, ChangeOrderDto, CreateWorkOrderDto, InspectionDto, ItemDto, TransitionDto, UpdateItemDto, UpdateWorkOrderDto } from '../dto/work-orders.dto';
 void OTP_REPOSITORY_TOKEN;
 
@@ -45,6 +46,7 @@ export class WorkOrdersUseCases {
     private readonly audit: AuditLogWriter,
     private readonly outbox: OutboxWriter,
     @Optional() @Inject(REALTIME_PUBLISHER) private readonly rt?: RealtimePublisher,
+    @Optional() @Inject(forwardRef(() => ApprovalLinkService)) private readonly approvalLinks?: ApprovalLinkService,
   ) {}
 
   // ---------- access ----------
@@ -156,7 +158,7 @@ export class WorkOrdersUseCases {
       if (!(cur && version === cur.version)) { await this.repo.addVersion({ woId: id, version, reasonAr, snapshot: snap, sha256: sha, createdBy: u.id }, tx); if (version !== wo.currentVersion) await this.repo.update(id, { currentVersion: version }, tx); }
       if (from === 'draft') { await this.transitions.apply(tx, wo, 'received', { userId: u.id }); const received = await this.repo.findById(id, tx); if (received) await this.transitions.apply(tx, received, 'awaiting_approval', { userId: u.id }, reasonAr, { version }); }
       else if (from !== 'awaiting_approval') await this.transitions.apply(tx, wo, 'awaiting_approval', { userId: u.id }, reasonAr, { version });
-      await this.outbox.publish(tx, { eventType: 'WorkOrderApprovalRequested', aggregateType: 'work_order', aggregateId: id, payload: { number: wo.number, version, customerUserId: wo.customerUserId, customerOrgId: wo.customerOrgId, total: wo.total } });
+      await this.outbox.publish(tx, { eventType: 'WorkOrderApprovalRequested', aggregateType: 'work_order', aggregateId: id, payload: { number: wo.number, version, customerUserId: wo.customerUserId, customerOrgId: wo.customerOrgId, total: wo.total, approvalUrl: this.approvalLinks?.url(id, version) ?? null } });
     });
     const fresh = await this.load(id); const v = await this.repo.getVersion(id, fresh.currentVersion);
     return { work_order: fresh, version: v?.version, snapshot_sha256: v?.sha256, approval_url_hint: `/v1/work-orders/${id}/approve` };

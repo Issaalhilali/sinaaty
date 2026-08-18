@@ -4,7 +4,12 @@ import '../../../core/config/app_config.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/ui/ui.dart';
+import 'package:go_router/go_router.dart';
+import '../../account/presentation/account_screen.dart';
 import '../../auth/presentation/providers.dart';
+import '../../billing/presentation/wallet_screen.dart';
+import '../../notifications/presentation/providers.dart';
+import '../../vehicles/presentation/vehicles_screen.dart';
 /// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
 class HomeShell extends ConsumerStatefulWidget { const HomeShell({super.key}); @override ConsumerState<HomeShell> createState() => _HomeShellState(); }
 class _HomeShellState extends ConsumerState<HomeShell> {
@@ -18,11 +23,17 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     };
     final title = tabs[_index].$1;
     final body = switch ((flavor, _index)) {
-      (AppFlavor.customer, 0) => EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () {}),
+      (AppFlavor.customer, 0) => const VehiclesScreen(),
+      (AppFlavor.customer, 1) => EmptyState(icon: Icons.add_circle_outline, title: l.requestSoonTitle, body: l.requestSoonBody),
+      (AppFlavor.customer, 2) => const WalletScreen(),
+      (AppFlavor.customer, 3) => const AccountScreen(),
       (AppFlavor.partner, 0) => EmptyState(icon: Icons.build_outlined, title: l.welcomeBack, body: l.todayEmpty, actionLabel: l.newWorkOrder, onAction: () {}),
       _ => EmptyState(icon: Icons.hourglass_empty, title: l.comingSoon, body: me?.phone ?? ''),
     };
-    return AppScaffold(title: title, body: body, moreItems: [PopupMenuItem(value: 'logout', child: Text(l.logout))], onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); },
+    final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
+    return AppScaffold(title: title, body: body,
+      moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],
+      onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') context.push('/notifications'); },
       bottom: NavigationBar(selectedIndex: _index, onDestinationSelected: (i) => setState(() => _index = i), destinations: [for (final t in tabs) NavigationDestination(icon: Icon(t.$2), label: t.$1)]));
   }
 }

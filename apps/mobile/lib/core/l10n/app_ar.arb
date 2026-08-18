@@ -17,7 +17,13 @@
   "sendCode": "أرسل الرمز",
   "otpTitle": "أدخل رمز التحقق",
   "otpSubtitle": "أرسلنا رمزاً من 6 أرقام إلى {phone}",
-  "@otpSubtitle": { "placeholders": { "phone": { "type": "String" } } },
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "verify": "تحقق",
   "resendCode": "إعادة الإرسال",
   "loginWithNafath": "الدخول عبر نفاذ",
@@ -34,5 +40,205 @@
   "welcomeBack": "أهلاً بعودتك",
   "todayEmpty": "لا توجد أوامر اليوم — أنشئ أول أمر إصلاح.",
   "newWorkOrder": "أمر عمل جديد",
-  "comingSoon": "قريباً"
+  "comingSoon": "قريباً",
+  "activeOrders": "أوامر الإصلاح الحالية",
+  "noActiveOrders": "لا توجد أوامر إصلاح حالياً",
+  "myCars": "سياراتي",
+  "vinLabel": "رقم الهيكل (VIN)",
+  "plateLabel": "رقم اللوحة",
+  "addCarTitle": "أضف سيارتك",
+  "addCarSubtitle": "أدخل رقم الهيكل (17 خانة) أو رقم اللوحة — سنتعرّف على السيارة تلقائياً.",
+  "addCarSubmit": "إضافة السيارة",
+  "addCarNeedOne": "أدخل رقم الهيكل أو رقم اللوحة.",
+  "carPassport": "سجل السيارة",
+  "noPassportEvents": "سيظهر هنا كل ما يحدث لسيارتك: صيانة، قطع، فحوصات.",
+  "odometer": "العدّاد",
+  "km": "كم",
+  "shareCarPassport": "مشاركة سجل السيارة",
+  "workOrder": "أمر إصلاح",
+  "workOrderNumber": "أمر إصلاح {number}",
+  "@workOrderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "timeline": "المتابعة",
+  "photos": "الصور",
+  "photosCount": "{count} صور",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "items": "البنود",
+  "total": "الإجمالي",
+  "vat": "ضريبة القيمة المضافة 15%",
+  "subtotal": "المجموع قبل الضريبة",
+  "approveNow": "راجع واعتمد",
+  "approveTitle": "اعتماد أمر الإصلاح",
+  "approveHint": "توقيعك يثبّت هذا السعر — أي تعديل يصلك كنسخة جديدة.",
+  "approveWithNafath": "اعتماد عبر نفاذ",
+  "approveWithOtp": "اعتماد برمز التحقق",
+  "nafathPickNumber": "افتح تطبيق نفاذ واختر الرقم",
+  "nafathWaiting": "بانتظار موافقتك في نفاذ…",
+  "approved": "تم الاعتماد — الورشة تبدأ العمل",
+  "declineOrder": "لا أوافق",
+  "declineReason": "سبب عدم الموافقة",
+  "versionN": "النسخة {n}",
+  "@versionN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "changeReason": "سبب التعديل: {reason}",
+  "@changeReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmReceipt": "استلمت سيارتي",
+  "confirmReceiptHint": "بتأكيدك يُحوَّل المبلغ المحفوظ للورشة.",
+  "payNow": "ادفع الآن",
+  "payInvoice": "دفع الفاتورة",
+  "invoice": "فاتورة",
+  "invoiceNumber": "فاتورة {number}",
+  "@invoiceNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "مدفوعة",
+  "due": "مستحقة",
+  "dueOn": "تستحق في {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHeld": "المبلغ محفوظ حتى تستلم سيارتك",
+  "payWithMada": "مدى",
+  "payWithApplePay": "Apple Pay",
+  "paymentDone": "تم الدفع — شكراً لك",
+  "paymentFailed": "لم يكتمل الدفع، حاول مرة أخرى.",
+  "paySheetTitle": "اختر طريقة الدفع",
+  "invoices": "الفواتير",
+  "notes": "سندات لأمر",
+  "note": "سند لأمر",
+  "noteNumber": "سند {number}",
+  "@noteNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "outstanding": "المتبقي",
+  "noteClosedHint": "أُغلق السند وصدرت المخالصة",
+  "settlement": "مخالصة",
+  "overdue": "متأخر",
+  "noteHint": "سند إلكتروني موثّق عبر نافذ — يُغلق تلقائياً عند سدادك.",
+  "walletEmptyTitle": "لا توجد فواتير أو سندات",
+  "walletEmptyBody": "ستظهر هنا فواتيرك ومدفوعاتك وسنداتك ومخالصاتك.",
+  "notifications": "الإشعارات",
+  "notificationsEmpty": "لا توجد إشعارات بعد",
+  "markAllRead": "تعليم الكل كمقروء",
+  "language": "اللغة",
+  "arabic": "العربية",
+  "english": "English",
+  "phone": "الجوال",
+  "nafathVerifiedLabel": "موثّق بنفاذ",
+  "notVerified": "غير موثّق",
+  "requestSoonTitle": "اطلب خدمة أو قطعة",
+  "requestSoonBody": "قريباً: اطلب فحصاً، قطعة بالمزاد العكسي، أو سطحة — من هنا.",
+  "viewDocument": "عرض المستند",
+  "viewInvoice": "عرض الفاتورة",
+  "statusDraft": "مسودة",
+  "statusReceived": "تم الاستلام",
+  "statusInspecting": "قيد الفحص",
+  "statusAwaitingApproval": "بانتظار اعتمادك",
+  "statusApproved": "معتمد",
+  "statusAwaitingParts": "بانتظار القطع",
+  "statusInProgress": "قيد التنفيذ",
+  "statusQualityCheck": "فحص الجودة",
+  "statusReady": "جاهزة للاستلام",
+  "statusDelivered": "تم التسليم",
+  "statusClosed": "مغلق",
+  "statusCancelled": "ملغى",
+  "statusDisputed": "نزاع",
+  "statusAbandoned": "مهجورة",
+  "invStatusIssued": "مستحقة",
+  "invStatusPaid": "مدفوعة",
+  "invStatusPartiallyPaid": "مدفوعة جزئياً",
+  "invStatusVoid": "ملغاة",
+  "invStatusOverdue": "متأخرة",
+  "invStatusRefunded": "مستردّة",
+  "noteStatusIssued": "ساري",
+  "noteStatusPartiallySettled": "مسدد جزئياً",
+  "noteStatusClosed": "مغلق",
+  "noteStatusInEnforcement": "قيد التنفيذ",
+  "noteStatusCancelled": "ملغى",
+  "noteStatusPending": "بانتظار الإصدار",
+  "signedByNafath": "موقّع بنفاذ",
+  "signedByOtp": "موقّع برمز التحقق",
+  "securedByNote": "مضمون بسند",
+  "termsPrepaid": "دفع مقدّم",
+  "termsOnDelivery": "الدفع عند الاستلام",
+  "termsDeferred": "دفع آجل",
+  "termsInstallments": "أقساط",
+  "termsFleetMonthly": "كشف شهري",
+  "loading": "جارٍ التحميل…",
+  "somethingWrong": "تعذّر التحميل",
+  "noOrdersForCar": "لا توجد أوامر إصلاح لهذه السيارة",
+  "checkIn": "فحص الاستلام",
+  "checkOut": "فحص التسليم",
+  "damages": "{count} ملاحظات",
+  "@damages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "codeLabel": "رمز التحقق",
+  "invalidCode": "أدخل الرمز المكوّن من 6 أرقام",
+  "payAmount": "ادفع {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "warrantyDays": "ضمان {days} يوم",
+  "@warrantyDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "nafathNumber": "الرقم في نفاذ",
+  "approveDone": "تم",
+  "payHint": "الدفع آمن — يبقى المبلغ محفوظاً حتى تستلم سيارتك.",
+  "clearanceIssued": "صدرت المخالصة {number}",
+  "@clearanceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmApproval": "تأكيد الاعتماد"
 }

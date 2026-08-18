@@ -48,6 +48,8 @@ export const envSchema = z.object({
   NOTE_DEFAULT_TERMS_DAYS: z.coerce.number().int().positive().default(30),
   DUNNING_SCHEDULE_DAYS: z.string().default('1,3,7,10').transform((s) => s.split(',').map((x) => Number(x.trim())).filter((n) => Number.isInteger(n) && n > 0)),
   DUNNING_FORMAL_STEP: z.coerce.number().int().positive().default(4),
+  APPROVAL_LINK_SECRET: z.string().min(16).default('dev-approval-link-secret-change-me'),
+  WEB_APPROVAL_BASE_URL: z.string().url().default('http://localhost:3000'),
   JOBS_ENABLED: z.coerce.boolean().default(true),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),

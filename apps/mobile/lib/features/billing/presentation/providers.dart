@@ -1,0 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/di/core_providers.dart';
+import '../../../core/result/result.dart';
+import '../data/billing_repository_impl.dart';
+import '../domain/billing.dart';
+import '../domain/billing_repository.dart';
+final billingRepositoryProvider = Provider<BillingRepository>((ref) => BillingRepositoryImpl(ref.watch(apiClientProvider)));
+final invoicesProvider = FutureProvider.autoDispose<Result<List<Invoice>>>((ref) => ref.watch(billingRepositoryProvider).invoices());
+final invoiceProvider = FutureProvider.autoDispose.family<Result<Invoice>, String>((ref, id) => ref.watch(billingRepositoryProvider).invoice(id));
+final notesProvider = FutureProvider.autoDispose<Result<List<PromissoryNote>>>((ref) => ref.watch(billingRepositoryProvider).notes());
+final noteProvider = FutureProvider.autoDispose.family<Result<PromissoryNote>, String>((ref, id) => ref.watch(billingRepositoryProvider).note(id));

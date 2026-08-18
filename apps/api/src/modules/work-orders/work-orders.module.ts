@@ -10,17 +10,19 @@ import { WorkOrdersUseCases } from './application/use-cases/work-orders.use-case
 import { WorkOrderPrismaRepository } from './infrastructure/prisma/work-order.prisma-repository';
 import { HtmlWorkOrderRenderer } from './infrastructure/pdf/html-renderer.adapter';
 import { WorkOrdersController } from './interface/http/work-orders.controller';
+import { ApprovalPageController } from './interface/http/approval-page.controller';
+import { ApprovalLinkService } from './application/approval-link.service';
 import { RealtimeGateway } from './interface/ws/realtime.gateway';
 
 @Module({
   imports: [IdentityModule, OrganizationsModule, VehiclesModule],
-  controllers: [WorkOrdersController],
+  controllers: [WorkOrdersController, ApprovalPageController],
   providers: [
-    WorkOrdersUseCases, WoTransitionService, RealtimeGateway,
+    WorkOrdersUseCases, WoTransitionService, RealtimeGateway, ApprovalLinkService,
     { provide: WORK_ORDER_REPOSITORY, useClass: WorkOrderPrismaRepository },
     { provide: PDF_RENDERER_PORT, useClass: HtmlWorkOrderRenderer },
     { provide: REALTIME_PUBLISHER, useExisting: RealtimeGateway },
   ],
-  exports: [WORK_ORDER_REPOSITORY, WoTransitionService, REALTIME_PUBLISHER],
+  exports: [WORK_ORDER_REPOSITORY, WoTransitionService, REALTIME_PUBLISHER, ApprovalLinkService],
 })
 export class WorkOrdersModule {}

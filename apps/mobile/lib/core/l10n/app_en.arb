@@ -17,7 +17,13 @@
   "sendCode": "Send code",
   "otpTitle": "Enter the code",
   "otpSubtitle": "We sent a 6-digit code to {phone}",
-  "@otpSubtitle": { "placeholders": { "phone": { "type": "String" } } },
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "verify": "Verify",
   "resendCode": "Resend",
   "loginWithNafath": "Sign in with Nafath",
@@ -34,5 +40,205 @@
   "welcomeBack": "Welcome back",
   "todayEmpty": "No orders today — create your first repair order.",
   "newWorkOrder": "New work order",
-  "comingSoon": "Coming soon"
+  "comingSoon": "Coming soon",
+  "activeOrders": "Current repair orders",
+  "noActiveOrders": "No repair orders right now",
+  "myCars": "My cars",
+  "vinLabel": "VIN",
+  "plateLabel": "Plate number",
+  "addCarTitle": "Add your car",
+  "addCarSubtitle": "Enter the 17-character VIN or the plate — we identify the car automatically.",
+  "addCarSubmit": "Add car",
+  "addCarNeedOne": "Enter a VIN or a plate number.",
+  "carPassport": "Car passport",
+  "noPassportEvents": "Everything that happens to your car will show here: service, parts, inspections.",
+  "odometer": "Odometer",
+  "km": "km",
+  "shareCarPassport": "Share car passport",
+  "workOrder": "Repair order",
+  "workOrderNumber": "Repair order {number}",
+  "@workOrderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "timeline": "Progress",
+  "photos": "Photos",
+  "photosCount": "{count} photos",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "items": "Items",
+  "total": "Total",
+  "vat": "VAT 15%",
+  "subtotal": "Subtotal",
+  "approveNow": "Review & approve",
+  "approveTitle": "Approve repair order",
+  "approveHint": "Your signature locks this price — any change reaches you as a new version.",
+  "approveWithNafath": "Approve with Nafath",
+  "approveWithOtp": "Approve with SMS code",
+  "nafathPickNumber": "Open the Nafath app and pick the number",
+  "nafathWaiting": "Waiting for your approval in Nafath…",
+  "approved": "Approved — the workshop starts now",
+  "declineOrder": "Decline",
+  "declineReason": "Reason",
+  "versionN": "Version {n}",
+  "@versionN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "changeReason": "Change reason: {reason}",
+  "@changeReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmReceipt": "I received my car",
+  "confirmReceiptHint": "Confirming releases the held amount to the workshop.",
+  "payNow": "Pay now",
+  "payInvoice": "Pay invoice",
+  "invoice": "Invoice",
+  "invoiceNumber": "Invoice {number}",
+  "@invoiceNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "Paid",
+  "due": "Due",
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHeld": "Amount is held until you receive your car",
+  "payWithMada": "mada",
+  "payWithApplePay": "Apple Pay",
+  "paymentDone": "Paid — thank you",
+  "paymentFailed": "Payment did not complete, try again.",
+  "paySheetTitle": "Choose payment method",
+  "invoices": "Invoices",
+  "notes": "Promissory notes",
+  "note": "Promissory note",
+  "noteNumber": "Note {number}",
+  "@noteNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "outstanding": "Outstanding",
+  "noteClosedHint": "Note closed and clearance issued",
+  "settlement": "Clearance",
+  "overdue": "Overdue",
+  "noteHint": "Electronic note via Nafez — closes automatically when you pay.",
+  "walletEmptyTitle": "No invoices or notes",
+  "walletEmptyBody": "Your invoices, payments, notes and clearances will show here.",
+  "notifications": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "markAllRead": "Mark all read",
+  "language": "Language",
+  "arabic": "العربية",
+  "english": "English",
+  "phone": "Phone",
+  "nafathVerifiedLabel": "Nafath verified",
+  "notVerified": "Not verified",
+  "requestSoonTitle": "Request a service or part",
+  "requestSoonBody": "Coming soon: request an inspection, a part via reverse auction, or a tow — from here.",
+  "viewDocument": "View document",
+  "viewInvoice": "View invoice",
+  "statusDraft": "Draft",
+  "statusReceived": "Received",
+  "statusInspecting": "Inspecting",
+  "statusAwaitingApproval": "Awaiting your approval",
+  "statusApproved": "Approved",
+  "statusAwaitingParts": "Awaiting parts",
+  "statusInProgress": "In progress",
+  "statusQualityCheck": "Quality check",
+  "statusReady": "Ready for pickup",
+  "statusDelivered": "Delivered",
+  "statusClosed": "Closed",
+  "statusCancelled": "Cancelled",
+  "statusDisputed": "Disputed",
+  "statusAbandoned": "Abandoned",
+  "invStatusIssued": "Due",
+  "invStatusPaid": "Paid",
+  "invStatusPartiallyPaid": "Partially paid",
+  "invStatusVoid": "Void",
+  "invStatusOverdue": "Overdue",
+  "invStatusRefunded": "Refunded",
+  "noteStatusIssued": "Active",
+  "noteStatusPartiallySettled": "Partially settled",
+  "noteStatusClosed": "Closed",
+  "noteStatusInEnforcement": "In enforcement",
+  "noteStatusCancelled": "Cancelled",
+  "noteStatusPending": "Pending issue",
+  "signedByNafath": "Signed with Nafath",
+  "signedByOtp": "Signed with SMS code",
+  "securedByNote": "Secured by note",
+  "termsPrepaid": "Prepaid",
+  "termsOnDelivery": "Pay on delivery",
+  "termsDeferred": "Deferred",
+  "termsInstallments": "Installments",
+  "termsFleetMonthly": "Monthly statement",
+  "loading": "Loading…",
+  "somethingWrong": "Could not load",
+  "noOrdersForCar": "No repair orders for this car",
+  "checkIn": "Check-in inspection",
+  "checkOut": "Check-out inspection",
+  "damages": "{count} notes",
+  "@damages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "codeLabel": "Verification code",
+  "invalidCode": "Enter the 6-digit code",
+  "payAmount": "Pay {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "warrantyDays": "{days}-day warranty",
+  "@warrantyDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "nafathNumber": "Nafath number",
+  "approveDone": "Done",
+  "payHint": "Secure payment — the amount stays held until you receive your car.",
+  "clearanceIssued": "Clearance {number} issued",
+  "@clearanceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmApproval": "Confirm approval"
 }

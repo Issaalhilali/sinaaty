@@ -13,3 +13,7 @@
 | Full OpenAPI → Dart model/client codegen (`openapi-generator`, needs Java) | Step 12 | endpoints-only generator + hand-written DTOs suffice for MVP | Step 13/17 |
 | iOS Xcode schemes for customer/partner/fleet flavors | Step 12 | entrypoints + dart-define work today; schemes need Xcode project edits | Step 13 |
 | Sentry wiring (`sentry_flutter`) when SENTRY_DSN provided | Step 12 | hook exists in bootstrap.dart | Step 17 |
+| Media thumbnails in customer app (presigned GET from storage port) | Step 13 | mock storage has no bytes; placeholder strip keeps layout | Step 14/17 |
+| Live PSP: open `redirect_url` in in-app browser + return deep link | Step 13 | mock PSP completes in-app via dev hook | live PSP integration |
+| Nafath approval from web page (redirect to Nafath app) — page uses OTP only today | Step 13 | OTP is legally sufficient for MVP pilot; Nafath web flow needs live contract | Step 20+ |
+| Customer «اطلب» tab (service/parts/tow requests) | Step 13 | placeholder empty state | Step 23 |

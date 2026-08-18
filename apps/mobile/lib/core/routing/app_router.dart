@@ -4,7 +4,14 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/otp_screen.dart';
 import '../../features/auth/presentation/providers.dart';
+import '../../features/billing/presentation/invoice_screen.dart';
+import '../../features/billing/presentation/note_screen.dart';
 import '../../features/home/presentation/home_shell.dart';
+import '../../features/notifications/presentation/inbox_screen.dart';
+import '../../features/vehicles/presentation/add_vehicle_screen.dart';
+import '../../features/vehicles/presentation/vehicle_screen.dart';
+import '../../features/work_orders/presentation/approve_screen.dart';
+import '../../features/work_orders/presentation/work_order_screen.dart';
 import '../di/core_providers.dart';
 /// go_router with an auth guard: unknown → splash, signedOut → /login, signedIn → /.
 final routerProvider = Provider<GoRouter>((ref) {
@@ -22,6 +29,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen(), routes: [GoRoute(path: 'otp', builder: (_, s) { final e = (s.extra as Map?) ?? {}; return OtpScreen(phone: e['phone'] as String? ?? '', debugCode: e['debug'] as String?); })]),
       GoRoute(path: '/', builder: (_, _) => const HomeShell()),
+      GoRoute(path: '/vehicles/add', builder: (_, _) => const AddVehicleScreen()),
+      GoRoute(path: '/vehicles/:id', builder: (_, s) => VehicleScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/work-orders/:id', builder: (_, s) => WorkOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'approve', builder: (_, s) => ApproveScreen(id: s.pathParameters['id']!))]),
+      GoRoute(path: '/invoices/:id', builder: (_, s) => InvoiceScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
     ],
   );
 });
