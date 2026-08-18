@@ -13,6 +13,7 @@ import { MediaModule } from './modules/media/media.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { WorkOrdersModule } from './modules/work-orders/work-orders.module';
+import { InvoicingModule } from './modules/invoicing/invoicing.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
@@ -35,6 +36,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     OrganizationsModule,
     VehiclesModule,
     WorkOrdersModule,
+    InvoicingModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

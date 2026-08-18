@@ -21,6 +21,10 @@ export const ERROR_CODES = {
   NAFATH_NOT_FOUND: { status: 404, ar: 'طلب نفاذ غير موجود.', en: 'Nafath transaction not found.' },
   TOKEN_INVALID: { status: 401, ar: 'انتهت الجلسة، سجّل الدخول مجدداً.', en: 'Session expired, please sign in again.' },
   TOKEN_REUSED: { status: 401, ar: 'تم اكتشاف استخدام غير آمن للجلسة؛ سجّل الدخول مجدداً.', en: 'Suspicious session reuse detected; please sign in again.' },
+  // ---- invoicing ----
+  INV_WO_NOT_INVOICEABLE: { status: 409, ar: 'لا يمكن إصدار فاتورة قبل جاهزية المركبة واعتماد العميل.', en: 'Work order must be approved and ready/delivered before invoicing.' },
+  INV_ALREADY_ISSUED: { status: 409, ar: 'توجد فاتورة سارية لهذا الأمر.', en: 'An active invoice already exists for this work order.' },
+  INV_NOT_VOIDABLE: { status: 409, ar: 'لا يمكن إلغاء فاتورة مدفوعة — أصدر إشعار دائن.', en: 'Paid invoices cannot be voided — issue a credit note.' },
   USER_SUSPENDED: { status: 403, ar: 'الحساب موقوف، تواصل مع الدعم.', en: 'Account suspended, contact support.' },
 } as const;
 

@@ -59,6 +59,9 @@ importers:
       '@sinaaty/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@sinaaty/zatca-ubl':
+        specifier: workspace:*
+        version: link:../../packages/zatca-ubl
       decimal.js:
         specifier: ^10.5.0
         version: 10.6.0
@@ -178,6 +181,18 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
+
+  packages/zatca-ubl:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.17.0
+        version: 22.20.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)
 
 packages:
 
