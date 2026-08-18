@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 DB="$ROOT/apps/api/tools/dev-db.sh"
 
 stop_all() {
-  echo "⏹  stopping API…";  pkill -f "nest start" 2>/dev/null; pkill -f "apps/api/dist/main.js" 2>/dev/null; pkill -f "node dist/main.js" 2>/dev/null; sleep 1
+  echo "⏹  stopping API…";  pkill -f "nest start" 2>/dev/null; pkill -f "apps/api/dist/main.js" 2>/dev/null; pkill -f "node dist/main.js" 2>/dev/null; lsof -ti:3000 2>/dev/null | xargs kill 2>/dev/null; sleep 1
   echo "⏹  stopping database…"; "$DB" stop 2>/dev/null || true
   echo "✓ everything stopped"
 }
