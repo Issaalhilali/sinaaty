@@ -45,7 +45,7 @@ model Device {
   lastSeenAt          DateTime?            @map("last_seen_at") @db.Timestamptz(6)
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   revokedAt           DateTime?            @map("revoked_at") @db.Timestamptz(6)
-  users               User                 @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   refreshTokens       RefreshToken[]
   workOrderSignatures WorkOrderSignature[]
 
@@ -59,8 +59,8 @@ model DisputeMessage {
   isInternal   Boolean  @default(false) @map("is_internal")
   bodyAr       String   @map("body_ar")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  users        User     @relation(fields: [authorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  disputes     Dispute  @relation(fields: [disputeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  authorUser   User     @relation(fields: [authorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dispute      Dispute  @relation(fields: [disputeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("dispute_messages")
 }
@@ -93,12 +93,12 @@ model Dispute {
   claimantOrg                Organization?       @relation("disputes_claimant_org_idToorganizations", fields: [claimantOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   escrowHold                 EscrowHold?         @relation("disputes_escrow_hold_idToescrow_holds", fields: [escrowHoldId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   openedByUser               User                @relation("disputes_opened_by_user_idTousers", fields: [openedByUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partOrders                 PartOrder?          @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder                  PartOrder?          @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   resolvedByUser             User?               @relation("disputes_resolved_byTousers", fields: [resolvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   respondentOrg              Organization?       @relation("disputes_respondent_org_idToorganizations", fields: [respondentOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   respondentUser             User?               @relation("disputes_respondent_user_idTousers", fields: [respondentUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  transportJobs              TransportJob?       @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders                 WorkOrder?          @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transportJob               TransportJob?       @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder                  WorkOrder?          @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   escrowHoldsAsDispute       EscrowHold[]        @relation("escrow_holds_dispute_idTodisputes")
   warrantyClaims             WarrantyClaim[]
 
@@ -116,24 +116,24 @@ model DriverProfile {
   lastGeo          Unsupported("geography")? @map("last_geo")
   lastGeoAt        DateTime?                 @map("last_geo_at") @db.Timestamptz(6)
   ratingAvg        Decimal                   @default(0) @map("rating_avg") @db.Decimal(3, 2)
-  organizations    Organization?             @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users            User                      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org              Organization?             @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user             User                      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("driver_profiles")
 }
 
 model DunningNotice {
-  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  noteId          String?              @map("note_id") @db.Uuid
-  invoiceId       String?              @map("invoice_id") @db.Uuid
-  step            Int                  @db.SmallInt
-  channel         notification_channel
-  isFormal        Boolean              @default(false) @map("is_formal")
-  sentAt          DateTime             @default(now()) @map("sent_at") @db.Timestamptz(6)
-  proofMediaId    String?              @map("proof_media_id") @db.Uuid
-  invoices        Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  promissoryNotes PromissoryNote?      @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets     MediaAsset?          @relation(fields: [proofMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id           String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  noteId       String?              @map("note_id") @db.Uuid
+  invoiceId    String?              @map("invoice_id") @db.Uuid
+  step         Int                  @db.SmallInt
+  channel      notification_channel
+  isFormal     Boolean              @default(false) @map("is_formal")
+  sentAt       DateTime             @default(now()) @map("sent_at") @db.Timestamptz(6)
+  proofMediaId String?              @map("proof_media_id") @db.Uuid
+  invoice      Invoice?             @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note         PromissoryNote?      @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proofMedia   MediaAsset?          @relation(fields: [proofMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("dunning_notices")
 }
@@ -154,9 +154,9 @@ model EnforcementCas {
   closedAt           DateTime?          @map("closed_at") @db.Timestamptz(6)
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
-  mediaAssets        MediaAsset?        @relation(fields: [bundleMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  promissoryNotes    PromissoryNote     @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users              User?              @relation(fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bundleMedia        MediaAsset?        @relation(fields: [bundleMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note               PromissoryNote     @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  requestedByUser    User?              @relation(fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("enforcement_cases")
 }
@@ -181,11 +181,11 @@ model EscrowHold {
   createdAt            DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
   disputesAsEscrowHold Dispute[]     @relation("disputes_escrow_hold_idToescrow_holds")
-  organizations        Organization  @relation(fields: [beneficiaryOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  payments             Payment       @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders           WorkOrder?    @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  beneficiaryOrg       Organization  @relation(fields: [beneficiaryOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payment              Payment       @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder            WorkOrder?    @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   dispute              Dispute?      @relation("escrow_holds_dispute_idTodisputes", fields: [disputeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_escrow_dispute")
-  partOrders           PartOrder?    @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_escrow_part_order")
+  partOrder            PartOrder?    @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_escrow_part_order")
   payoutItems          PayoutItem[]
 
   @@index([beneficiaryOrgId, status], map: "idx_escrow_org_status")
@@ -193,20 +193,20 @@ model EscrowHold {
 }
 
 model FleetApproval {
-  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId             String            @map("org_id") @db.Uuid
-  workOrderId       String?           @map("work_order_id") @db.Uuid
-  partOrderId       String?           @map("part_order_id") @db.Uuid
-  versionId         String?           @map("version_id") @db.Uuid
-  approverUserId    String            @map("approver_user_id") @db.Uuid
-  decision          String            @db.VarChar(10)
-  noteAr            String?           @map("note_ar")
-  decidedAt         DateTime          @default(now()) @map("decided_at") @db.Timestamptz(6)
-  users             User              @relation(fields: [approverUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations     Organization      @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partOrders        PartOrder?        @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrderVersions WorkOrderVersion? @relation(fields: [versionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders        WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId          String            @map("org_id") @db.Uuid
+  workOrderId    String?           @map("work_order_id") @db.Uuid
+  partOrderId    String?           @map("part_order_id") @db.Uuid
+  versionId      String?           @map("version_id") @db.Uuid
+  approverUserId String            @map("approver_user_id") @db.Uuid
+  decision       String            @db.VarChar(10)
+  noteAr         String?           @map("note_ar")
+  decidedAt      DateTime          @default(now()) @map("decided_at") @db.Timestamptz(6)
+  approverUser   User              @relation(fields: [approverUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org            Organization      @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder      PartOrder?        @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  version        WorkOrderVersion? @relation(fields: [versionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder      WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("fleet_approvals")
 }
@@ -221,23 +221,23 @@ model FleetPolicy {
   monthlyBudget             Decimal?     @map("monthly_budget") @db.Decimal(14, 2)
   isActive                  Boolean      @default(true) @map("is_active")
   createdAt                 DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org                       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("fleet_policies")
 }
 
 model FleetStatement {
-  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId         String         @map("org_id") @db.Uuid
-  periodStart   DateTime       @map("period_start") @db.Date
-  periodEnd     DateTime       @map("period_end") @db.Date
-  total         Decimal        @db.Decimal(14, 2)
-  invoiceIds    String[]       @map("invoice_ids") @db.Uuid
-  pdfMediaId    String?        @map("pdf_media_id") @db.Uuid
-  status        invoice_status @default(issued)
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations Organization   @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets   MediaAsset?    @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId       String         @map("org_id") @db.Uuid
+  periodStart DateTime       @map("period_start") @db.Date
+  periodEnd   DateTime       @map("period_end") @db.Date
+  total       Decimal        @db.Decimal(14, 2)
+  invoiceIds  String[]       @map("invoice_ids") @db.Uuid
+  pdfMediaId  String?        @map("pdf_media_id") @db.Uuid
+  status      invoice_status @default(issued)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  org         Organization   @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pdfMedia    MediaAsset?    @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([orgId, periodStart, periodEnd])
   @@map("fleet_statements")
@@ -255,8 +255,8 @@ model GroupBuy {
   closesAt       DateTime     @map("closes_at") @db.Timestamptz(6)
   status         String       @default("open") @db.VarChar(20)
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  partsCatalog   PartsCatalog @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations  Organization @relation(fields: [supplierOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  catalog        PartsCatalog @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplierOrg    Organization @relation(fields: [supplierOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   partOrders     PartOrder[]
 
   @@map("group_buys")
@@ -277,25 +277,25 @@ model Inspection {
   customerAckSignatureId String?             @map("customer_ack_signature_id") @db.Uuid
   performedAt            DateTime            @default(now()) @map("performed_at") @db.Timestamptz(6)
   createdAt              DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  workOrderSignatures    WorkOrderSignature? @relation(fields: [customerAckSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users                  User?               @relation(fields: [inspectorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations          Organization?       @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles               Vehicle             @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders             WorkOrder?          @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  customerAckSignature   WorkOrderSignature? @relation(fields: [customerAckSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inspectorUser          User?               @relation(fields: [inspectorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org                    Organization?       @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle                Vehicle             @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder              WorkOrder?          @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([workOrderId], map: "idx_inspections_wo")
   @@map("inspections")
 }
 
 model IntegrationCredential {
-  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  provider      integration_provider
-  orgId         String?              @map("org_id") @db.Uuid
-  secretEnc     Bytes                @map("secret_enc")
-  metadata      Json                 @default("{}")
-  expiresAt     DateTime?            @map("expires_at") @db.Timestamptz(6)
-  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations Organization?        @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id        String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider  integration_provider
+  orgId     String?              @map("org_id") @db.Uuid
+  secretEnc Bytes                @map("secret_enc")
+  metadata  Json                 @default("{}")
+  expiresAt DateTime?            @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  org       Organization?        @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([provider, orgId])
   @@map("integration_credentials")
@@ -324,18 +324,18 @@ model IntegrationRequest {
 }
 
 model InventorySyncRun {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId         String       @map("org_id") @db.Uuid
-  source        String       @db.VarChar(20)
-  fileMediaId   String?      @map("file_media_id") @db.Uuid
-  rowsTotal     Int?         @map("rows_total")
-  rowsUpserted  Int?         @map("rows_upserted")
-  rowsFailed    Int?         @map("rows_failed")
-  errors        Json?
-  startedAt     DateTime     @default(now()) @map("started_at") @db.Timestamptz(6)
-  finishedAt    DateTime?    @map("finished_at") @db.Timestamptz(6)
-  mediaAssets   MediaAsset?  @relation(fields: [fileMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId        String       @map("org_id") @db.Uuid
+  source       String       @db.VarChar(20)
+  fileMediaId  String?      @map("file_media_id") @db.Uuid
+  rowsTotal    Int?         @map("rows_total")
+  rowsUpserted Int?         @map("rows_upserted")
+  rowsFailed   Int?         @map("rows_failed")
+  errors       Json?
+  startedAt    DateTime     @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt   DateTime?    @map("finished_at") @db.Timestamptz(6)
+  fileMedia    MediaAsset?  @relation(fields: [fileMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("inventory_sync_runs")
 }
@@ -353,18 +353,18 @@ model InvoiceLine {
   vatAmount       Decimal        @map("vat_amount") @db.Decimal(14, 2)
   lineTotal       Decimal        @map("line_total") @db.Decimal(14, 2)
   sortOrder       Int            @default(0) @map("sort_order")
-  invoices        Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  workOrderItems  WorkOrderItem? @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice         Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  workOrderItem   WorkOrderItem? @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("invoice_lines")
 }
 
 model InvoiceSequence {
-  orgId         String       @map("org_id") @db.Uuid
-  series        String       @default("INV") @db.VarChar(10)
-  year          Int          @db.SmallInt
-  lastNumber    Int          @default(0) @map("last_number")
-  organizations Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  orgId      String       @map("org_id") @db.Uuid
+  series     String       @default("INV") @db.VarChar(10)
+  year       Int          @db.SmallInt
+  lastNumber Int          @default(0) @map("last_number")
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([orgId, series, year])
   @@map("invoice_sequences")
@@ -411,16 +411,16 @@ model Invoice {
   updatedAt        DateTime          @default(now()) @map("updated_at") @db.Timestamptz(6)
   dunningNotices   DunningNotice[]
   invoiceLines     InvoiceLine[]
-  partOrders       PartOrder?        @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoices_part_order")
-  transportJobs    TransportJob?     @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoices_transport")
+  partOrder        PartOrder?        @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoices_part_order")
+  transportJob     TransportJob?     @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoices_transport")
   createdByUser    User?             @relation("invoices_created_byTousers", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   customerOrg      Organization?     @relation("invoices_customer_org_idToorganizations", fields: [customerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   customerUser     User?             @relation("invoices_customer_user_idTousers", fields: [customerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   org              Organization      @relation("invoices_org_idToorganizations", fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invoices         Invoice?          @relation("invoicesToinvoices", fields: [parentInvoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentInvoice    Invoice?          @relation("invoicesToinvoices", fields: [parentInvoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   otherInvoices    Invoice[]         @relation("invoicesToinvoices")
   pdfMedia         MediaAsset?       @relation("invoices_pdf_media_idTomedia_assets", fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders       WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder        WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   xmlMedia         MediaAsset?       @relation("invoices_xml_media_idTomedia_assets", fields: [xmlMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   payments         Payment[]
   promissoryNotes  PromissoryNote[]
@@ -445,23 +445,23 @@ model KybDocument {
   reviewedAt      DateTime?      @map("reviewed_at") @db.Timestamptz(6)
   rejectionReason String?        @map("rejection_reason")
   createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  mediaAssets     MediaAsset     @relation(fields: [mediaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_kyb_media")
-  organizations   Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users           User?          @relation(fields: [reviewedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  media           MediaAsset     @relation(fields: [mediaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_kyb_media")
+  org             Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  reviewedByUser  User?          @relation(fields: [reviewedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("kyb_documents")
 }
 
 model LedgerAccount {
-  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code          String              @unique @db.VarChar(60)
-  type          ledger_account_type
-  orgId         String?             @map("org_id") @db.Uuid
-  currency      String              @default("SAR") @db.Char(3)
-  isActive      Boolean             @default(true) @map("is_active")
-  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations Organization?       @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ledgerLines   LedgerLine[]
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String              @unique @db.VarChar(60)
+  type        ledger_account_type
+  orgId       String?             @map("org_id") @db.Uuid
+  currency    String              @default("SAR") @db.Char(3)
+  isActive    Boolean             @default(true) @map("is_active")
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  org         Organization?       @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ledgerLines LedgerLine[]
 
   @@index([orgId], map: "idx_ledger_accounts_org")
   @@map("ledger_accounts")
@@ -476,7 +476,7 @@ model LedgerEntry {
   idempotencyKey String       @unique @map("idempotency_key") @db.VarChar(120)
   postedBy       String?      @map("posted_by") @db.Uuid
   postedAt       DateTime     @default(now()) @map("posted_at") @db.Timestamptz(6)
-  users          User?        @relation(fields: [postedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  postedByUser   User?        @relation(fields: [postedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ledgerLines    LedgerLine[]
   payouts        Payout[]
 
@@ -486,13 +486,13 @@ model LedgerEntry {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model LedgerLine {
-  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  entryId        String        @map("entry_id") @db.Uuid
-  accountId      String        @map("account_id") @db.Uuid
-  debit          Decimal       @default(0) @db.Decimal(14, 2)
-  credit         Decimal       @default(0) @db.Decimal(14, 2)
-  ledgerAccounts LedgerAccount @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ledgerEntries  LedgerEntry   @relation(fields: [entryId], references: [id], onUpdate: NoAction)
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entryId   String        @map("entry_id") @db.Uuid
+  accountId String        @map("account_id") @db.Uuid
+  debit     Decimal       @default(0) @db.Decimal(14, 2)
+  credit    Decimal       @default(0) @db.Decimal(14, 2)
+  account   LedgerAccount @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  entry     LedgerEntry   @relation(fields: [entryId], references: [id], onUpdate: NoAction)
 
   @@index([accountId], map: "idx_ledger_lines_account")
   @@map("ledger_lines")
@@ -522,7 +522,7 @@ model MediaAsset {
   invoicesAsPdfMedia Invoice[]          @relation("invoices_pdf_media_idTomedia_assets")
   invoicesAsXmlMedia Invoice[]          @relation("invoices_xml_media_idTomedia_assets")
   kybDocuments       KybDocument[]
-  users              User?              @relation(fields: [uploadedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  uploadedByUser     User?              @relation(fields: [uploadedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   mediaLinks         MediaLink[]
   organizations      Organization[]
   partsCatalog       PartsCatalog[]
@@ -538,12 +538,12 @@ model MediaAsset {
 }
 
 model MediaLink {
-  mediaId     String     @map("media_id") @db.Uuid
-  entityType  String     @map("entity_type") @db.VarChar(40)
-  entityId    String     @map("entity_id") @db.Uuid
-  label       String?    @db.VarChar(40)
-  sortOrder   Int        @default(0) @map("sort_order")
-  mediaAssets MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mediaId    String     @map("media_id") @db.Uuid
+  entityType String     @map("entity_type") @db.VarChar(40)
+  entityId   String     @map("entity_id") @db.Uuid
+  label      String?    @db.VarChar(40)
+  sortOrder  Int        @default(0) @map("sort_order")
+  media      MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([mediaId, entityType, entityId])
   @@index([entityType, entityId], map: "idx_media_links_entity")
@@ -565,37 +565,37 @@ model NotificationTemplate {
 }
 
 model Notification {
-  id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                String                @map("user_id") @db.Uuid
-  channel               notification_channel
-  templateCode          String?               @map("template_code") @db.VarChar(60)
-  titleAr               String?               @map("title_ar")
-  bodyAr                String                @map("body_ar")
-  data                  Json                  @default("{}")
-  status                notification_status   @default(queued)
-  providerRef           String?               @map("provider_ref") @db.VarChar(120)
-  sentAt                DateTime?             @map("sent_at") @db.Timestamptz(6)
-  readAt                DateTime?             @map("read_at") @db.Timestamptz(6)
-  createdAt             DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
-  notificationTemplates NotificationTemplate? @relation(fields: [templateCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  users                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                           String                @map("user_id") @db.Uuid
+  channel                          notification_channel
+  templateCode                     String?               @map("template_code") @db.VarChar(60)
+  titleAr                          String?               @map("title_ar")
+  bodyAr                           String                @map("body_ar")
+  data                             Json                  @default("{}")
+  status                           notification_status   @default(queued)
+  providerRef                      String?               @map("provider_ref") @db.VarChar(120)
+  sentAt                           DateTime?             @map("sent_at") @db.Timestamptz(6)
+  readAt                           DateTime?             @map("read_at") @db.Timestamptz(6)
+  createdAt                        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  templateCodeNotificationTemplate NotificationTemplate? @relation(fields: [templateCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  user                             User                  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([userId, createdAt(sort: Desc)], map: "idx_notifications_user")
   @@map("notifications")
 }
 
 model OrganizationBankAccount {
-  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId         String       @map("org_id") @db.Uuid
-  bankName      String       @map("bank_name") @db.VarChar(100)
-  ibanEnc       Bytes        @map("iban_enc")
-  ibanLast4     String       @map("iban_last4") @db.Char(4)
-  holderName    String       @map("holder_name") @db.VarChar(150)
-  isDefault     Boolean      @default(true) @map("is_default")
-  verifiedAt    DateTime?    @map("verified_at") @db.Timestamptz(6)
-  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  payouts       Payout[]
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId      String       @map("org_id") @db.Uuid
+  bankName   String       @map("bank_name") @db.VarChar(100)
+  ibanEnc    Bytes        @map("iban_enc")
+  ibanLast4  String       @map("iban_last4") @db.Char(4)
+  holderName String       @map("holder_name") @db.VarChar(150)
+  isDefault  Boolean      @default(true) @map("is_default")
+  verifiedAt DateTime?    @map("verified_at") @db.Timestamptz(6)
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  payouts    Payout[]
 
   @@map("organization_bank_accounts")
 }
@@ -613,7 +613,7 @@ model OrganizationLocation {
   serviceRadiusKm   Int                      @default(25) @map("service_radius_km")
   workingHours      Json                     @default("{}") @map("working_hours")
   createdAt         DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations     Organization             @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org               Organization             @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   supplierInventory SupplierInventory[]
   workOrders        WorkOrder[]
 
@@ -632,7 +632,7 @@ model OrganizationMember {
   invitedBy     String?         @map("invited_by") @db.Uuid
   joinedAt      DateTime        @default(now()) @map("joined_at") @db.Timestamptz(6)
   invitedByUser User?           @relation("organization_members_invited_byTousers", fields: [invitedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org           Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   user          User            @relation("organization_members_user_idTousers", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([orgId, userId])
@@ -642,13 +642,13 @@ model OrganizationMember {
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model OrganizationSpecialty {
-  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId             String           @map("org_id") @db.Uuid
-  makeId            Int?             @map("make_id") @db.SmallInt
-  categoryId        Int?             @map("category_id") @db.SmallInt
-  serviceCategories ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicleMakes      VehicleMake?     @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations     Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId      String           @map("org_id") @db.Uuid
+  makeId     Int?             @map("make_id") @db.SmallInt
+  categoryId Int?             @map("category_id") @db.SmallInt
+  category   ServiceCategory? @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  make       VehicleMake?     @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org        Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("organization_specialties")
 }
@@ -701,8 +701,8 @@ model Organization {
   organizationLocations        OrganizationLocation[]
   organizationMembers          OrganizationMember[]
   organizationSpecialties      OrganizationSpecialty[]
-  mediaAssets                  MediaAsset?               @relation(fields: [logoMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_logo")
-  users                        User?                     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  logoMedia                    MediaAsset?               @relation(fields: [logoMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_orgs_logo")
+  createdByUser                User?                     @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   partBids                     PartBid[]
   partBrands                   PartBrand[]
   partOrdersAsBuyerOrg         PartOrder[]               @relation("part_orders_buyer_org_idToorganizations")
@@ -787,9 +787,9 @@ model PartBid {
   expiresAt                DateTime?          @map("expires_at") @db.Timestamptz(6)
   createdAt                DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
-  supplierInventory        SupplierInventory? @relation(fields: [inventoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory                SupplierInventory? @relation(fields: [inventoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   request                  PartRequest        @relation("part_bids_request_idTopart_requests", fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  organizations            Organization       @relation(fields: [supplierOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplierOrg              Organization       @relation(fields: [supplierOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   partOrders               PartOrder[]
   partRequestsAsAwardedBid PartRequest[]      @relation("part_requests_awarded_bid_idTopart_bids")
 
@@ -799,14 +799,14 @@ model PartBid {
 }
 
 model PartBrand {
-  id            Int            @id @default(autoincrement())
-  nameAr        String         @map("name_ar") @db.VarChar(80)
-  nameEn        String         @unique @map("name_en") @db.VarChar(80)
-  isOem         Boolean        @default(false) @map("is_oem")
-  agentOrgId    String?        @map("agent_org_id") @db.Uuid
-  logoUrl       String?        @map("logo_url")
-  organizations Organization?  @relation(fields: [agentOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partsCatalog  PartsCatalog[]
+  id           Int            @id @default(autoincrement())
+  nameAr       String         @map("name_ar") @db.VarChar(80)
+  nameEn       String         @unique @map("name_en") @db.VarChar(80)
+  isOem        Boolean        @default(false) @map("is_oem")
+  agentOrgId   String?        @map("agent_org_id") @db.Uuid
+  logoUrl      String?        @map("logo_url")
+  agentOrg     Organization?  @relation(fields: [agentOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partsCatalog PartsCatalog[]
 
   @@map("part_brands")
 }
@@ -818,7 +818,7 @@ model PartCategory {
   nameEn              String              @map("name_en") @db.VarChar(100)
   parentId            Int?                @map("parent_id")
   isMajorComponent    Boolean             @default(false) @map("is_major_component")
-  partCategories      PartCategory?       @relation("part_categoriesTopart_categories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent              PartCategory?       @relation("part_categoriesTopart_categories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   otherPartCategories PartCategory[]      @relation("part_categoriesTopart_categories")
   partRequests        PartRequest[]
   partsCatalog        PartsCatalog[]
@@ -830,19 +830,19 @@ model PartCategory {
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model PartFitment {
-  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  catalogId     String        @map("catalog_id") @db.Uuid
-  makeId        Int           @map("make_id") @db.SmallInt
-  modelId       Int?          @map("model_id")
-  yearFrom      Int?          @map("year_from") @db.SmallInt
-  yearTo        Int?          @map("year_to") @db.SmallInt
-  engineCode    String?       @map("engine_code") @db.VarChar(40)
-  trim          String?       @db.VarChar(80)
-  notesAr       String?       @map("notes_ar")
-  source        String        @default("agent") @db.VarChar(30)
-  partsCatalog  PartsCatalog  @relation(fields: [catalogId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  vehicleMakes  VehicleMake   @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicleModels VehicleModel? @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  catalogId  String        @map("catalog_id") @db.Uuid
+  makeId     Int           @map("make_id") @db.SmallInt
+  modelId    Int?          @map("model_id")
+  yearFrom   Int?          @map("year_from") @db.SmallInt
+  yearTo     Int?          @map("year_to") @db.SmallInt
+  engineCode String?       @map("engine_code") @db.VarChar(40)
+  trim       String?       @db.VarChar(80)
+  notesAr    String?       @map("notes_ar")
+  source     String        @default("agent") @db.VarChar(30)
+  catalog    PartsCatalog  @relation(fields: [catalogId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  make       VehicleMake   @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  model      VehicleModel? @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([makeId, modelId, yearFrom, yearTo], map: "idx_part_fitments_lookup")
   @@map("part_fitments")
@@ -850,21 +850,21 @@ model PartFitment {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model PartOrderItem {
-  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  partOrderId       String             @map("part_order_id") @db.Uuid
-  inventoryId       String?            @map("inventory_id") @db.Uuid
-  catalogId         String?            @map("catalog_id") @db.Uuid
-  descriptionAr     String             @map("description_ar") @db.VarChar(200)
-  condition         part_condition
-  quantity          Int
-  unitPrice         Decimal            @map("unit_price") @db.Decimal(14, 2)
-  vatRate           Decimal            @default(15.00) @map("vat_rate") @db.Decimal(5, 2)
-  lineTotal         Decimal            @map("line_total") @db.Decimal(14, 2)
-  warrantyDays      Int                @default(0) @map("warranty_days")
-  coreReturnCredit  Decimal            @default(0) @map("core_return_credit") @db.Decimal(14, 2)
-  partsCatalog      PartsCatalog?      @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  supplierInventory SupplierInventory? @relation(fields: [inventoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partOrders        PartOrder          @relation(fields: [partOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  partOrderId      String             @map("part_order_id") @db.Uuid
+  inventoryId      String?            @map("inventory_id") @db.Uuid
+  catalogId        String?            @map("catalog_id") @db.Uuid
+  descriptionAr    String             @map("description_ar") @db.VarChar(200)
+  condition        part_condition
+  quantity         Int
+  unitPrice        Decimal            @map("unit_price") @db.Decimal(14, 2)
+  vatRate          Decimal            @default(15.00) @map("vat_rate") @db.Decimal(5, 2)
+  lineTotal        Decimal            @map("line_total") @db.Decimal(14, 2)
+  warrantyDays     Int                @default(0) @map("warranty_days")
+  coreReturnCredit Decimal            @default(0) @map("core_return_credit") @db.Decimal(14, 2)
+  catalog          PartsCatalog?      @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inventory        SupplierInventory? @relation(fields: [inventoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder        PartOrder          @relation(fields: [partOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([partOrderId], map: "idx_part_order_items_order")
   @@map("part_order_items")
@@ -903,15 +903,15 @@ model PartOrder {
   fleetApprovals           FleetApproval[]
   invoices                 Invoice[]
   partOrderItems           PartOrderItem[]
-  groupBuys                GroupBuy?         @relation(fields: [groupBuyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_orders_group_buy")
+  groupBuy                 GroupBuy?         @relation(fields: [groupBuyId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_orders_group_buy")
   transportJob             TransportJob?     @relation("part_orders_transport_job_idTotransport_jobs", fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_orders_transport")
-  partBids                 PartBid?          @relation(fields: [bidId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  bid                      PartBid?          @relation(fields: [bidId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   buyerOrg                 Organization?     @relation("part_orders_buyer_org_idToorganizations", fields: [buyerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users                    User?             @relation(fields: [buyerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partRequests             PartRequest?      @relation(fields: [requestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  buyerUser                User?             @relation(fields: [buyerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  request                  PartRequest?      @relation(fields: [requestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   supplierOrg              Organization      @relation("part_orders_supplier_org_idToorganizations", fields: [supplierOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tradeAccounts            TradeAccount?     @relation(fields: [tradeAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders               WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tradeAccount             TradeAccount?     @relation(fields: [tradeAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder                WorkOrder?        @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   partSerials              PartSerial[]
   payments                 Payment[]
   promissoryNotes          PromissoryNote[]
@@ -927,13 +927,13 @@ model PartOrder {
 }
 
 model PartRequestRecipient {
-  requestId     String       @map("request_id") @db.Uuid
-  orgId         String       @map("org_id") @db.Uuid
-  notifiedAt    DateTime     @default(now()) @map("notified_at") @db.Timestamptz(6)
-  viewedAt      DateTime?    @map("viewed_at") @db.Timestamptz(6)
-  distanceKm    Decimal?     @map("distance_km") @db.Decimal(6, 2)
-  organizations Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  partRequests  PartRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  requestId  String       @map("request_id") @db.Uuid
+  orgId      String       @map("org_id") @db.Uuid
+  notifiedAt DateTime     @default(now()) @map("notified_at") @db.Timestamptz(6)
+  viewedAt   DateTime?    @map("viewed_at") @db.Timestamptz(6)
+  distanceKm Decimal?     @map("distance_km") @db.Decimal(6, 2)
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  request    PartRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([requestId, orgId])
   @@map("part_request_recipients")
@@ -966,11 +966,11 @@ model PartRequest {
   partOrders            PartOrder[]
   partRequestRecipients PartRequestRecipient[]
   awardedBid            PartBid?                  @relation("part_requests_awarded_bid_idTopart_bids", fields: [awardedBidId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_requests_awarded")
-  partCategories        PartCategory?             @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations         Organization?             @relation(fields: [requesterOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users                 User?                     @relation(fields: [requesterUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles              Vehicle?                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders            WorkOrder?                @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category              PartCategory?             @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  requesterOrg          Organization?             @relation(fields: [requesterOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  requesterUser         User?                     @relation(fields: [requesterUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle               Vehicle?                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder             WorkOrder?                @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([deliverToGeo], map: "idx_part_requests_geo", type: Gist)
   @@index([status, biddingEndsAt], map: "idx_part_requests_status_ends")
@@ -993,12 +993,12 @@ model PartSerial {
   scanCount       Int                @default(0) @map("scan_count")
   lastScannedAt   DateTime?          @map("last_scanned_at") @db.Timestamptz(6)
   createdAt       DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  partOrders      PartOrder?         @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_serials_order")
-  partsCatalog    PartsCatalog       @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder       PartOrder?         @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_part_serials_order")
+  catalog         PartsCatalog       @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   issuerOrg       Organization       @relation("part_serials_issuer_org_idToorganizations", fields: [issuerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ownerOrg        Organization?      @relation("part_serials_owner_org_idToorganizations", fields: [ownerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles        Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrderItems  WorkOrderItem?     @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle         Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrderItem   WorkOrderItem?     @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   warranties      Warranty[]
 
   @@unique([catalogId, serialNumber])
@@ -1026,10 +1026,10 @@ model PartsCatalog {
   partFitments      PartFitment[]
   partOrderItems    PartOrderItem[]
   partSerials       PartSerial[]
-  partBrands        PartBrand           @relation(fields: [brandId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partCategories    PartCategory?       @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations     Organization?       @relation(fields: [createdByOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets       MediaAsset?         @relation(fields: [imageMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  brand             PartBrand           @relation(fields: [brandId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category          PartCategory?       @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdByOrg      Organization?       @relation(fields: [createdByOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  imageMedia        MediaAsset?         @relation(fields: [imageMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   supplierInventory SupplierInventory[]
 
   @@unique([brandId, partNumber])
@@ -1064,12 +1064,12 @@ model Payment {
   createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
   escrowHolds          EscrowHold[]
-  partOrders           PartOrder?            @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payments_part_order")
-  invoices             Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder            PartOrder?            @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payments_part_order")
+  invoice              Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   payeeOrg             Organization          @relation("payments_payee_org_idToorganizations", fields: [payeeOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   payerOrg             Organization?         @relation("payments_payer_org_idToorganizations", fields: [payerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users                User?                 @relation(fields: [payerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders           WorkOrder?            @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payerUser            User?                 @relation(fields: [payerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder            WorkOrder?            @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   promissoryNoteEvents PromissoryNoteEvent[]
   refunds              Refund[]
 
@@ -1082,8 +1082,8 @@ model PayoutItem {
   payoutId     String     @map("payout_id") @db.Uuid
   escrowHoldId String     @map("escrow_hold_id") @db.Uuid
   amount       Decimal    @db.Decimal(14, 2)
-  escrowHolds  EscrowHold @relation(fields: [escrowHoldId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  payouts      Payout     @relation(fields: [payoutId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  escrowHold   EscrowHold @relation(fields: [escrowHoldId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payout       Payout     @relation(fields: [payoutId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([payoutId, escrowHoldId])
   @@map("payout_items")
@@ -1091,32 +1091,32 @@ model PayoutItem {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Payout {
-  id                       String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId                    String                  @map("org_id") @db.Uuid
-  bankAccountId            String                  @map("bank_account_id") @db.Uuid
-  amount                   Decimal                 @db.Decimal(14, 2)
-  status                   payout_status           @default(scheduled)
-  providerRef              String?                 @map("provider_ref") @db.VarChar(120)
-  scheduledFor             DateTime                @map("scheduled_for") @db.Date
-  processedAt              DateTime?               @map("processed_at") @db.Timestamptz(6)
-  failureReason            String?                 @map("failure_reason")
-  ledgerEntryId            String?                 @map("ledger_entry_id") @db.Uuid
-  createdAt                DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  payoutItems              PayoutItem[]
-  organizationBankAccounts OrganizationBankAccount @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  ledgerEntries            LedgerEntry?            @relation(fields: [ledgerEntryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations            Organization            @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId         String                  @map("org_id") @db.Uuid
+  bankAccountId String                  @map("bank_account_id") @db.Uuid
+  amount        Decimal                 @db.Decimal(14, 2)
+  status        payout_status           @default(scheduled)
+  providerRef   String?                 @map("provider_ref") @db.VarChar(120)
+  scheduledFor  DateTime                @map("scheduled_for") @db.Date
+  processedAt   DateTime?               @map("processed_at") @db.Timestamptz(6)
+  failureReason String?                 @map("failure_reason")
+  ledgerEntryId String?                 @map("ledger_entry_id") @db.Uuid
+  createdAt     DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  payoutItems   PayoutItem[]
+  bankAccount   OrganizationBankAccount @relation(fields: [bankAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ledgerEntry   LedgerEntry?            @relation(fields: [ledgerEntryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org           Organization            @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([orgId, status], map: "idx_payouts_org")
   @@map("payouts")
 }
 
 model PlatformSetting {
-  key       String   @id @db.VarChar(80)
-  value     Json
-  updatedBy String?  @map("updated_by") @db.Uuid
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
-  users     User?    @relation(fields: [updatedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  key           String   @id @db.VarChar(80)
+  value         Json
+  updatedBy     String?  @map("updated_by") @db.Uuid
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedByUser User?    @relation(fields: [updatedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("platform_settings")
 }
@@ -1133,9 +1133,9 @@ model PromissoryNoteEvent {
   actorUserId     String?        @map("actor_user_id") @db.Uuid
   noteAr          String?        @map("note_ar")
   createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  users           User?          @relation(fields: [actorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  promissoryNotes PromissoryNote @relation(fields: [noteId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  payments        Payment?       @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  actorUser       User?          @relation(fields: [actorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note            PromissoryNote @relation(fields: [noteId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  payment         Payment?       @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([noteId, createdAt], map: "idx_pn_events_note")
   @@map("promissory_note_events")
@@ -1173,15 +1173,15 @@ model PromissoryNote {
   dunningNotices       DunningNotice[]
   enforcementCases     EnforcementCas[]
   promissoryNoteEvents PromissoryNoteEvent[]
-  partOrders           PartOrder?            @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_pn_part_order")
-  workOrderSignatures  WorkOrderSignature?   @relation(fields: [consentSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder            PartOrder?            @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_pn_part_order")
+  consentSignature     WorkOrderSignature?   @relation(fields: [consentSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdByUser        User?                 @relation("promissory_notes_created_byTousers", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   creditorOrg          Organization          @relation("promissory_notes_creditor_org_idToorganizations", fields: [creditorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   debtorOrg            Organization?         @relation("promissory_notes_debtor_org_idToorganizations", fields: [debtorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   debtorUser           User?                 @relation("promissory_notes_debtor_user_idTousers", fields: [debtorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invoices             Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets          MediaAsset?           @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders           WorkOrder?            @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice              Invoice?              @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pdfMedia             MediaAsset?           @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder            WorkOrder?            @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   settlements          Settlement[]
 
   @@index([creditorOrgId, status], map: "idx_pn_creditor")
@@ -1198,8 +1198,8 @@ model RefreshToken {
   expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
   revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  devices   Device?   @relation(fields: [deviceId], references: [id], onUpdate: NoAction)
-  users     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  device    Device?   @relation(fields: [deviceId], references: [id], onUpdate: NoAction)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([userId], map: "idx_refresh_tokens_user")
   @@map("refresh_tokens")
@@ -1207,17 +1207,17 @@ model RefreshToken {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Refund {
-  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  paymentId   String         @map("payment_id") @db.Uuid
-  amount      Decimal        @db.Decimal(14, 2)
-  reason      String?
-  pspRefundId String?        @map("psp_refund_id") @db.VarChar(120)
-  status      payment_status @default(initiated)
-  requestedBy String?        @map("requested_by") @db.Uuid
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  processedAt DateTime?      @map("processed_at") @db.Timestamptz(6)
-  payments    Payment        @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       User?          @relation(fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  paymentId       String         @map("payment_id") @db.Uuid
+  amount          Decimal        @db.Decimal(14, 2)
+  reason          String?
+  pspRefundId     String?        @map("psp_refund_id") @db.VarChar(120)
+  status          payment_status @default(initiated)
+  requestedBy     String?        @map("requested_by") @db.Uuid
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  processedAt     DateTime?      @map("processed_at") @db.Timestamptz(6)
+  payment         Payment        @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  requestedByUser User?          @relation(fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("refunds")
 }
@@ -1237,13 +1237,13 @@ model Review {
   commentAr      String?       @map("comment_ar")
   isPublic       Boolean       @default(true) @map("is_public")
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  partOrders     PartOrder?    @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder      PartOrder?    @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reviewerOrg    Organization? @relation("reviews_reviewer_org_idToorganizations", fields: [reviewerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   reviewerUser   User          @relation("reviews_reviewer_user_idTousers", fields: [reviewerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   targetOrg      Organization? @relation("reviews_target_org_idToorganizations", fields: [targetOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   targetUser     User?         @relation("reviews_target_user_idTousers", fields: [targetUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  transportJobs  TransportJob? @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders     WorkOrder?    @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transportJob   TransportJob? @relation(fields: [transportJobId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder      WorkOrder?    @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([reviewerUserId, partOrderId])
   @@unique([reviewerUserId, transportJobId])
@@ -1268,32 +1268,32 @@ model ServiceCategory {
   nameEn                  String                  @map("name_en") @db.VarChar(80)
   parentId                Int?                    @map("parent_id") @db.SmallInt
   organizationSpecialties OrganizationSpecialty[]
-  serviceCategories       ServiceCategory?        @relation("service_categoriesToservice_categories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parent                  ServiceCategory?        @relation("service_categoriesToservice_categories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   otherServiceCategories  ServiceCategory[]       @relation("service_categoriesToservice_categories")
 
   @@map("service_categories")
 }
 
 model Settlement {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  number          String          @unique @db.VarChar(24)
-  noteId          String?         @map("note_id") @db.Uuid
-  invoiceId       String?         @map("invoice_id") @db.Uuid
-  workOrderId     String?         @map("work_order_id") @db.Uuid
-  creditorOrgId   String          @map("creditor_org_id") @db.Uuid
-  debtorUserId    String?         @map("debtor_user_id") @db.Uuid
-  debtorOrgId     String?         @map("debtor_org_id") @db.Uuid
-  amountSettled   Decimal         @map("amount_settled") @db.Decimal(14, 2)
-  pdfMediaId      String?         @map("pdf_media_id") @db.Uuid
-  contentSha256   String          @map("content_sha256") @db.Char(64)
-  issuedAt        DateTime        @default(now()) @map("issued_at") @db.Timestamptz(6)
-  creditorOrg     Organization    @relation("settlements_creditor_org_idToorganizations", fields: [creditorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  debtorOrg       Organization?   @relation("settlements_debtor_org_idToorganizations", fields: [debtorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users           User?           @relation(fields: [debtorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invoices        Invoice?        @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  promissoryNotes PromissoryNote? @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets     MediaAsset?     @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders      WorkOrder?      @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  number        String          @unique @db.VarChar(24)
+  noteId        String?         @map("note_id") @db.Uuid
+  invoiceId     String?         @map("invoice_id") @db.Uuid
+  workOrderId   String?         @map("work_order_id") @db.Uuid
+  creditorOrgId String          @map("creditor_org_id") @db.Uuid
+  debtorUserId  String?         @map("debtor_user_id") @db.Uuid
+  debtorOrgId   String?         @map("debtor_org_id") @db.Uuid
+  amountSettled Decimal         @map("amount_settled") @db.Decimal(14, 2)
+  pdfMediaId    String?         @map("pdf_media_id") @db.Uuid
+  contentSha256 String          @map("content_sha256") @db.Char(64)
+  issuedAt      DateTime        @default(now()) @map("issued_at") @db.Timestamptz(6)
+  creditorOrg   Organization    @relation("settlements_creditor_org_idToorganizations", fields: [creditorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  debtorOrg     Organization?   @relation("settlements_debtor_org_idToorganizations", fields: [debtorOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  debtorUser    User?           @relation(fields: [debtorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice       Invoice?        @relation(fields: [invoiceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note          PromissoryNote? @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pdfMedia      MediaAsset?     @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder     WorkOrder?      @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("settlements")
 }
@@ -1339,47 +1339,47 @@ model Subscription {
   cancelAtPeriodEnd  Boolean             @default(false) @map("cancel_at_period_end")
   createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
-  organizations      Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  subscriptionPlans  SubscriptionPlan    @relation(fields: [planId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org                Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  plan               SubscriptionPlan    @relation(fields: [planId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([orgId, status], map: "idx_subscriptions_org")
   @@map("subscriptions")
 }
 
 model SupplierInventory {
-  id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId                 String                @map("org_id") @db.Uuid
-  locationId            String?               @map("location_id") @db.Uuid
-  catalogId             String?               @map("catalog_id") @db.Uuid
-  categoryId            Int?                  @map("category_id")
-  makeId                Int?                  @map("make_id") @db.SmallInt
-  modelId               Int?                  @map("model_id")
-  yearFrom              Int?                  @map("year_from") @db.SmallInt
-  yearTo                Int?                  @map("year_to") @db.SmallInt
-  partNumber            String?               @map("part_number") @db.VarChar(60)
-  condition             part_condition
-  titleAr               String                @map("title_ar") @db.VarChar(200)
-  descriptionAr         String?               @map("description_ar")
-  price                 Decimal?              @db.Decimal(14, 2)
-  tradePrice            Decimal?              @map("trade_price") @db.Decimal(14, 2)
-  quantity              Int                   @default(1)
-  reservedQty           Int                   @default(0) @map("reserved_qty")
-  donorVin              String?               @map("donor_vin") @db.Char(17)
-  warrantyDays          Int                   @default(0) @map("warranty_days")
-  leadTimeHours         Int?                  @map("lead_time_hours")
-  externalSku           String?               @map("external_sku") @db.VarChar(60)
-  syncedAt              DateTime?             @map("synced_at") @db.Timestamptz(6)
-  isActive              Boolean               @default(true) @map("is_active")
-  createdAt             DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
-  partBids              PartBid[]
-  partOrderItems        PartOrderItem[]
-  partsCatalog          PartsCatalog?         @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partCategories        PartCategory?         @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizationLocations OrganizationLocation? @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicleMakes          VehicleMake?          @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicleModels         VehicleModel?         @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations         Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId          String                @map("org_id") @db.Uuid
+  locationId     String?               @map("location_id") @db.Uuid
+  catalogId      String?               @map("catalog_id") @db.Uuid
+  categoryId     Int?                  @map("category_id")
+  makeId         Int?                  @map("make_id") @db.SmallInt
+  modelId        Int?                  @map("model_id")
+  yearFrom       Int?                  @map("year_from") @db.SmallInt
+  yearTo         Int?                  @map("year_to") @db.SmallInt
+  partNumber     String?               @map("part_number") @db.VarChar(60)
+  condition      part_condition
+  titleAr        String                @map("title_ar") @db.VarChar(200)
+  descriptionAr  String?               @map("description_ar")
+  price          Decimal?              @db.Decimal(14, 2)
+  tradePrice     Decimal?              @map("trade_price") @db.Decimal(14, 2)
+  quantity       Int                   @default(1)
+  reservedQty    Int                   @default(0) @map("reserved_qty")
+  donorVin       String?               @map("donor_vin") @db.Char(17)
+  warrantyDays   Int                   @default(0) @map("warranty_days")
+  leadTimeHours  Int?                  @map("lead_time_hours")
+  externalSku    String?               @map("external_sku") @db.VarChar(60)
+  syncedAt       DateTime?             @map("synced_at") @db.Timestamptz(6)
+  isActive       Boolean               @default(true) @map("is_active")
+  createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  partBids       PartBid[]
+  partOrderItems PartOrderItem[]
+  catalog        PartsCatalog?         @relation(fields: [catalogId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category       PartCategory?         @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  location       OrganizationLocation? @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  make           VehicleMake?          @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  model          VehicleModel?         @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org            Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([titleAr(ops: raw("gin_trgm_ops"))], map: "idx_inventory_title_trgm", type: Gin)
   @@map("supplier_inventory")
@@ -1401,9 +1401,9 @@ model TradeAccount {
   createdAt            DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
   partOrders           PartOrder[]
-  users                User?                @relation(fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedByUser       User?                @relation(fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   buyerOrg             Organization         @relation("trade_accounts_buyer_org_idToorganizations", fields: [buyerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrderSignatures  WorkOrderSignature?  @relation(fields: [guarantorSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  guarantorSignature   WorkOrderSignature?  @relation(fields: [guarantorSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   sellerOrg            Organization         @relation("trade_accounts_seller_org_idToorganizations", fields: [sellerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([sellerOrgId, buyerOrgId])
@@ -1446,12 +1446,12 @@ model TransportJob {
   reviews                  Review[]
   driverUser               User?                    @relation("transport_jobs_driver_user_idTousers", fields: [driverUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   partOrder                PartOrder?               @relation("transport_jobs_part_order_idTopart_orders", fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets              MediaAsset?              @relation(fields: [proofMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proofMedia               MediaAsset?              @relation(fields: [proofMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   providerOrg              Organization?            @relation("transport_jobs_provider_org_idToorganizations", fields: [providerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   requesterOrg             Organization?            @relation("transport_jobs_requester_org_idToorganizations", fields: [requesterOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   requesterUser            User?                    @relation("transport_jobs_requester_user_idTousers", fields: [requesterUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles                 Vehicle?                 @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders               WorkOrder?               @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle                  Vehicle?                 @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder                WorkOrder?               @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   transportTracking        TransportTracking[]
 
   @@index([pickupGeo], map: "idx_transport_pickup_geo", type: Gist)
@@ -1460,13 +1460,13 @@ model TransportJob {
 }
 
 model TransportTracking {
-  id            BigInt                   @id @default(autoincrement())
-  jobId         String                   @map("job_id") @db.Uuid
-  geo           Unsupported("geography")
-  speedKmh      Decimal?                 @map("speed_kmh") @db.Decimal(5, 1)
-  heading       Int?                     @db.SmallInt
-  recordedAt    DateTime                 @default(now()) @map("recorded_at") @db.Timestamptz(6)
-  transportJobs TransportJob             @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id         BigInt                   @id @default(autoincrement())
+  jobId      String                   @map("job_id") @db.Uuid
+  geo        Unsupported("geography")
+  speedKmh   Decimal?                 @map("speed_kmh") @db.Decimal(5, 1)
+  heading    Int?                     @db.SmallInt
+  recordedAt DateTime                 @default(now()) @map("recorded_at") @db.Timestamptz(6)
+  job        TransportJob             @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([jobId, recordedAt(sort: Desc)], map: "idx_transport_tracking_job")
   @@map("transport_tracking")
@@ -1479,7 +1479,7 @@ model UserIdentity {
   providerUid String            @map("provider_uid") @db.VarChar(255)
   metadata    Json              @default("{}")
   createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  users       User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([provider, providerUid])
   @@map("user_identities")
@@ -1554,21 +1554,21 @@ model User {
 }
 
 model VehicleEvent {
-  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  vehicleId     String             @map("vehicle_id") @db.Uuid
-  type          vehicle_event_type
-  occurredAt    DateTime           @map("occurred_at") @db.Timestamptz(6)
-  odometerKm    Int?               @map("odometer_km")
-  orgId         String?            @map("org_id") @db.Uuid
-  refTable      String?            @map("ref_table") @db.VarChar(40)
-  refId         String?            @map("ref_id") @db.Uuid
-  summaryAr     String             @map("summary_ar")
-  summaryEn     String?            @map("summary_en")
-  data          Json               @default("{}")
-  isPublic      Boolean            @default(true) @map("is_public")
-  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations Organization?      @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles      Vehicle            @relation(fields: [vehicleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vehicleId  String             @map("vehicle_id") @db.Uuid
+  type       vehicle_event_type
+  occurredAt DateTime           @map("occurred_at") @db.Timestamptz(6)
+  odometerKm Int?               @map("odometer_km")
+  orgId      String?            @map("org_id") @db.Uuid
+  refTable   String?            @map("ref_table") @db.VarChar(40)
+  refId      String?            @map("ref_id") @db.Uuid
+  summaryAr  String             @map("summary_ar")
+  summaryEn  String?            @map("summary_en")
+  data       Json               @default("{}")
+  isPublic   Boolean            @default(true) @map("is_public")
+  createdAt  DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  org        Organization?      @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle    Vehicle            @relation(fields: [vehicleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([vehicleId, occurredAt(sort: Desc)], map: "idx_vehicle_events_vehicle")
   @@map("vehicle_events")
@@ -1595,7 +1595,7 @@ model VehicleModel {
   nameEn            String              @map("name_en") @db.VarChar(80)
   partFitments      PartFitment[]
   supplierInventory SupplierInventory[]
-  vehicleMakes      VehicleMake         @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  make              VehicleMake         @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   vehicles          Vehicle[]
 
   @@unique([makeId, nameEn])
@@ -1631,10 +1631,10 @@ model Vehicle {
   partSerials         PartSerial[]
   transportJobs       TransportJob[]
   vehicleEvents       VehicleEvent[]
-  vehicleMakes        VehicleMake?       @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicleModels       VehicleModel?      @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizations       Organization?      @relation(fields: [ownerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users               User?              @relation(fields: [ownerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  make                VehicleMake?       @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  model               VehicleModel?      @relation(fields: [modelId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerOrg            Organization?      @relation(fields: [ownerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ownerUser           User?              @relation(fields: [ownerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   warranties          Warranty[]
   workOrders          WorkOrder[]
 
@@ -1653,9 +1653,9 @@ model VoiceNote {
   extractedItems Json?      @map("extracted_items")
   status         String     @default("pending") @db.VarChar(20)
   createdAt      DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
-  mediaAssets    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users          User       @relation(fields: [recordedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders     WorkOrder? @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  media          MediaAsset @relation(fields: [mediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recordedByUser User       @relation(fields: [recordedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder      WorkOrder? @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("voice_notes")
 }
@@ -1686,15 +1686,15 @@ model Warranty {
   contentSha256      String          @map("content_sha256") @db.Char(64)
   createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   beneficiaryOrg     Organization?   @relation("warranties_beneficiary_org_idToorganizations", fields: [beneficiaryOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users              User?           @relation(fields: [beneficiaryUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partCategories     PartCategory?   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets        MediaAsset?     @relation(fields: [certificateMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  beneficiaryUser    User?           @relation(fields: [beneficiaryUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category           PartCategory?   @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  certificateMedia   MediaAsset?     @relation(fields: [certificateMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   installerOrg       Organization?   @relation("warranties_installer_org_idToorganizations", fields: [installerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   issuerOrg          Organization    @relation("warranties_issuer_org_idToorganizations", fields: [issuerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partOrders         PartOrder?      @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  partSerials        PartSerial?     @relation(fields: [partSerialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles           Vehicle?        @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrderItems     WorkOrderItem?  @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partOrder          PartOrder?      @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  partSerial         PartSerial?     @relation(fields: [partSerialId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle            Vehicle?        @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrderItem      WorkOrderItem?  @relation(fields: [workOrderItemId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   warrantyClaims     WarrantyClaim[]
 
   @@index([beneficiaryUserId], map: "idx_warranties_beneficiary")
@@ -1713,10 +1713,10 @@ model WarrantyClaim {
   resolvedBy     String?               @map("resolved_by") @db.Uuid
   resolvedAt     DateTime?             @map("resolved_at") @db.Timestamptz(6)
   createdAt      DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
-  disputes       Dispute?              @relation(fields: [disputeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_wclaims_dispute")
+  dispute        Dispute?              @relation(fields: [disputeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_wclaims_dispute")
   claimantUser   User?                 @relation("warranty_claims_claimant_user_idTousers", fields: [claimantUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   resolvedByUser User?                 @relation("warranty_claims_resolved_byTousers", fields: [resolvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  warranties     Warranty              @relation(fields: [warrantyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  warranty       Warranty              @relation(fields: [warrantyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("warranty_claims")
 }
@@ -1761,34 +1761,34 @@ model WorkOrderItem {
   invoiceLines   InvoiceLine[]
   partSerials    PartSerial[]
   warranties     Warranty[]
-  partOrders     PartOrder?      @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_wo_items_part_order")
-  workOrders     WorkOrder       @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  partOrder      PartOrder?      @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_wo_items_part_order")
+  workOrder      WorkOrder       @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([workOrderId], map: "idx_wo_items_wo")
   @@map("work_order_items")
 }
 
 model WorkOrderSignature {
-  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workOrderId       String           @map("work_order_id") @db.Uuid
-  versionId         String           @map("version_id") @db.Uuid
-  signerUserId      String           @map("signer_user_id") @db.Uuid
-  signerRole        String           @map("signer_role") @db.VarChar(30)
-  purpose           String           @db.VarChar(30)
-  method            signature_method
-  providerTxRef     String?          @map("provider_tx_ref") @db.VarChar(120)
-  providerPayload   Json?            @map("provider_payload")
-  signedHash        String           @map("signed_hash") @db.Char(64)
-  ipAddress         String?          @map("ip_address") @db.Inet
-  deviceId          String?          @map("device_id") @db.Uuid
-  signedAt          DateTime         @default(now()) @map("signed_at") @db.Timestamptz(6)
-  inspections       Inspection[]
-  promissoryNotes   PromissoryNote[]
-  tradeAccounts     TradeAccount[]
-  devices           Device?          @relation(fields: [deviceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users             User             @relation(fields: [signerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrderVersions WorkOrderVersion @relation(fields: [versionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders        WorkOrder        @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workOrderId     String           @map("work_order_id") @db.Uuid
+  versionId       String           @map("version_id") @db.Uuid
+  signerUserId    String           @map("signer_user_id") @db.Uuid
+  signerRole      String           @map("signer_role") @db.VarChar(30)
+  purpose         String           @db.VarChar(30)
+  method          signature_method
+  providerTxRef   String?          @map("provider_tx_ref") @db.VarChar(120)
+  providerPayload Json?            @map("provider_payload")
+  signedHash      String           @map("signed_hash") @db.Char(64)
+  ipAddress       String?          @map("ip_address") @db.Inet
+  deviceId        String?          @map("device_id") @db.Uuid
+  signedAt        DateTime         @default(now()) @map("signed_at") @db.Timestamptz(6)
+  inspections     Inspection[]
+  promissoryNotes PromissoryNote[]
+  tradeAccounts   TradeAccount[]
+  device          Device?          @relation(fields: [deviceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  signerUser      User             @relation(fields: [signerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  version         WorkOrderVersion @relation(fields: [versionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder       WorkOrder        @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([workOrderId], map: "idx_wo_signatures_wo")
   @@map("work_order_signatures")
@@ -1802,8 +1802,8 @@ model WorkOrderStatusHistory {
   actorUserId String?            @map("actor_user_id") @db.Uuid
   noteAr      String?            @map("note_ar")
   createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  users       User?              @relation(fields: [actorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders  WorkOrder          @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  actorUser   User?              @relation(fields: [actorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder   WorkOrder          @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([workOrderId, createdAt], map: "idx_wo_history_wo")
   @@map("work_order_status_history")
@@ -1821,9 +1821,9 @@ model WorkOrderVersion {
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   fleetApprovals      FleetApproval[]
   workOrderSignatures WorkOrderSignature[]
-  users               User?                @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  mediaAssets         MediaAsset?          @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  workOrders          WorkOrder            @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdByUser       User?                @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  pdfMedia            MediaAsset?          @relation(fields: [pdfMediaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder           WorkOrder            @relation(fields: [workOrderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([workOrderId, version])
   @@map("work_order_versions")
@@ -1889,9 +1889,9 @@ model WorkOrder {
   createdByUser          User?                    @relation("work_orders_created_byTousers", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   customerOrg            Organization?            @relation("work_orders_customer_org_idToorganizations", fields: [customerOrgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   customerUser           User?                    @relation("work_orders_customer_user_idTousers", fields: [customerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  organizationLocations  OrganizationLocation?    @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  location               OrganizationLocation?    @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   org                    Organization             @relation("work_orders_org_idToorganizations", fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  vehicles               Vehicle                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle                Vehicle                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([customerUserId, createdAt(sort: Desc)], map: "idx_wo_customer")
   @@index([customerOrgId, createdAt(sort: Desc)], map: "idx_wo_customer_org")
@@ -1910,7 +1910,7 @@ model ZatcaDevice {
   lastIcv          BigInt            @default(0) @map("last_icv")
   lastHash         String?           @map("last_hash")
   createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  organizations    Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org              Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   zatcaSubmissions ZatcaSubmission[]
 
   @@map("zatca_devices")
@@ -1928,8 +1928,8 @@ model ZatcaSubmission {
   errors       Json?
   status       zatca_status
   submittedAt  DateTime     @default(now()) @map("submitted_at") @db.Timestamptz(6)
-  zatcaDevices ZatcaDevice? @relation(fields: [deviceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invoices     Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  device       ZatcaDevice? @relation(fields: [deviceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([invoiceId], map: "idx_zatca_submissions_invoice")
   @@map("zatca_submissions")

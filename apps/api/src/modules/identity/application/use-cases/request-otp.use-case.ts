@@ -7,8 +7,6 @@ import { HASHER_PORT, type HasherPort } from '../ports/hasher.port';
 import { OTP_SENDER_PORT, type OtpSenderPort } from '../ports/otp-sender.port';
 import type { OtpRequestDto } from '../dto/auth.dto';
 
-const MAX_PER_10_MIN = 3;
-
 @Injectable()
 export class RequestOtpUseCase {
   constructor(
@@ -22,7 +20,7 @@ export class RequestOtpUseCase {
     const phone = normalizeSaudiPhone(dto.phone);
     if (!phone) throw new AppError('VALIDATION', { details: [{ path: 'phone', message: 'invalid Saudi mobile number' }] });
     const recent = await this.otps.countRecent(phone, new Date(Date.now() - 10 * 60_000));
-    if (recent >= MAX_PER_10_MIN) throw new AppError('OTP_TOO_MANY');
+    if (recent >= this.config.get('OTP_MAX_REQUESTS_PER_10MIN')) throw new AppError('OTP_TOO_MANY');
     const code = this.hasher.randomDigits(OTP_LENGTH);
     const ttl = this.config.get('OTP_TTL_SECONDS');
     await this.otps.create({ phone, purpose: dto.purpose, codeHash: this.hasher.sha256(`${phone}:${code}`), expiresAt: new Date(Date.now() + ttl * 1000) });

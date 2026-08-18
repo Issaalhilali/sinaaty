@@ -90,6 +90,15 @@ src = src.replace(modelRe, (whole, name, body) => {
         }
       }
       void dis;
+      // Non-disambiguated FK-side relation (has fields: [...]) → name from the FK column:
+      // planId → plan, orgId → org, reviewedBy → reviewedByUser (append target when no Id suffix).
+      if (!isScalar && !field.includes('To') && rest.includes('fields:')) {
+        const fk = /fields:\s*\[([^\],]+)/.exec(rest)?.[1]?.trim();
+        if (fk) {
+          const targetSingular = tables.get(baseType) ?? pascal(baseType);
+          relName = /Id$/.test(fk) ? fk.replace(/Id$/, '') : fk + targetSingular;
+        }
+      }
       line = `${indent}${isScalar ? camelField : relName}${gap}${type}${rest}`;
     } else if (t.startsWith('@@')) {
       // @@index([a_b, c]) / @@unique / @@id → camelCase field refs

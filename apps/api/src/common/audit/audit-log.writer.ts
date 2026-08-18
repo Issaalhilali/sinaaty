@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
+import type { TxHandle } from '../ports/unit-of-work.port';
 import { computeAuditHash } from './audit-hash';
 import { redactPii } from '../crypto/redaction';
 
-export type Tx = Prisma.TransactionClient;
+export type Tx = TxHandle | Prisma.TransactionClient;
+const unwrap = (tx: Tx): Prisma.TransactionClient => tx as Prisma.TransactionClient;
 
 export interface AuditEvent {
   action: string; // work_order.approve, invoice.issue, pn.close ...
@@ -27,7 +29,8 @@ export interface AuditEvent {
 export class AuditLogWriter {
   private static readonly LOCK_KEY = 7_432_001; // arbitrary constant, app-wide
 
-  async write(tx: Tx, ev: AuditEvent): Promise<{ id: bigint; hash: string }> {
+  async write(handle: Tx, ev: AuditEvent): Promise<{ id: bigint; hash: string }> {
+    const tx = unwrap(handle);
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(${AuditLogWriter.LOCK_KEY})`;
     const last = await tx.$queryRaw<Array<{ hash: string }>>`SELECT hash FROM audit_log ORDER BY id DESC LIMIT 1`;
     const prevHash = last[0]?.hash ?? null;

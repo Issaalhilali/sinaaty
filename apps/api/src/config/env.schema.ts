@@ -32,8 +32,13 @@ export const envSchema = z.object({
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
   OTP_TTL_SECONDS: z.coerce.number().int().positive().default(300),
   OTP_MAX_ATTEMPTS: z.coerce.number().int().positive().default(5),
+  OTP_MAX_REQUESTS_PER_10MIN: z.coerce.number().int().positive().default(3),
   NAFATH_MOCK_AUTO_APPROVE_MS: z.coerce.number().int().nonnegative().default(1500),
   NAFATH_CALLBACK_SECRET: z.string().min(8).default('dev-nafath-callback-secret'),
+
+  S3_BUCKET_MEDIA: z.string().default('sinaaty-media'),
+  S3_BUCKET_DOCS: z.string().default('sinaaty-docs'),
+  INTEGRATION_STORAGE: z.enum(['mock', 'live']).default('mock'),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),

@@ -2,6 +2,7 @@ import { type ArgumentsHost, Catch, type ExceptionFilter, HttpException } from '
 import type { Request, Response } from 'express';
 import { ThrottlerException } from '@nestjs/throttler';
 import { ZodError } from 'zod';
+import { Prisma } from '@prisma/client';
 import { Logger } from 'nestjs-pino';
 import { AppError, ERROR_CODES, type ErrorCode } from '../errors';
 import type { ErrorEnvelope } from './error-envelope';
@@ -47,6 +48,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
           details: exception.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
         },
       };
+    }
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002 unique violation → CONFLICT; P2025 record not found → NOT_FOUND; P2003 FK → VALIDATION
+      const map: Record<string, ErrorCode> = { P2002: 'CONFLICT', P2025: 'NOT_FOUND', P2003: 'VALIDATION' };
+      const code = map[exception.code];
+      if (code) {
+        const env = this.fromCode(code);
+        const target = (exception.meta as { target?: unknown; field_name?: unknown } | undefined)?.target ?? (exception.meta as { field_name?: unknown } | undefined)?.field_name;
+        return { status: env.status, body: { ...env.body, details: target ? { fields: target } : undefined } };
+      }
     }
     if (exception instanceof ThrottlerException) {
       return this.fromCode('RATE_LIMITED');

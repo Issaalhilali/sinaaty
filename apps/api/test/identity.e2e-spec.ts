@@ -49,10 +49,11 @@ describe('Identity (e2e)', () => {
       const dead = await http().post('/v1/auth/refresh').send({ refresh_token: r1.body.refreshToken }).expect(401);
       expect(['TOKEN_REUSED', 'TOKEN_INVALID']).toContain(dead.body.code);
     });
-    it('rate-limits OTP requests per phone (3 per 10 min)', async () => {
-      await http().post('/v1/auth/otp/request').send({ phone }).expect(200);
-      await http().post('/v1/auth/otp/request').send({ phone }).expect(200);
-      const res = await http().post('/v1/auth/otp/request').send({ phone }).expect(429);
+    it('rate-limits OTP requests per phone (OTP_MAX_REQUESTS_PER_10MIN)', async () => {
+      const limit = Number(process.env['OTP_MAX_REQUESTS_PER_10MIN']);
+      const fresh = `+96658${String(Date.now()).slice(-7)}`;
+      for (let i = 0; i < limit; i++) await http().post('/v1/auth/otp/request').send({ phone: fresh }).expect(200);
+      const res = await http().post('/v1/auth/otp/request').send({ phone: fresh }).expect(429);
       expect(res.body.code).toBe('OTP_TOO_MANY');
     });
   });

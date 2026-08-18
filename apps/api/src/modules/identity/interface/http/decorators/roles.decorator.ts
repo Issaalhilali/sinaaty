@@ -4,9 +4,9 @@ import type { OrgMemberRole, PlatformRole } from '@sinaaty/shared-types';
 export const ROLES_KEY = 'roles';
 export interface RolesSpec {
   /** allowed platform roles (any of) */
-  platform?: PlatformRole[];
+  platform?: readonly PlatformRole[];
   /** allowed org roles (any of) — the org id is read from req.params[orgParam ?? 'orgId'] */
-  org?: OrgMemberRole[];
+  org?: readonly OrgMemberRole[];
   orgParam?: string;
   /** require nafath-verified identity (legal actions) */
   nafath?: boolean;
