@@ -45,6 +45,9 @@ export const envSchema = z.object({
   PSP_WEBHOOK_SECRET: z.string().min(8).default('dev-psp-webhook-secret'),
   ESCROW_AUTO_RELEASE_HOURS: z.coerce.number().int().positive().default(72),
   VAT_RATE_PCT: z.coerce.number().min(0).max(100).default(15),
+  NOTE_DEFAULT_TERMS_DAYS: z.coerce.number().int().positive().default(30),
+  DUNNING_SCHEDULE_DAYS: z.string().default('1,3,7,10').transform((s) => s.split(',').map((x) => Number(x.trim())).filter((n) => Number.isInteger(n) && n > 0)),
+  DUNNING_FORMAL_STEP: z.coerce.number().int().positive().default(4),
   JOBS_ENABLED: z.coerce.boolean().default(true),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),

@@ -138,7 +138,7 @@ model DunningNotice {
   @@map("dunning_notices")
 }
 
-model EnforcementCas {
+model EnforcementCase {
   id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   noteId             String             @map("note_id") @db.Uuid
   status             enforcement_status @default(preparing)
@@ -516,7 +516,7 @@ model MediaAsset {
   isImmutable        Boolean            @default(false) @map("is_immutable")
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   dunningNotices     DunningNotice[]
-  enforcementCases   EnforcementCas[]
+  enforcementCases   EnforcementCase[]
   fleetStatements    FleetStatement[]
   inventorySyncRuns  InventorySyncRun[]
   invoicesAsPdfMedia Invoice[]          @relation("invoices_pdf_media_idTomedia_assets")
@@ -1171,7 +1171,7 @@ model PromissoryNote {
   createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
   dunningNotices       DunningNotice[]
-  enforcementCases     EnforcementCas[]
+  enforcementCases     EnforcementCase[]
   promissoryNoteEvents PromissoryNoteEvent[]
   partOrder            PartOrder?            @relation(fields: [partOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_pn_part_order")
   consentSignature     WorkOrderSignature?   @relation(fields: [consentSignatureId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1300,7 +1300,7 @@ model Settlement {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// PostGIS system table — never managed by Prisma.
-model SpatialRefSy {
+model SpatialRefSys {
   srid      Int     @id
   authName  String? @map("auth_name") @db.VarChar(256)
   authSrid  Int?    @map("auth_srid")
@@ -1510,7 +1510,7 @@ model User {
   disputesAsResolvedBy           Dispute[]                @relation("disputes_resolved_byTousers")
   disputesAsRespondentUser       Dispute[]                @relation("disputes_respondent_user_idTousers")
   driverProfiles                 DriverProfile?
-  enforcementCases               EnforcementCas[]
+  enforcementCases               EnforcementCase[]
   fleetApprovals                 FleetApproval[]
   inspections                    Inspection[]
   invoicesAsCreatedBy            Invoice[]                @relation("invoices_created_byTousers")

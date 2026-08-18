@@ -31,6 +31,9 @@ export const ERROR_CODES = {
   PAY_WEBHOOK_INVALID: { status: 401, ar: 'توقيع الإشعار غير صالح.', en: 'Invalid webhook signature.' },
   ESCROW_NOT_RELEASABLE: { status: 409, ar: 'المبلغ غير قابل للإفراج في حالته الحالية.', en: 'Escrow hold is not releasable in its current state.' },
   ESCROW_FROZEN: { status: 409, ar: 'المبلغ مجمّد بسبب نزاع.', en: 'Escrow hold is frozen due to a dispute.' },
+  // ---- promissory notes ----
+  PN_NOT_OPEN: { status: 409, ar: 'السند غير مفتوح.', en: 'Promissory note is not open.' },
+  PN_NOT_OVERDUE: { status: 409, ar: 'لا يمكن التحويل للتنفيذ قبل تاريخ الاستحقاق والإشعار الرسمي.', en: 'Enforcement requires an overdue note with a formal notice sent.' },
   USER_SUSPENDED: { status: 403, ar: 'الحساب موقوف، تواصل مع الدعم.', en: 'Account suspended, contact support.' },
 } as const;
 

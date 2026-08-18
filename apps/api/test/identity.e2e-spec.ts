@@ -2,14 +2,15 @@ import { Test } from '@nestjs/testing';
 import { type INestApplication, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma';
 
 describe('Identity (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication; let prisma: PrismaService;
   const phone = `+96659${String(Date.now()).slice(-7)}`;
 
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init();
+    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); prisma = app.get(PrismaService);
   });
   afterAll(async () => { await app.close(); });
   const http = () => request(app.getHttpServer());
@@ -52,7 +53,8 @@ describe('Identity (e2e)', () => {
     it('rate-limits OTP requests per phone (OTP_MAX_REQUESTS_PER_10MIN)', async () => {
       const limit = Number(process.env['OTP_MAX_REQUESTS_PER_10MIN']);
       const fresh = `+96658${String(Date.now()).slice(-7)}`;
-      for (let i = 0; i < limit; i++) await http().post('/v1/auth/otp/request').send({ phone: fresh }).expect(200);
+      // seed `limit` recent challenges directly (fast) then the next request must be refused
+      await prisma.otpChallenge.createMany({ data: Array.from({ length: limit }, (_, i) => ({ phoneE164: fresh, purpose: 'login', codeHash: `seed-${i}`, expiresAt: new Date(Date.now() + 60_000) })) });
       const res = await http().post('/v1/auth/otp/request').send({ phone: fresh }).expect(429);
       expect(res.body.code).toBe('OTP_TOO_MANY');
     });

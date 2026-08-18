@@ -15,6 +15,8 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { WorkOrdersModule } from './modules/work-orders/work-orders.module';
 import { InvoicingModule } from './modules/invoicing/invoicing.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { PromissoryNotesModule } from './modules/promissory-notes/promissory-notes.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
@@ -24,6 +26,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     LoggerModule,
     PrismaModule,
     CommonModule,
+    IntegrationsModule,
     ThrottlerModule.forRootAsync({
       inject: [AppConfig],
       useFactory: (config: AppConfig) => ({
@@ -39,6 +42,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     WorkOrdersModule,
     InvoicingModule,
     PaymentsModule,
+    PromissoryNotesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

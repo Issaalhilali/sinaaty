@@ -13,9 +13,11 @@ const pascal = (s) => s.replace(/(^|_)([a-z0-9])/g, (_, __, c) => c.toUpperCase(
 const camel = (s) => s.replace(/_+([a-zA-Z0-9])/g, (_, c) => c.toUpperCase());
 // Prisma names singular-ish models nicely? No — db pull keeps table names. We keep plural table
 // names but PascalCase them (WorkOrders → keep as `WorkOrder`? we singularize simple plurals).
+const IRREGULAR = { cases: 'case', sys: 'sys', status: 'status', catalog: 'catalog' };
 const singular = (s) => {
+  if (IRREGULAR[s]) return IRREGULAR[s];
   if (/ies$/.test(s)) return s.replace(/ies$/, 'y');
-  if (/(ses|xes|zes|ches|shes)$/.test(s)) return s.replace(/es$/, '');
+  if (/(xes|zes|ches|shes|sses)$/.test(s)) return s.replace(/es$/, '');
   if (/s$/.test(s) && !/ss$/.test(s)) return s.replace(/s$/, '');
   return s;
 };
