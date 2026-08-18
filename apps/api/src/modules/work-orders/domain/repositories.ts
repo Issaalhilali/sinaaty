@@ -6,7 +6,7 @@ import type { WorkOrder, WorkOrderItem } from './work-order';
 export interface WorkOrderRepository {
   nextNumber(tx?: TxHandle): Promise<string>;
   create(input: { number: string; orgId: string; locationId?: string; vehicleId: string; customerUserId?: string; customerOrgId?: string; paymentTerms: PaymentTerms; titleAr?: string; complaintAr?: string; depositRequired?: string; dueDate?: Date; promisedReadyAt?: Date; createdBy: string }, tx?: TxHandle): Promise<WorkOrder>;
-  findById(id: string): Promise<WorkOrder | null>;
+  findById(id: string, tx?: TxHandle): Promise<WorkOrder | null>;
   list(q: { orgId?: string; customerUserId?: string; customerOrgId?: string; status?: WorkOrderStatus[]; limit: number }): Promise<WorkOrder[]>;
   update(id: string, patch: Partial<{ titleAr: string; complaintAr: string; diagnosisAr: string; paymentTerms: PaymentTerms; depositRequired: string; dueDate: Date | null; promisedReadyAt: Date | null; assignedTechnicianId: string | null; status: WorkOrderStatus; currentVersion: number; approvedAt: Date; receivedAt: Date; readyAt: Date; deliveredAt: Date; closedAt: Date; cancelledAt: Date; cancelReason: string; abandonedNoticeAt: Date }>, tx?: TxHandle): Promise<void>;
   setTotals(id: string, t: { subtotal: string; discount: string; vatAmount: string; total: string }, tx?: TxHandle): Promise<void>;

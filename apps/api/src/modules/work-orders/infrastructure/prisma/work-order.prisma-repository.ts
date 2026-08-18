@@ -24,7 +24,7 @@ export class WorkOrderPrismaRepository implements WorkOrderRepository {
     const r = await this.db(tx).workOrder.create({ data: { number: i.number, orgId: i.orgId, locationId: i.locationId, vehicleId: i.vehicleId, customerUserId: i.customerUserId, customerOrgId: i.customerOrgId, paymentTerms: i.paymentTerms, titleAr: i.titleAr, complaintAr: i.complaintAr, depositRequired: i.depositRequired ? new Prisma.Decimal(i.depositRequired) : undefined, dueDate: i.dueDate, promisedReadyAt: i.promisedReadyAt, createdBy: i.createdBy }, include: woInclude });
     return toWo(r);
   }
-  async findById(id: string) { const r = await this.prisma.workOrder.findUnique({ where: { id }, include: woInclude }); return r ? toWo(r) : null; }
+  async findById(id: string, tx?: TxHandle) { const r = await this.db(tx).workOrder.findUnique({ where: { id }, include: woInclude }); return r ? toWo(r) : null; }
   async list(qy: { orgId?: string; customerUserId?: string; customerOrgId?: string; status?: WorkOrderStatus[]; limit: number }) {
     const rows = await this.prisma.workOrder.findMany({ where: { orgId: qy.orgId, customerUserId: qy.customerUserId, customerOrgId: qy.customerOrgId, status: qy.status ? { in: qy.status } : undefined }, orderBy: { createdAt: 'desc' }, take: qy.limit, include: woInclude });
     return rows.map(toWo);

@@ -3,7 +3,8 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, We
 import type { Server, Socket } from 'socket.io';
 import { TOKEN_PORT, type TokenPort } from '../../../identity/application/ports/token.port';
 import type { AuthUser } from '../../../identity/domain/auth-user';
-import { WorkOrdersUseCases } from '../../application/use-cases/work-orders.use-cases';
+import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../domain/repositories';
+import { isCustomer, isStaff, isWorkshopMember } from '../../domain/work-order';
 import type { RealtimePublisher } from '../../application/ports/realtime.port';
 
 /**
@@ -14,7 +15,7 @@ import type { RealtimePublisher } from '../../application/ports/realtime.port';
 @WebSocketGateway({ namespace: '/realtime', cors: { origin: true, credentials: true } })
 export class RealtimeGateway implements OnGatewayConnection, RealtimePublisher {
   @WebSocketServer() server!: Server;
-  constructor(@Inject(TOKEN_PORT) private readonly tokens: TokenPort, private readonly workOrders: WorkOrdersUseCases) {}
+  constructor(@Inject(TOKEN_PORT) private readonly tokens: TokenPort, @Inject(WORK_ORDER_REPOSITORY) private readonly repo: WorkOrderRepository) {}
 
   async handleConnection(client: Socket) {
     const token = (client.handshake.auth as { token?: string })?.token ?? (client.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
@@ -24,7 +25,9 @@ export class RealtimeGateway implements OnGatewayConnection, RealtimePublisher {
   async subscribe(@ConnectedSocket() client: Socket, @MessageBody() body: { channel?: string }) {
     const user = (client.data as { user?: AuthUser }).user; const channel = body?.channel ?? '';
     const m = /^work-order:([0-9a-f-]{36})$/i.exec(channel);
-    if (!user || !m || !(await this.workOrders.canAccessId(m[1]!, user))) return { ok: false, code: 'FORBIDDEN', channel };
+    if (!user || !m) return { ok: false, code: 'FORBIDDEN', channel };
+    const wo = await this.repo.findById(m[1]!);
+    if (!wo || !(isWorkshopMember(wo, user) || isCustomer(wo, user) || isStaff(user))) return { ok: false, code: 'FORBIDDEN', channel };
     await client.join(channel); return { ok: true, channel };
   }
   @SubscribeMessage('unsubscribe')

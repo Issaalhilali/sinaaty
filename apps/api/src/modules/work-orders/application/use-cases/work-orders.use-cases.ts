@@ -104,7 +104,7 @@ export class WorkOrdersUseCases {
     return this.repo.addItem(woId, version, { type: i.type as WoItemType, descriptionAr: i.description_ar, descriptionEn: i.description_en, partCondition: i.part_condition as PartCondition | undefined, partNumber: i.part_number, quantity: String(i.quantity), unitPrice: Money.of(i.unit_price).toString(), discount: Money.of(i.discount).toString(), vatRate: i.vat_rate.toFixed(2), lineTotal: l.net.toString(), warrantyDays: i.warranty_days, sortOrder: i.sort_order ?? idx }, tx);
   }
   private async recomputeTotals(woId: string, tx?: TxHandle) {
-    const wo = await this.repo.findById(woId); if (!wo) return;
+    const wo = await this.repo.findById(woId, tx); if (!wo) return;
     const items = activeItems(wo);
     const t = computeTotals(items.map((i) => ({ quantity: i.quantity, unitPrice: Money.of(i.unitPrice), discount: Money.of(i.discount), vatRatePct: Number(i.vatRate) })));
     await this.repo.setTotals(woId, { subtotal: t.subtotal.toString(), discount: t.discountTotal.toString(), vatAmount: t.vatTotal.toString(), total: t.total.toString() }, tx);
@@ -143,14 +143,19 @@ export class WorkOrdersUseCases {
     if (activeItems(wo).length === 0) throw new AppError('VALIDATION', { messageAr: 'أضف بنداً واحداً على الأقل.', messageEn: 'Add at least one item.' });
     const from = wo.status;
     if (!['draft', 'received', 'inspecting', 'awaiting_approval', ...CHANGE_ORDER_FROM].includes(from)) throw new AppError('CONFLICT', { messageAr: `لا يمكن طلب الاعتماد في الحالة "${from}".`, messageEn: `Cannot request approval from ${from}.` });
-    const version = from === 'awaiting_approval' ? wo.currentVersion : wo.currentVersion + (AFTER_APPROVAL.includes(from) || (await this.repo.getVersion(id, wo.currentVersion)) ? 1 : 0);
-    const snap = await this.buildSnapshot(wo, version, reasonAr ?? null); const sha = snapshotHash(snap);
+    // Version to freeze: reuse currentVersion when it has no snapshot yet (first request, or a change
+    // order already bumped it); otherwise the content changed → next version.
+    const cur = await this.repo.getVersion(id, wo.currentVersion);
+    let version = cur ? wo.currentVersion + 1 : wo.currentVersion;
+    let snap = await this.buildSnapshot(wo, version, reasonAr ?? null); let sha = snapshotHash(snap);
+    if (cur && from === 'awaiting_approval') {
+      const same = snapshotHash({ ...cur.snapshot, created_at: snap.created_at, reason_ar: snap.reason_ar, version: cur.version }) === snapshotHash({ ...snap, version: cur.version });
+      if (same) { version = cur.version; snap = cur.snapshot; sha = cur.sha256; }
+    }
     await this.uow.run(async (tx) => {
-      const existing = await this.repo.getVersion(id, version);
-      if (!existing) await this.repo.addVersion({ woId: id, version, reasonAr, snapshot: snap, sha256: sha, createdBy: u.id }, tx);
-      else if (existing.sha256 !== sha) { const v2 = version + 1; await this.repo.addVersion({ woId: id, version: v2, reasonAr, snapshot: { ...snap, version: v2 }, sha256: snapshotHash({ ...snap, version: v2 }), createdBy: u.id }, tx); await this.repo.update(id, { currentVersion: v2 }, tx); }
-      if (!existing && version !== wo.currentVersion) await this.repo.update(id, { currentVersion: version }, tx);
-      if (from !== 'awaiting_approval') await this.transitions.apply(tx, wo, 'awaiting_approval', { userId: u.id }, reasonAr, { version });
+      if (!(cur && version === cur.version)) { await this.repo.addVersion({ woId: id, version, reasonAr, snapshot: snap, sha256: sha, createdBy: u.id }, tx); if (version !== wo.currentVersion) await this.repo.update(id, { currentVersion: version }, tx); }
+      if (from === 'draft') { await this.transitions.apply(tx, wo, 'received', { userId: u.id }); const received = await this.repo.findById(id, tx); if (received) await this.transitions.apply(tx, received, 'awaiting_approval', { userId: u.id }, reasonAr, { version }); }
+      else if (from !== 'awaiting_approval') await this.transitions.apply(tx, wo, 'awaiting_approval', { userId: u.id }, reasonAr, { version });
       await this.outbox.publish(tx, { eventType: 'WorkOrderApprovalRequested', aggregateType: 'work_order', aggregateId: id, payload: { number: wo.number, version, customerUserId: wo.customerUserId, customerOrgId: wo.customerOrgId, total: wo.total } });
     });
     const fresh = await this.load(id); const v = await this.repo.getVersion(id, fresh.currentVersion);
@@ -243,7 +248,7 @@ export class WorkOrdersUseCases {
       const ins = await this.repo.addInspection({ woId: id, vehicleId: wo.vehicleId, orgId: wo.orgId, type, odometerKm: dto.odometer_km, fuelLevelPct: dto.fuel_level_pct, checklist: dto.checklist, damages: dto.damages, inspectorUserId: u.id, mediaIds: dto.media_ids }, tx);
       await this.passport.record({ vehicleId: wo.vehicleId, type: 'inspection', odometerKm: dto.odometer_km ?? null, orgId: wo.orgId, refTable: 'inspections', refId: ins.id, summaryAr: type === 'check_in' ? `فحص استلام — ${dto.media_ids.length} صورة، ${dto.damages.length} ملاحظة` : type === 'check_out' ? 'فحص تسليم' : 'فحص', summaryEn: `${type} inspection`, isPublic: type === 'check_in' || type === 'check_out' }, tx);
       if (type === 'check_in' && wo.status === 'draft') await this.transitions.apply(tx, wo, 'received', { userId: u.id });
-      if (type === 'check_in' && (wo.status === 'received' || wo.status === 'draft')) { const fresh = await this.repo.findById(id); if (fresh && fresh.status === 'received') await this.transitions.apply(tx, fresh, 'inspecting', { userId: u.id }); }
+      if (type === 'check_in' && (wo.status === 'received' || wo.status === 'draft')) { const fresh = await this.repo.findById(id, tx); if (fresh && fresh.status === 'received') await this.transitions.apply(tx, fresh, 'inspecting', { userId: u.id }); }
       return ins;
     });
     this.rt?.publish(`work-order:${id}`, 'inspection', { work_order_id: id, inspection_id: r.id, type });
