@@ -21,6 +21,9 @@ export const envSchema = z.object({
   DIRECT_DATABASE_URL: z.string().min(1).optional(),
   REDIS_URL: z.string().min(1).default('redis://localhost:6379'),
 
+  /** 32-byte key, base64 — encrypts national_id / iban / CSIDs (AES-256-GCM). */
+  PII_ENC_KEY: z.string().refine((s) => Buffer.from(s, 'base64').length === 32, 'PII_ENC_KEY must be 32 bytes base64'),
+
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
 

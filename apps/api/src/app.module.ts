@@ -5,6 +5,7 @@ import { Logger } from 'nestjs-pino';
 import { AppConfig, ConfigModule } from './config';
 import { LoggerModule } from './common/logging/logger.module';
 import { PrismaModule } from './prisma';
+import { CommonModule } from './common/common.module';
 import { AllExceptionsFilter, RequestIdMiddleware } from './common/http';
 import { HealthModule } from './modules/health/health.module';
 
@@ -13,6 +14,7 @@ import { HealthModule } from './modules/health/health.module';
     ConfigModule,
     LoggerModule,
     PrismaModule,
+    CommonModule,
     ThrottlerModule.forRootAsync({
       inject: [AppConfig],
       useFactory: (config: AppConfig) => ({

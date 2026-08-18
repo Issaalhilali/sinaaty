@@ -13,7 +13,8 @@
     "incremental": true,
     "types": ["node", "jest"],
     "paths": {
-      "@app/*": ["src/*"]
+      "@app/*": ["src/*"],
+      "@sinaaty/*": ["../../packages/*/src"]
     }
   },
   "include": ["src/**/*", "test/**/*", "prisma/**/*", "tools/**/*.ts"],
