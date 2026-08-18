@@ -12,6 +12,10 @@ import '../../features/vehicles/presentation/add_vehicle_screen.dart';
 import '../../features/vehicles/presentation/vehicle_screen.dart';
 import '../../features/work_orders/presentation/approve_screen.dart';
 import '../../features/work_orders/presentation/work_order_screen.dart';
+import '../../features/workshop/presentation/inspection_screen.dart';
+import '../../features/workshop/presentation/new_order_screen.dart';
+import '../../features/workshop/presentation/order_screen.dart';
+import '../../features/workshop/presentation/orders_screen.dart';
 import '../di/core_providers.dart';
 /// go_router with an auth guard: unknown → splash, signedOut → /login, signedIn → /.
 final routerProvider = Provider<GoRouter>((ref) {
@@ -35,6 +39,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/invoices/:id', builder: (_, s) => InvoiceScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
+      GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
+      GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
+      GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!))]),
     ],
   );
 });

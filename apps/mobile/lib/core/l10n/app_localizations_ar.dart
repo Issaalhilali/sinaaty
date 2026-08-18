@@ -510,4 +510,228 @@ class L10nAr extends L10n {
 
   @override
   String get confirmApproval => 'تأكيد الاعتماد';
+
+  @override
+  String get wsToday => 'اليوم';
+
+  @override
+  String get wsInShop => 'سيارات في الورشة';
+
+  @override
+  String get wsAwaitingCustomer => 'بانتظار اعتماد العميل';
+
+  @override
+  String get wsReadyToPayout => 'ر.س جاهز للتحويل';
+
+  @override
+  String get wsNeedsAction => 'يحتاج تصرّفك الآن';
+
+  @override
+  String get wsTodayCars => 'سيارات اليوم';
+
+  @override
+  String get wsAll => 'عرض الكل';
+
+  @override
+  String get wsNewOrder => 'أمر جديد';
+
+  @override
+  String get wsNoOrders => 'لا توجد أوامر بعد';
+
+  @override
+  String get wsNoOrdersBody =>
+      'أنشئ أول أمر إصلاح: امسح اللوحة أو أدخل رقم الهيكل، أضف البنود، وأرسله للعميل.';
+
+  @override
+  String get wsStart => 'ابدأ العمل';
+
+  @override
+  String get wsReceive => 'استلام السيارة';
+
+  @override
+  String get wsInspect => 'فحص الاستلام';
+
+  @override
+  String get wsRequestApproval => 'أرسل للعميل للاعتماد';
+
+  @override
+  String get wsQuality => 'إلى فحص الجودة';
+
+  @override
+  String get wsReady => 'جاهزة للاستلام';
+
+  @override
+  String get wsDeliver => 'تم التسليم';
+
+  @override
+  String get wsIssueInvoice => 'إصدار الفاتورة';
+
+  @override
+  String get wsAddPhoto => 'أضف صورة';
+
+  @override
+  String get wsWaitingCustomer =>
+      'بانتظار اعتماد العميل — لا يبدأ العمل قبل موافقته';
+
+  @override
+  String get wsCustomerPhone => 'جوال العميل';
+
+  @override
+  String get wsTitle => 'وصف مختصر للعمل';
+
+  @override
+  String get wsTitleHint => 'مثال: سمكرة رفرف أمامي';
+
+  @override
+  String get wsItems => 'البنود';
+
+  @override
+  String get wsAddItem => 'أضف بنداً';
+
+  @override
+  String get wsItemDesc => 'الوصف';
+
+  @override
+  String get wsItemPrice => 'السعر';
+
+  @override
+  String get wsItemQty => 'الكمية';
+
+  @override
+  String get wsLabor => 'أجور';
+
+  @override
+  String get wsPart => 'قطعة';
+
+  @override
+  String get wsWarranty => 'ضمان (أيام)';
+
+  @override
+  String get wsPaymentTerms => 'شروط الدفع';
+
+  @override
+  String get wsCreate => 'إنشاء الأمر';
+
+  @override
+  String get wsEstimate => 'التقدير';
+
+  @override
+  String get wsAngles => '8 زوايا';
+
+  @override
+  String wsAngleOf(int done, int total) {
+    return '$done / $total';
+  }
+
+  @override
+  String get wsShootNext => 'صوّر الزاوية التالية';
+
+  @override
+  String get wsSubmitInspection => 'حفظ فحص الاستلام';
+
+  @override
+  String get wsDamages => 'ملاحظات الهيكل';
+
+  @override
+  String get wsAddDamage => 'أضف ملاحظة';
+
+  @override
+  String get wsFuel => 'الوقود %';
+
+  @override
+  String get wsZone => 'الموضع';
+
+  @override
+  String get wsSeverity => 'الشدة';
+
+  @override
+  String get wsMinor => 'بسيط';
+
+  @override
+  String get wsModerate => 'متوسط';
+
+  @override
+  String get wsSevere => 'شديد';
+
+  @override
+  String get wsOffline => 'بلا إنترنت — سيُرسل تلقائياً عند عودة الاتصال';
+
+  @override
+  String wsPendingSync(int count) {
+    return '$count إجراء بانتظار المزامنة';
+  }
+
+  @override
+  String get wsSynced => 'تمت المزامنة';
+
+  @override
+  String get wsWalletHeld => 'محفوظ حتى تأكيد العملاء';
+
+  @override
+  String get wsWalletAvailable => 'متاح للتحويل';
+
+  @override
+  String get wsWalletTransit => 'قيد التحويل للبنك';
+
+  @override
+  String get wsPayouts => 'التحويلات';
+
+  @override
+  String get wsNoPayouts =>
+      'لا توجد تحويلات بعد — تُجدول تلقائياً عند توفّر رصيد.';
+
+  @override
+  String get wsPartsSoon => 'قطع لهذه السيارة';
+
+  @override
+  String get wsPartsSoonBody =>
+      'قريباً: ابحث برقم الهيكل، اشترِ من الوكلاء بحساب آجل مضمون، أو افتح مزاداً على التشاليح.';
+
+  @override
+  String get wsOrders => 'الأوامر';
+
+  @override
+  String get wsActive => 'الحالية';
+
+  @override
+  String get wsDone => 'المنتهية';
+
+  @override
+  String get wsAngleFront => 'أمام';
+
+  @override
+  String get wsAngleFrontRight => 'أمام يمين';
+
+  @override
+  String get wsAngleRight => 'يمين';
+
+  @override
+  String get wsAngleRearRight => 'خلف يمين';
+
+  @override
+  String get wsAngleRear => 'خلف';
+
+  @override
+  String get wsAngleRearLeft => 'خلف يسار';
+
+  @override
+  String get wsAngleLeft => 'يسار';
+
+  @override
+  String get wsAngleFrontLeft => 'أمام يسار';
+
+  @override
+  String get wsCustomer => 'العميل';
+
+  @override
+  String get wsPhotoAdded => 'أُضيفت الصورة';
+
+  @override
+  String wsInvoiceIssued(String number) {
+    return 'صدرت الفاتورة $number';
+  }
+
+  @override
+  String get wsCustomerApprovedHint =>
+      'اعتمد العميل — ابدأ العمل وارفع أول صورة.';
 }

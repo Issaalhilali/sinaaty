@@ -240,5 +240,100 @@
       }
     }
   },
-  "confirmApproval": "Confirm approval"
+  "confirmApproval": "Confirm approval",
+  "wsToday": "Today",
+  "wsInShop": "cars in the shop",
+  "wsAwaitingCustomer": "awaiting customer approval",
+  "wsReadyToPayout": "SAR ready to pay out",
+  "wsNeedsAction": "Needs your action now",
+  "wsTodayCars": "Today's cars",
+  "wsAll": "View all",
+  "wsNewOrder": "New order",
+  "wsNoOrders": "No orders yet",
+  "wsNoOrdersBody": "Create the first repair order: scan the plate or enter the VIN, add items, send to the customer.",
+  "wsStart": "Start work",
+  "wsReceive": "Receive car",
+  "wsInspect": "Check-in inspection",
+  "wsRequestApproval": "Send to customer for approval",
+  "wsQuality": "To quality check",
+  "wsReady": "Ready for pickup",
+  "wsDeliver": "Delivered",
+  "wsIssueInvoice": "Issue invoice",
+  "wsAddPhoto": "Add photo",
+  "wsWaitingCustomer": "Waiting for customer approval — work starts after they approve",
+  "wsCustomerPhone": "Customer phone",
+  "wsTitle": "Short description",
+  "wsTitleHint": "e.g. front fender bodywork",
+  "wsItems": "Items",
+  "wsAddItem": "Add item",
+  "wsItemDesc": "Description",
+  "wsItemPrice": "Price",
+  "wsItemQty": "Qty",
+  "wsLabor": "Labor",
+  "wsPart": "Part",
+  "wsWarranty": "Warranty (days)",
+  "wsPaymentTerms": "Payment terms",
+  "wsCreate": "Create order",
+  "wsEstimate": "Estimate",
+  "wsAngles": "8 angles",
+  "wsAngleOf": "{done} / {total}",
+  "@wsAngleOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wsShootNext": "Shoot next angle",
+  "wsSubmitInspection": "Save check-in",
+  "wsDamages": "Body notes",
+  "wsAddDamage": "Add note",
+  "wsFuel": "Fuel %",
+  "wsZone": "Zone",
+  "wsSeverity": "Severity",
+  "wsMinor": "Minor",
+  "wsModerate": "Moderate",
+  "wsSevere": "Severe",
+  "wsOffline": "Offline — will send automatically when back online",
+  "wsPendingSync": "{count} actions pending sync",
+  "@wsPendingSync": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSynced": "Synced",
+  "wsWalletHeld": "Held until customers confirm",
+  "wsWalletAvailable": "Available to pay out",
+  "wsWalletTransit": "On its way to the bank",
+  "wsPayouts": "Payouts",
+  "wsNoPayouts": "No payouts yet — scheduled automatically when balance is available.",
+  "wsPartsSoon": "Parts for this car",
+  "wsPartsSoonBody": "Coming soon: search by VIN, buy from distributors on a secured trade account, or open a scrapyard auction.",
+  "wsOrders": "Orders",
+  "wsActive": "Active",
+  "wsDone": "Done",
+  "wsAngleFront": "Front",
+  "wsAngleFrontRight": "Front right",
+  "wsAngleRight": "Right",
+  "wsAngleRearRight": "Rear right",
+  "wsAngleRear": "Rear",
+  "wsAngleRearLeft": "Rear left",
+  "wsAngleLeft": "Left",
+  "wsAngleFrontLeft": "Front left",
+  "wsCustomer": "Customer",
+  "wsPhotoAdded": "Photo added",
+  "wsInvoiceIssued": "Invoice {number} issued",
+  "@wsInvoiceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "wsCustomerApprovedHint": "Customer approved — start work and upload the first photo."
 }

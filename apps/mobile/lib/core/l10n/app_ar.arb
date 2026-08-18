@@ -240,5 +240,100 @@
       }
     }
   },
-  "confirmApproval": "تأكيد الاعتماد"
+  "confirmApproval": "تأكيد الاعتماد",
+  "wsToday": "اليوم",
+  "wsInShop": "سيارات في الورشة",
+  "wsAwaitingCustomer": "بانتظار اعتماد العميل",
+  "wsReadyToPayout": "ر.س جاهز للتحويل",
+  "wsNeedsAction": "يحتاج تصرّفك الآن",
+  "wsTodayCars": "سيارات اليوم",
+  "wsAll": "عرض الكل",
+  "wsNewOrder": "أمر جديد",
+  "wsNoOrders": "لا توجد أوامر بعد",
+  "wsNoOrdersBody": "أنشئ أول أمر إصلاح: امسح اللوحة أو أدخل رقم الهيكل، أضف البنود، وأرسله للعميل.",
+  "wsStart": "ابدأ العمل",
+  "wsReceive": "استلام السيارة",
+  "wsInspect": "فحص الاستلام",
+  "wsRequestApproval": "أرسل للعميل للاعتماد",
+  "wsQuality": "إلى فحص الجودة",
+  "wsReady": "جاهزة للاستلام",
+  "wsDeliver": "تم التسليم",
+  "wsIssueInvoice": "إصدار الفاتورة",
+  "wsAddPhoto": "أضف صورة",
+  "wsWaitingCustomer": "بانتظار اعتماد العميل — لا يبدأ العمل قبل موافقته",
+  "wsCustomerPhone": "جوال العميل",
+  "wsTitle": "وصف مختصر للعمل",
+  "wsTitleHint": "مثال: سمكرة رفرف أمامي",
+  "wsItems": "البنود",
+  "wsAddItem": "أضف بنداً",
+  "wsItemDesc": "الوصف",
+  "wsItemPrice": "السعر",
+  "wsItemQty": "الكمية",
+  "wsLabor": "أجور",
+  "wsPart": "قطعة",
+  "wsWarranty": "ضمان (أيام)",
+  "wsPaymentTerms": "شروط الدفع",
+  "wsCreate": "إنشاء الأمر",
+  "wsEstimate": "التقدير",
+  "wsAngles": "8 زوايا",
+  "wsAngleOf": "{done} / {total}",
+  "@wsAngleOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wsShootNext": "صوّر الزاوية التالية",
+  "wsSubmitInspection": "حفظ فحص الاستلام",
+  "wsDamages": "ملاحظات الهيكل",
+  "wsAddDamage": "أضف ملاحظة",
+  "wsFuel": "الوقود %",
+  "wsZone": "الموضع",
+  "wsSeverity": "الشدة",
+  "wsMinor": "بسيط",
+  "wsModerate": "متوسط",
+  "wsSevere": "شديد",
+  "wsOffline": "بلا إنترنت — سيُرسل تلقائياً عند عودة الاتصال",
+  "wsPendingSync": "{count} إجراء بانتظار المزامنة",
+  "@wsPendingSync": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSynced": "تمت المزامنة",
+  "wsWalletHeld": "محفوظ حتى تأكيد العملاء",
+  "wsWalletAvailable": "متاح للتحويل",
+  "wsWalletTransit": "قيد التحويل للبنك",
+  "wsPayouts": "التحويلات",
+  "wsNoPayouts": "لا توجد تحويلات بعد — تُجدول تلقائياً عند توفّر رصيد.",
+  "wsPartsSoon": "قطع لهذه السيارة",
+  "wsPartsSoonBody": "قريباً: ابحث برقم الهيكل، اشترِ من الوكلاء بحساب آجل مضمون، أو افتح مزاداً على التشاليح.",
+  "wsOrders": "الأوامر",
+  "wsActive": "الحالية",
+  "wsDone": "المنتهية",
+  "wsAngleFront": "أمام",
+  "wsAngleFrontRight": "أمام يمين",
+  "wsAngleRight": "يمين",
+  "wsAngleRearRight": "خلف يمين",
+  "wsAngleRear": "خلف",
+  "wsAngleRearLeft": "خلف يسار",
+  "wsAngleLeft": "يسار",
+  "wsAngleFrontLeft": "أمام يسار",
+  "wsCustomer": "العميل",
+  "wsPhotoAdded": "أُضيفت الصورة",
+  "wsInvoiceIssued": "صدرت الفاتورة {number}",
+  "@wsInvoiceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "wsCustomerApprovedHint": "اعتمد العميل — ابدأ العمل وارفع أول صورة."
 }

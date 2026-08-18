@@ -1038,6 +1038,432 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تأكيد الاعتماد'**
   String get confirmApproval;
+
+  /// No description provided for @wsToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get wsToday;
+
+  /// No description provided for @wsInShop.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارات في الورشة'**
+  String get wsInShop;
+
+  /// No description provided for @wsAwaitingCustomer.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار اعتماد العميل'**
+  String get wsAwaitingCustomer;
+
+  /// No description provided for @wsReadyToPayout.
+  ///
+  /// In ar, this message translates to:
+  /// **'ر.س جاهز للتحويل'**
+  String get wsReadyToPayout;
+
+  /// No description provided for @wsNeedsAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج تصرّفك الآن'**
+  String get wsNeedsAction;
+
+  /// No description provided for @wsTodayCars.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارات اليوم'**
+  String get wsTodayCars;
+
+  /// No description provided for @wsAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض الكل'**
+  String get wsAll;
+
+  /// No description provided for @wsNewOrder.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمر جديد'**
+  String get wsNewOrder;
+
+  /// No description provided for @wsNoOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد أوامر بعد'**
+  String get wsNoOrders;
+
+  /// No description provided for @wsNoOrdersBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ أول أمر إصلاح: امسح اللوحة أو أدخل رقم الهيكل، أضف البنود، وأرسله للعميل.'**
+  String get wsNoOrdersBody;
+
+  /// No description provided for @wsStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ العمل'**
+  String get wsStart;
+
+  /// No description provided for @wsReceive.
+  ///
+  /// In ar, this message translates to:
+  /// **'استلام السيارة'**
+  String get wsReceive;
+
+  /// No description provided for @wsInspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص الاستلام'**
+  String get wsInspect;
+
+  /// No description provided for @wsRequestApproval.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل للعميل للاعتماد'**
+  String get wsRequestApproval;
+
+  /// No description provided for @wsQuality.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى فحص الجودة'**
+  String get wsQuality;
+
+  /// No description provided for @wsReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاهزة للاستلام'**
+  String get wsReady;
+
+  /// No description provided for @wsDeliver.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التسليم'**
+  String get wsDeliver;
+
+  /// No description provided for @wsIssueInvoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'إصدار الفاتورة'**
+  String get wsIssueInvoice;
+
+  /// No description provided for @wsAddPhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف صورة'**
+  String get wsAddPhoto;
+
+  /// No description provided for @wsWaitingCustomer.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار اعتماد العميل — لا يبدأ العمل قبل موافقته'**
+  String get wsWaitingCustomer;
+
+  /// No description provided for @wsCustomerPhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'جوال العميل'**
+  String get wsCustomerPhone;
+
+  /// No description provided for @wsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصف مختصر للعمل'**
+  String get wsTitle;
+
+  /// No description provided for @wsTitleHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: سمكرة رفرف أمامي'**
+  String get wsTitleHint;
+
+  /// No description provided for @wsItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'البنود'**
+  String get wsItems;
+
+  /// No description provided for @wsAddItem.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف بنداً'**
+  String get wsAddItem;
+
+  /// No description provided for @wsItemDesc.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوصف'**
+  String get wsItemDesc;
+
+  /// No description provided for @wsItemPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر'**
+  String get wsItemPrice;
+
+  /// No description provided for @wsItemQty.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية'**
+  String get wsItemQty;
+
+  /// No description provided for @wsLabor.
+  ///
+  /// In ar, this message translates to:
+  /// **'أجور'**
+  String get wsLabor;
+
+  /// No description provided for @wsPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة'**
+  String get wsPart;
+
+  /// No description provided for @wsWarranty.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمان (أيام)'**
+  String get wsWarranty;
+
+  /// No description provided for @wsPaymentTerms.
+  ///
+  /// In ar, this message translates to:
+  /// **'شروط الدفع'**
+  String get wsPaymentTerms;
+
+  /// No description provided for @wsCreate.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء الأمر'**
+  String get wsCreate;
+
+  /// No description provided for @wsEstimate.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقدير'**
+  String get wsEstimate;
+
+  /// No description provided for @wsAngles.
+  ///
+  /// In ar, this message translates to:
+  /// **'8 زوايا'**
+  String get wsAngles;
+
+  /// No description provided for @wsAngleOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'{done} / {total}'**
+  String wsAngleOf(int done, int total);
+
+  /// No description provided for @wsShootNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوّر الزاوية التالية'**
+  String get wsShootNext;
+
+  /// No description provided for @wsSubmitInspection.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ فحص الاستلام'**
+  String get wsSubmitInspection;
+
+  /// No description provided for @wsDamages.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات الهيكل'**
+  String get wsDamages;
+
+  /// No description provided for @wsAddDamage.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف ملاحظة'**
+  String get wsAddDamage;
+
+  /// No description provided for @wsFuel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوقود %'**
+  String get wsFuel;
+
+  /// No description provided for @wsZone.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموضع'**
+  String get wsZone;
+
+  /// No description provided for @wsSeverity.
+  ///
+  /// In ar, this message translates to:
+  /// **'الشدة'**
+  String get wsSeverity;
+
+  /// No description provided for @wsMinor.
+  ///
+  /// In ar, this message translates to:
+  /// **'بسيط'**
+  String get wsMinor;
+
+  /// No description provided for @wsModerate.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوسط'**
+  String get wsModerate;
+
+  /// No description provided for @wsSevere.
+  ///
+  /// In ar, this message translates to:
+  /// **'شديد'**
+  String get wsSevere;
+
+  /// No description provided for @wsOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'بلا إنترنت — سيُرسل تلقائياً عند عودة الاتصال'**
+  String get wsOffline;
+
+  /// No description provided for @wsPendingSync.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} إجراء بانتظار المزامنة'**
+  String wsPendingSync(int count);
+
+  /// No description provided for @wsSynced.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمت المزامنة'**
+  String get wsSynced;
+
+  /// No description provided for @wsWalletHeld.
+  ///
+  /// In ar, this message translates to:
+  /// **'محفوظ حتى تأكيد العملاء'**
+  String get wsWalletHeld;
+
+  /// No description provided for @wsWalletAvailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'متاح للتحويل'**
+  String get wsWalletAvailable;
+
+  /// No description provided for @wsWalletTransit.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التحويل للبنك'**
+  String get wsWalletTransit;
+
+  /// No description provided for @wsPayouts.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحويلات'**
+  String get wsPayouts;
+
+  /// No description provided for @wsNoPayouts.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد تحويلات بعد — تُجدول تلقائياً عند توفّر رصيد.'**
+  String get wsNoPayouts;
+
+  /// No description provided for @wsPartsSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطع لهذه السيارة'**
+  String get wsPartsSoon;
+
+  /// No description provided for @wsPartsSoonBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريباً: ابحث برقم الهيكل، اشترِ من الوكلاء بحساب آجل مضمون، أو افتح مزاداً على التشاليح.'**
+  String get wsPartsSoonBody;
+
+  /// No description provided for @wsOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأوامر'**
+  String get wsOrders;
+
+  /// No description provided for @wsActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالية'**
+  String get wsActive;
+
+  /// No description provided for @wsDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنتهية'**
+  String get wsDone;
+
+  /// No description provided for @wsAngleFront.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمام'**
+  String get wsAngleFront;
+
+  /// No description provided for @wsAngleFrontRight.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمام يمين'**
+  String get wsAngleFrontRight;
+
+  /// No description provided for @wsAngleRight.
+  ///
+  /// In ar, this message translates to:
+  /// **'يمين'**
+  String get wsAngleRight;
+
+  /// No description provided for @wsAngleRearRight.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلف يمين'**
+  String get wsAngleRearRight;
+
+  /// No description provided for @wsAngleRear.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلف'**
+  String get wsAngleRear;
+
+  /// No description provided for @wsAngleRearLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلف يسار'**
+  String get wsAngleRearLeft;
+
+  /// No description provided for @wsAngleLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'يسار'**
+  String get wsAngleLeft;
+
+  /// No description provided for @wsAngleFrontLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمام يسار'**
+  String get wsAngleFrontLeft;
+
+  /// No description provided for @wsCustomer.
+  ///
+  /// In ar, this message translates to:
+  /// **'العميل'**
+  String get wsCustomer;
+
+  /// No description provided for @wsPhotoAdded.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُضيفت الصورة'**
+  String get wsPhotoAdded;
+
+  /// No description provided for @wsInvoiceIssued.
+  ///
+  /// In ar, this message translates to:
+  /// **'صدرت الفاتورة {number}'**
+  String wsInvoiceIssued(String number);
+
+  /// No description provided for @wsCustomerApprovedHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتمد العميل — ابدأ العمل وارفع أول صورة.'**
+  String get wsCustomerApprovedHint;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
