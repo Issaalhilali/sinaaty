@@ -26,19 +26,21 @@ class WorkOrderScreen extends ConsumerWidget {
     }
     return AppScaffold(title: order?.number == null ? l.workOrder : l.workOrderNumber(order!.number), primaryAction: primary,
       body: AsyncResultView<WorkOrder>(value: wo, onRetry: refresh, builder: (o) => RefreshIndicator(onRefresh: () async => refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
-        SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [Expanded(child: Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge)), StatusBadge(Labels.woStatus(l, o.status), tone: o.awaitingApproval ? BadgeTone.brass : BadgeTone.seal)]),
-          const SizedBox(height: SinaatySpace.sm), Wrap(spacing: 8, runSpacing: 4, children: [StatusBadge(Labels.terms(l, o.paymentTerms)), if (o.paymentTerms == 'deferred') StatusBadge(l.securedByNote, tone: BadgeTone.brass, icon: Icons.verified_outlined), if (tl.value?.valueOrNull?.versions.any((v) => v.signed) ?? false) StatusBadge(l.signedByNafath, tone: BadgeTone.seal, icon: Icons.verified_user_outlined)]),
+        SectionCard(glow: true, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.headlineSmall)), StatusBadge(Labels.woStatus(l, o.status), tone: o.awaitingApproval ? BadgeTone.brass : BadgeTone.seal)]),
+          const SizedBox(height: 2), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true),
+          const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [StatusBadge(Labels.terms(l, o.paymentTerms)), if (o.paymentTerms == 'deferred') StatusBadge(l.securedByNote, tone: BadgeTone.brass, icon: Icons.verified_outlined), if (tl.value?.valueOrNull?.versions.any((v) => v.signed) ?? false) StatusBadge(l.signedByNafath, tone: BadgeTone.seal, icon: Icons.verified_user_outlined)]),
         ])),
-        const SizedBox(height: SinaatySpace.lg), Text(l.timeline, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: SinaatySpace.sm),
+        const SizedBox(height: SinaatySpace.xl), SectionTitle(l.timeline),
         SectionCard(child: _Timeline(order: o, timeline: tl.value?.valueOrNull, locale: locale)),
-        const SizedBox(height: SinaatySpace.lg), Text(l.items, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: SinaatySpace.sm),
+        const SizedBox(height: SinaatySpace.xl), SectionTitle(l.items),
         SectionCard(child: Column(children: [
-          for (final i in o.items) Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.descriptionAr), Text('${i.quantity} × ${Fmt.money(i.unitPrice, locale: locale)}${i.warrantyDays > 0 ? ' · ${l.warrantyDays(i.warrantyDays)}' : ''}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])), Text(Fmt.money(i.lineTotal, locale: locale))])),
-          const Divider(), KeyValueRow(l.vat, Fmt.money(o.vatAmount, locale: locale)), KeyValueRow(l.total, Fmt.money(o.total, locale: locale), emphasized: true),
+          for (final i in o.items) Padding(padding: const EdgeInsets.symmetric(vertical: 7), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.descriptionAr, style: Theme.of(context).textTheme.titleSmall), Text('${i.quantity} × ${Fmt.money(i.unitPrice, locale: locale)}${i.warrantyDays > 0 ? ' · ${l.warrantyDays(i.warrantyDays)}' : ''}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])), Text(Fmt.money(i.lineTotal, locale: locale))])),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()), KeyValueRow(l.vat, Fmt.money(o.vatAmount, locale: locale)), Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l.total, style: Theme.of(context).textTheme.titleMedium), MoneyText(Fmt.money(o.total, locale: locale))])),
         ])),
         if ((tl.value?.valueOrNull?.media.isNotEmpty ?? false) || (tl.value?.valueOrNull?.inspections.isNotEmpty ?? false)) ...[
-          const SizedBox(height: SinaatySpace.lg), Text(l.photos, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: SinaatySpace.sm),
+          const SizedBox(height: SinaatySpace.xl), SectionTitle(l.photos),
           SectionCard(child: Column(children: [
             for (final ins in tl.value!.valueOrNull!.inspections) AppListRow(icon: ins.type == 'check_in' ? Icons.login : Icons.logout, title: ins.type == 'check_in' ? l.checkIn : l.checkOut, subtitle: [Fmt.dateTime(ins.performedAt, locale: locale), if (ins.odometerKm != null) '${ins.odometerKm} ${l.km}', l.damages(ins.damagesCount)].join(' · '), trailing: StatusBadge(l.photosCount(ins.mediaIds.length))),
             _PhotoStrip(count: tl.value!.valueOrNull!.media.length),

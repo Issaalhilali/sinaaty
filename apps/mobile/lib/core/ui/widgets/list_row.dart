@@ -7,10 +7,10 @@ class AppListRow extends StatelessWidget {
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme; final t = Theme.of(context).textTheme;
     return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SinaatySpace.radius), child: Padding(padding: const EdgeInsets.symmetric(vertical: SinaatySpace.md, horizontal: SinaatySpace.sm), child: Row(children: [
-      if (icon != null) ...[Container(width: 40, height: 40, decoration: BoxDecoration(color: s.primaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: s.onPrimaryContainer, size: 22)), const SizedBox(width: SinaatySpace.md)],
+      if (icon != null) ...[Container(width: 44, height: 44, decoration: BoxDecoration(color: s.primaryContainer.withValues(alpha: .8), borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: s.onPrimaryContainer, size: 22)), const SizedBox(width: SinaatySpace.md)],
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis), if (subtitle != null) Text(subtitle!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis)])),
       if (trailing != null) ...[const SizedBox(width: SinaatySpace.sm), trailing!],
-      if (onTap != null) Icon(Icons.chevron_left, color: s.onSurfaceVariant, textDirection: Directionality.of(context) == TextDirection.rtl ? TextDirection.ltr : TextDirection.rtl),
+      if (onTap != null) Icon(Icons.chevron_left, size: 20, color: s.onSurfaceVariant.withValues(alpha: .6), textDirection: Directionality.of(context) == TextDirection.rtl ? TextDirection.ltr : TextDirection.rtl),
     ])));
   }
 }

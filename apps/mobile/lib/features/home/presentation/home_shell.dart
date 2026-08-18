@@ -21,7 +21,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       AppFlavor.partner => [(l.tabToday, Icons.today_outlined), (l.tabOrders, Icons.receipt_long_outlined), (l.tabParts, Icons.settings_input_component_outlined), (l.tabWallet, Icons.account_balance_wallet_outlined)],
       AppFlavor.fleet => [(l.tabToday, Icons.dashboard_outlined), (l.tabMyCars, Icons.directions_car_outlined), (l.tabWallet, Icons.account_balance_wallet_outlined), (l.tabAccount, Icons.person_outline)],
     };
-    final title = tabs[_index].$1;
+    final title = tabs[_index].$1; final name = me?.fullNameAr ?? '';
     final body = switch ((flavor, _index)) {
       (AppFlavor.customer, 0) => const VehiclesScreen(),
       (AppFlavor.customer, 1) => EmptyState(icon: Icons.add_circle_outline, title: l.requestSoonTitle, body: l.requestSoonBody),
@@ -31,7 +31,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       _ => EmptyState(icon: Icons.hourglass_empty, title: l.comingSoon, body: me?.phone ?? ''),
     };
     final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
-    return AppScaffold(title: title, body: body,
+    return AppScaffold(title: title, subtitle: _index == 0 && name.isNotEmpty ? '${l.welcomeBack} $name' : null, leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],
       onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') context.push('/notifications'); },
       bottom: NavigationBar(selectedIndex: _index, onDestinationSelected: (i) => setState(() => _index = i), destinations: [for (final t in tabs) NavigationDestination(icon: Icon(t.$2), label: t.$1)]));

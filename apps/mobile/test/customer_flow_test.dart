@@ -95,7 +95,7 @@ void main() {
     expect(find.textContaining('WO-2026-000042'), findsWidgets); expect(find.text('راجع واعتمد'), findsOneWidget);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_work_order_light.png'));
     await tester.tap(find.text('راجع واعتمد')); await tester.pumpAndSettle();
-    expect(find.text('ورشة النور للسمكرة والميكانيكا · النسخة 1'), findsOneWidget); expect(find.text('1,368.50 ر.س'), findsWidgets);
+    expect(find.text('ورشة النور للسمكرة والميكانيكا'), findsOneWidget); expect(find.text('النسخة 1'), findsOneWidget); expect(find.textContaining('1,368.50'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_approve_light.png'));
     await tester.tap(find.text('اعتماد برمز التحقق')); await tester.pumpAndSettle();
     expect(wos.lastMethod, 'otp'); expect(find.byType(TextField), findsOneWidget);
