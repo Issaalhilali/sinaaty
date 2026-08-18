@@ -99,7 +99,7 @@ describe('Organizations (e2e)', () => {
     await http().post(`/v1/organizations/${orgId}/subscription`).set(auth(ownerTok)).send({ plan_code: 'scrapyard_basic' }).expect(400);
   });
   it('public discovery finds the active workshop near its coordinates with distance', async () => {
-    const res = await http().get('/v1/organizations?type=workshop&lat=24.64&lng=46.80&radius_km=10').expect(200);
+    const res = await http().get(`/v1/organizations?type=workshop&lat=24.64&lng=46.80&radius_km=10&q=${suffix}`).expect(200);
     const hit = res.body.find((o: { id: string }) => o.id === orgId);
     expect(hit).toBeDefined(); expect(hit.distanceKm).toBeLessThan(5);
     const pub = await http().get(`/v1/organizations/${orgId}/public`).expect(200);

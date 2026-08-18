@@ -1,0 +1,29 @@
+import { Inject, Module, OnModuleInit } from '@nestjs/common';
+import { AppConfig } from '../../config';
+import { IdentityModule } from '../identity/identity.module';
+import { OrganizationsModule } from '../organizations/organizations.module';
+import { WorkOrdersModule } from '../work-orders/work-orders.module';
+import { NOTIFICATION_REPOSITORY, type NotificationRepository } from './domain/repositories';
+import { TEMPLATES } from './domain/templates';
+import { PUSH_PORT, SMS_PORT, WHATSAPP_PORT } from './application/ports/channels.port';
+import { NotificationService } from './application/notification.service';
+import { NotificationOutboxHandlers } from './application/handlers/notification.handlers';
+import { NotificationPrismaRepository } from './infrastructure/prisma/notification.prisma-repository';
+import { PushMockAdapter, SmsMockAdapter, WhatsAppMockAdapter } from './infrastructure/channels/mock-channels';
+import { AdminNotificationsController, NotificationsController } from './interface/http/notifications.controller';
+
+const live = (name: string) => () => { throw new Error(`${name} live adapter not implemented — set INTEGRATION_SMS=mock`); };
+@Module({
+  imports: [IdentityModule, OrganizationsModule, WorkOrdersModule],
+  controllers: [NotificationsController, AdminNotificationsController],
+  providers: [NotificationService, NotificationOutboxHandlers, PushMockAdapter, SmsMockAdapter, WhatsAppMockAdapter, { provide: NOTIFICATION_REPOSITORY, useClass: NotificationPrismaRepository },
+    { provide: PUSH_PORT, inject: [AppConfig, PushMockAdapter], useFactory: (c: AppConfig, m: PushMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('FCM')()) },
+    { provide: SMS_PORT, inject: [AppConfig, SmsMockAdapter], useFactory: (c: AppConfig, m: SmsMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('SMS')()) },
+    { provide: WHATSAPP_PORT, inject: [AppConfig, WhatsAppMockAdapter], useFactory: (c: AppConfig, m: WhatsAppMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('WhatsApp')()) }],
+  exports: [NotificationService, PUSH_PORT, SMS_PORT],
+})
+export class NotificationsModule implements OnModuleInit {
+  constructor(@Inject(NOTIFICATION_REPOSITORY) private readonly repo: NotificationRepository) {}
+  /** Mirror code templates into notification_templates so ops can see/edit them (code stays the renderer). */
+  async onModuleInit() { await this.repo.upsertTemplates(Object.values(TEMPLATES).map((t) => ({ code: t.code, channel: t.channels[0] ?? 'push', titleAr: t.titleAr, titleEn: t.titleEn, bodyAr: t.bodyAr, bodyEn: t.bodyEn }))); }
+}

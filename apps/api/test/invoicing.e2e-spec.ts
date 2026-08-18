@@ -8,7 +8,7 @@ import { AppModule } from '../src/app.module';
 describe('Invoicing (e2e)', () => {
   let app: INestApplication; const http = () => request(app.getHttpServer());
   const suffix = String(Date.now()).slice(-7);
-  const wsPhone = '+966500000001'; const custPhone = `+96657${suffix}`;
+  const wsPhone = '+966500000001'; const custPhone = `+96659${suffix}`;
   let wsTok: string; let custTok: string; let orgId: string; let woId: string; let invId: string; let snapshotTotal: string; let snapshotVat: string;
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });

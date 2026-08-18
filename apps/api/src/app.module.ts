@@ -17,6 +17,7 @@ import { InvoicingModule } from './modules/invoicing/invoicing.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { PromissoryNotesModule } from './modules/promissory-notes/promissory-notes.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
@@ -43,6 +44,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     InvoicingModule,
     PaymentsModule,
     PromissoryNotesModule,
+    NotificationsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

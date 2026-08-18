@@ -10,7 +10,7 @@ describe('Payments + Escrow + Ledger (e2e)', () => {
   let app: INestApplication; let prisma: PrismaService; let psp: PspMockAdapter;
   const http = () => request(app.getHttpServer());
   const suffix = String(Date.now()).slice(-7);
-  const wsPhone = '+966500000001'; const custPhone = `+96659${suffix}`; const adminPhone = '+966500000099';
+  const wsPhone = '+966500000001'; const custPhone = `+96658${suffix}`; const adminPhone = '+966500000099';
   let wsTok: string; let custTok: string; let adminTok: string; let orgId: string;
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });
