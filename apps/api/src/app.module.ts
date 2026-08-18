@@ -8,6 +8,9 @@ import { PrismaModule } from './prisma';
 import { CommonModule } from './common/common.module';
 import { AllExceptionsFilter, RequestIdMiddleware } from './common/http';
 import { HealthModule } from './modules/health/health.module';
+import { IdentityModule } from './modules/identity/identity.module';
+import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
+import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
 @Module({
   imports: [
@@ -22,9 +25,12 @@ import { HealthModule } from './modules/health/health.module';
       }),
     }),
     HealthModule,
+    IdentityModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_FILTER, useFactory: (logger: Logger) => new AllExceptionsFilter(logger), inject: [Logger] },
   ],
 })

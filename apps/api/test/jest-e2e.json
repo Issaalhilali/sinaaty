@@ -21,5 +21,6 @@
   "testRegex": "test/.*\\.e2e-spec\\.ts$",
   "setupFiles": [
     "<rootDir>/test/setup-env.ts"
-  ]
+  ],
+  "forceExit": true
 }

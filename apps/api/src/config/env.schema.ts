@@ -24,6 +24,17 @@ export const envSchema = z.object({
   /** 32-byte key, base64 — encrypts national_id / iban / CSIDs (AES-256-GCM). */
   PII_ENC_KEY: z.string().refine((s) => Buffer.from(s, 'base64').length === 32, 'PII_ENC_KEY must be 32 bytes base64'),
 
+  /** Ed25519 PEM keys, base64-encoded (see tools/gen-jwt-keys.mjs). */
+  JWT_PRIVATE_KEY: z.string().min(40),
+  JWT_PUBLIC_KEY: z.string().min(40),
+  JWT_ISSUER: z.string().default('sinaaty'),
+  JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
+  JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  OTP_TTL_SECONDS: z.coerce.number().int().positive().default(300),
+  OTP_MAX_ATTEMPTS: z.coerce.number().int().positive().default(5),
+  NAFATH_MOCK_AUTO_APPROVE_MS: z.coerce.number().int().nonnegative().default(1500),
+  NAFATH_CALLBACK_SECRET: z.string().min(8).default('dev-nafath-callback-secret'),
+
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
 

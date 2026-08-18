@@ -12,6 +12,16 @@ export const ERROR_CODES = {
   CONFLICT: { status: 409, ar: 'تعارض مع الحالة الحالية.', en: 'Conflict with current state.' },
   RATE_LIMITED: { status: 429, ar: 'طلبات كثيرة، انتظر قليلاً ثم أعد المحاولة.', en: 'Too many requests, slow down.' },
   SERVICE_UNAVAILABLE: { status: 503, ar: 'الخدمة غير متاحة مؤقتاً.', en: 'Service temporarily unavailable.' },
+  // ---- identity ----
+  OTP_INVALID: { status: 400, ar: 'رمز التحقق غير صحيح.', en: 'Incorrect verification code.' },
+  OTP_EXPIRED: { status: 400, ar: 'انتهت صلاحية رمز التحقق، اطلب رمزاً جديداً.', en: 'Code expired, request a new one.' },
+  OTP_TOO_MANY: { status: 429, ar: 'محاولات كثيرة، انتظر قليلاً ثم أعد المحاولة.', en: 'Too many attempts, try again later.' },
+  NAFATH_PENDING: { status: 409, ar: 'بانتظار موافقتك في تطبيق نفاذ.', en: 'Waiting for your approval in the Nafath app.' },
+  NAFATH_REJECTED: { status: 400, ar: 'تم رفض الطلب في نفاذ أو انتهت مهلته.', en: 'Nafath request was rejected or expired.' },
+  NAFATH_NOT_FOUND: { status: 404, ar: 'طلب نفاذ غير موجود.', en: 'Nafath transaction not found.' },
+  TOKEN_INVALID: { status: 401, ar: 'انتهت الجلسة، سجّل الدخول مجدداً.', en: 'Session expired, please sign in again.' },
+  TOKEN_REUSED: { status: 401, ar: 'تم اكتشاف استخدام غير آمن للجلسة؛ سجّل الدخول مجدداً.', en: 'Suspicious session reuse detected; please sign in again.' },
+  USER_SUSPENDED: { status: 403, ar: 'الحساب موقوف، تواصل مع الدعم.', en: 'Account suspended, contact support.' },
 } as const;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

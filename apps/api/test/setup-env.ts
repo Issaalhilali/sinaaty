@@ -1,5 +1,10 @@
-// Runs before test files are loaded so ConfigModule sees test values (not apps/api/.env).
-process.env['NODE_ENV'] = 'test';
-process.env['APP_ENV'] = 'test';
-process.env['LOG_LEVEL'] = 'silent';
-process.env['DATABASE_URL'] ??= 'postgresql://sinaaty:sinaaty@localhost:5432/sinaaty';
+// Runs before each e2e test file is loaded (jest setupFiles) — overrides .env for tests.
+Object.assign(process.env, {
+  NODE_ENV: 'test',
+  APP_ENV: 'test',
+  LOG_LEVEL: 'silent',
+  NAFATH_MOCK_AUTO_APPROVE_MS: '0',
+  INTEGRATION_NAFATH: 'mock',
+  INTEGRATION_SMS: 'mock',
+  THROTTLE_LIMIT: '1000',
+});

@@ -32,7 +32,8 @@
     "seed": "tsx prisma/seed.ts",
     "openapi:export": "tsx tools/export-openapi.ts",
     "new:module": "node tools/new-module.mjs",
-    "clean": "rm -rf dist coverage"
+    "clean": "rm -rf dist coverage",
+    "gen:keys": "node tools/gen-jwt-keys.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.5",
@@ -46,6 +47,7 @@
     "@sinaaty/shared-types": "workspace:*",
     "decimal.js": "^10.5.0",
     "helmet": "^8.1.0",
+    "jose": "^5.10.0",
     "nestjs-pino": "^4.4.0",
     "pino": "^9.7.0",
     "pino-http": "^10.5.0",

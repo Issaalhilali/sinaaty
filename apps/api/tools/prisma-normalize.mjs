@@ -63,8 +63,34 @@ src = src.replace(modelRe, (whole, name, body) => {
       const isScalar = !tables.has(baseType);
       const camelField = camel(field);
       if (camelField !== field && isScalar && !rest.includes('@map(')) rest = `${rest} @map("${field}")`;
-      // relation field names: keep readable camelCase too
-      line = `${indent}${isScalar ? camelField : camel(field)}${gap}${type}${rest}`;
+      // Relation field names. Prisma disambiguates duplicates as `<target>_<src>_<fkcol>To<target>`;
+      // rewrite those deterministically: FK side → camel(fkcol sans _id) [+ TargetModel if no _id],
+      // reverse side → camel(srcTable) + 'As' + Pascal(fkcol sans _id). Others → camelCase.
+      let relName = camel(field);
+      const dis = /^([a-z0-9_]+?)_(\1|[a-z0-9_]+?)_([a-z0-9_]+)To([a-z0-9_]+)$/.exec(field);
+      if (!isScalar && field.includes('To')) {
+        const m = /^(.+)To([a-z0-9_]+)$/.exec(field);
+        if (m) {
+          const target = m[2];
+          const head = m[1]; // `<targetTable>_<srcTable>_<fkcol>`
+          const stripped = head.startsWith(target + '_') ? head.slice(target.length + 1) : head;
+          const targetSingular = tables.get(target) ?? pascal(target);
+          if (rest.includes('fields:')) {
+            // FK side: srcTable is the current model (name); fkcol = stripped minus `<name>_`
+            const fkcol = stripped.startsWith(name + '_') ? stripped.slice(name.length + 1) : stripped;
+            const base = camel(fkcol.replace(/_id$/, ''));
+            relName = /_id$/.test(fkcol) ? base : base + targetSingular;
+          } else {
+            // reverse side: stripped = `<srcTable>_<fkcol>`; srcTable = the base table (from type)
+            const src = baseType; // e.g. disputes
+            let fkcol = stripped;
+            while (fkcol.startsWith(src + '_')) fkcol = fkcol.slice(src.length + 1);
+            relName = camel(src) + 'As' + pascal(fkcol.replace(/_id$/, ''));
+          }
+        }
+      }
+      void dis;
+      line = `${indent}${isScalar ? camelField : relName}${gap}${type}${rest}`;
     } else if (t.startsWith('@@')) {
       // @@index([a_b, c]) / @@unique / @@id → camelCase field refs
       line = line.replace(/\[([^\]]*)\]/g, (_, list) =>
