@@ -23,6 +23,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
+    "schema:sync": "node tools/sync-schema.mjs",
+    "schema:check": "node tools/sync-schema.mjs --check",
     "seed": "tsx prisma/seed.ts",
     "openapi:export": "tsx tools/export-openapi.ts",
     "new:module": "node tools/new-module.mjs",
