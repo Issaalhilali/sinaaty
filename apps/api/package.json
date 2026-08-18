@@ -28,6 +28,7 @@
     "prisma:normalize": "node tools/prisma-normalize.mjs",
     "prisma:drift": "prisma migrate diff --from-url \"$DATABASE_URL\" --to-schema-datamodel prisma/schema.prisma --exit-code",
     "db:verify": "pnpm schema:check && pnpm prisma migrate deploy && pnpm seed && pnpm prisma:drift",
+    "db:supabase": "tools/supabase-db.sh",
     "seed": "tsx prisma/seed.ts",
     "openapi:export": "tsx tools/export-openapi.ts",
     "new:module": "node tools/new-module.mjs",
