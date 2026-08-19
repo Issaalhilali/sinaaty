@@ -38,3 +38,7 @@
 | `helm lint` / `helm template` the chart (helm not installed locally) | Step 17 | templates written against the k8s API spec | Step 24 |
 | App metrics beyond auto-instrumentation (outbox backlog, ledger imbalance, integration counters as OTEL metrics) | Step 17 | dashboard panels reference them; emit from the jobs | Step 24 |
 | Staging deploy workflow (helm upgrade on tag) | Step 17 | images job publishes to GHCR; deploy stays manual for the pilot | Step 25 |
+| Transport payment + ledger posting (customer pays the tow; margin split like escrow) | Step 19 | job stores price/margin and audits them; no payment flow yet | Step 23 |
+| Tow rates in `platform_settings` instead of code defaults | Step 19 | margin bps is configurable; base/per-km are constants | Step 25 |
+| Driver app screens (offers, active job, tracking, proof capture) | Step 19 | API complete and tested | Step 22/23 |
+| Assign a specific provider org (dispatcher flow) instead of first-to-accept | Step 19 | first-to-accept fits the pilot | Step 26 |
