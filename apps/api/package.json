@@ -33,7 +33,8 @@
     "openapi:export": "tsx tools/export-openapi.ts",
     "new:module": "node tools/new-module.mjs",
     "clean": "rm -rf dist coverage",
-    "gen:keys": "node tools/gen-jwt-keys.mjs"
+    "gen:keys": "node tools/gen-jwt-keys.mjs",
+    "grant:role": "node tools/grant-platform-role.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.5",

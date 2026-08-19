@@ -34,3 +34,4 @@
 | Dispute evidence thumbnails in admin (presigned GET) | Step 16 | media ids listed; storage mock has no bytes | Step 17 |
 | Customer/partner dispute screens in the apps (open + chat) | Step 16 | API + admin room done; mobile UI pending | Step 23 |
 | `replace_part` / `no_action` decisions leave escrow frozen until a follow-up decision | Step 16 | intentional (documented), needs a 'pending follow-up' badge in admin | Step 17 |
+| Invite flow for platform staff (email/SMS invite instead of the grant:role CLI) | Step 15 | CLI + in-dashboard role change cover the pilot | Step 24 |
