@@ -14,7 +14,7 @@ if (!phone) { console.error('✗ رقم غير صالح. مثال: pnpm --filter
 if (!ROLES.includes(rawRole)) { console.error(`✗ دور غير معروف: ${rawRole}. المتاح: ${ROLES.join(' | ')}`); process.exit(1); }
 const prisma = new PrismaClient();
 try {
-  const user = await prisma.user.upsert({ where: { phoneE164: phone }, update: { platformRole: rawRole, status: 'active' }, create: { phoneE164: phone, fullNameAr: name ?? 'فريق المنصة', status: 'active', platformRole: rawRole } });
+  const user = await prisma.user.upsert({ where: { phoneE164: phone }, update: { platformRole: rawRole, status: 'active', ...(name ? { fullNameAr: name } : {}) }, create: { phoneE164: phone, fullNameAr: name ?? 'فريق المنصة', status: 'active', platformRole: rawRole } });
   console.log(`✓ ${phone} → ${rawRole}${name ? ` (${name})` : ''}  [user ${user.id}]`);
   console.log(rawRole === 'none' ? '  لن يستطيع الدخول للوحة الإدارة بعد الآن.' : '  ادخل الآن من http://localhost:3001/login برمز التحقق.');
 } finally { await prisma.$disconnect(); }
