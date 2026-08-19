@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { OutboxHandlerRegistry, type OutboxEnvelope } from '../../../integrations/outbox/outbox-handler.registry';
 import { ORGANIZATION_REPOSITORY, type OrganizationRepository } from '../../../organizations/domain/repositories';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../../work-orders/domain/repositories';
+import { ACCIDENT_REPORT_REPOSITORY, type AccidentReportRepository } from '../../../accidents/domain/repositories';
+import { customerShare } from '../../../accidents/domain/accident-report';
 import { NotificationService } from '../notification.service';
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -13,7 +15,7 @@ const money = (v: unknown) => Number(v ?? 0).toLocaleString('en-US', { minimumFr
 @Injectable()
 export class NotificationOutboxHandlers implements OnModuleInit {
   private readonly log = new Logger(NotificationOutboxHandlers.name);
-  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository) {}
+  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(ACCIDENT_REPORT_REPOSITORY) private readonly accidents: AccidentReportRepository) {}
   private async orgStaff(orgId: string, roles = ['owner', 'manager']) { return (await this.orgs.listMembers(orgId)).filter((m) => m.isActive && roles.includes(m.role)).map((m) => m.userId); }
   private async orgName(orgId: string) { const o = await this.orgs.findById(orgId); return o?.tradeNameAr ?? o?.legalNameAr ?? 'الورشة'; }
   private async customers(p: { customerUserId?: string | null; customerOrgId?: string | null }) { const ids: string[] = []; if (p.customerUserId) ids.push(p.customerUserId); if (p.customerOrgId) ids.push(...(await this.orgStaff(p.customerOrgId, ['owner', 'fleet_admin', 'fleet_approver']))); return ids; }
@@ -35,6 +37,22 @@ export class NotificationOutboxHandlers implements OnModuleInit {
     on('TransportProofRequested', 'transport-proof', async (ev) => { const p = ev.payload; if (typeof p['requesterUserId'] !== 'string') return; await this.notify.notifyMany([p['requesterUserId']], { template: 'transport.proof', data: { id: ev.aggregateId, number: str(p['number']), code: str(p['code']) } }); });
     on('TransportDelivered', 'transport-delivered', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await transportParties(p), { template: 'transport.delivered', data: { id: ev.aggregateId, number: str(p['number']), price: money(p['price']) }, dedupeKey: `transport.delivered:${ev.aggregateId}` }); });
 
+    // Accident files (Step 21): the customer's real question is "what do I pay?" — the answer leads the copy.
+    const ACCIDENT_STATUS: Record<string, string> = { under_assessment: 'قيد التقييم من المُقيِّم.', assessed: 'تم التقييم.', approved: 'اعتمده التأمين.', rejected: 'رُفضت المطالبة — الإصلاح على حساب العميل.', closed: 'أُغلق الملف.', reported: 'مُسجَّل.' };
+    on('AccidentReportLinked', 'accident-linked', async (ev) => {
+      const p = ev.payload as { ref?: string; workOrderId?: string | null; status?: string };
+      if (!p.workOrderId) return;
+      const c = await this.woCtx(p.workOrderId); if (!c) return;
+      const rep = await this.accidents.findById(ev.aggregateId); if (!rep) return;
+      const share = customerShare(c.wo.total, rep.deductibleAmount, rep.faultPercent);
+      await this.notify.notifyMany(await this.customers(c.wo), { template: 'accident.linked', data: { id: c.wo.id, number: c.wo.number, ref: str(p.ref), insurer: rep.insurerNameAr ?? 'شركة التأمين', approved: money(rep.approvedAmount ?? '0'), customer: money(share.estimated_customer_total) }, dedupeKey: `accident.linked:${ev.aggregateId}` });
+    });
+    on('AccidentReportUpdated', 'accident-updated', async (ev) => {
+      const p = ev.payload as { ref?: string; to?: string; approvedAmount?: string | null; workOrderId?: string | null };
+      if (!p.workOrderId) return;
+      const c = await this.woCtx(p.workOrderId); if (!c) return;
+      await this.notify.notifyMany(await this.customers(c.wo), { template: 'accident.updated', data: { id: c.wo.id, ref: str(p.ref), status: ACCIDENT_STATUS[str(p.to)] ?? '', approved_note: p.approvedAmount ? ` المعتمد ${money(p.approvedAmount)} ر.س.` : '' }, dedupeKey: `accident.updated:${ev.aggregateId}:${str(p.to)}` });
+    });
     on('WorkOrderCreated', 'wo-created', async (ev) => { const c = await this.woCtx(ev.aggregateId); if (!c) return; await this.notify.notifyMany(await this.customers(c.wo), { template: 'wo.created', data: { id: c.wo.id, number: c.wo.number, org: c.org, vehicle: 'سيارتك' }, dedupeKey: `wo.created:${c.wo.id}` }); });
     on('WorkOrderApprovalRequested', 'wo-approval', async (ev) => { const c = await this.woCtx(ev.aggregateId); if (!c) return; const v = Number(ev.payload['version'] ?? c.wo.currentVersion); const tpl = v > 1 ? 'wo.change_order' : 'wo.awaiting_approval'; await this.notify.notifyMany(await this.customers(c.wo), { template: tpl, data: { id: c.wo.id, number: c.wo.number, org: c.org, total: money(ev.payload['total'] ?? c.wo.total), version: v, link: typeof ev.payload['approvalUrl'] === 'string' ? ` ${ev.payload['approvalUrl']}` : '' }, dedupeKey: `${tpl}:${c.wo.id}:v${v}` }); });
     on('WorkOrderApproved', 'wo-approved', async (ev) => { const c = await this.woCtx(ev.aggregateId); if (!c) return; const v = ev.payload['version']; await this.notify.notifyMany(await this.orgStaff(c.wo.orgId, ['owner', 'manager', 'technician']), { template: 'wo.approved', data: { id: c.wo.id, number: c.wo.number, version: v, deferred: ev.payload['paymentTerms'] === 'deferred' ? ' الدفع آجل — سيصدر سند لأمر تلقائياً.' : '' }, dedupeKey: `wo.approved:${c.wo.id}:v${String(v)}` }); });

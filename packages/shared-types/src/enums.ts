@@ -1,6 +1,18 @@
 // GENERATED from apps/api/prisma/schema.prisma by tools/gen-enums.mjs — DO NOT EDIT.
 // Regenerate: pnpm --filter @sinaaty/shared-types gen
 
+/** DB enum `accident_report_status` */
+export const AccidentReportStatus = {
+  reported: 'reported',
+  under_assessment: 'under_assessment',
+  assessed: 'assessed',
+  approved: 'approved',
+  rejected: 'rejected',
+  closed: 'closed',
+} as const;
+export type AccidentReportStatus = (typeof AccidentReportStatus)[keyof typeof AccidentReportStatus];
+export const AccidentReportStatusValues = Object.values(AccidentReportStatus) as AccidentReportStatus[];
+
 /** DB enum `bid_status` */
 export const BidStatus = {
   submitted: 'submitted',
@@ -562,6 +574,7 @@ export type ZatcaStatus = (typeof ZatcaStatus)[keyof typeof ZatcaStatus];
 export const ZatcaStatusValues = Object.values(ZatcaStatus) as ZatcaStatus[];
 
 export const DB_ENUMS = {
+  accident_report_status: AccidentReportStatusValues,
   bid_status: BidStatusValues,
   dispute_resolution: DisputeResolutionValues,
   dispute_status: DisputeStatusValues,

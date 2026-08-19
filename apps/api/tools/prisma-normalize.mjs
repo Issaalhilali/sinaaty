@@ -125,5 +125,13 @@ src = src.replace(modelRe, (whole, name, body) => {
   return `model ${Model} {${out.join('\n')}}`;
 });
 
+// 3) Back-relations that live inside *already normalized* models still carry the raw table name
+// (`accident_reports accident_reports[]`, added by db pull when a new table references an old one).
+// The block loop above skips those models, so rewrite their relation lines here.
+for (const [table, Model] of tables) {
+  const re = new RegExp(`^(\\s+)[A-Za-z0-9_]+(\\s+)${table}(\\[\\]|\\?)?(\\s.*)?$`, 'gm');
+  src = src.replace(re, (line, indent, gap, arr, rest) => `${indent}${camel(table)}${gap}${Model}${arr ?? ''}${rest ?? ''}`);
+}
+
 writeFileSync(file, src);
 console.log(`normalized ${tables.size} models → PascalCase/camelCase with @map`);

@@ -74,6 +74,8 @@ export const envSchema = z.object({
   INTEGRATION_SMS: integrationMode,
   INTEGRATION_AI: integrationMode,
   INTEGRATION_MAPS: integrationMode,
+  /** منجز/تقدير — accident reports. Only `mock` exists: the provider contract is unconfirmed (PRD risk R3). */
+  INTEGRATION_ACCIDENTS: integrationMode,
 });
 
 export type Env = z.infer<typeof envSchema>;

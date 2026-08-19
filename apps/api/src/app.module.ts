@@ -21,6 +21,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { PartsModule } from './modules/parts/parts.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { DisputesModule } from './modules/disputes/disputes.module';
+import { AccidentsModule } from './modules/accidents/accidents.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
@@ -52,6 +53,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     AdminModule,
     DisputesModule,
     LogisticsModule,
+    AccidentsModule,
     NotificationsModule,
   ],
   providers: [

@@ -49,4 +49,8 @@
 | Outbox metrics as OTEL gauges (backlog depth, claimed-but-stalled, dead-letter count) | Security/concurrency batch | admin monitor shows them; alerting needs metrics | Step 24 |
 | `job_locks` rows for one-shot jobs are never garbage-collected | Security/concurrency batch | a handful of fixed names, rows are reused in place | — |
 | Rotate the production secrets through KMS instead of env vars | Security/concurrency batch | boot now refuses dev defaults in prod; rotation is still manual | Step 24 |
+| Live منجز/تقدير adapter (provider + API unconfirmed) | Step 21 | port + mock only; module refuses INTEGRATION_ACCIDENTS=live | after the agreement is signed |
+| Accept `suggested_items` into the work order in one tap (API returns them; the app must post them) | Step 21 | avoids cross-module item writes from the accidents module | Step 22/23 |
+| Attach check-out photos to the accident claim file | Step 21 | photo count is sent; upload needs the provider's attachment API | after the agreement is signed |
+| Scheduled refresh of open accident files (assessment lands days later) | Step 21 | manual refresh endpoint exists | Step 25 |
 

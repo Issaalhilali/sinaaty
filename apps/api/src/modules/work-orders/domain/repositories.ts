@@ -1,4 +1,4 @@
-import type { InspectionType, PaymentTerms, PartCondition, SignatureMethod, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
+import type { InspectionType, PaymentTerms, PartCondition, SignatureMethod, WoItemType, WorkOrderSource, WorkOrderStatus } from '@sinaaty/shared-types';
 import type { TxHandle } from '../../../common/ports/unit-of-work.port';
 import type { Snapshot } from './snapshot';
 import type { WorkOrder, WorkOrderItem } from './work-order';
@@ -8,7 +8,7 @@ export interface WorkOrderRepository {
   create(input: { number: string; orgId: string; locationId?: string; vehicleId: string; customerUserId?: string; customerOrgId?: string; paymentTerms: PaymentTerms; titleAr?: string; complaintAr?: string; depositRequired?: string; dueDate?: Date; promisedReadyAt?: Date; createdBy: string }, tx?: TxHandle): Promise<WorkOrder>;
   findById(id: string, tx?: TxHandle): Promise<WorkOrder | null>;
   list(q: { orgId?: string; customerUserId?: string; customerOrgId?: string; status?: WorkOrderStatus[]; limit: number }): Promise<WorkOrder[]>;
-  update(id: string, patch: Partial<{ titleAr: string; complaintAr: string; diagnosisAr: string; paymentTerms: PaymentTerms; depositRequired: string; dueDate: Date | null; promisedReadyAt: Date | null; assignedTechnicianId: string | null; status: WorkOrderStatus; currentVersion: number; approvedAt: Date; receivedAt: Date; readyAt: Date; deliveredAt: Date; closedAt: Date; cancelledAt: Date; cancelReason: string; abandonedNoticeAt: Date }>, tx?: TxHandle): Promise<void>;
+  update(id: string, patch: Partial<{ source: WorkOrderSource; accidentReportRef: string; titleAr: string; complaintAr: string; diagnosisAr: string; paymentTerms: PaymentTerms; depositRequired: string; dueDate: Date | null; promisedReadyAt: Date | null; assignedTechnicianId: string | null; status: WorkOrderStatus; currentVersion: number; approvedAt: Date; receivedAt: Date; readyAt: Date; deliveredAt: Date; closedAt: Date; cancelledAt: Date; cancelReason: string; abandonedNoticeAt: Date }>, tx?: TxHandle): Promise<void>;
   setTotals(id: string, t: { subtotal: string; discount: string; vatAmount: string; total: string }, tx?: TxHandle): Promise<void>;
   // items
   addItem(woId: string, version: number, i: { type: WoItemType; descriptionAr: string; descriptionEn?: string; partCondition?: PartCondition; partNumber?: string; quantity: string; unitPrice: string; discount: string; vatRate: string; lineTotal: string; warrantyDays?: number; sortOrder?: number }, tx?: TxHandle): Promise<WorkOrderItem>;

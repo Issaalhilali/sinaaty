@@ -2387,6 +2387,140 @@
         ]
       }
     },
+    "/v1/organizations/{orgId}/zatca/onboard": {
+      "post": {
+        "operationId": "ZatcaController_onboard_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Onboard an EGS unit: CSR → compliance CSID → compliance checks → production CSID",
+        "tags": [
+          "zatca"
+        ]
+      }
+    },
+    "/v1/organizations/{orgId}/zatca/devices": {
+      "get": {
+        "operationId": "ZatcaController_devices_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "zatca"
+        ]
+      }
+    },
+    "/v1/invoices/{id}/zatca": {
+      "get": {
+        "operationId": "ZatcaController_submissions_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "zatca"
+        ]
+      }
+    },
+    "/v1/invoices/{id}/zatca/submit": {
+      "post": {
+        "operationId": "ZatcaController_submit_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sign (XAdES) and clear/report an issued invoice; idempotent, retries a rejection",
+        "tags": [
+          "zatca"
+        ]
+      }
+    },
     "/v1/payments": {
       "post": {
         "operationId": "PaymentsController_create_v1",
@@ -5286,6 +5420,717 @@
         ],
         "tags": [
           "admin/disputes"
+        ]
+      }
+    },
+    "/v1/transport/quote": {
+      "post": {
+        "operationId": "TransportController_quote_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Price a tow/delivery by route distance (maps port; mock in dev)",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs": {
+      "post": {
+        "operationId": "TransportController_create_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      },
+      "get": {
+        "operationId": "TransportController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "as",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}": {
+      "get": {
+        "operationId": "TransportController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/cancel": {
+      "post": {
+        "operationId": "TransportController_cancel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/profile": {
+      "put": {
+        "operationId": "TransportController_upsertDriver_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create/update my driver profile (truck plate + type)",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/me": {
+      "get": {
+        "operationId": "TransportController_me_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/online": {
+      "put": {
+        "operationId": "TransportController_online_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/offers": {
+      "get": {
+        "operationId": "TransportController_offers_v1",
+        "parameters": [
+          {
+            "name": "radius_km",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Open jobs near me (PostGIS)",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/accept": {
+      "post": {
+        "operationId": "TransportController_accept_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/transition": {
+      "post": {
+        "operationId": "TransportController_transition_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/track": {
+      "post": {
+        "operationId": "TransportController_track_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Driver location ping (rate-limited server-side)",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/proof/otp": {
+      "post": {
+        "operationId": "TransportController_proofOtp_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send the receiver a one-time code at the drop-off",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/complete": {
+      "post": {
+        "operationId": "TransportController_complete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Proof of delivery: photo + receiver code → delivered",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/admin/transport/drivers/near": {
+      "get": {
+        "operationId": "AdminTransportController_near_v1",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "radius_km",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/transport"
+        ]
+      }
+    },
+    "/v1/accident-reports/lookup": {
+      "post": {
+        "operationId": "AccidentsController_lookup_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview an accident report by its reference (منجز/تقدير) — nothing is stored",
+        "tags": [
+          "accident-reports"
+        ]
+      }
+    },
+    "/v1/accident-reports": {
+      "post": {
+        "operationId": "AccidentsController_link_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Link the report to a work order: draft items, insurer amounts, Car Passport event",
+        "tags": [
+          "accident-reports"
+        ]
+      },
+      "get": {
+        "operationId": "AccidentsController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vehicle_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "accident-reports"
+        ]
+      }
+    },
+    "/v1/accident-reports/{id}": {
+      "get": {
+        "operationId": "AccidentsController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "accident-reports"
+        ]
+      }
+    },
+    "/v1/accident-reports/{id}/refresh": {
+      "post": {
+        "operationId": "AccidentsController_refresh_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Re-read the file from the provider (the assessment lands days later)",
+        "tags": [
+          "accident-reports"
+        ]
+      }
+    },
+    "/v1/accident-reports/{id}/submit-repair": {
+      "post": {
+        "operationId": "AccidentsController_submitRepair_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "FR-WO-10 — register the completed repair against the accident file",
+        "tags": [
+          "accident-reports"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/accident-report": {
+      "get": {
+        "operationId": "WorkOrderAccidentController_byWorkOrder_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The accident file behind this repair, if any",
+        "tags": [
+          "work-orders"
         ]
       }
     },

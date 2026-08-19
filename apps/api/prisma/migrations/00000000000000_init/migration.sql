@@ -39,6 +39,7 @@ CREATE TYPE payment_terms        AS ENUM ('prepaid','on_delivery','deferred','in
 CREATE TYPE wo_item_type         AS ENUM ('labor','part','paint','towing','storage','diagnostic','other');
 CREATE TYPE part_condition       AS ENUM ('oem_new','aftermarket_new','used_scrapyard','refurbished');
 CREATE TYPE inspection_type      AS ENUM ('check_in','progress','quality','check_out','accident','pre_purchase');
+CREATE TYPE accident_report_status AS ENUM ('reported','under_assessment','assessed','approved','rejected','closed');
 CREATE TYPE media_kind           AS ENUM ('image','video','audio','pdf','xml','other');
 CREATE TYPE signature_method     AS ENUM ('nafath','otp','in_app_biometric','manual');
 CREATE TYPE invoice_type         AS ENUM ('standard_tax','simplified_tax','credit_note','debit_note','proforma');
@@ -528,6 +529,37 @@ CREATE TABLE voice_notes (
   created_at     timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE accident_reports (                                -- تقرير حادث من منجز/تقدير (Step 21)
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider       varchar(30) NOT NULL DEFAULT 'monjez',        -- الجهة تُؤكَّد لاحقاً — docs/integrations/monjez.md
+  external_ref   varchar(80) NOT NULL,                         -- رقم البلاغ لدى المزوّد
+  vehicle_id     uuid REFERENCES vehicles(id),
+  work_order_id  uuid REFERENCES work_orders(id) ON DELETE SET NULL,
+  org_id         uuid REFERENCES organizations(id),            -- الورشة التي ربطت التقرير
+  status         accident_report_status NOT NULL DEFAULT 'reported',
+  accident_at    timestamptz,
+  location_ar    varchar(200),
+  plate_snapshot varchar(20),
+  vin_snapshot   varchar(17),
+  fault_percent  numeric(5,2),                                 -- نسبة الخطأ على مركبة العميل
+  insurer_name_ar varchar(120),
+  policy_no      varchar(60),
+  claim_no       varchar(60),
+  deductible_amount numeric(14,2),                             -- التحمّل على العميل
+  approved_amount numeric(14,2),                               -- ما اعتمده التأمين للإصلاح
+  damages        jsonb NOT NULL DEFAULT '[]',                  -- [{part_code,label_ar,severity,action}]
+  repair_submission_ref varchar(80),                           -- مرجع تسجيل تقرير الإصلاح (FR-WO-10)
+  repair_submitted_at timestamptz,
+  raw            jsonb NOT NULL DEFAULT '{}',                  -- payload المزوّد بعد تنقية PII
+  created_by     uuid REFERENCES users(id),
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (provider, external_ref)
+);
+CREATE TRIGGER trg_accident_reports_updated BEFORE UPDATE ON accident_reports FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_accident_reports_wo ON accident_reports(work_order_id);
+CREATE INDEX idx_accident_reports_vehicle ON accident_reports(vehicle_id, accident_at DESC);
+
 -- =============================================================================
 -- 6. INVOICING  (module: invoicing)
 -- =============================================================================
@@ -569,6 +601,7 @@ CREATE TABLE invoices (
   zatca_pih          text,                                     -- previous invoice hash
   zatca_hash         text,                                     -- this invoice hash
   zatca_qr           text,                                     -- base64 TLV
+  zatca_xml       text,                                          -- signed UBL (Phase 2) — archived 6 years per ZATCA
   zatca_status       zatca_status NOT NULL DEFAULT 'not_required',
   xml_media_id       uuid REFERENCES media_assets(id),
   pdf_media_id       uuid REFERENCES media_assets(id),
@@ -1386,6 +1419,13 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id) WHERE read_at IS
 -- =============================================================================
 -- 14. INTEGRATIONS / OUTBOX / WEBHOOKS  (module: integrations)
 -- =============================================================================
+CREATE TABLE job_locks (                                       -- one scheduled job runs once cluster-wide
+  name         varchar(80) PRIMARY KEY,                          -- escrow.auto-release, payouts.run, parts.jobs ...
+  locked_until timestamptz NOT NULL,                             -- lease: expires by itself if the holder dies
+  holder       varchar(120),                                     -- instance id, for diagnosis
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE TABLE outbox (                                          -- transactional outbox
   id             bigserial PRIMARY KEY,
   event_type     varchar(80) NOT NULL,                         -- WorkOrderApproved, InvoicePaid, PartRequestCreated ...
@@ -1393,7 +1433,8 @@ CREATE TABLE outbox (                                          -- transactional 
   aggregate_id   uuid NOT NULL,
   payload        jsonb NOT NULL,
   created_at     timestamptz NOT NULL DEFAULT now(),
-  published_at   timestamptz
+  published_at   timestamptz,
+  locked_until   timestamptz                                    -- claim window: one dispatcher instance owns the row until it expires
 );
 CREATE INDEX idx_outbox_unpublished ON outbox(id) WHERE published_at IS NULL;
 
