@@ -46,3 +46,7 @@
 | Map ZATCA business-rule errors (BR-KSA-*) to Arabic messages in the admin monitor | Step 20 | stored per submission already | Step 24 |
 | Move archived `zatca_xml` to cold object storage after N months | Step 20 | kept in the database for the pilot (6-year retention) | Step 30 |
 | Credit/debit notes: BillingReference must carry the original invoice number, not the note's | Step 20 | single-invoice flows correct; note flow needs the parent number threaded | Step 21 |
+| Outbox metrics as OTEL gauges (backlog depth, claimed-but-stalled, dead-letter count) | Security/concurrency batch | admin monitor shows them; alerting needs metrics | Step 24 |
+| `job_locks` rows for one-shot jobs are never garbage-collected | Security/concurrency batch | a handful of fixed names, rows are reused in place | — |
+| Rotate the production secrets through KMS instead of env vars | Security/concurrency batch | boot now refuses dev defaults in prod; rotation is still manual | Step 24 |
+

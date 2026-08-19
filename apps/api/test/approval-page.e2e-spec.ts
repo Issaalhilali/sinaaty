@@ -3,6 +3,7 @@ import { type INestApplication, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { ApprovalLinkService } from '../src/modules/work-orders/application/approval-link.service';
+import { AppConfig } from '../src/config';
 import { OutboxProcessor } from '../src/modules/integrations/outbox/outbox.processor';
 import { SmsMockAdapter } from '../src/modules/notifications/infrastructure/channels/mock-channels';
 
@@ -43,6 +44,18 @@ describe('Web approval page (e2e)', () => {
     expect(['approved', 'in_progress']).toContain(done.body.work_order.status);
     const again = await http().get(`/v1/approve/${token}`).expect(200); expect(again.text).toContain('تم اعتماد هذه النسخة'); expect(again.text).not.toContain('id="go"');
     const v = await http().get(`/v1/work-orders/${woId}/versions/1`).set(auth(wsTok)).expect(200); expect(v.body.signed).toBe(true); expect(v.body.signature?.method ?? v.body.signatures?.[0]?.method ?? 'otp').toBe('otp');
+  });
+  it('the public OTP endpoint is quota-limited: a leaked link cannot pump SMS at the customer', async () => {
+    // Its own work order: earlier tests already approved `woId`, and an approved order never reaches the quota.
+    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: customerPhone, vin: `JTDKN3DU2A0${suffix.slice(0, 6)}`, title_ar: 'فحص كهرباء', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '80' }] }).expect(201);
+    await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'received' }).expect(200);
+    await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(wsTok)).send({}).expect(200);
+    const t = links.mint(wo.body.id, 1);
+    const config = app.get(AppConfig); const real = config.get.bind(config);
+    const spy = jest.spyOn(config, 'get').mockImplementation(((k: string) => (k === 'OTP_MAX_REQUESTS_PER_10MIN' ? 0 : real(k as never))));
+    try { const r = await http().post(`/v1/approve/${t}/otp`).send({}).expect(429); expect(r.body.code).toBe('OTP_TOO_MANY'); }
+    finally { spy.mockRestore(); }
+    await http().post(`/v1/approve/${t}/otp`).send({}).expect(200);   // back to normal once the window clears
   });
   it('the approval-request SMS carries the link', async () => {
     const wo2 = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: customerPhone, vin: `JTDKN3DU1A0${suffix.slice(0, 6)}`, title_ar: 'فحص', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '50' }] }).expect(201);

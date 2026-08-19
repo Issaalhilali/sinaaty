@@ -13,3 +13,5 @@ supersede it with a new ADR and link both ways.
 | 0005 | [Transactional outbox + BullMQ](./0005-outbox-and-bullmq-for-integrations.md)     | Accepted |
 | 0006 | [Next.js only for admin back-office](./0006-nextjs-admin-only.md)                 | Accepted |
 | 0007 | [Clean Architecture in API and mobile](./0007-clean-architecture.md)              | Accepted |
+| 0008 | [Supabase managed Postgres](./0008-supabase-managed-postgres.md)                  | Accepted |
+| 0009 | [Postgres outbox, not Kafka (yet)](./0009-postgres-outbox-not-kafka.md)           | Accepted |

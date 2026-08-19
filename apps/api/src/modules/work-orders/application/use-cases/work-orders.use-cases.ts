@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
 import Decimal from 'decimal.js';
 import type { InspectionType, PartCondition, PaymentTerms, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
 import { AppError } from '../../../../common/errors';
+import { AppConfig } from '../../../../config';
 import { AuditLogWriter } from '../../../../common/audit';
 import { OutboxWriter } from '../../../../common/outbox';
 import { Money } from '../../../../common/domain/money';
@@ -45,6 +46,7 @@ export class WorkOrdersUseCases {
     private readonly passport: VehicleEventsWriter,
     private readonly audit: AuditLogWriter,
     private readonly outbox: OutboxWriter,
+    private readonly config: AppConfig,
     @Optional() @Inject(REALTIME_PUBLISHER) private readonly rt?: RealtimePublisher,
     @Optional() @Inject(forwardRef(() => ApprovalLinkService)) private readonly approvalLinks?: ApprovalLinkService,
   ) {}
@@ -188,9 +190,17 @@ export class WorkOrdersUseCases {
       return { method: 'nafath', version, snapshot_sha256: v.sha256, transaction_id: r.transactionId, random: r.random, expires_at: r.expiresAt.toISOString() };
     }
     if (!u.phone) throw new AppError('VALIDATION', { messageAr: 'لا يوجد رقم جوال على حسابك.', messageEn: 'No phone on your account.' });
+    // The public approval page reaches this path, so the per-phone quota must be enforced here too —
+    // otherwise a leaked link is a free SMS pump aimed at the customer (and at our bill).
+    const recent = await this.otps.countRecent(u.phone, new Date(Date.now() - 10 * 60_000));
+    if (recent >= this.config.get('OTP_MAX_REQUESTS_PER_10MIN')) throw new AppError('OTP_TOO_MANY');
     const code = this.hasher.randomDigits(6);
     await this.otps.create({ phone: u.phone, purpose: 'sign_work_order', codeHash: this.hasher.sha256(`${u.phone}:${code}`), expiresAt: new Date(Date.now() + 300_000) });
-    return { method: 'otp', version, snapshot_sha256: v.sha256, expires_in: 300, debug_code: code };
+    // The code must never travel in the HTTP response outside local development: the public approval page
+    // (/v1/approve/:token/otp) reaches this path, and returning the code there would defeat the second factor
+    // for anyone who merely holds the SMS link.
+    const exposeDebug = !this.config.isProd && this.config.get('INTEGRATION_SMS') === 'mock';
+    return { method: 'otp', version, snapshot_sha256: v.sha256, expires_in: 300, ...(exposeDebug ? { debug_code: code } : {}) };
   }
   async approveComplete(u: AuthUser, id: string, dto: ApproveCompleteDto, meta: { ip?: string | null; deviceId?: string | null }) {
     const wo = await this.load(id); this.mustCustomer(wo, u);

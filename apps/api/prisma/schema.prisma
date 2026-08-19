@@ -766,6 +766,7 @@ model Outbox {
   payload       Json
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   publishedAt   DateTime? @map("published_at") @db.Timestamptz(6)
+  lockedUntil    DateTime? @map("locked_until") @db.Timestamptz(6)
 
   @@map("outbox")
 }
@@ -2358,4 +2359,14 @@ enum zatca_status {
   reported
   rejected
   failed
+}
+
+/// Cluster-wide lease so a scheduled job runs on one instance only.
+model JobLock {
+  name        String   @id @db.VarChar(80)
+  lockedUntil DateTime @map("locked_until") @db.Timestamptz(6)
+  holder      String?  @db.VarChar(120)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("job_locks")
 }

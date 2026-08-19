@@ -79,11 +79,28 @@ export const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 /** Used by ConfigModule.validate — throws a readable error listing every bad variable. */
+/**
+ * Secrets that ship with a development default. Anyone can read them in the repository, so a production
+ * deployment that still carries one is a live vulnerability — e.g. the approval-link secret would let an
+ * attacker mint a valid "approve this work order" link for any work order id. Booting is refused instead.
+ */
+const DEV_DEFAULT_SECRETS: Array<{ key: keyof Env; devDefault: string; risk: string }> = [
+  { key: 'APPROVAL_LINK_SECRET', devDefault: 'dev-approval-link-secret-change-me', risk: 'anyone could forge customer approval links' },
+  { key: 'PSP_WEBHOOK_SECRET', devDefault: 'dev-psp-webhook-secret', risk: 'anyone could forge payment webhooks' },
+  { key: 'NAFATH_CALLBACK_SECRET', devDefault: 'dev-nafath-callback-secret', risk: 'anyone could forge Nafath callbacks' },
+];
+
 export function validateEnv(raw: Record<string, unknown>): Env {
   const parsed = envSchema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid environment configuration:\n${issues}`);
   }
-  return parsed.data;
+  const env = parsed.data;
+  if (env.APP_ENV === 'prod' || env.NODE_ENV === 'production') {
+    const insecure = DEV_DEFAULT_SECRETS.filter((s) => env[s.key] === s.devDefault).map((s) => `  - ${String(s.key)} still holds the development default → ${s.risk}`);
+    if (env.PII_ENC_KEY === Buffer.alloc(32).toString('base64')) insecure.push('  - PII_ENC_KEY is all zeros → encrypted national ids and IBANs would be trivially readable');
+    if (insecure.length) throw new Error(`Refusing to start in production with development secrets:\n${insecure.join('\n')}`);
+  }
+  return env;
 }

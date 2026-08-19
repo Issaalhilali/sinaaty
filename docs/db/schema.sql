@@ -1384,6 +1384,13 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id) WHERE read_at IS
 -- =============================================================================
 -- 14. INTEGRATIONS / OUTBOX / WEBHOOKS  (module: integrations)
 -- =============================================================================
+CREATE TABLE job_locks (                                       -- one scheduled job runs once cluster-wide
+  name         varchar(80) PRIMARY KEY,                          -- escrow.auto-release, payouts.run, parts.jobs ...
+  locked_until timestamptz NOT NULL,                             -- lease: expires by itself if the holder dies
+  holder       varchar(120),                                     -- instance id, for diagnosis
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE TABLE outbox (                                          -- transactional outbox
   id             bigserial PRIMARY KEY,
   event_type     varchar(80) NOT NULL,                         -- WorkOrderApproved, InvoicePaid, PartRequestCreated ...
@@ -1391,7 +1398,8 @@ CREATE TABLE outbox (                                          -- transactional 
   aggregate_id   uuid NOT NULL,
   payload        jsonb NOT NULL,
   created_at     timestamptz NOT NULL DEFAULT now(),
-  published_at   timestamptz
+  published_at   timestamptz,
+  locked_until   timestamptz                                    -- claim window: one dispatcher instance owns the row until it expires
 );
 CREATE INDEX idx_outbox_unpublished ON outbox(id) WHERE published_at IS NULL;
 

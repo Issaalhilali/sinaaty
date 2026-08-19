@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Header, HttpCode, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { ApprovalLinkService } from '../../application/approval-link.service';
@@ -16,7 +17,10 @@ export class ApprovalPageController {
   @Get(':token') @Header('Cache-Control', 'no-store') @ApiOperation({ summary: 'Arabic RTL web page to review + approve a work order version (from the SMS link)' })
   async page(@Param('token') token: string, @Res() res: Response) { const v = await this.links.view(token); res.setHeader('content-type', 'text/html; charset=utf-8'); res.send(renderApprovalPage(token, v)); }
   @Get(':token/data') data(@Param('token') token: string) { return this.links.view(token); }
+  // Public surface: tighter than the global limit — this endpoint sends an SMS.
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post(':token/otp') @HttpCode(200) otp(@Param('token') token: string) { return this.links.sendOtp(token); }
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post(':token/complete') @HttpCode(200) complete(@Param('token') token: string, @Body(zod(CodeDto)) dto: CodeDto, @Req() req: Request) { return this.links.complete(token, dto.code, req.ip ?? null); }
   @Post(':token/decline') @HttpCode(200) decline(@Param('token') token: string, @Body(zod(DeclineDto)) dto: DeclineDto) { return this.links.decline(token, dto.reason_ar); }
 }

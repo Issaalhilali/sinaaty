@@ -4,7 +4,7 @@ import { AppConfig } from '../../../config';
 import { PrismaService } from '../../../prisma';
 import { OutboxHandlerRegistry, type OutboxEnvelope } from './outbox-handler.registry';
 
-const MAX_ATTEMPTS = 6; const backoffMs = (attempt: number) => Math.min(60 * 60_000, 5_000 * 2 ** attempt);
+const LEASE_SECONDS = 120; const MAX_ATTEMPTS = 6; const backoffMs = (attempt: number) => Math.min(60 * 60_000, 5_000 * 2 ** attempt);
 /**
  * Transactional-outbox dispatcher (in-process; BullMQ workers can replace the loop without changing handlers).
  * Every (outbox row × handler) has an integration_requests row keyed `outbox:<id>:<handler>` that tracks
@@ -15,15 +15,25 @@ const MAX_ATTEMPTS = 6; const backoffMs = (attempt: number) => Math.min(60 * 60_
 export class OutboxProcessor {
   private readonly log = new Logger(OutboxProcessor.name); private running = false;
   constructor(private readonly prisma: PrismaService, private readonly registry: OutboxHandlerRegistry, private readonly config: AppConfig) {}
-  @Interval(10_000) async tick() { if (!this.config.get('JOBS_ENABLED')) return; await this.drain(50); }
+  @Interval(10_000) async tick() { if (!this.config.get('JOBS_ENABLED')) return; await this.drain(50); }   // safe on every replica: rows are claimed with SKIP LOCKED
 
   async drain(limit = 50): Promise<{ processed: number; succeeded: number; failed: number; deadLettered: number }> {
     if (this.running) return { processed: 0, succeeded: 0, failed: 0, deadLettered: 0 }; this.running = true;
     const stats = { processed: 0, succeeded: 0, failed: 0, deadLettered: 0 };
     try {
-      const rows = await this.prisma.outbox.findMany({ where: { publishedAt: null }, orderBy: { id: 'asc' }, take: limit });
+      // Claim rows atomically: with several API replicas every instance used to poll the same rows and could
+      // call a provider twice before either recorded its attempt. SKIP LOCKED hands each row to exactly one
+      // instance, and the lease expires so a crashed instance does not park events forever.
+      const rows = await this.prisma.$queryRaw<Array<{ id: bigint; event_type: string; aggregate_type: string; aggregate_id: string; payload: unknown; created_at: Date }>>`
+        UPDATE outbox SET locked_until = now() + make_interval(secs => ${LEASE_SECONDS})
+        WHERE id IN (
+          SELECT id FROM outbox
+          WHERE published_at IS NULL AND (locked_until IS NULL OR locked_until < now())
+          ORDER BY id ASC LIMIT ${limit} FOR UPDATE SKIP LOCKED
+        )
+        RETURNING id, event_type, aggregate_type, aggregate_id, payload, created_at`;
       for (const row of rows) {
-        const ev: OutboxEnvelope = { id: row.id, eventType: row.eventType, aggregateType: row.aggregateType, aggregateId: row.aggregateId, payload: (row.payload ?? {}) as Record<string, unknown>, createdAt: row.createdAt };
+        const ev: OutboxEnvelope = { id: row.id, eventType: row.event_type, aggregateType: row.aggregate_type, aggregateId: row.aggregate_id, payload: (row.payload ?? {}) as Record<string, unknown>, createdAt: row.created_at };
         const handlers = this.registry.for(ev.eventType);
         let allDone = true; stats.processed++;
         for (const h of handlers) {
@@ -43,7 +53,9 @@ export class OutboxProcessor {
             if (dead) { stats.deadLettered++; this.log.error(`outbox ${row.id} ${ev.eventType} → ${h.name} dead-lettered: ${msg}`); } else { stats.failed++; this.log.warn(`outbox ${row.id} ${ev.eventType} → ${h.name} failed (attempt ${attempts}): ${msg}`); }
           }
         }
-        if (allDone) await this.prisma.outbox.update({ where: { id: row.id }, data: { publishedAt: new Date() } });
+        // Release the claim either way: published when every handler finished, otherwise free for the next
+        // pass (a still-held lease would delay the retry by up to LEASE_SECONDS).
+        await this.prisma.outbox.update({ where: { id: row.id }, data: { publishedAt: allDone ? new Date() : null, lockedUntil: null } });
       }
     } finally { this.running = false; }
     return stats;

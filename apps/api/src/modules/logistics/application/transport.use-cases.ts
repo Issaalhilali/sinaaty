@@ -124,6 +124,8 @@ export class TransportUseCases {
     if (!['picked_up', 'en_route_dropoff'].includes(j.status)) throw new AppError('CONFLICT', { messageAr: 'اطلب الرمز عند الوصول لنقطة التسليم.', messageEn: 'Request the code at the drop-off.' });
     const receiver = j.requesterUserId ? await this.users.findById(j.requesterUserId) : null;
     const phone = receiver?.phone; if (!phone) throw new AppError('VALIDATION', { messageAr: 'لا يوجد رقم مستلم لإرسال الرمز.', messageEn: 'No receiver phone to send the code to.' });
+    const recent = await this.otps.countRecent(phone, new Date(Date.now() - 10 * 60_000));
+    if (recent >= this.config.get('OTP_MAX_REQUESTS_PER_10MIN')) throw new AppError('OTP_TOO_MANY');
     const code = this.hasher.randomDigits(6);
     await this.otps.create({ phone, purpose: 'accept_delivery', codeHash: this.hasher.sha256(`${phone}:${code}`), expiresAt: new Date(Date.now() + 900_000) });
     await this.uow.run((tx) => this.outbox.publish(tx, { eventType: 'TransportProofRequested', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, requesterUserId: j.requesterUserId, code } }));
