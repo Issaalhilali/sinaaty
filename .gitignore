@@ -85,3 +85,10 @@ infra/k8s/**/charts/
 tmp/
 .tmp/
 .cache/
+
+# Next.js / admin-web
+apps/admin-web/.next/
+apps/admin-web/out/
+apps/admin-web/test-results/
+apps/admin-web/playwright-report/
+.vscode/

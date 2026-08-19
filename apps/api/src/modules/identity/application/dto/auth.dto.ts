@@ -12,7 +12,7 @@ export type OtpRequestDto = z.infer<typeof OtpRequestDto>;
 export const OtpVerifyDto = z.object({
   phone: PhoneSchema,
   code: z.string().regex(/^\d{6}$/),
-  device: z.object({ platform: z.enum(['ios', 'android', 'web']), device_name: z.string().max(120).optional(), push_token: z.string().max(4096).optional(), app_flavor: z.enum(['customer', 'partner', 'fleet']).optional(), app_version: z.string().max(20).optional() }).optional(),
+  device: z.object({ platform: z.enum(['ios', 'android', 'web']), device_name: z.string().max(120).optional(), push_token: z.string().max(4096).optional(), app_flavor: z.enum(['customer', 'partner', 'fleet', 'admin']).optional(), app_version: z.string().max(20).optional() }).optional(),
 });
 export type OtpVerifyDto = z.infer<typeof OtpVerifyDto>;
 
@@ -23,7 +23,7 @@ export const RegisterDeviceDto = z.object({
   platform: z.enum(['ios', 'android', 'web']),
   device_name: z.string().max(120).optional(),
   push_token: z.string().max(4096).optional(),
-  app_flavor: z.enum(['customer', 'partner', 'fleet']).optional(),
+  app_flavor: z.enum(['customer', 'partner', 'fleet', 'admin']).optional(),
   app_version: z.string().max(20).optional(),
 });
 export type RegisterDeviceDto = z.infer<typeof RegisterDeviceDto>;

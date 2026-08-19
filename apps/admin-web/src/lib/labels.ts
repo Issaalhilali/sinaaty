@@ -1,0 +1,8 @@
+export const ORG_STATUS: Record<string, string> = { draft: 'مسودة', pending_kyb: 'بانتظار التحقق', active: 'نشطة', suspended: 'موقوفة', rejected: 'مرفوضة', closed: 'مغلقة' };
+export const ORG_TYPE: Record<string, string> = { workshop: 'ورشة', factory: 'مصنع', service_center: 'مركز خدمة', body_shop: 'سمكرة', parts_dealer: 'محل قطع', parts_distributor: 'موزّع قطع', parts_brand_agent: 'وكيل علامة', scrapyard: 'تشليح', fleet_company: 'أسطول', logistics: 'لوجستيات', inspection_center: 'مركز فحص' };
+export const ESCROW: Record<string, string> = { pending: 'معلّق', held: 'محفوظ', frozen: 'مجمّد', released: 'محرَّر', refunded: 'مستردّ', split: 'مقسَّم' };
+export const PAYOUT: Record<string, string> = { scheduled: 'مجدول', processing: 'قيد التنفيذ', paid: 'مدفوع', failed: 'فشل', cancelled: 'ملغى' };
+export const NOTE: Record<string, string> = { draft: 'مسودة', pending_consent: 'بانتظار الموافقة', issued: 'ساري', partially_settled: 'مسدد جزئياً', closed: 'مغلق', cancelled: 'ملغى', rejected: 'مرفوض', in_enforcement: 'قيد التنفيذ', enforced: 'نُفِّذ' };
+export const INTEG: Record<string, string> = { pending: 'معلّق', succeeded: 'نجح', failed: 'فشل', dead_letter: 'متوقف (DLQ)', retrying: 'يعاد' };
+export const ROLE: Record<string, string> = { none: '—', support: 'دعم', ops: 'عمليات', finance: 'مالية', compliance: 'امتثال', super_admin: 'مشرف عام' };
+export const tone = (s: string) => (['active', 'succeeded', 'released', 'paid', 'closed', 'issued', 'processed'].includes(s) ? 'pill-seal' : ['pending_kyb', 'held', 'pending', 'scheduled', 'partially_settled', 'pending_consent', 'received'].includes(s) ? 'pill-brass' : ['frozen', 'failed', 'dead_letter', 'suspended', 'rejected', 'in_enforcement'].includes(s) ? 'pill-bad' : 'pill-plain');

@@ -1,0 +1,19 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+@font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 400; src: url('/fonts/IBMPlexSansArabic-Regular.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 600; src: url('/fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; font-weight: 700; src: url('/fonts/IBMPlexSansArabic-Bold.ttf') format('truetype'); font-display: swap; }
+:root { color-scheme: light; }
+html, body { background: #F1F4F2; color: #0F1C18; font-feature-settings: 'tnum'; }
+.card { @apply bg-white border border-line rounded-xl2 shadow-card; }
+.pill { @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold; }
+.pill-seal { @apply bg-seal-soft text-seal-ink; } .pill-brass { @apply bg-brass-soft text-brass-ink; } .pill-plain { @apply bg-[#EAEFEC] text-ink-2; } .pill-bad { @apply bg-[#F9E1DE] text-bad; } .pill-warn { @apply bg-[#FBEFD9] text-warn; }
+.btn { @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-seal px-5 text-sm font-bold text-white hover:bg-seal-deep disabled:opacity-50 transition; }
+.btn-ghost { @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold text-ink-2 hover:bg-ground transition; }
+.btn-danger { @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-bad px-4 text-sm font-bold text-white hover:opacity-90 transition; }
+.input { @apply h-11 w-full rounded-xl border border-line bg-white px-3 text-sm outline-none focus:border-seal focus:ring-2 focus:ring-seal/20; }
+.eyebrow { @apply flex items-center gap-2 text-xs font-bold text-muted mb-2; } .eyebrow::before { content: ''; width: 3px; height: 13px; background: #0E6B54; border-radius: 2px; }
+.seal-card { @apply relative overflow-hidden rounded-xl3 p-5 text-white shadow-seal; background: radial-gradient(120% 90% at 100% 0%, #137a61 0%, #0E6B54 40%, #083A2E 100%); }
+.seal-card::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 1px, transparent 1px 22px), repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 1px, transparent 1px 22px); mask: linear-gradient(180deg, #000, transparent 90%); }
+.seal-card > * { position: relative; }
+table.tbl { @apply w-full text-sm; } table.tbl th { @apply text-right text-xs font-bold text-muted bg-[#F7F9F7] px-4 py-2.5 first:rounded-tr-xl2 last:rounded-tl-xl2; } table.tbl td { @apply px-4 py-3 border-t border-line align-middle; }
+.num { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }

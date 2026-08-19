@@ -28,3 +28,7 @@
 | Bid with photos (supplier attaches media to a bid) | Step 22 | bid DTO has no media yet; add `part_bid_media` link | Step 23 |
 | Customer parts request + bids compare + warranty wallet screens | Step 22 | workshop flows first | Step 23 |
 | Driver job list/tracking screens | Step 22 | logistics module not built | Step 19 |
+| Maker/checker (two-person) approval on escrow refunds | Step 15 | single reason-gated action + audit for pilot; needs an approvals table | Step 16 |
+| Disputes room UI (evidence, messages, decision) | Step 15 | disputes module not built | Step 16 |
+| Outbox integration_requests hardcode provider='nafez' (skews the integrations-by-provider table) | Step 15 | cosmetic in monitor; add an 'internal' provider enum value | Step 17 |
+| Admin 2FA beyond OTP (TOTP/WebAuthn for platform staff) | Step 15 | OTP is the second factor today | Step 24 |
