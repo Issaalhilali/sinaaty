@@ -42,3 +42,7 @@
 | Tow rates in `platform_settings` instead of code defaults | Step 19 | margin bps is configurable; base/per-km are constants | Step 25 |
 | Driver app screens (offers, active job, tracking, proof capture) | Step 19 | API complete and tested | Step 22/23 |
 | Assign a specific provider org (dispatcher flow) instead of first-to-accept | Step 19 | first-to-accept fits the pilot | Step 26 |
+| Run the ZATCA SDK validator + sandbox onboarding against the real portal | Step 20 | crypto verified locally; portal needs credentials + network | before pilot |
+| Map ZATCA business-rule errors (BR-KSA-*) to Arabic messages in the admin monitor | Step 20 | stored per submission already | Step 24 |
+| Move archived `zatca_xml` to cold object storage after N months | Step 20 | kept in the database for the pilot (6-year retention) | Step 30 |
+| Credit/debit notes: BillingReference must carry the original invoice number, not the note's | Step 20 | single-invoice flows correct; note flow needs the parent number threaded | Step 21 |

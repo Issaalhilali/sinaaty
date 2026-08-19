@@ -1,8 +1,9 @@
 /**
- * ZATCA Phase 1 QR: TLV (tag-length-value) of 5 fields, base64-encoded.
- *   1 seller name · 2 VAT registration number · 3 timestamp (ISO 8601) · 4 invoice total (with VAT) · 5 VAT total
- * Phase 2 adds tags 6–9 (invoice hash, ECDSA signature, public key, certificate signature) — see Step 20.
- * Length byte = UTF-8 byte length (Arabic names count bytes, not characters).
+ * ZATCA QR (TLV, base64).
+ *   Phase 1 (tags 1–5): seller name · VAT number · timestamp · total incl. VAT · VAT amount.
+ *   Phase 2 adds: 6 invoice hash (base64 string) · 7 ECDSA signature (raw bytes) · 8 EC public key (bytes)
+ *                 · 9 the CA signature over the certificate — required for simplified invoices.
+ * Length byte is the UTF-8 **byte** length: Arabic seller names count bytes, not characters.
  */
 export interface QrPhase1 { sellerName: string; vatNumber: string; timestamp: string; total: string; vat: string }
 export interface QrPhase2 extends QrPhase1 { invoiceHash?: string; signature?: string; publicKey?: string; certSignature?: string }
@@ -26,12 +27,14 @@ export function validateQrInput(q: QrPhase1): void {
 export function encodeQr(q: QrPhase2): string {
   validateQrInput(q);
   const parts = [tlv(1, q.sellerName), tlv(2, q.vatNumber), tlv(3, q.timestamp), tlv(4, q.total), tlv(5, q.vat)];
-  if (q.invoiceHash) parts.push(tlv(6, q.invoiceHash));
-  if (q.signature) parts.push(tlv(7, unb64(q.signature)));
-  if (q.publicKey) parts.push(tlv(8, unb64(q.publicKey)));
+  if (q.invoiceHash) parts.push(tlv(6, q.invoiceHash));           // hash travels as its base64 *string*
+  if (q.signature) parts.push(tlv(7, unb64(q.signature)));        // raw r‖s bytes
+  if (q.publicKey) parts.push(tlv(8, unb64(q.publicKey)));        // EC point / SPKI bytes
   if (q.certSignature) parts.push(tlv(9, unb64(q.certSignature)));
   return b64(concat(parts));
 }
+/** A Phase-2 QR must carry tags 1–8 (9 as well for simplified invoices). */
+export function isPhase2(base64: string): boolean { const d = decodeQr(base64); return [6, 7, 8].every((t) => d[t] !== undefined); }
 export function decodeQr(base64: string): Record<number, string> & { fields: QrPhase1 } {
   const u = unb64(base64); const out: Record<number, string> = {}; let i = 0;
   while (i < u.length) { const tag = u[i]!; const len = u[i + 1]!; const v = u.subarray(i + 2, i + 2 + len); if (v.length !== len) throw new RangeError('truncated TLV'); out[tag] = tag >= 7 ? b64(v) : dec.decode(v); i += 2 + len; }

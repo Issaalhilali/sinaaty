@@ -68,6 +68,7 @@ export const envSchema = z.object({
   INTEGRATION_NAFATH: integrationMode,
   INTEGRATION_NAFEZ: integrationMode,
   INTEGRATION_ZATCA: z.enum(['mock', 'sandbox', 'live']).default('mock'),
+  ZATCA_BASE_URL: z.string().url().default('https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal'),
   INTEGRATION_PSP: integrationMode,
   INTEGRATION_ESCROW: integrationMode,
   INTEGRATION_SMS: integrationMode,

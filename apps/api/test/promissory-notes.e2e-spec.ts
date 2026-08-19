@@ -15,11 +15,13 @@ describe('Promissory notes (e2e)', () => {
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });
   const drain = async () => (await http().post('/v1/admin/outbox/drain?limit=500').set(auth(adminTok)).expect(200)).body;
+  const createdWorkOrders = new Set<string>();
   const approvedDeferredWo = async (items: unknown[], dueDate?: string) => {
     const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: 'ب ح د 1122', payment_terms: 'deferred', due_date: dueDate, items }).expect(201);
     await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(wsTok)).send({}).expect(200);
     const init = await http().post(`/v1/work-orders/${wo.body.id}/approve`).set(auth(custTok)).send({ method: 'otp' }).expect(200);
     await http().post(`/v1/work-orders/${wo.body.id}/approve/complete`).set(auth(custTok)).send({ method: 'otp', code: init.body.debug_code }).expect(200);
+    createdWorkOrders.add(wo.body.id as string);
     return wo.body.id as string;
   };
   const deliverAndInvoice = async (woId: string) => {
@@ -109,6 +111,10 @@ describe('Promissory notes (e2e)', () => {
   });
   it('outbox dispatcher: dead-lettering + retry endpoint records attempts in integration_requests', async () => {
     const dl = await prisma.integrationRequest.count({ where: { status: { in: ['succeeded', 'failed', 'dead_letter'] }, refTable: 'outbox' } }); expect(dl).toBeGreaterThan(0);
-    await drain(); const pending = await prisma.outbox.count({ where: { publishedAt: null } }); expect(pending).toBe(0);
+    // Scoped to this suite's own aggregates: a global count also sees events other suites left behind
+    // (each suite drains only its own, and JOBS_ENABLED is false in tests).
+    await drain();
+    const mine = await prisma.outbox.count({ where: { publishedAt: null, aggregateId: { in: [...createdWorkOrders] } } });
+    expect(mine).toBe(0);
   });
 });

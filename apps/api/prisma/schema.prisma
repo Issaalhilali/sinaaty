@@ -402,6 +402,7 @@ model Invoice {
   zatcaPih         String?           @map("zatca_pih")
   zatcaHash        String?           @map("zatca_hash")
   zatcaQr          String?           @map("zatca_qr")
+  zatcaXml         String?           @map("zatca_xml")
   zatcaStatus      zatca_status      @default(not_required) @map("zatca_status")
   xmlMediaId       String?           @map("xml_media_id") @db.Uuid
   pdfMediaId       String?           @map("pdf_media_id") @db.Uuid

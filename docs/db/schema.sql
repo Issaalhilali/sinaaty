@@ -566,6 +566,7 @@ CREATE TABLE invoices (
   zatca_pih          text,                                     -- previous invoice hash
   zatca_hash         text,                                     -- this invoice hash
   zatca_qr           text,                                     -- base64 TLV
+  zatca_xml       text,                                          -- signed UBL (Phase 2) — archived 6 years per ZATCA
   zatca_status       zatca_status NOT NULL DEFAULT 'not_required',
   xml_media_id       uuid REFERENCES media_assets(id),
   pdf_media_id       uuid REFERENCES media_assets(id),

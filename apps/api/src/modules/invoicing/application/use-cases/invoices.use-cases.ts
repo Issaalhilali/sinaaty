@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { buildInvoiceXml, encodeQr, invoiceHash } from '@sinaaty/zatca-ubl';
+import { buildInvoiceXml, encodeQr, GENESIS_PIH, invoiceHash } from '@sinaaty/zatca-ubl';
 import type { InvoiceStatus, PaymentTerms } from '@sinaaty/shared-types';
 import { AppError } from '../../../../common/errors';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -149,6 +149,8 @@ export class InvoicesUseCases {
     const b2b = !!(inv.buyerSnapshot.org_id || inv.buyerSnapshot.vat_number);
     return buildInvoiceXml({
       id: inv.number, uuid: inv.zatcaUuid ?? inv.id, issueDate: issue.slice(0, 10), issueTime: issue.slice(11, 19),
+      // Chain values as recorded when the invoice was issued; a Phase-2 seller has real ones, otherwise the genesis PIH.
+      icv: Number(inv.zatcaIcv ?? 0), pih: inv.zatcaPih ?? GENESIS_PIH,
       typeCode: inv.type === 'credit_note' ? '381' : inv.type === 'debit_note' ? '383' : '388', subtype: b2b ? '0100000' : '0200000', currency: 'SAR',
       seller: { registrationName: inv.sellerSnapshot.name_ar, vatNumber: inv.sellerSnapshot.vat_number, city: 'الرياض' },
       buyer: b2b ? { registrationName: inv.buyerSnapshot.name_ar, vatNumber: inv.buyerSnapshot.vat_number } : null,
