@@ -1464,6 +1464,576 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'اعتمد العميل — ابدأ العمل وارفع أول صورة.'**
   String get wsCustomerApprovedHint;
+
+  /// No description provided for @ptParts.
+  ///
+  /// In ar, this message translates to:
+  /// **'القطع'**
+  String get ptParts;
+
+  /// No description provided for @ptSearchByVin.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث برقم الهيكل'**
+  String get ptSearchByVin;
+
+  /// No description provided for @ptVinHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'17 خانة'**
+  String get ptVinHint;
+
+  /// No description provided for @ptOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'عروض مطابقة لهذه السيارة'**
+  String get ptOffers;
+
+  /// No description provided for @ptNoOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد قطع مطابقة الآن — افتح مزاداً ليصلك عرض من التشاليح والمحلات القريبة.'**
+  String get ptNoOffers;
+
+  /// No description provided for @ptOpenAuction.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب بالمزاد العكسي'**
+  String get ptOpenAuction;
+
+  /// No description provided for @ptBuyNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشترِ الآن'**
+  String get ptBuyNow;
+
+  /// No description provided for @ptTradePrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر الورش'**
+  String get ptTradePrice;
+
+  /// No description provided for @ptRetailPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر التجزئة'**
+  String get ptRetailPrice;
+
+  /// No description provided for @ptGenuineQr.
+  ///
+  /// In ar, this message translates to:
+  /// **'QR أصالة'**
+  String get ptGenuineQr;
+
+  /// No description provided for @ptLeadHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'يصل خلال {h} س'**
+  String ptLeadHours(int h);
+
+  /// No description provided for @ptCondOem.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصلي وكالة'**
+  String get ptCondOem;
+
+  /// No description provided for @ptCondAftermarket.
+  ///
+  /// In ar, this message translates to:
+  /// **'بديل معتمد'**
+  String get ptCondAftermarket;
+
+  /// No description provided for @ptCondUsed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستعمل تشليح'**
+  String get ptCondUsed;
+
+  /// No description provided for @ptCondRefurb.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجدَّد'**
+  String get ptCondRefurb;
+
+  /// No description provided for @ptQty.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكمية'**
+  String get ptQty;
+
+  /// No description provided for @ptTermsPrepaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفع الآن — المبلغ محفوظ حتى تستلم'**
+  String get ptTermsPrepaid;
+
+  /// No description provided for @ptTermsDeferred.
+  ///
+  /// In ar, this message translates to:
+  /// **'آجل على الحساب المضمون — يصدر سند لأمر'**
+  String get ptTermsDeferred;
+
+  /// No description provided for @ptOrderPlaced.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم الطلب'**
+  String get ptOrderPlaced;
+
+  /// No description provided for @ptMyRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلباتي بالمزاد'**
+  String get ptMyRequests;
+
+  /// No description provided for @ptMyOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات القطع'**
+  String get ptMyOrders;
+
+  /// No description provided for @ptPartName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم القطعة'**
+  String get ptPartName;
+
+  /// No description provided for @ptPartNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: دسكات أمامية'**
+  String get ptPartNameHint;
+
+  /// No description provided for @ptAcceptedConditions.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالات المقبولة'**
+  String get ptAcceptedConditions;
+
+  /// No description provided for @ptBiddingMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدة المزاد (دقيقة)'**
+  String get ptBiddingMinutes;
+
+  /// No description provided for @ptSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الطلب'**
+  String get ptSend;
+
+  /// No description provided for @ptBids.
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض'**
+  String get ptBids;
+
+  /// No description provided for @ptBidsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} عروض'**
+  String ptBidsCount(int n);
+
+  /// No description provided for @ptLowest.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل عرض'**
+  String get ptLowest;
+
+  /// No description provided for @ptEndsIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي خلال {m} د'**
+  String ptEndsIn(int m);
+
+  /// No description provided for @ptEnded.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهى'**
+  String get ptEnded;
+
+  /// No description provided for @ptAcceptBid.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقبل هذا العرض'**
+  String get ptAcceptBid;
+
+  /// No description provided for @ptAccepted.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم القبول — أُنشئ طلب الشراء'**
+  String get ptAccepted;
+
+  /// No description provided for @ptNoBidsYet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم تصل عروض بعد — ننبّه المورّدين القريبين.'**
+  String get ptNoBidsYet;
+
+  /// No description provided for @ptTradeAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساب الآجل المضمون'**
+  String get ptTradeAccount;
+
+  /// No description provided for @ptTradeAvailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتاح'**
+  String get ptTradeAvailable;
+
+  /// No description provided for @ptTradeOutstanding.
+  ///
+  /// In ar, this message translates to:
+  /// **'القائم'**
+  String get ptTradeOutstanding;
+
+  /// No description provided for @ptTradeLimit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد'**
+  String get ptTradeLimit;
+
+  /// No description provided for @ptRequestTrade.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب حساباً آجلاً'**
+  String get ptRequestTrade;
+
+  /// No description provided for @ptTradePending.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار موافقة المورّد'**
+  String get ptTradePending;
+
+  /// No description provided for @ptScanQr.
+  ///
+  /// In ar, this message translates to:
+  /// **'امسح QR القطعة'**
+  String get ptScanQr;
+
+  /// No description provided for @ptScanHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'وجّه الكاميرا نحو ملصق QR على القطعة الأصلية'**
+  String get ptScanHint;
+
+  /// No description provided for @ptVerifyGenuine.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة أصلية موثّقة'**
+  String get ptVerifyGenuine;
+
+  /// No description provided for @ptVerifyFake.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير موثّقة'**
+  String get ptVerifyFake;
+
+  /// No description provided for @ptVerifyAlert.
+  ///
+  /// In ar, this message translates to:
+  /// **'تنبيه: مسح متكرر'**
+  String get ptVerifyAlert;
+
+  /// No description provided for @ptInstallOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'ركّبها في أمر العمل'**
+  String get ptInstallOn;
+
+  /// No description provided for @ptChooseItem.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر بند القطعة'**
+  String get ptChooseItem;
+
+  /// No description provided for @ptInstalled.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التركيب — صدر ضمان القطعة + التركيب'**
+  String get ptInstalled;
+
+  /// No description provided for @ptLaborWarranty.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمان التركيب (أيام)'**
+  String get ptLaborWarranty;
+
+  /// No description provided for @ptWarranties.
+  ///
+  /// In ar, this message translates to:
+  /// **'الضمانات'**
+  String get ptWarranties;
+
+  /// No description provided for @ptWarrantyPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة'**
+  String get ptWarrantyPart;
+
+  /// No description provided for @ptWarrantyLabor.
+  ///
+  /// In ar, this message translates to:
+  /// **'تركيب'**
+  String get ptWarrantyLabor;
+
+  /// No description provided for @ptWarrantyBoth.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة + تركيب'**
+  String get ptWarrantyBoth;
+
+  /// No description provided for @ptValidUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'ساري حتى {date}'**
+  String ptValidUntil(String date);
+
+  /// No description provided for @ptExpired.
+  ///
+  /// In ar, this message translates to:
+  /// **'منتهٍ'**
+  String get ptExpired;
+
+  /// No description provided for @spRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات'**
+  String get spRequests;
+
+  /// No description provided for @spSales.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبيعاتي'**
+  String get spSales;
+
+  /// No description provided for @spIncoming.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات قريبة منك'**
+  String get spIncoming;
+
+  /// No description provided for @spNoRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات الآن — ستصلك إشعارات عند وجود طلب قريب يناسب قطعك.'**
+  String get spNoRequests;
+
+  /// No description provided for @spHot.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقرب للانتهاء'**
+  String get spHot;
+
+  /// No description provided for @spBid.
+  ///
+  /// In ar, this message translates to:
+  /// **'قدّم عرضك'**
+  String get spBid;
+
+  /// No description provided for @spYourBid.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرضك'**
+  String get spYourBid;
+
+  /// No description provided for @spUpdateBid.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدّل عرضك'**
+  String get spUpdateBid;
+
+  /// No description provided for @spPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعرك'**
+  String get spPrice;
+
+  /// No description provided for @spEta.
+  ///
+  /// In ar, this message translates to:
+  /// **'التسليم خلال (ساعات)'**
+  String get spEta;
+
+  /// No description provided for @spWarrantyDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضمان (أيام)'**
+  String get spWarrantyDays;
+
+  /// No description provided for @spNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات'**
+  String get spNotes;
+
+  /// No description provided for @spBidSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل عرضك — سنخبرك عند القبول'**
+  String get spBidSent;
+
+  /// No description provided for @spWon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قُبل عرضك'**
+  String get spWon;
+
+  /// No description provided for @spLost.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُقبل'**
+  String get spLost;
+
+  /// No description provided for @spOrdersToFulfil.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات للتجهيز'**
+  String get spOrdersToFulfil;
+
+  /// No description provided for @spPreparing.
+  ///
+  /// In ar, this message translates to:
+  /// **'جهّز'**
+  String get spPreparing;
+
+  /// No description provided for @spShip.
+  ///
+  /// In ar, this message translates to:
+  /// **'شُحن'**
+  String get spShip;
+
+  /// No description provided for @spDeliver.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التسليم'**
+  String get spDeliver;
+
+  /// No description provided for @spDelivered.
+  ///
+  /// In ar, this message translates to:
+  /// **'مُسلَّم'**
+  String get spDelivered;
+
+  /// No description provided for @spTradeAccounts.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابات آجلة'**
+  String get spTradeAccounts;
+
+  /// No description provided for @spApprove.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتمد الحساب'**
+  String get spApprove;
+
+  /// No description provided for @spCreditLimit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الائتماني'**
+  String get spCreditLimit;
+
+  /// No description provided for @spTermsDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدة السداد (أيام)'**
+  String get spTermsDays;
+
+  /// No description provided for @spInventory.
+  ///
+  /// In ar, this message translates to:
+  /// **'المخزون'**
+  String get spInventory;
+
+  /// No description provided for @spItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} صنف'**
+  String spItems(int n);
+
+  /// No description provided for @spSerials.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرقام QR'**
+  String get spSerials;
+
+  /// No description provided for @spIssueSerials.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصدر دفعة QR'**
+  String get spIssueSerials;
+
+  /// No description provided for @spSerialsIssued.
+  ///
+  /// In ar, this message translates to:
+  /// **'صدرت {n} أرقام — دفعة {batch}'**
+  String spSerialsIssued(int n, String batch);
+
+  /// No description provided for @spCatalogId.
+  ///
+  /// In ar, this message translates to:
+  /// **'معرّف القطعة في الكتالوج'**
+  String get spCatalogId;
+
+  /// No description provided for @spCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'العدد'**
+  String get spCount;
+
+  /// No description provided for @spAwaitingPayment.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار الدفع'**
+  String get spAwaitingPayment;
+
+  /// No description provided for @spPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدفوع'**
+  String get spPaid;
+
+  /// No description provided for @spConfirmed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤكَّد'**
+  String get spConfirmed;
+
+  /// No description provided for @spCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغى'**
+  String get spCancelled;
+
+  /// No description provided for @spDisputed.
+  ///
+  /// In ar, this message translates to:
+  /// **'نزاع'**
+  String get spDisputed;
+
+  /// No description provided for @spReturned.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرتجع'**
+  String get spReturned;
+
+  /// No description provided for @spNoOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات بعد'**
+  String get spNoOrders;
+
+  /// No description provided for @spNoTrade.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد حسابات آجلة — تأتي طلبات الورش هنا للاعتماد.'**
+  String get spNoTrade;
+
+  /// No description provided for @spBeFirst.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا عروض بعد — كن الأول'**
+  String get spBeFirst;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

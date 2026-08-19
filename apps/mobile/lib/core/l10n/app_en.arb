@@ -335,5 +335,145 @@
       }
     }
   },
-  "wsCustomerApprovedHint": "Customer approved — start work and upload the first photo."
+  "wsCustomerApprovedHint": "Customer approved — start work and upload the first photo.",
+  "ptParts": "Parts",
+  "ptSearchByVin": "Search by VIN",
+  "ptVinHint": "17 characters",
+  "ptOffers": "Offers matching this car",
+  "ptNoOffers": "No matching parts right now — open an auction to get offers from nearby scrapyards and shops.",
+  "ptOpenAuction": "Request via reverse auction",
+  "ptBuyNow": "Buy now",
+  "ptTradePrice": "Trade price",
+  "ptRetailPrice": "Retail",
+  "ptGenuineQr": "Genuine QR",
+  "ptLeadHours": "Arrives in {h} h",
+  "@ptLeadHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptCondOem": "OEM new",
+  "ptCondAftermarket": "Aftermarket",
+  "ptCondUsed": "Used (scrapyard)",
+  "ptCondRefurb": "Refurbished",
+  "ptQty": "Qty",
+  "ptTermsPrepaid": "Pay now — held until you receive it",
+  "ptTermsDeferred": "Deferred on secured trade account — promissory note issued",
+  "ptOrderPlaced": "Order placed",
+  "ptMyRequests": "My auctions",
+  "ptMyOrders": "Part orders",
+  "ptPartName": "Part name",
+  "ptPartNameHint": "e.g. front brake discs",
+  "ptAcceptedConditions": "Accepted conditions",
+  "ptBiddingMinutes": "Auction length (min)",
+  "ptSend": "Send request",
+  "ptBids": "Bids",
+  "ptBidsCount": "{n} bids",
+  "@ptBidsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ptLowest": "Lowest",
+  "ptEndsIn": "Ends in {m} min",
+  "@ptEndsIn": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEnded": "Ended",
+  "ptAcceptBid": "Accept this bid",
+  "ptAccepted": "Accepted — purchase order created",
+  "ptNoBidsYet": "No bids yet — nearby suppliers are being notified.",
+  "ptTradeAccount": "Secured trade account",
+  "ptTradeAvailable": "Available",
+  "ptTradeOutstanding": "Outstanding",
+  "ptTradeLimit": "Limit",
+  "ptRequestTrade": "Request a trade account",
+  "ptTradePending": "Awaiting supplier approval",
+  "ptScanQr": "Scan part QR",
+  "ptScanHint": "Point the camera at the QR label on the genuine part",
+  "ptVerifyGenuine": "Genuine, verified part",
+  "ptVerifyFake": "Not verified",
+  "ptVerifyAlert": "Alert: repeated scans",
+  "ptInstallOn": "Install on work order",
+  "ptChooseItem": "Choose the part item",
+  "ptInstalled": "Installed — part + labor warranty issued",
+  "ptLaborWarranty": "Labor warranty (days)",
+  "ptWarranties": "Warranties",
+  "ptWarrantyPart": "Part",
+  "ptWarrantyLabor": "Labor",
+  "ptWarrantyBoth": "Part + labor",
+  "ptValidUntil": "Valid until {date}",
+  "@ptValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "ptExpired": "Expired",
+  "spRequests": "Requests",
+  "spSales": "My sales",
+  "spIncoming": "Requests near you",
+  "spNoRequests": "No requests right now — you'll be notified when a nearby request matches your parts.",
+  "spHot": "Ending soonest",
+  "spBid": "Submit your bid",
+  "spYourBid": "Your bid",
+  "spUpdateBid": "Update bid",
+  "spPrice": "Your price",
+  "spEta": "Delivery within (hours)",
+  "spWarrantyDays": "Warranty (days)",
+  "spNotes": "Notes",
+  "spBidSent": "Bid sent — we'll tell you when accepted",
+  "spWon": "Accepted",
+  "spLost": "Not accepted",
+  "spOrdersToFulfil": "Orders to fulfil",
+  "spPreparing": "Prepare",
+  "spShip": "Shipped",
+  "spDeliver": "Delivered",
+  "spDelivered": "Delivered",
+  "spTradeAccounts": "Trade accounts",
+  "spApprove": "Approve account",
+  "spCreditLimit": "Credit limit",
+  "spTermsDays": "Payment terms (days)",
+  "spInventory": "Inventory",
+  "spItems": "{n} items",
+  "@spItems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spSerials": "QR serials",
+  "spIssueSerials": "Issue QR batch",
+  "spSerialsIssued": "{n} serials issued — batch {batch}",
+  "@spSerialsIssued": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "batch": {
+        "type": "String"
+      }
+    }
+  },
+  "spCatalogId": "Catalog part id",
+  "spCount": "Count",
+  "spAwaitingPayment": "Awaiting payment",
+  "spPaid": "Paid",
+  "spConfirmed": "Confirmed",
+  "spCancelled": "Cancelled",
+  "spDisputed": "Disputed",
+  "spReturned": "Returned",
+  "spNoOrders": "No orders yet",
+  "spNoTrade": "No trade accounts — workshop requests land here for approval.",
+  "spBeFirst": "No bids yet — be first"
 }

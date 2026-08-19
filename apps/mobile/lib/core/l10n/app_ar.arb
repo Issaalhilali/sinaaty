@@ -335,5 +335,145 @@
       }
     }
   },
-  "wsCustomerApprovedHint": "اعتمد العميل — ابدأ العمل وارفع أول صورة."
+  "wsCustomerApprovedHint": "اعتمد العميل — ابدأ العمل وارفع أول صورة.",
+  "ptParts": "القطع",
+  "ptSearchByVin": "ابحث برقم الهيكل",
+  "ptVinHint": "17 خانة",
+  "ptOffers": "عروض مطابقة لهذه السيارة",
+  "ptNoOffers": "لا توجد قطع مطابقة الآن — افتح مزاداً ليصلك عرض من التشاليح والمحلات القريبة.",
+  "ptOpenAuction": "اطلب بالمزاد العكسي",
+  "ptBuyNow": "اشترِ الآن",
+  "ptTradePrice": "سعر الورش",
+  "ptRetailPrice": "سعر التجزئة",
+  "ptGenuineQr": "QR أصالة",
+  "ptLeadHours": "يصل خلال {h} س",
+  "@ptLeadHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptCondOem": "أصلي وكالة",
+  "ptCondAftermarket": "بديل معتمد",
+  "ptCondUsed": "مستعمل تشليح",
+  "ptCondRefurb": "مجدَّد",
+  "ptQty": "الكمية",
+  "ptTermsPrepaid": "دفع الآن — المبلغ محفوظ حتى تستلم",
+  "ptTermsDeferred": "آجل على الحساب المضمون — يصدر سند لأمر",
+  "ptOrderPlaced": "تم الطلب",
+  "ptMyRequests": "طلباتي بالمزاد",
+  "ptMyOrders": "طلبات القطع",
+  "ptPartName": "اسم القطعة",
+  "ptPartNameHint": "مثال: دسكات أمامية",
+  "ptAcceptedConditions": "الحالات المقبولة",
+  "ptBiddingMinutes": "مدة المزاد (دقيقة)",
+  "ptSend": "أرسل الطلب",
+  "ptBids": "العروض",
+  "ptBidsCount": "{n} عروض",
+  "@ptBidsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ptLowest": "أقل عرض",
+  "ptEndsIn": "ينتهي خلال {m} د",
+  "@ptEndsIn": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEnded": "انتهى",
+  "ptAcceptBid": "اقبل هذا العرض",
+  "ptAccepted": "تم القبول — أُنشئ طلب الشراء",
+  "ptNoBidsYet": "لم تصل عروض بعد — ننبّه المورّدين القريبين.",
+  "ptTradeAccount": "الحساب الآجل المضمون",
+  "ptTradeAvailable": "المتاح",
+  "ptTradeOutstanding": "القائم",
+  "ptTradeLimit": "الحد",
+  "ptRequestTrade": "اطلب حساباً آجلاً",
+  "ptTradePending": "بانتظار موافقة المورّد",
+  "ptScanQr": "امسح QR القطعة",
+  "ptScanHint": "وجّه الكاميرا نحو ملصق QR على القطعة الأصلية",
+  "ptVerifyGenuine": "قطعة أصلية موثّقة",
+  "ptVerifyFake": "غير موثّقة",
+  "ptVerifyAlert": "تنبيه: مسح متكرر",
+  "ptInstallOn": "ركّبها في أمر العمل",
+  "ptChooseItem": "اختر بند القطعة",
+  "ptInstalled": "تم التركيب — صدر ضمان القطعة + التركيب",
+  "ptLaborWarranty": "ضمان التركيب (أيام)",
+  "ptWarranties": "الضمانات",
+  "ptWarrantyPart": "قطعة",
+  "ptWarrantyLabor": "تركيب",
+  "ptWarrantyBoth": "قطعة + تركيب",
+  "ptValidUntil": "ساري حتى {date}",
+  "@ptValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "ptExpired": "منتهٍ",
+  "spRequests": "طلبات",
+  "spSales": "مبيعاتي",
+  "spIncoming": "طلبات قريبة منك",
+  "spNoRequests": "لا توجد طلبات الآن — ستصلك إشعارات عند وجود طلب قريب يناسب قطعك.",
+  "spHot": "الأقرب للانتهاء",
+  "spBid": "قدّم عرضك",
+  "spYourBid": "عرضك",
+  "spUpdateBid": "عدّل عرضك",
+  "spPrice": "سعرك",
+  "spEta": "التسليم خلال (ساعات)",
+  "spWarrantyDays": "ضمان (أيام)",
+  "spNotes": "ملاحظات",
+  "spBidSent": "أُرسل عرضك — سنخبرك عند القبول",
+  "spWon": "قُبل عرضك",
+  "spLost": "لم يُقبل",
+  "spOrdersToFulfil": "طلبات للتجهيز",
+  "spPreparing": "جهّز",
+  "spShip": "شُحن",
+  "spDeliver": "تم التسليم",
+  "spDelivered": "مُسلَّم",
+  "spTradeAccounts": "حسابات آجلة",
+  "spApprove": "اعتمد الحساب",
+  "spCreditLimit": "الحد الائتماني",
+  "spTermsDays": "مدة السداد (أيام)",
+  "spInventory": "المخزون",
+  "spItems": "{n} صنف",
+  "@spItems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spSerials": "أرقام QR",
+  "spIssueSerials": "أصدر دفعة QR",
+  "spSerialsIssued": "صدرت {n} أرقام — دفعة {batch}",
+  "@spSerialsIssued": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "batch": {
+        "type": "String"
+      }
+    }
+  },
+  "spCatalogId": "معرّف القطعة في الكتالوج",
+  "spCount": "العدد",
+  "spAwaitingPayment": "بانتظار الدفع",
+  "spPaid": "مدفوع",
+  "spConfirmed": "مؤكَّد",
+  "spCancelled": "ملغى",
+  "spDisputed": "نزاع",
+  "spReturned": "مرتجع",
+  "spNoOrders": "لا توجد طلبات بعد",
+  "spNoTrade": "لا توجد حسابات آجلة — تأتي طلبات الورش هنا للاعتماد.",
+  "spBeFirst": "لا عروض بعد — كن الأول"
 }

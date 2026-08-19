@@ -25,3 +25,6 @@
 | InventorySync REST adapter (pull from distributor ERP) | Step 18b | CSV push covers pilot; REST needs a real ERP contract | Step 22 |
 | Part-order transport job (supplier → workshop delivery via logistics) | Step 18 | transport_job_id column reserved | Step 19 |
 | promissory-notes e2e order-dependent flake when run after parts suites (once) | Step 18b | investigate outbox timing in full-suite runs | Step 17 CI |
+| Bid with photos (supplier attaches media to a bid) | Step 22 | bid DTO has no media yet; add `part_bid_media` link | Step 23 |
+| Customer parts request + bids compare + warranty wallet screens | Step 22 | workshop flows first | Step 23 |
+| Driver job list/tracking screens | Step 22 | logistics module not built | Step 19 |

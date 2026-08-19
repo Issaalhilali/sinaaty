@@ -13,6 +13,9 @@ final workshopRepositoryProvider = Provider<WorkshopRepository>((ref) => Worksho
 final pendingActionsProvider = Provider<PendingActions>((_) => FilePendingActions());
 /// The workshop org the signed-in member belongs to (first workshop membership).
 final currentOrgIdProvider = Provider<String?>((ref) => ref.watch(authControllerProvider).me?.orgs.firstOrNull?.orgId);
+/// Org type decides the partner tabs (workshop vs supplier).
+final currentOrgInfoProvider = FutureProvider<({String type, String nameAr})?>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return null; return (await ref.watch(workshopRepositoryProvider).orgInfo(org)).valueOrNull; });
+const supplierOrgTypes = {'scrapyard', 'parts_dealer', 'parts_distributor', 'parts_brand_agent'};
 final orgOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(workshopRepositoryProvider).orgOrders(org); });
 final orgWalletProvider = FutureProvider.autoDispose<Result<OrgWallet>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.err(UnknownFailure()); return ref.watch(workshopRepositoryProvider).wallet(org); });
 

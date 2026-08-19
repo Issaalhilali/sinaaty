@@ -736,4 +736,307 @@ class L10nEn extends L10n {
   @override
   String get wsCustomerApprovedHint =>
       'Customer approved — start work and upload the first photo.';
+
+  @override
+  String get ptParts => 'Parts';
+
+  @override
+  String get ptSearchByVin => 'Search by VIN';
+
+  @override
+  String get ptVinHint => '17 characters';
+
+  @override
+  String get ptOffers => 'Offers matching this car';
+
+  @override
+  String get ptNoOffers =>
+      'No matching parts right now — open an auction to get offers from nearby scrapyards and shops.';
+
+  @override
+  String get ptOpenAuction => 'Request via reverse auction';
+
+  @override
+  String get ptBuyNow => 'Buy now';
+
+  @override
+  String get ptTradePrice => 'Trade price';
+
+  @override
+  String get ptRetailPrice => 'Retail';
+
+  @override
+  String get ptGenuineQr => 'Genuine QR';
+
+  @override
+  String ptLeadHours(int h) {
+    return 'Arrives in $h h';
+  }
+
+  @override
+  String get ptCondOem => 'OEM new';
+
+  @override
+  String get ptCondAftermarket => 'Aftermarket';
+
+  @override
+  String get ptCondUsed => 'Used (scrapyard)';
+
+  @override
+  String get ptCondRefurb => 'Refurbished';
+
+  @override
+  String get ptQty => 'Qty';
+
+  @override
+  String get ptTermsPrepaid => 'Pay now — held until you receive it';
+
+  @override
+  String get ptTermsDeferred =>
+      'Deferred on secured trade account — promissory note issued';
+
+  @override
+  String get ptOrderPlaced => 'Order placed';
+
+  @override
+  String get ptMyRequests => 'My auctions';
+
+  @override
+  String get ptMyOrders => 'Part orders';
+
+  @override
+  String get ptPartName => 'Part name';
+
+  @override
+  String get ptPartNameHint => 'e.g. front brake discs';
+
+  @override
+  String get ptAcceptedConditions => 'Accepted conditions';
+
+  @override
+  String get ptBiddingMinutes => 'Auction length (min)';
+
+  @override
+  String get ptSend => 'Send request';
+
+  @override
+  String get ptBids => 'Bids';
+
+  @override
+  String ptBidsCount(int n) {
+    return '$n bids';
+  }
+
+  @override
+  String get ptLowest => 'Lowest';
+
+  @override
+  String ptEndsIn(int m) {
+    return 'Ends in $m min';
+  }
+
+  @override
+  String get ptEnded => 'Ended';
+
+  @override
+  String get ptAcceptBid => 'Accept this bid';
+
+  @override
+  String get ptAccepted => 'Accepted — purchase order created';
+
+  @override
+  String get ptNoBidsYet =>
+      'No bids yet — nearby suppliers are being notified.';
+
+  @override
+  String get ptTradeAccount => 'Secured trade account';
+
+  @override
+  String get ptTradeAvailable => 'Available';
+
+  @override
+  String get ptTradeOutstanding => 'Outstanding';
+
+  @override
+  String get ptTradeLimit => 'Limit';
+
+  @override
+  String get ptRequestTrade => 'Request a trade account';
+
+  @override
+  String get ptTradePending => 'Awaiting supplier approval';
+
+  @override
+  String get ptScanQr => 'Scan part QR';
+
+  @override
+  String get ptScanHint =>
+      'Point the camera at the QR label on the genuine part';
+
+  @override
+  String get ptVerifyGenuine => 'Genuine, verified part';
+
+  @override
+  String get ptVerifyFake => 'Not verified';
+
+  @override
+  String get ptVerifyAlert => 'Alert: repeated scans';
+
+  @override
+  String get ptInstallOn => 'Install on work order';
+
+  @override
+  String get ptChooseItem => 'Choose the part item';
+
+  @override
+  String get ptInstalled => 'Installed — part + labor warranty issued';
+
+  @override
+  String get ptLaborWarranty => 'Labor warranty (days)';
+
+  @override
+  String get ptWarranties => 'Warranties';
+
+  @override
+  String get ptWarrantyPart => 'Part';
+
+  @override
+  String get ptWarrantyLabor => 'Labor';
+
+  @override
+  String get ptWarrantyBoth => 'Part + labor';
+
+  @override
+  String ptValidUntil(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String get ptExpired => 'Expired';
+
+  @override
+  String get spRequests => 'Requests';
+
+  @override
+  String get spSales => 'My sales';
+
+  @override
+  String get spIncoming => 'Requests near you';
+
+  @override
+  String get spNoRequests =>
+      'No requests right now — you\'ll be notified when a nearby request matches your parts.';
+
+  @override
+  String get spHot => 'Ending soonest';
+
+  @override
+  String get spBid => 'Submit your bid';
+
+  @override
+  String get spYourBid => 'Your bid';
+
+  @override
+  String get spUpdateBid => 'Update bid';
+
+  @override
+  String get spPrice => 'Your price';
+
+  @override
+  String get spEta => 'Delivery within (hours)';
+
+  @override
+  String get spWarrantyDays => 'Warranty (days)';
+
+  @override
+  String get spNotes => 'Notes';
+
+  @override
+  String get spBidSent => 'Bid sent — we\'ll tell you when accepted';
+
+  @override
+  String get spWon => 'Accepted';
+
+  @override
+  String get spLost => 'Not accepted';
+
+  @override
+  String get spOrdersToFulfil => 'Orders to fulfil';
+
+  @override
+  String get spPreparing => 'Prepare';
+
+  @override
+  String get spShip => 'Shipped';
+
+  @override
+  String get spDeliver => 'Delivered';
+
+  @override
+  String get spDelivered => 'Delivered';
+
+  @override
+  String get spTradeAccounts => 'Trade accounts';
+
+  @override
+  String get spApprove => 'Approve account';
+
+  @override
+  String get spCreditLimit => 'Credit limit';
+
+  @override
+  String get spTermsDays => 'Payment terms (days)';
+
+  @override
+  String get spInventory => 'Inventory';
+
+  @override
+  String spItems(int n) {
+    return '$n items';
+  }
+
+  @override
+  String get spSerials => 'QR serials';
+
+  @override
+  String get spIssueSerials => 'Issue QR batch';
+
+  @override
+  String spSerialsIssued(int n, String batch) {
+    return '$n serials issued — batch $batch';
+  }
+
+  @override
+  String get spCatalogId => 'Catalog part id';
+
+  @override
+  String get spCount => 'Count';
+
+  @override
+  String get spAwaitingPayment => 'Awaiting payment';
+
+  @override
+  String get spPaid => 'Paid';
+
+  @override
+  String get spConfirmed => 'Confirmed';
+
+  @override
+  String get spCancelled => 'Cancelled';
+
+  @override
+  String get spDisputed => 'Disputed';
+
+  @override
+  String get spReturned => 'Returned';
+
+  @override
+  String get spNoOrders => 'No orders yet';
+
+  @override
+  String get spNoTrade =>
+      'No trade accounts — workshop requests land here for approval.';
+
+  @override
+  String get spBeFirst => 'No bids yet — be first';
 }

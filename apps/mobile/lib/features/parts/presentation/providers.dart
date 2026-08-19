@@ -1,0 +1,23 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/di/core_providers.dart';
+import '../../../core/result/result.dart';
+import '../../workshop/presentation/providers.dart';
+import '../data/parts_repository_impl.dart';
+import '../data/qr_scanner_impl.dart';
+import '../domain/parts.dart';
+import '../domain/parts_repository.dart';
+final partsRepositoryProvider = Provider<PartsRepository>((ref) => PartsRepositoryImpl(ref.watch(apiClientProvider)));
+/// Needs a BuildContext to push the camera page; screens override via [qrScannerProvider.overrideWithValue] in tests.
+final qrScannerProvider = Provider<QrScanner>((_) => MobileQrScanner(() => _navKey.currentContext!));
+final _navKey = GlobalKey<NavigatorState>(); GlobalKey<NavigatorState> get partsNavKey => _navKey;
+final myPartRequestsProvider = FutureProvider.autoDispose<Result<List<PartRequest>>>((ref) async { final org = ref.watch(currentOrgIdProvider); return ref.watch(partsRepositoryProvider).myRequests(orgId: org); });
+final incomingRequestsProvider = FutureProvider.autoDispose<Result<List<PartRequest>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(partsRepositoryProvider).myRequests(orgId: org, asSupplier: true); });
+final partRequestProvider = FutureProvider.autoDispose.family<Result<PartRequest>, String>((ref, id) => ref.watch(partsRepositoryProvider).request(id));
+final myPartOrdersProvider = FutureProvider.autoDispose<Result<List<PartOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); return ref.watch(partsRepositoryProvider).orders(orgId: org); });
+final supplierOrdersProvider = FutureProvider.autoDispose<Result<List<PartOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(partsRepositoryProvider).orders(orgId: org, asSupplier: true); });
+final partOrderProvider = FutureProvider.autoDispose.family<Result<PartOrder>, String>((ref, id) => ref.watch(partsRepositoryProvider).order(id));
+final buyerTradeAccountsProvider = FutureProvider.autoDispose<Result<List<TradeAccount>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(partsRepositoryProvider).tradeAccounts(orgId: org, asSeller: false); });
+final sellerTradeAccountsProvider = FutureProvider.autoDispose<Result<List<TradeAccount>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(partsRepositoryProvider).tradeAccounts(orgId: org, asSeller: true); });
+final supplierInventoryProvider = FutureProvider.autoDispose<Result<List<InventoryItem>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(partsRepositoryProvider).inventory(org); });
+final warrantiesProvider = FutureProvider.autoDispose<Result<List<Warranty>>>((ref) async { final org = ref.watch(currentOrgIdProvider); return ref.watch(partsRepositoryProvider).warranties(orgId: org); });

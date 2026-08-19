@@ -16,6 +16,8 @@ import '../../features/workshop/presentation/inspection_screen.dart';
 import '../../features/workshop/presentation/new_order_screen.dart';
 import '../../features/workshop/presentation/order_screen.dart';
 import '../../features/workshop/presentation/orders_screen.dart';
+import '../../features/parts/presentation/part_order_screen.dart';
+import '../../features/parts/presentation/request_screen.dart';
 import '../di/core_providers.dart';
 /// go_router with an auth guard: unknown → splash, signedOut → /login, signedIn → /.
 final routerProvider = Provider<GoRouter>((ref) {
@@ -40,6 +42,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
       GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
+      GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
       GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!))]),
     ],

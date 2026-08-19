@@ -734,4 +734,304 @@ class L10nAr extends L10n {
   @override
   String get wsCustomerApprovedHint =>
       'اعتمد العميل — ابدأ العمل وارفع أول صورة.';
+
+  @override
+  String get ptParts => 'القطع';
+
+  @override
+  String get ptSearchByVin => 'ابحث برقم الهيكل';
+
+  @override
+  String get ptVinHint => '17 خانة';
+
+  @override
+  String get ptOffers => 'عروض مطابقة لهذه السيارة';
+
+  @override
+  String get ptNoOffers =>
+      'لا توجد قطع مطابقة الآن — افتح مزاداً ليصلك عرض من التشاليح والمحلات القريبة.';
+
+  @override
+  String get ptOpenAuction => 'اطلب بالمزاد العكسي';
+
+  @override
+  String get ptBuyNow => 'اشترِ الآن';
+
+  @override
+  String get ptTradePrice => 'سعر الورش';
+
+  @override
+  String get ptRetailPrice => 'سعر التجزئة';
+
+  @override
+  String get ptGenuineQr => 'QR أصالة';
+
+  @override
+  String ptLeadHours(int h) {
+    return 'يصل خلال $h س';
+  }
+
+  @override
+  String get ptCondOem => 'أصلي وكالة';
+
+  @override
+  String get ptCondAftermarket => 'بديل معتمد';
+
+  @override
+  String get ptCondUsed => 'مستعمل تشليح';
+
+  @override
+  String get ptCondRefurb => 'مجدَّد';
+
+  @override
+  String get ptQty => 'الكمية';
+
+  @override
+  String get ptTermsPrepaid => 'دفع الآن — المبلغ محفوظ حتى تستلم';
+
+  @override
+  String get ptTermsDeferred => 'آجل على الحساب المضمون — يصدر سند لأمر';
+
+  @override
+  String get ptOrderPlaced => 'تم الطلب';
+
+  @override
+  String get ptMyRequests => 'طلباتي بالمزاد';
+
+  @override
+  String get ptMyOrders => 'طلبات القطع';
+
+  @override
+  String get ptPartName => 'اسم القطعة';
+
+  @override
+  String get ptPartNameHint => 'مثال: دسكات أمامية';
+
+  @override
+  String get ptAcceptedConditions => 'الحالات المقبولة';
+
+  @override
+  String get ptBiddingMinutes => 'مدة المزاد (دقيقة)';
+
+  @override
+  String get ptSend => 'أرسل الطلب';
+
+  @override
+  String get ptBids => 'العروض';
+
+  @override
+  String ptBidsCount(int n) {
+    return '$n عروض';
+  }
+
+  @override
+  String get ptLowest => 'أقل عرض';
+
+  @override
+  String ptEndsIn(int m) {
+    return 'ينتهي خلال $m د';
+  }
+
+  @override
+  String get ptEnded => 'انتهى';
+
+  @override
+  String get ptAcceptBid => 'اقبل هذا العرض';
+
+  @override
+  String get ptAccepted => 'تم القبول — أُنشئ طلب الشراء';
+
+  @override
+  String get ptNoBidsYet => 'لم تصل عروض بعد — ننبّه المورّدين القريبين.';
+
+  @override
+  String get ptTradeAccount => 'الحساب الآجل المضمون';
+
+  @override
+  String get ptTradeAvailable => 'المتاح';
+
+  @override
+  String get ptTradeOutstanding => 'القائم';
+
+  @override
+  String get ptTradeLimit => 'الحد';
+
+  @override
+  String get ptRequestTrade => 'اطلب حساباً آجلاً';
+
+  @override
+  String get ptTradePending => 'بانتظار موافقة المورّد';
+
+  @override
+  String get ptScanQr => 'امسح QR القطعة';
+
+  @override
+  String get ptScanHint => 'وجّه الكاميرا نحو ملصق QR على القطعة الأصلية';
+
+  @override
+  String get ptVerifyGenuine => 'قطعة أصلية موثّقة';
+
+  @override
+  String get ptVerifyFake => 'غير موثّقة';
+
+  @override
+  String get ptVerifyAlert => 'تنبيه: مسح متكرر';
+
+  @override
+  String get ptInstallOn => 'ركّبها في أمر العمل';
+
+  @override
+  String get ptChooseItem => 'اختر بند القطعة';
+
+  @override
+  String get ptInstalled => 'تم التركيب — صدر ضمان القطعة + التركيب';
+
+  @override
+  String get ptLaborWarranty => 'ضمان التركيب (أيام)';
+
+  @override
+  String get ptWarranties => 'الضمانات';
+
+  @override
+  String get ptWarrantyPart => 'قطعة';
+
+  @override
+  String get ptWarrantyLabor => 'تركيب';
+
+  @override
+  String get ptWarrantyBoth => 'قطعة + تركيب';
+
+  @override
+  String ptValidUntil(String date) {
+    return 'ساري حتى $date';
+  }
+
+  @override
+  String get ptExpired => 'منتهٍ';
+
+  @override
+  String get spRequests => 'طلبات';
+
+  @override
+  String get spSales => 'مبيعاتي';
+
+  @override
+  String get spIncoming => 'طلبات قريبة منك';
+
+  @override
+  String get spNoRequests =>
+      'لا توجد طلبات الآن — ستصلك إشعارات عند وجود طلب قريب يناسب قطعك.';
+
+  @override
+  String get spHot => 'الأقرب للانتهاء';
+
+  @override
+  String get spBid => 'قدّم عرضك';
+
+  @override
+  String get spYourBid => 'عرضك';
+
+  @override
+  String get spUpdateBid => 'عدّل عرضك';
+
+  @override
+  String get spPrice => 'سعرك';
+
+  @override
+  String get spEta => 'التسليم خلال (ساعات)';
+
+  @override
+  String get spWarrantyDays => 'ضمان (أيام)';
+
+  @override
+  String get spNotes => 'ملاحظات';
+
+  @override
+  String get spBidSent => 'أُرسل عرضك — سنخبرك عند القبول';
+
+  @override
+  String get spWon => 'قُبل عرضك';
+
+  @override
+  String get spLost => 'لم يُقبل';
+
+  @override
+  String get spOrdersToFulfil => 'طلبات للتجهيز';
+
+  @override
+  String get spPreparing => 'جهّز';
+
+  @override
+  String get spShip => 'شُحن';
+
+  @override
+  String get spDeliver => 'تم التسليم';
+
+  @override
+  String get spDelivered => 'مُسلَّم';
+
+  @override
+  String get spTradeAccounts => 'حسابات آجلة';
+
+  @override
+  String get spApprove => 'اعتمد الحساب';
+
+  @override
+  String get spCreditLimit => 'الحد الائتماني';
+
+  @override
+  String get spTermsDays => 'مدة السداد (أيام)';
+
+  @override
+  String get spInventory => 'المخزون';
+
+  @override
+  String spItems(int n) {
+    return '$n صنف';
+  }
+
+  @override
+  String get spSerials => 'أرقام QR';
+
+  @override
+  String get spIssueSerials => 'أصدر دفعة QR';
+
+  @override
+  String spSerialsIssued(int n, String batch) {
+    return 'صدرت $n أرقام — دفعة $batch';
+  }
+
+  @override
+  String get spCatalogId => 'معرّف القطعة في الكتالوج';
+
+  @override
+  String get spCount => 'العدد';
+
+  @override
+  String get spAwaitingPayment => 'بانتظار الدفع';
+
+  @override
+  String get spPaid => 'مدفوع';
+
+  @override
+  String get spConfirmed => 'مؤكَّد';
+
+  @override
+  String get spCancelled => 'ملغى';
+
+  @override
+  String get spDisputed => 'نزاع';
+
+  @override
+  String get spReturned => 'مرتجع';
+
+  @override
+  String get spNoOrders => 'لا توجد طلبات بعد';
+
+  @override
+  String get spNoTrade =>
+      'لا توجد حسابات آجلة — تأتي طلبات الورش هنا للاعتماد.';
+
+  @override
+  String get spBeFirst => 'لا عروض بعد — كن الأول';
 }
