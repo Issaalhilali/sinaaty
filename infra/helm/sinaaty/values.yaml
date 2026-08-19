@@ -1,0 +1,41 @@
+# Defaults are staging-shaped; production overrides live in values-prod.yaml (not committed).
+image:
+  registry: ghcr.io/sinaaty/sinaaty
+  tag: latest
+  pullPolicy: IfNotPresent
+
+api:
+  replicas: 2
+  port: 3000
+  resources: { requests: { cpu: 200m, memory: 384Mi }, limits: { cpu: "1", memory: 1Gi } }
+  env:
+    APP_ENV: staging
+    LOG_LEVEL: info
+    OTEL_ENABLED: "true"
+    OTEL_SERVICE_NAME: sinaaty-api
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+    ESCROW_AUTO_RELEASE_HOURS: "72"
+    # Providers stay mocked until each contract is signed and its adapter is implemented.
+    INTEGRATION_NAFATH: mock
+    INTEGRATION_NAFEZ: mock
+    INTEGRATION_PSP: mock
+    INTEGRATION_ZATCA: mock
+    INTEGRATION_SMS: mock
+
+adminWeb:
+  replicas: 2
+  port: 3001
+  resources: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: 500m, memory: 512Mi } }
+
+# Secrets are supplied by the cluster (External Secrets / sealed-secrets) — never in this file.
+secretName: sinaaty-secrets
+
+migrations:
+  enabled: true      # pre-install/pre-upgrade Job: prisma migrate deploy
+
+ingress:
+  enabled: true
+  className: nginx
+  apiHost: api.sinaaty.sa
+  adminHost: admin.sinaaty.sa
+  tls: true

@@ -1,41 +1,13 @@
-import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
-import { VersioningType } from '@nestjs/common';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from 'nestjs-pino';
-import helmet from 'helmet';
-import { AppModule } from './app.module';
-import { AppConfig } from './config';
+import { startTelemetry } from './telemetry';
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, rawBody: true });
-  const logger = app.get(Logger);
-  const config = app.get(AppConfig);
+/**
+ * Entry point. Telemetry must be started before anything else is imported, otherwise the
+ * OpenTelemetry auto-instrumentation cannot patch http/express/pg (ESM imports are hoisted),
+ * so the application itself is pulled in with a dynamic import below.
+ */
+startTelemetry();
 
-  app.useLogger(logger);
-  app.use(helmet());
-  app.set('trust proxy', 1);
-  app.enableCors({ origin: config.get('CORS_ORIGINS'), credentials: true });
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-  app.enableShutdownHooks();
-
-  if (!config.isProd) {
-    const doc = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('Sinaaty API — صناعتي')
-        .setDescription('Core API for the Sinaaty platform. Errors use {code, message_ar, message_en, details, request_id}.')
-        .setVersion('1')
-        .addBearerAuth()
-        .build(),
-    );
-    SwaggerModule.setup('docs', app, doc, { jsonDocumentUrl: 'docs/openapi.json' });
-  }
-
-  const port = config.get('PORT');
-  await app.listen(port);
-  logger.log(`API listening on ${config.get('API_BASE_URL')} (env=${config.get('APP_ENV')}) — docs at /docs`);
-}
-
-void bootstrap();
+void (async () => {
+  const { bootstrap } = await import('./bootstrap');
+  await bootstrap();
+})();

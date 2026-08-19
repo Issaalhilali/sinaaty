@@ -24,7 +24,6 @@
 | Trade-account agreement signed by workshop owner via Nafath (`guarantor_signature_id`) | Step 18b | needs live Nafath contract; approval by supplier suffices for mock | Step 20+ |
 | InventorySync REST adapter (pull from distributor ERP) | Step 18b | CSV push covers pilot; REST needs a real ERP contract | Step 22 |
 | Part-order transport job (supplier → workshop delivery via logistics) | Step 18 | transport_job_id column reserved | Step 19 |
-| promissory-notes e2e order-dependent flake when run after parts suites (once) | Step 18b | investigate outbox timing in full-suite runs | Step 17 CI |
 | Bid with photos (supplier attaches media to a bid) | Step 22 | bid DTO has no media yet; add `part_bid_media` link | Step 23 |
 | Customer parts request + bids compare + warranty wallet screens | Step 22 | workshop flows first | Step 23 |
 | Driver job list/tracking screens | Step 22 | logistics module not built | Step 19 |
@@ -35,3 +34,7 @@
 | Customer/partner dispute screens in the apps (open + chat) | Step 16 | API + admin room done; mobile UI pending | Step 23 |
 | `replace_part` / `no_action` decisions leave escrow frozen until a follow-up decision | Step 16 | intentional (documented), needs a 'pending follow-up' badge in admin | Step 17 |
 | Invite flow for platform staff (email/SMS invite instead of the grant:role CLI) | Step 15 | CLI + in-dashboard role change cover the pilot | Step 24 |
+| Build/push the container images (needs a reachable registry) | Step 17 | Docker Hub unreachable from the dev machine; CI builds them | first CI run on main |
+| `helm lint` / `helm template` the chart (helm not installed locally) | Step 17 | templates written against the k8s API spec | Step 24 |
+| App metrics beyond auto-instrumentation (outbox backlog, ledger imbalance, integration counters as OTEL metrics) | Step 17 | dashboard panels reference them; emit from the jobs | Step 24 |
+| Staging deploy workflow (helm upgrade on tag) | Step 17 | images job publishes to GHCR; deploy stays manual for the pilot | Step 25 |

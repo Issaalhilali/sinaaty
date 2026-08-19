@@ -54,6 +54,12 @@ export const envSchema = z.object({
   PART_ORDER_AUTO_CONFIRM_HOURS: z.coerce.number().int().positive().default(72),
   JOBS_ENABLED: z.coerce.boolean().default(true),
 
+  /** Observability — off by default; CI/staging/prod set OTEL_ENABLED=true (see infra/helm). */
+  OTEL_ENABLED: z.enum(['true', 'false']).default('false'),
+  OTEL_SERVICE_NAME: z.string().default('sinaaty-api'),
+  OTEL_EXPORTER: z.enum(['otlp', 'console']).default('otlp'),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().default('http://localhost:4318'),
+
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
   THROTTLE_LIMIT: z.coerce.number().int().positive().default(120),
 

@@ -3,7 +3,9 @@
 // To change the model: edit docs/db/schema.sql → pnpm schema:sync → prisma migrate deploy →
 // prisma db pull → node tools/prisma-normalize.mjs → prisma generate.
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // tracing: emits DB spans consumed by @prisma/instrumentation (OTEL_ENABLED=true)
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
