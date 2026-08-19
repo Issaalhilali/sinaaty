@@ -50,6 +50,8 @@ export const envSchema = z.object({
   DUNNING_FORMAL_STEP: z.coerce.number().int().positive().default(4),
   APPROVAL_LINK_SECRET: z.string().min(16).default('dev-approval-link-secret-change-me'),
   WEB_APPROVAL_BASE_URL: z.string().url().default('http://localhost:3000'),
+  BIDDING_DEFAULT_MINUTES: z.coerce.number().int().positive().default(60),
+  PART_ORDER_AUTO_CONFIRM_HOURS: z.coerce.number().int().positive().default(72),
   JOBS_ENABLED: z.coerce.boolean().default(true),
 
   THROTTLE_TTL_SECONDS: z.coerce.number().int().positive().default(60),

@@ -4,7 +4,7 @@ import { PrismaService } from '../../../../prisma';
 import type { User } from '../../domain/user';
 import type { UserRepository } from '../../domain/repositories';
 
-const select = { id: true, phoneE164: true, fullNameAr: true, status: true, platformRole: true, nafathVerifiedAt: true, organizationMembersAsUser: { where: { isActive: true }, select: { orgId: true, role: true } } } satisfies Prisma.UserSelect;
+const select = { id: true, phoneE164: true, fullNameAr: true, status: true, platformRole: true, nafathVerifiedAt: true, organizationMembersAsUser: { where: { isActive: true }, orderBy: { joinedAt: 'asc' }, select: { orgId: true, role: true } } } satisfies Prisma.UserSelect;
 type Row = Prisma.UserGetPayload<{ select: typeof select }>;
 
 const toUser = (r: Row): User => ({

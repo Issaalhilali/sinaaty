@@ -15,6 +15,7 @@ export interface EscrowRepository {
   findById(id: string, tx?: TxHandle): Promise<EscrowHold | null>;
   findByPayment(paymentId: string): Promise<EscrowHold | null>;
   listByWorkOrder(workOrderId: string): Promise<EscrowHold[]>;
+  listByPartOrder(partOrderId: string): Promise<EscrowHold[]>;
   listDue(now: Date, limit: number): Promise<EscrowHold[]>;
   listReleasedUnpaid(orgId?: string): Promise<EscrowHold[]>;
   update(id: string, patch: Partial<{ status: EscrowStatus; platformFee: string; releasedAmount: string; refundedAmount: string; releaseReason: string; disputeId: string | null; releasedAt: Date }>, tx?: TxHandle): Promise<void>;

@@ -15,8 +15,8 @@ export class NoteOutboxHandlers implements OnModuleInit {
       this.log.log(`note ${n.number} ${n.status} for work order ${ev.aggregateId}`);
     });
     const onPaid = (full: boolean) => async (ev: { aggregateId: string; payload: Record<string, unknown> }) => {
-      const p = ev.payload as { workOrderId?: string | null; paymentId?: string | null; amount?: string; paidTotal?: string; total?: string };
-      const r = await this.notes.closeOnPayment({ workOrderId: p.workOrderId ?? null, invoiceId: ev.aggregateId, paymentId: p.paymentId ?? null, amount: p.amount ?? '0', paidTotal: p.paidTotal ?? '0', total: p.total ?? '0', full });
+      const p = ev.payload as { workOrderId?: string | null; partOrderId?: string | null; paymentId?: string | null; amount?: string; paidTotal?: string; total?: string };
+      const r = await this.notes.closeOnPayment({ workOrderId: p.workOrderId ?? null, partOrderId: p.partOrderId ?? null, invoiceId: ev.aggregateId, paymentId: p.paymentId ?? null, amount: p.amount ?? '0', paidTotal: p.paidTotal ?? '0', total: p.total ?? '0', full });
       if (r.note) this.log.log(`note ${r.note.number} → ${r.note.status}${r.settlementId ? ` (settlement ${r.settlementId})` : ''}`);
     };
     this.registry.on('InvoicePaid', 'promissory-notes.close-on-payment', onPaid(true));

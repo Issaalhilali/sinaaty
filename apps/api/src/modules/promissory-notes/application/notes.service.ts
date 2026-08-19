@@ -61,11 +61,21 @@ export class NotesService {
     return (await this.notes.findById(draft.id))!;
   }
 
+  /** Parts hub: note for a deferred part order on a Nafez-secured trade account (creditor = supplier, debtor = workshop org). Idempotent. */
+  async issueForPartOrder(o: { partOrderId: string; orderNumber: string; invoiceId: string | null; creditorOrgId: string; debtorOrgId: string; amount: string; dueDate: Date; actorUserId?: string | null }): Promise<PromissoryNote> {
+    const existing = await this.notes.findOpenByPartOrder(o.partOrderId); if (existing) return existing;
+    const org = await this.orgs.findById(o.creditorOrgId); const debtorOrg = await this.orgs.findById(o.debtorOrgId); if (!org || !debtorOrg) throw new AppError('NOT_FOUND');
+    const draft = await this.uow.run(async (tx) => { const number = await this.notes.nextNumber('PN', tx); const n = await this.notes.create({ number, creditorOrgId: o.creditorOrgId, debtorOrgId: o.debtorOrgId, partOrderId: o.partOrderId, invoiceId: o.invoiceId, amount: o.amount, dueDate: o.dueDate, placeOfIssue: 'الرياض', createdBy: o.actorUserId ?? null }, tx); await this.notes.addEvent({ noteId: n.id, from: null, to: 'draft', noteAr: `إنشاء مسودة السند من طلب القطع ${o.orderNumber} (حساب آجل مضمون)` }, tx); return n; });
+    const res = await this.nafez.createNote({ internalNumber: draft.number, creditor: { orgId: org.id, legalNameAr: org.legalNameAr, crNumber: org.crNumber, vatNumber: org.vatNumber }, debtor: { userId: null, orgId: debtorOrg.id, nationalIdHash: null, nameAr: debtorOrg.legalNameAr }, amount: o.amount, currency: 'SAR', dueDate: o.dueDate.toISOString().slice(0, 10), placeOfIssue: 'الرياض', reference: { workOrderNumber: null, invoiceNumber: null, consentSignatureId: null } }, `nafez.create:${draft.id}`);
+    await this.uow.run(async (tx) => { const fresh = (await this.notes.findById(draft.id, tx))!; if (res.status === 'rejected') { await this.transition(tx, fresh, 'rejected', { providerRef: res.noteRef, providerPayload: res.raw }); return; } await this.transition(tx, fresh, res.status === 'issued' ? 'issued' : 'pending_consent', { providerRef: res.noteRef, providerPayload: res.raw, actorUserId: o.actorUserId ?? null, patch: { nafezReference: res.noteRef, issueDate: res.issuedAt ?? new Date(), issuedAt: res.issuedAt ?? new Date(), nafezPayload: res.raw } }); });
+    return (await this.notes.findById(draft.id))!;
+  }
+
   /** InvoicePaid handler: close the open note for the WO/invoice, issue the settlement — all in one unit. Idempotent. */
-  async closeOnPayment(p: { workOrderId: string | null; invoiceId: string | null; paymentId: string | null; amount: string; paidTotal: string; total: string; full: boolean }): Promise<{ note: PromissoryNote | null; settlementId?: string; alreadyClosed?: boolean }> {
-    if (!p.workOrderId) return { note: null };
-    const note = await this.notes.findOpenByWorkOrder(p.workOrderId);
-    if (!note) { const any = await this.notes.findByWorkOrder(p.workOrderId); const closed = any.find((n) => n.status === 'closed'); return closed ? { note: closed, alreadyClosed: true } : { note: null }; }
+  async closeOnPayment(p: { workOrderId: string | null; partOrderId?: string | null; invoiceId: string | null; paymentId: string | null; amount: string; paidTotal: string; total: string; full: boolean }): Promise<{ note: PromissoryNote | null; settlementId?: string; alreadyClosed?: boolean }> {
+    if (!p.workOrderId && !p.partOrderId) return { note: null };
+    const note = p.workOrderId ? await this.notes.findOpenByWorkOrder(p.workOrderId) : await this.notes.findOpenByPartOrder(p.partOrderId!);
+    if (!note) { if (!p.workOrderId) return { note: null }; const any = await this.notes.findByWorkOrder(p.workOrderId); const closed = any.find((n) => n.status === 'closed'); return closed ? { note: closed, alreadyClosed: true } : { note: null }; }
     const outstanding = Money.of(note.outstandingAmount).minus(Money.of(p.amount)); const closes = p.full || outstanding.isZero() || outstanding.isNegative();
     if (!closes) {
       await this.nafez.updateOutstanding(note.nafezReference!, outstanding.toString(), `nafez.update:${note.id}:${p.paymentId ?? p.paidTotal}`);
@@ -79,7 +89,7 @@ export class NotesService {
       const content = { number, note: note.number, nafez_ref: note.nafezReference, creditor_org_id: note.creditorOrgId, debtor_user_id: note.debtorUserId, debtor_org_id: note.debtorOrgId, amount: note.amount, invoice_id: p.invoiceId, payment_id: p.paymentId, closed_at: closed.closedAt.toISOString() };
       const s = await this.notes.createSettlement({ number, noteId: note.id, invoiceId: p.invoiceId, workOrderId: note.workOrderId, creditorOrgId: note.creditorOrgId, debtorUserId: note.debtorUserId, debtorOrgId: note.debtorOrgId, amountSettled: note.amount, contentSha256: createHash('sha256').update(JSON.stringify(content)).digest('hex') }, tx);
       await this.audit.write(tx, { action: 'settlement.issue', entityType: 'settlement', entityId: s.id, orgId: note.creditorOrgId, actorType: 'system', after: content });
-      await this.outbox.publish(tx, { eventType: 'SettlementIssued', aggregateType: 'settlement', aggregateId: s.id, payload: { number, noteId: note.id, noteNumber: note.number, creditorOrgId: note.creditorOrgId, debtorUserId: note.debtorUserId, debtorOrgId: note.debtorOrgId, amount: note.amount } });
+      await this.outbox.publish(tx, { eventType: 'SettlementIssued', aggregateType: 'settlement', aggregateId: s.id, payload: { number, noteId: note.id, noteNumber: note.number, creditorOrgId: note.creditorOrgId, debtorUserId: note.debtorUserId, debtorOrgId: note.debtorOrgId, amount: note.amount, workOrderId: note.workOrderId, partOrderId: note.partOrderId } });
       const wo = note.workOrderId ? await this.workOrders.findById(note.workOrderId, tx) : null;
       if (wo) await this.passport.record({ vehicleId: wo.vehicleId, type: 'work_order', orgId: note.creditorOrgId, refTable: 'settlements', refId: s.id, summaryAr: `سداد كامل وإغلاق السند ${note.number} — مخالصة ${number}`, summaryEn: `Note ${note.number} closed — settlement ${number}`, isPublic: false }, tx);
       return s.id;

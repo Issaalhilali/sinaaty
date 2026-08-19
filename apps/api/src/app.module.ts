@@ -18,6 +18,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { PromissoryNotesModule } from './modules/promissory-notes/promissory-notes.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { PartsModule } from './modules/parts/parts.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
@@ -44,6 +45,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     InvoicingModule,
     PaymentsModule,
     PromissoryNotesModule,
+    PartsModule,
     NotificationsModule,
   ],
   providers: [

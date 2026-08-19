@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { buildInvoiceXml, encodeQr, invoiceHash } from '@sinaaty/zatca-ubl';
-import type { InvoiceStatus } from '@sinaaty/shared-types';
+import type { InvoiceStatus, PaymentTerms } from '@sinaaty/shared-types';
 import { AppError } from '../../../../common/errors';
 import { AuditLogWriter } from '../../../../common/audit';
 import { OutboxWriter } from '../../../../common/outbox';
 import { Money } from '../../../../common/domain/money';
 import { computeLine } from '../../../../common/domain/vat';
 import { newId } from '../../../../common/domain/ids';
-import { UNIT_OF_WORK, type UnitOfWork } from '../../../../common/ports/unit-of-work.port';
+import { UNIT_OF_WORK, type TxHandle, type UnitOfWork } from '../../../../common/ports/unit-of-work.port';
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { isPlatformStaff } from '../../../identity/domain/auth-user';
 import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/repositories';
@@ -84,6 +84,27 @@ export class InvoicesUseCases {
     });
   }
 
+  /** Parts marketplace: invoice for a part order (supplier → buyer). Lines are the order items; VAT per line (ZATCA). */
+  async issueForPartOrder(p: { partOrderId: string; orderNumber: string; supplierOrgId: string; buyerUserId: string | null; buyerOrgId: string | null; items: Array<{ id?: string | null; descriptionAr: string; quantity: number; unitPrice: string; vatRate: string }>; deliveryFee: string; paymentTerms: PaymentTerms; dueDate: Date | null; actorUserId?: string | null }, tx?: TxHandle) {
+    const org = await this.orgs.findById(p.supplierOrgId); if (!org) throw new AppError('NOT_FOUND');
+    if (!org.vatNumber) throw new AppError('VALIDATION', { messageAr: 'أضف الرقم الضريبي للمنشأة قبل إصدار الفواتير.', messageEn: 'Organization VAT number is required to issue invoices.' });
+    const buyerUser = p.buyerUserId ? await this.users.findById(p.buyerUserId) : null; const buyerOrg = p.buyerOrgId ? await this.orgs.findById(p.buyerOrgId) : null;
+    const seller: PartySnapshot = { name_ar: org.tradeNameAr ?? org.legalNameAr, name_en: org.legalNameEn, vat_number: org.vatNumber, cr_number: org.crNumber, org_id: org.id };
+    const buyer: PartySnapshot = buyerOrg ? { name_ar: buyerOrg.legalNameAr, name_en: buyerOrg.legalNameEn, vat_number: buyerOrg.vatNumber, cr_number: buyerOrg.crNumber, org_id: buyerOrg.id } : { name_ar: buyerUser?.fullNameAr ?? 'عميل', phone: buyerUser?.phone ?? null, user_id: buyerUser?.id ?? null };
+    const src = [...p.items.map((i) => ({ descriptionAr: i.descriptionAr, quantity: String(i.quantity), unitPrice: i.unitPrice, vatRate: i.vatRate })), ...(Number(p.deliveryFee) > 0 ? [{ descriptionAr: 'رسوم توصيل', quantity: '1', unitPrice: p.deliveryFee, vatRate: '15.00' }] : [])];
+    const lines: NewInvoiceLine[] = src.map((it, idx) => { const l = computeLine({ quantity: it.quantity, unitPrice: Money.of(it.unitPrice), vatRatePct: Number(it.vatRate) }); return { descriptionAr: it.descriptionAr, quantity: it.quantity, unitPrice: Money.of(it.unitPrice).toString(), discount: '0.00', vatRate: it.vatRate, vatAmount: l.vat.toString(), lineTotal: l.net.toString(), sortOrder: idx }; });
+    const subtotal = Money.sum(lines.map((l) => Money.of(l.lineTotal))); const vatTotal = Money.sum(lines.map((l) => Money.of(l.vatAmount))); const total = subtotal.plus(vatTotal);
+    const type = invoiceTypeFor(buyer); const now = new Date(); const timestamp = isoNoMs(now); const zatcaUuid = newId();
+    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: org.vatNumber, timestamp, total: total.toString(), vat: vatTotal.toString() });
+    const run = async (t: TxHandle) => {
+      const number = await this.invoices.nextNumber(org.id, 'INV', now.getFullYear(), t);
+      const created = await this.invoices.create({ orgId: org.id, number, type, status: 'issued', partOrderId: p.partOrderId, customerUserId: p.buyerUserId ?? undefined, customerOrgId: p.buyerOrgId ?? undefined, buyerSnapshot: buyer, sellerSnapshot: seller, subtotal: subtotal.toString(), discountTotal: '0.00', vatTotal: vatTotal.toString(), total: total.toString(), paymentTerms: p.paymentTerms, issueDate: now, dueDate: p.dueDate, supplyDate: now, zatcaUuid, zatcaHash: invoiceHash({ number, uuid: zatcaUuid, seller, buyer, lines, totals: { subtotal: subtotal.toString(), vat: vatTotal.toString(), total: total.toString() }, issued_at: timestamp, part_order: p.orderNumber }), zatcaQr: qr, zatcaStatus: 'not_required', createdBy: p.actorUserId ?? null, lines }, t);
+      await this.audit.write(t, { action: 'invoice.issue', entityType: 'invoice', entityId: created.id, orgId: org.id, actorType: 'system', after: { number, total: total.toString(), partOrder: p.orderNumber } });
+      await this.outbox.publish(t, { eventType: 'InvoiceIssued', aggregateType: 'invoice', aggregateId: created.id, payload: { number, orgId: org.id, partOrderId: p.partOrderId, customerUserId: p.buyerUserId, customerOrgId: p.buyerOrgId, total: total.toString(), paymentTerms: p.paymentTerms, dueDate: p.dueDate?.toISOString() ?? null } });
+      return created;
+    };
+    return tx ? run(tx) : this.uow.run(run);
+  }
   async get(u: AuthUser, id: string) { const i = await this.load(id); if (!this.canRead(i, u)) throw new AppError('FORBIDDEN'); return i; }
   async list(u: AuthUser, q: { org_id?: string; status?: InvoiceStatus[]; limit?: number }) {
     if (q.org_id) { if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === q.org_id)) throw new AppError('FORBIDDEN'); return this.invoices.list({ orgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); }

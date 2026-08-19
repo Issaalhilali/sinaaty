@@ -6,6 +6,7 @@ export interface NoteRepository {
   create(n: { number: string; creditorOrgId: string; debtorUserId?: string | null; debtorOrgId?: string | null; workOrderId?: string | null; invoiceId?: string | null; partOrderId?: string | null; amount: string; dueDate: Date; placeOfIssue?: string; consentSignatureId?: string | null; issuanceFee?: string; createdBy?: string | null }, tx?: TxHandle): Promise<PromissoryNote>;
   findById(id: string, tx?: TxHandle): Promise<PromissoryNote | null>;
   findOpenByWorkOrder(workOrderId: string, tx?: TxHandle): Promise<PromissoryNote | null>;
+  findOpenByPartOrder(partOrderId: string, tx?: TxHandle): Promise<PromissoryNote | null>;
   findByWorkOrder(workOrderId: string): Promise<PromissoryNote[]>;
   list(q: { creditorOrgId?: string; debtorUserId?: string; debtorOrgId?: string; status?: PnStatus[]; overdueOnly?: boolean; limit: number }): Promise<PromissoryNote[]>;
   update(id: string, patch: Partial<{ status: PnStatus; nafezReference: string; outstandingAmount: string; issueDate: Date; issuedAt: Date; closedAt: Date; cancelledAt: Date; cancelReason: string; nafezPayload: unknown; invoiceId: string }>, tx?: TxHandle): Promise<void>;

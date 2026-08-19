@@ -168,7 +168,7 @@ async function upsertUser(phone: string, nameAr: string, extra: Partial<Prisma.U
 async function upsertOrg(input: { cr: string; type: Prisma.OrganizationCreateInput['type']; nameAr: string; nameEn: string; slug: string; ownerId: string; vat?: string; lat: number; lng: number; city: string; zone?: string }) {
   const org = await prisma.organization.upsert({
     where: { crNumber: input.cr },
-    update: { legalNameAr: input.nameAr, legalNameEn: input.nameEn, tradeNameAr: input.nameAr, status: 'active' },
+    update: { legalNameAr: input.nameAr, legalNameEn: input.nameEn, tradeNameAr: input.nameAr, status: 'active', ...(input.vat ? { vatNumber: input.vat, vatRegistered: true } : {}) },
     create: {
       type: input.type, status: 'active', legalNameAr: input.nameAr, legalNameEn: input.nameEn, tradeNameAr: input.nameAr,
       slug: input.slug, crNumber: input.cr, vatNumber: input.vat, vatRegistered: !!input.vat, verifiedAt: new Date(), createdBy: input.ownerId,
@@ -197,8 +197,10 @@ async function seedDemo() {
   const admin = await upsertUser('+966500000099', 'مشرف المنصة', { platformRole: 'super_admin' });
 
   const workshop = await upsertOrg({ cr: '1010000001', type: 'workshop', nameAr: 'ورشة النور للسمكرة والميكانيكا', nameEn: 'Al Noor Auto Workshop', slug: 'alnoor-workshop', ownerId: owner1.id, vat: '300000000000003', lat: 24.6300, lng: 46.7900, city: 'الرياض', zone });
-  const scrapyard = await upsertOrg({ cr: '1010000002', type: 'scrapyard', nameAr: 'تشليح الشرق لقطع الغيار', nameEn: 'Al Sharq Scrapyard', slug: 'alsharq-scrapyard', ownerId: owner2.id, lat: 24.6100, lng: 46.8300, city: 'الرياض', zone });
-  const distributor = await upsertOrg({ cr: '1010000003', type: 'parts_distributor', nameAr: 'وكيل بوش الرياض — فرع الصناعية', nameEn: 'Bosch Riyadh Distributor', slug: 'bosch-riyadh', ownerId: owner3.id, vat: '300000000000004', lat: 24.6250, lng: 46.7950, city: 'الرياض', zone });
+  const scrapyard = await upsertOrg({ cr: '1010000002', type: 'scrapyard', nameAr: 'تشليح الشرق لقطع الغيار', nameEn: 'Al Sharq Scrapyard', slug: 'alsharq-scrapyard', ownerId: owner2.id, vat: '300000000000053', lat: 24.6100, lng: 46.8300, city: 'الرياض', zone });
+  const owner4 = await upsertUser('+966500000004', 'سعد — محل قطع الجزيرة');
+  const dealer = await upsertOrg({ cr: '1010000004', type: 'parts_dealer', nameAr: 'محل قطع الجزيرة', nameEn: 'Al Jazeera Parts Shop', slug: 'aljazeera-parts', ownerId: owner4.id, vat: '300000000000063', lat: 24.6400, lng: 46.7800, city: 'الرياض', zone });
+  const distributor = await upsertOrg({ cr: '1010000003', type: 'parts_distributor', nameAr: 'وكيل بوش الرياض — فرع الصناعية', nameEn: 'Bosch Riyadh Distributor', slug: 'bosch-riyadh', ownerId: owner3.id, vat: '300000000000043', lat: 24.6250, lng: 46.7950, city: 'الرياض', zone });
 
   // subscriptions
   const plan = async (code: string) => (await prisma.subscriptionPlan.findUniqueOrThrow({ where: { code } })).id;
@@ -218,7 +220,7 @@ async function seedDemo() {
     create: { vin: '4T1B11HK5KU000001', plateNumber: 'أ ب ج 4821', makeId: toyota.id, modelId: camry.id, modelYear: 2019, fuelType: 'petrol', ownerType: 'user', ownerUserId: customer.id, odometerKm: 84250 },
   });
 
-  console.log(`✓ demo: workshop=${workshop.id} scrapyard=${scrapyard.id} distributor=${distributor.id} customer=${customer.id} admin=${admin.id}`);
+  console.log(`✓ demo: workshop=${workshop.id} scrapyard=${scrapyard.id} distributor=${distributor.id} dealer=${dealer.id} customer=${customer.id} admin=${admin.id}`);
 }
 
 async function main() {

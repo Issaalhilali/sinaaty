@@ -52,7 +52,7 @@ export class PaymentsUseCases {
     if (await this.payments.findPendingForInvoice(inv.id)) throw new AppError('PAY_INTENT_PENDING');
     const amount = this.remaining(inv).toString(); const paymentId = newId();
     const intent = await this.psp.createIntent({ paymentId, amount, currency: 'SAR', method: dto.method, description: `فاتورة ${inv.number} — ${inv.sellerSnapshot.name_ar}`, metadata: { invoice_id: inv.id, invoice_number: inv.number, org_id: inv.orgId } });
-    const p = await this.payments.create({ invoiceId: inv.id, workOrderId: inv.workOrderId ?? undefined, payerUserId: inv.customerUserId ?? undefined, payerOrgId: inv.customerOrgId ?? undefined, payeeOrgId: inv.orgId, method: dto.method, amount, pspProvider: this.psp.provider, pspIntentId: intent.intentId, idempotencyKey: `intent:${paymentId}`, status: 'pending' });
+    const p = await this.payments.create({ invoiceId: inv.id, workOrderId: inv.workOrderId ?? undefined, partOrderId: inv.partOrderId ?? undefined, payerUserId: inv.customerUserId ?? undefined, payerOrgId: inv.customerOrgId ?? undefined, payeeOrgId: inv.orgId, method: dto.method, amount, pspProvider: this.psp.provider, pspIntentId: intent.intentId, idempotencyKey: `intent:${paymentId}`, status: 'pending' });
     return { payment_id: p.id, amount, currency: 'SAR', intent: { id: intent.intentId, client_secret: intent.clientSecret, redirect_url: intent.redirectUrl, expires_at: intent.expiresAt.toISOString() } };
   }
 
@@ -76,7 +76,7 @@ export class PaymentsUseCases {
     if (Money.of(ev.amount).toString() !== Money.of(p.amount).toString()) throw new AppError('CONFLICT', { messageEn: 'webhook amount mismatch', details: { expected: p.amount, got: ev.amount } });
     await this.uow.run(async (tx) => {
       await this.payments.update(p.id, { status: 'captured', pspChargeId: ev.chargeId, capturedAt: ev.occurredAt, pspPayload: ev.raw }, tx);
-      await this.escrow.hold(tx, { paymentId: p.id, orgId: p.payeeOrgId, amount: p.amount, workOrderId: p.workOrderId, providerRef: ev.chargeId });
+      await this.escrow.hold(tx, { paymentId: p.id, orgId: p.payeeOrgId, amount: p.amount, workOrderId: p.workOrderId, partOrderId: p.partOrderId, providerRef: ev.chargeId });
       if (p.invoiceId) await this.markInvoicePaid(tx, p.invoiceId, p.amount, p.id, p.method);
       await this.audit.write(tx, { action: 'payment.captured', entityType: 'payment', entityId: p.id, orgId: p.payeeOrgId, actorType: 'webhook', after: { amount: p.amount, method: p.method, chargeId: ev.chargeId } });
     });
@@ -90,7 +90,7 @@ export class PaymentsUseCases {
     const inv = await this.invoices.findById(invoiceId); if (!inv) return;
     const paid = Money.of(inv.paidTotal).plus(Money.of(amount)); const full = paid.gte(Money.of(inv.total));
     await this.invoices.setStatus(inv.id, full ? 'paid' : 'partially_paid', { paidTotal: paid.toString() }, tx);
-    await this.outbox.publish(tx, { eventType: full ? 'InvoicePaid' : 'InvoicePartiallyPaid', aggregateType: 'invoice', aggregateId: inv.id, payload: { number: inv.number, orgId: inv.orgId, workOrderId: inv.workOrderId, customerUserId: inv.customerUserId, customerOrgId: inv.customerOrgId, paymentId, method, amount, paidTotal: paid.toString(), total: inv.total } });
+    await this.outbox.publish(tx, { eventType: full ? 'InvoicePaid' : 'InvoicePartiallyPaid', aggregateType: 'invoice', aggregateId: inv.id, payload: { number: inv.number, orgId: inv.orgId, workOrderId: inv.workOrderId, partOrderId: inv.partOrderId, customerUserId: inv.customerUserId, customerOrgId: inv.customerOrgId, paymentId, method, amount, paidTotal: paid.toString(), total: inv.total } });
   }
 
   /** Cash at the counter: workshop initiates, customer confirms with OTP → invoice paid, no escrow/commission on cash (note fee later). */
