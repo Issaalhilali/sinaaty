@@ -1034,4 +1034,211 @@ class L10nAr extends L10n {
 
   @override
   String get spBeFirst => 'لا عروض بعد — كن الأول';
+
+  @override
+  String get reqHubTitle => 'كيف نساعدك؟';
+
+  @override
+  String get reqHubBody => 'اختر ما تحتاجه الآن — نتكفّل بالباقي.';
+
+  @override
+  String get reqPart => 'أطلب قطعة غيار';
+
+  @override
+  String get reqPartBody =>
+      'نرسل طلبك للورش والتشاليح والوكلاء، وتختار أنت أفضل عرض.';
+
+  @override
+  String get reqTow => 'أطلب سطحة';
+
+  @override
+  String get reqTowBody => 'نقل سيارتك إلى الورشة بسعر معروف مسبقاً.';
+
+  @override
+  String get reqMyRequests => 'طلبات القطع';
+
+  @override
+  String get reqMyTows => 'طلبات السطحة';
+
+  @override
+  String get reqPartVehicle => 'السيارة';
+
+  @override
+  String get reqPartAnyVehicle => 'بدون تحديد سيارة';
+
+  @override
+  String get reqPartSend => 'أرسل الطلب';
+
+  @override
+  String get towTitle => 'سطحة';
+
+  @override
+  String get towRequestAction => 'أطلب السطحة';
+
+  @override
+  String get towRequested => 'أرسلنا طلبك — سيصلك السائق قريباً.';
+
+  @override
+  String get towNoHiddenFees => 'سعر واضح مسبقاً';
+
+  @override
+  String get towQuoteHint => 'حدّد موقع سيارتك والوجهة ليظهر السعر.';
+
+  @override
+  String get towCalculating => 'نحسب السعر…';
+
+  @override
+  String towQuoteLine(String km, int minutes) {
+    return '$km كم · وصول خلال $minutes دقيقة تقريباً';
+  }
+
+  @override
+  String get towVehicle => 'سيارتك';
+
+  @override
+  String get towNoVehicle => 'بدون تحديد سيارة';
+
+  @override
+  String get towFrom => 'من أين؟';
+
+  @override
+  String get towTo => 'إلى أين؟';
+
+  @override
+  String get towPickupAddress => 'وصف الموقع';
+
+  @override
+  String get towPickupHint => 'مثال: طريق الملك فهد، بعد مخرج 12';
+
+  @override
+  String get towDropoffAddress => 'وصف الوجهة';
+
+  @override
+  String get towDropoffHint => 'مثال: ورشة النور — الصناعية الثانية';
+
+  @override
+  String get towLocationLink => 'رابط الموقع أو الإحداثيات';
+
+  @override
+  String get towLinkHelp => 'الصق رابط الموقع من الخرائط، أو اكتب الإحداثيات.';
+
+  @override
+  String get towLinkUnreadable =>
+      'لم نتمكن من قراءة الموقع — الصق الرابط الكامل أو الإحداثيات.';
+
+  @override
+  String get towTruckType => 'نوع السطحة';
+
+  @override
+  String get towTypeFlatbed => 'سطحة عادية';
+
+  @override
+  String get towTypeWheelLift => 'رافعة عجلات';
+
+  @override
+  String get towTypeHeavy => 'سطحة ثقيلة';
+
+  @override
+  String get towNotes => 'ملاحظات';
+
+  @override
+  String get towNotesHint => 'مثال: السيارة لا تدور';
+
+  @override
+  String get towProgress => 'مسار الطلب';
+
+  @override
+  String get towRoute => 'المسار';
+
+  @override
+  String get towDriver => 'السائق';
+
+  @override
+  String towEta(int minutes) {
+    return '$minutes دقيقة';
+  }
+
+  @override
+  String towKm(String km) {
+    return '$km كم';
+  }
+
+  @override
+  String get towRequestedAt => 'وقت الطلب';
+
+  @override
+  String get towCancelTitle => 'إلغاء طلب السطحة';
+
+  @override
+  String get towCancelBody => 'يمكن الإلغاء قبل تحميل السيارة فقط.';
+
+  @override
+  String get towCancelReason => 'السبب (اختياري)';
+
+  @override
+  String get towCancelAction => 'إلغاء الطلب';
+
+  @override
+  String get towStatusRequested => 'بانتظار سائق';
+
+  @override
+  String get towStatusSearching => 'نبحث عن أقرب سطحة';
+
+  @override
+  String get towStatusAssigned => 'تم تعيين سائق';
+
+  @override
+  String get towStatusEnRoutePickup => 'السائق في طريقه إليك';
+
+  @override
+  String get towStatusPickedUp => 'سيارتك على السطحة';
+
+  @override
+  String get towStatusEnRouteDropoff => 'في الطريق إلى الوجهة';
+
+  @override
+  String get towStatusDelivered => 'تم التسليم';
+
+  @override
+  String get towStatusCompleted => 'اكتمل';
+
+  @override
+  String get towStatusCancelled => 'ملغى';
+
+  @override
+  String get towStatusFailed => 'تعذّر التنفيذ';
+
+  @override
+  String get towEmptyTitle => 'لا توجد طلبات سطحة';
+
+  @override
+  String get towEmptyBody => 'اطلب سطحة عندما تحتاج نقل سيارتك.';
+
+  @override
+  String get ptCheapest => 'الأرخص';
+
+  @override
+  String get ptFastest => 'الأسرع';
+
+  @override
+  String get ptLongestWarranty => 'أطول ضمان';
+
+  @override
+  String get ptWarrantiesEmptyTitle => 'لا توجد ضمانات بعد';
+
+  @override
+  String get ptWarrantiesEmptyBody =>
+      'كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.';
+
+  @override
+  String get ptWarrantyActive => 'ساري';
+
+  @override
+  String get ptWarrantyIssuer => 'الجهة الضامنة';
+
+  @override
+  String get ptWarrantyFrom => 'يبدأ';
+
+  @override
+  String get ptWarrantyNumber => 'رقم الضمان';
 }

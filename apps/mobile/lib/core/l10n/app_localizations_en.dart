@@ -1039,4 +1039,216 @@ class L10nEn extends L10n {
 
   @override
   String get spBeFirst => 'No bids yet — be first';
+
+  @override
+  String get reqHubTitle => 'How can we help?';
+
+  @override
+  String get reqHubBody => 'Pick what you need now — we handle the rest.';
+
+  @override
+  String get reqPart => 'Request a part';
+
+  @override
+  String get reqPartBody =>
+      'We send your request to workshops, scrapyards and dealers; you pick the best offer.';
+
+  @override
+  String get reqTow => 'Request a tow truck';
+
+  @override
+  String get reqTowBody =>
+      'Move your car to the workshop at a price you know up front.';
+
+  @override
+  String get reqMyRequests => 'Part requests';
+
+  @override
+  String get reqMyTows => 'Tow requests';
+
+  @override
+  String get reqPartVehicle => 'Vehicle';
+
+  @override
+  String get reqPartAnyVehicle => 'No specific vehicle';
+
+  @override
+  String get reqPartSend => 'Send request';
+
+  @override
+  String get towTitle => 'Tow truck';
+
+  @override
+  String get towRequestAction => 'Request the tow';
+
+  @override
+  String get towRequested =>
+      'Request sent — a driver will be with you shortly.';
+
+  @override
+  String get towNoHiddenFees => 'Price known up front';
+
+  @override
+  String get towQuoteHint =>
+      'Set where your car is and where it goes to see the price.';
+
+  @override
+  String get towCalculating => 'Calculating the price…';
+
+  @override
+  String towQuoteLine(String km, int minutes) {
+    return '$km km · about $minutes minutes away';
+  }
+
+  @override
+  String get towVehicle => 'Your car';
+
+  @override
+  String get towNoVehicle => 'No specific vehicle';
+
+  @override
+  String get towFrom => 'From';
+
+  @override
+  String get towTo => 'To';
+
+  @override
+  String get towPickupAddress => 'Location description';
+
+  @override
+  String get towPickupHint => 'e.g. King Fahd Road, after exit 12';
+
+  @override
+  String get towDropoffAddress => 'Destination description';
+
+  @override
+  String get towDropoffHint => 'e.g. Al Noor Workshop — Industrial 2';
+
+  @override
+  String get towLocationLink => 'Location link or coordinates';
+
+  @override
+  String get towLinkHelp =>
+      'Paste the location link from Maps, or type the coordinates.';
+
+  @override
+  String get towLinkUnreadable =>
+      'We could not read that location — paste the full link or the coordinates.';
+
+  @override
+  String get towTruckType => 'Truck type';
+
+  @override
+  String get towTypeFlatbed => 'Flatbed';
+
+  @override
+  String get towTypeWheelLift => 'Wheel lift';
+
+  @override
+  String get towTypeHeavy => 'Heavy tow';
+
+  @override
+  String get towNotes => 'Notes';
+
+  @override
+  String get towNotesHint => 'e.g. the car will not start';
+
+  @override
+  String get towProgress => 'Progress';
+
+  @override
+  String get towRoute => 'Route';
+
+  @override
+  String get towDriver => 'Driver';
+
+  @override
+  String towEta(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String towKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get towRequestedAt => 'Requested at';
+
+  @override
+  String get towCancelTitle => 'Cancel the tow';
+
+  @override
+  String get towCancelBody =>
+      'Cancelling is possible only before the car is loaded.';
+
+  @override
+  String get towCancelReason => 'Reason (optional)';
+
+  @override
+  String get towCancelAction => 'Cancel request';
+
+  @override
+  String get towStatusRequested => 'Waiting for a driver';
+
+  @override
+  String get towStatusSearching => 'Finding the nearest truck';
+
+  @override
+  String get towStatusAssigned => 'Driver assigned';
+
+  @override
+  String get towStatusEnRoutePickup => 'Driver on the way to you';
+
+  @override
+  String get towStatusPickedUp => 'Your car is on the truck';
+
+  @override
+  String get towStatusEnRouteDropoff => 'On the way to the destination';
+
+  @override
+  String get towStatusDelivered => 'Delivered';
+
+  @override
+  String get towStatusCompleted => 'Completed';
+
+  @override
+  String get towStatusCancelled => 'Cancelled';
+
+  @override
+  String get towStatusFailed => 'Could not be completed';
+
+  @override
+  String get towEmptyTitle => 'No tow requests';
+
+  @override
+  String get towEmptyBody => 'Request a tow when your car needs moving.';
+
+  @override
+  String get ptCheapest => 'Cheapest';
+
+  @override
+  String get ptFastest => 'Fastest';
+
+  @override
+  String get ptLongestWarranty => 'Longest warranty';
+
+  @override
+  String get ptWarrantiesEmptyTitle => 'No warranties yet';
+
+  @override
+  String get ptWarrantiesEmptyBody =>
+      'Every part installed through Sinaaty arrives with a digital warranty here.';
+
+  @override
+  String get ptWarrantyActive => 'Active';
+
+  @override
+  String get ptWarrantyIssuer => 'Guaranteed by';
+
+  @override
+  String get ptWarrantyFrom => 'Starts';
+
+  @override
+  String get ptWarrantyNumber => 'Warranty no.';
 }

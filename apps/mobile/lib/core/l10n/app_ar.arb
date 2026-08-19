@@ -475,5 +475,95 @@
   "spReturned": "مرتجع",
   "spNoOrders": "لا توجد طلبات بعد",
   "spNoTrade": "لا توجد حسابات آجلة — تأتي طلبات الورش هنا للاعتماد.",
-  "spBeFirst": "لا عروض بعد — كن الأول"
+  "spBeFirst": "لا عروض بعد — كن الأول",
+  "reqHubTitle": "كيف نساعدك؟",
+  "reqHubBody": "اختر ما تحتاجه الآن — نتكفّل بالباقي.",
+  "reqPart": "أطلب قطعة غيار",
+  "reqPartBody": "نرسل طلبك للورش والتشاليح والوكلاء، وتختار أنت أفضل عرض.",
+  "reqTow": "أطلب سطحة",
+  "reqTowBody": "نقل سيارتك إلى الورشة بسعر معروف مسبقاً.",
+  "reqMyRequests": "طلبات القطع",
+  "reqMyTows": "طلبات السطحة",
+  "reqPartVehicle": "السيارة",
+  "reqPartAnyVehicle": "بدون تحديد سيارة",
+  "reqPartSend": "أرسل الطلب",
+  "towTitle": "سطحة",
+  "towRequestAction": "أطلب السطحة",
+  "towRequested": "أرسلنا طلبك — سيصلك السائق قريباً.",
+  "towNoHiddenFees": "سعر واضح مسبقاً",
+  "towQuoteHint": "حدّد موقع سيارتك والوجهة ليظهر السعر.",
+  "towCalculating": "نحسب السعر…",
+  "towQuoteLine": "{km} كم · وصول خلال {minutes} دقيقة تقريباً",
+  "@towQuoteLine": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towVehicle": "سيارتك",
+  "towNoVehicle": "بدون تحديد سيارة",
+  "towFrom": "من أين؟",
+  "towTo": "إلى أين؟",
+  "towPickupAddress": "وصف الموقع",
+  "towPickupHint": "مثال: طريق الملك فهد، بعد مخرج 12",
+  "towDropoffAddress": "وصف الوجهة",
+  "towDropoffHint": "مثال: ورشة النور — الصناعية الثانية",
+  "towLocationLink": "رابط الموقع أو الإحداثيات",
+  "towLinkHelp": "الصق رابط الموقع من الخرائط، أو اكتب الإحداثيات.",
+  "towLinkUnreadable": "لم نتمكن من قراءة الموقع — الصق الرابط الكامل أو الإحداثيات.",
+  "towTruckType": "نوع السطحة",
+  "towTypeFlatbed": "سطحة عادية",
+  "towTypeWheelLift": "رافعة عجلات",
+  "towTypeHeavy": "سطحة ثقيلة",
+  "towNotes": "ملاحظات",
+  "towNotesHint": "مثال: السيارة لا تدور",
+  "towProgress": "مسار الطلب",
+  "towRoute": "المسار",
+  "towDriver": "السائق",
+  "towEta": "{minutes} دقيقة",
+  "@towEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towKm": "{km} كم",
+  "@towKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "towRequestedAt": "وقت الطلب",
+  "towCancelTitle": "إلغاء طلب السطحة",
+  "towCancelBody": "يمكن الإلغاء قبل تحميل السيارة فقط.",
+  "towCancelReason": "السبب (اختياري)",
+  "towCancelAction": "إلغاء الطلب",
+  "towStatusRequested": "بانتظار سائق",
+  "towStatusSearching": "نبحث عن أقرب سطحة",
+  "towStatusAssigned": "تم تعيين سائق",
+  "towStatusEnRoutePickup": "السائق في طريقه إليك",
+  "towStatusPickedUp": "سيارتك على السطحة",
+  "towStatusEnRouteDropoff": "في الطريق إلى الوجهة",
+  "towStatusDelivered": "تم التسليم",
+  "towStatusCompleted": "اكتمل",
+  "towStatusCancelled": "ملغى",
+  "towStatusFailed": "تعذّر التنفيذ",
+  "towEmptyTitle": "لا توجد طلبات سطحة",
+  "towEmptyBody": "اطلب سطحة عندما تحتاج نقل سيارتك.",
+  "ptCheapest": "الأرخص",
+  "ptFastest": "الأسرع",
+  "ptLongestWarranty": "أطول ضمان",
+  "ptWarrantiesEmptyTitle": "لا توجد ضمانات بعد",
+  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.",
+  "ptWarrantyActive": "ساري",
+  "ptWarrantyIssuer": "الجهة الضامنة",
+  "ptWarrantyFrom": "يبدأ",
+  "ptWarrantyNumber": "رقم الضمان"
 }

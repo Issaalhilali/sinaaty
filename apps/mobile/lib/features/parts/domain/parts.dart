@@ -15,3 +15,34 @@ class TradeAccount { final String id; final String sellerOrgId; final String buy
 class SerialVerify { final bool genuine; final bool alert; final String? status; final String? serialNumber; final String? partNameAr; final String? partNumber; final String? brandAr; final String? issuerAr; final String messageAr; final String messageEn; const SerialVerify({required this.genuine, required this.alert, this.status, this.serialNumber, this.partNameAr, this.partNumber, this.brandAr, this.issuerAr, required this.messageAr, required this.messageEn}); }
 class Warranty { final String id; final String number; final String covers; final String coverageAr; final DateTime startsAt; final DateTime endsAt; final String status; final String? partOrderId; final String? vehicleId; final String? issuerAr; const Warranty({required this.id, required this.number, required this.covers, required this.coverageAr, required this.startsAt, required this.endsAt, required this.status, this.partOrderId, this.vehicleId, this.issuerAr}); bool get valid => status == 'active' && endsAt.isAfter(DateTime.now()); }
 class InventoryItem { final String id; final String titleAr; final String? partNumber; final String condition; final String? price; final String? tradePrice; final int quantity; final int reservedQty; final String? externalSku; const InventoryItem({required this.id, required this.titleAr, this.partNumber, required this.condition, this.price, this.tradePrice, required this.quantity, required this.reservedQty, this.externalSku}); }
+
+/// Which bid wins on which axis — the customer compares three things and nothing else:
+/// price, how soon it arrives, and how long it is guaranteed. Ties give every tied bid the tag.
+enum BidHighlight { cheapest, fastest, longestWarranty }
+
+Map<String, Set<BidHighlight>> bidHighlights(List<PartBid> bids) {
+  final live = bids.where((b) => b.status == 'submitted' || b.status == 'accepted').toList();
+  final out = <String, Set<BidHighlight>>{};
+  if (live.length < 2) return out;
+  void mark(BidHighlight h, Iterable<PartBid> winners) { for (final b in winners) { out.putIfAbsent(b.id, () => <BidHighlight>{}).add(h); } }
+  final prices = live.map((b) => double.tryParse(b.unitPrice) ?? double.infinity).toList();
+  final min = prices.reduce((a, b) => a < b ? a : b);
+  if (min.isFinite) mark(BidHighlight.cheapest, live.where((b) => (double.tryParse(b.unitPrice) ?? double.infinity) == min));
+  final withEta = live.where((b) => b.etaHours != null).toList();
+  if (withEta.isNotEmpty) { final fastest = withEta.map((b) => b.etaHours!).reduce((a, b) => a < b ? a : b); mark(BidHighlight.fastest, withEta.where((b) => b.etaHours == fastest)); }
+  final maxW = live.map((b) => b.warrantyDays).reduce((a, b) => a > b ? a : b);
+  if (maxW > 0) mark(BidHighlight.longestWarranty, live.where((b) => b.warrantyDays == maxW));
+  return out;
+}
+
+/// Cheapest first — the order the customer expects when comparing offers.
+List<PartBid> sortedForCompare(List<PartBid> bids) {
+  final list = [...bids];
+  list.sort((a, b) {
+    int rank(PartBid x) => x.status == 'accepted' ? 0 : x.status == 'submitted' ? 1 : 2;
+    final r = rank(a).compareTo(rank(b));
+    if (r != 0) return r;
+    return (double.tryParse(a.unitPrice) ?? double.infinity).compareTo(double.tryParse(b.unitPrice) ?? double.infinity);
+  });
+  return list;
+}

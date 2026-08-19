@@ -53,4 +53,8 @@
 | Accept `suggested_items` into the work order in one tap (API returns them; the app must post them) | Step 21 | avoids cross-module item writes from the accidents module | Step 22/23 |
 | Attach check-out photos to the accident claim file | Step 21 | photo count is sent; upload needs the provider's attachment API | after the agreement is signed |
 | Scheduled refresh of open accident files (assessment lands days later) | Step 21 | manual refresh endpoint exists | Step 25 |
+| Tow: «استخدم موقعي الحالي» + map picker (needs a location plugin + platform permissions) | Step 23 | pasted maps link / coordinates covers the pilot | Step 25 |
+| Tow: pick the destination workshop from the nearby list instead of typing it | Step 23 | discovery API exists; mobile has no orgs repository yet | Step 23b/26 |
+| Live tow tracking on a map (the API already streams `transport:{id}`) | Step 23 | status timeline + refresh for now | Step 30 |
+| Warranty claim from the wallet (open a claim on a warranty) | Step 23 | API supports claims; screen lists warranties only | Step 26 |
 

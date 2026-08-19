@@ -1,3 +1,4 @@
+import '../../features/parts/domain/parts.dart';
 import 'app_localizations.dart';
 /// Enum → localized label (keeps Arabic out of widgets; ARB is the source).
 abstract final class Labels {
@@ -7,5 +8,7 @@ abstract final class Labels {
   static String condition(L10n l, String s) => switch (s) { 'oem_new' => l.ptCondOem, 'aftermarket_new' => l.ptCondAftermarket, 'used_scrapyard' => l.ptCondUsed, 'refurbished' => l.ptCondRefurb, _ => s };
   static String partOrderStatus(L10n l, String s) => switch (s) { 'pending_payment' => l.spAwaitingPayment, 'paid' => l.spPaid, 'preparing' => l.spPreparing, 'shipped' => l.spShip, 'delivered' => l.spDelivered, 'installed' => l.ptInstalled, 'confirmed' => l.spConfirmed, 'cancelled' => l.spCancelled, 'disputed' => l.spDisputed, 'returned' => l.spReturned, _ => s };
   static String covers(L10n l, String s) => switch (s) { 'part' => l.ptWarrantyPart, 'labor' => l.ptWarrantyLabor, _ => l.ptWarrantyBoth };
+  static String transportStatus(L10n l, String s) => switch (s) { 'requested' => l.towStatusRequested, 'searching' => l.towStatusSearching, 'assigned' => l.towStatusAssigned, 'en_route_pickup' => l.towStatusEnRoutePickup, 'picked_up' => l.towStatusPickedUp, 'en_route_dropoff' => l.towStatusEnRouteDropoff, 'delivered' => l.towStatusDelivered, 'completed' => l.towStatusCompleted, 'cancelled' => l.towStatusCancelled, 'failed' => l.towStatusFailed, _ => s };
+  static String bidHighlight(L10n l, BidHighlight h) => switch (h) { BidHighlight.cheapest => l.ptCheapest, BidHighlight.fastest => l.ptFastest, BidHighlight.longestWarranty => l.ptLongestWarranty };
   static String terms(L10n l, String s) => switch (s) { 'prepaid' => l.termsPrepaid, 'on_delivery' => l.termsOnDelivery, 'deferred' => l.termsDeferred, 'installments' => l.termsInstallments, 'fleet_monthly' => l.termsFleetMonthly, _ => s };
 }

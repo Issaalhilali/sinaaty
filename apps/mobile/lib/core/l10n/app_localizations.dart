@@ -2034,6 +2034,402 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'لا عروض بعد — كن الأول'**
   String get spBeFirst;
+
+  /// No description provided for @reqHubTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف نساعدك؟'**
+  String get reqHubTitle;
+
+  /// No description provided for @reqHubBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر ما تحتاجه الآن — نتكفّل بالباقي.'**
+  String get reqHubBody;
+
+  /// No description provided for @reqPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطلب قطعة غيار'**
+  String get reqPart;
+
+  /// No description provided for @reqPartBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نرسل طلبك للورش والتشاليح والوكلاء، وتختار أنت أفضل عرض.'**
+  String get reqPartBody;
+
+  /// No description provided for @reqTow.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطلب سطحة'**
+  String get reqTow;
+
+  /// No description provided for @reqTowBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقل سيارتك إلى الورشة بسعر معروف مسبقاً.'**
+  String get reqTowBody;
+
+  /// No description provided for @reqMyRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات القطع'**
+  String get reqMyRequests;
+
+  /// No description provided for @reqMyTows.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات السطحة'**
+  String get reqMyTows;
+
+  /// No description provided for @reqPartVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'السيارة'**
+  String get reqPartVehicle;
+
+  /// No description provided for @reqPartAnyVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون تحديد سيارة'**
+  String get reqPartAnyVehicle;
+
+  /// No description provided for @reqPartSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الطلب'**
+  String get reqPartSend;
+
+  /// No description provided for @towTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة'**
+  String get towTitle;
+
+  /// No description provided for @towRequestAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطلب السطحة'**
+  String get towRequestAction;
+
+  /// No description provided for @towRequested.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسلنا طلبك — سيصلك السائق قريباً.'**
+  String get towRequested;
+
+  /// No description provided for @towNoHiddenFees.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر واضح مسبقاً'**
+  String get towNoHiddenFees;
+
+  /// No description provided for @towQuoteHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّد موقع سيارتك والوجهة ليظهر السعر.'**
+  String get towQuoteHint;
+
+  /// No description provided for @towCalculating.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحسب السعر…'**
+  String get towCalculating;
+
+  /// No description provided for @towQuoteLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'{km} كم · وصول خلال {minutes} دقيقة تقريباً'**
+  String towQuoteLine(String km, int minutes);
+
+  /// No description provided for @towVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك'**
+  String get towVehicle;
+
+  /// No description provided for @towNoVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدون تحديد سيارة'**
+  String get towNoVehicle;
+
+  /// No description provided for @towFrom.
+  ///
+  /// In ar, this message translates to:
+  /// **'من أين؟'**
+  String get towFrom;
+
+  /// No description provided for @towTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى أين؟'**
+  String get towTo;
+
+  /// No description provided for @towPickupAddress.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصف الموقع'**
+  String get towPickupAddress;
+
+  /// No description provided for @towPickupHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: طريق الملك فهد، بعد مخرج 12'**
+  String get towPickupHint;
+
+  /// No description provided for @towDropoffAddress.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصف الوجهة'**
+  String get towDropoffAddress;
+
+  /// No description provided for @towDropoffHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: ورشة النور — الصناعية الثانية'**
+  String get towDropoffHint;
+
+  /// No description provided for @towLocationLink.
+  ///
+  /// In ar, this message translates to:
+  /// **'رابط الموقع أو الإحداثيات'**
+  String get towLocationLink;
+
+  /// No description provided for @towLinkHelp.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصق رابط الموقع من الخرائط، أو اكتب الإحداثيات.'**
+  String get towLinkHelp;
+
+  /// No description provided for @towLinkUnreadable.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم نتمكن من قراءة الموقع — الصق الرابط الكامل أو الإحداثيات.'**
+  String get towLinkUnreadable;
+
+  /// No description provided for @towTruckType.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع السطحة'**
+  String get towTruckType;
+
+  /// No description provided for @towTypeFlatbed.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة عادية'**
+  String get towTypeFlatbed;
+
+  /// No description provided for @towTypeWheelLift.
+  ///
+  /// In ar, this message translates to:
+  /// **'رافعة عجلات'**
+  String get towTypeWheelLift;
+
+  /// No description provided for @towTypeHeavy.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة ثقيلة'**
+  String get towTypeHeavy;
+
+  /// No description provided for @towNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات'**
+  String get towNotes;
+
+  /// No description provided for @towNotesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: السيارة لا تدور'**
+  String get towNotesHint;
+
+  /// No description provided for @towProgress.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسار الطلب'**
+  String get towProgress;
+
+  /// No description provided for @towRoute.
+  ///
+  /// In ar, this message translates to:
+  /// **'المسار'**
+  String get towRoute;
+
+  /// No description provided for @towDriver.
+  ///
+  /// In ar, this message translates to:
+  /// **'السائق'**
+  String get towDriver;
+
+  /// No description provided for @towEta.
+  ///
+  /// In ar, this message translates to:
+  /// **'{minutes} دقيقة'**
+  String towEta(int minutes);
+
+  /// No description provided for @towKm.
+  ///
+  /// In ar, this message translates to:
+  /// **'{km} كم'**
+  String towKm(String km);
+
+  /// No description provided for @towRequestedAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقت الطلب'**
+  String get towRequestedAt;
+
+  /// No description provided for @towCancelTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء طلب السطحة'**
+  String get towCancelTitle;
+
+  /// No description provided for @towCancelBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'يمكن الإلغاء قبل تحميل السيارة فقط.'**
+  String get towCancelBody;
+
+  /// No description provided for @towCancelReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب (اختياري)'**
+  String get towCancelReason;
+
+  /// No description provided for @towCancelAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء الطلب'**
+  String get towCancelAction;
+
+  /// No description provided for @towStatusRequested.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار سائق'**
+  String get towStatusRequested;
+
+  /// No description provided for @towStatusSearching.
+  ///
+  /// In ar, this message translates to:
+  /// **'نبحث عن أقرب سطحة'**
+  String get towStatusSearching;
+
+  /// No description provided for @towStatusAssigned.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تعيين سائق'**
+  String get towStatusAssigned;
+
+  /// No description provided for @towStatusEnRoutePickup.
+  ///
+  /// In ar, this message translates to:
+  /// **'السائق في طريقه إليك'**
+  String get towStatusEnRoutePickup;
+
+  /// No description provided for @towStatusPickedUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك على السطحة'**
+  String get towStatusPickedUp;
+
+  /// No description provided for @towStatusEnRouteDropoff.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق إلى الوجهة'**
+  String get towStatusEnRouteDropoff;
+
+  /// No description provided for @towStatusDelivered.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التسليم'**
+  String get towStatusDelivered;
+
+  /// No description provided for @towStatusCompleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتمل'**
+  String get towStatusCompleted;
+
+  /// No description provided for @towStatusCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغى'**
+  String get towStatusCancelled;
+
+  /// No description provided for @towStatusFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر التنفيذ'**
+  String get towStatusFailed;
+
+  /// No description provided for @towEmptyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد طلبات سطحة'**
+  String get towEmptyTitle;
+
+  /// No description provided for @towEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب سطحة عندما تحتاج نقل سيارتك.'**
+  String get towEmptyBody;
+
+  /// No description provided for @ptCheapest.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأرخص'**
+  String get ptCheapest;
+
+  /// No description provided for @ptFastest.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسرع'**
+  String get ptFastest;
+
+  /// No description provided for @ptLongestWarranty.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطول ضمان'**
+  String get ptLongestWarranty;
+
+  /// No description provided for @ptWarrantiesEmptyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ضمانات بعد'**
+  String get ptWarrantiesEmptyTitle;
+
+  /// No description provided for @ptWarrantiesEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.'**
+  String get ptWarrantiesEmptyBody;
+
+  /// No description provided for @ptWarrantyActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'ساري'**
+  String get ptWarrantyActive;
+
+  /// No description provided for @ptWarrantyIssuer.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجهة الضامنة'**
+  String get ptWarrantyIssuer;
+
+  /// No description provided for @ptWarrantyFrom.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبدأ'**
+  String get ptWarrantyFrom;
+
+  /// No description provided for @ptWarrantyNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الضمان'**
+  String get ptWarrantyNumber;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -475,5 +475,95 @@
   "spReturned": "Returned",
   "spNoOrders": "No orders yet",
   "spNoTrade": "No trade accounts — workshop requests land here for approval.",
-  "spBeFirst": "No bids yet — be first"
+  "spBeFirst": "No bids yet — be first",
+  "reqHubTitle": "How can we help?",
+  "reqHubBody": "Pick what you need now — we handle the rest.",
+  "reqPart": "Request a part",
+  "reqPartBody": "We send your request to workshops, scrapyards and dealers; you pick the best offer.",
+  "reqTow": "Request a tow truck",
+  "reqTowBody": "Move your car to the workshop at a price you know up front.",
+  "reqMyRequests": "Part requests",
+  "reqMyTows": "Tow requests",
+  "reqPartVehicle": "Vehicle",
+  "reqPartAnyVehicle": "No specific vehicle",
+  "reqPartSend": "Send request",
+  "towTitle": "Tow truck",
+  "towRequestAction": "Request the tow",
+  "towRequested": "Request sent — a driver will be with you shortly.",
+  "towNoHiddenFees": "Price known up front",
+  "towQuoteHint": "Set where your car is and where it goes to see the price.",
+  "towCalculating": "Calculating the price…",
+  "towQuoteLine": "{km} km · about {minutes} minutes away",
+  "@towQuoteLine": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towVehicle": "Your car",
+  "towNoVehicle": "No specific vehicle",
+  "towFrom": "From",
+  "towTo": "To",
+  "towPickupAddress": "Location description",
+  "towPickupHint": "e.g. King Fahd Road, after exit 12",
+  "towDropoffAddress": "Destination description",
+  "towDropoffHint": "e.g. Al Noor Workshop — Industrial 2",
+  "towLocationLink": "Location link or coordinates",
+  "towLinkHelp": "Paste the location link from Maps, or type the coordinates.",
+  "towLinkUnreadable": "We could not read that location — paste the full link or the coordinates.",
+  "towTruckType": "Truck type",
+  "towTypeFlatbed": "Flatbed",
+  "towTypeWheelLift": "Wheel lift",
+  "towTypeHeavy": "Heavy tow",
+  "towNotes": "Notes",
+  "towNotesHint": "e.g. the car will not start",
+  "towProgress": "Progress",
+  "towRoute": "Route",
+  "towDriver": "Driver",
+  "towEta": "{minutes} min",
+  "@towEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towKm": "{km} km",
+  "@towKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "towRequestedAt": "Requested at",
+  "towCancelTitle": "Cancel the tow",
+  "towCancelBody": "Cancelling is possible only before the car is loaded.",
+  "towCancelReason": "Reason (optional)",
+  "towCancelAction": "Cancel request",
+  "towStatusRequested": "Waiting for a driver",
+  "towStatusSearching": "Finding the nearest truck",
+  "towStatusAssigned": "Driver assigned",
+  "towStatusEnRoutePickup": "Driver on the way to you",
+  "towStatusPickedUp": "Your car is on the truck",
+  "towStatusEnRouteDropoff": "On the way to the destination",
+  "towStatusDelivered": "Delivered",
+  "towStatusCompleted": "Completed",
+  "towStatusCancelled": "Cancelled",
+  "towStatusFailed": "Could not be completed",
+  "towEmptyTitle": "No tow requests",
+  "towEmptyBody": "Request a tow when your car needs moving.",
+  "ptCheapest": "Cheapest",
+  "ptFastest": "Fastest",
+  "ptLongestWarranty": "Longest warranty",
+  "ptWarrantiesEmptyTitle": "No warranties yet",
+  "ptWarrantiesEmptyBody": "Every part installed through Sinaaty arrives with a digital warranty here.",
+  "ptWarrantyActive": "Active",
+  "ptWarrantyIssuer": "Guaranteed by",
+  "ptWarrantyFrom": "Starts",
+  "ptWarrantyNumber": "Warranty no."
 }
