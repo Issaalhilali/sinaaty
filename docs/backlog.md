@@ -29,6 +29,8 @@
 | Customer parts request + bids compare + warranty wallet screens | Step 22 | workshop flows first | Step 23 |
 | Driver job list/tracking screens | Step 22 | logistics module not built | Step 19 |
 | Maker/checker (two-person) approval on escrow refunds | Step 15 | single reason-gated action + audit for pilot; needs an approvals table | Step 16 |
-| Disputes room UI (evidence, messages, decision) | Step 15 | disputes module not built | Step 16 |
 | Outbox integration_requests hardcode provider='nafez' (skews the integrations-by-provider table) | Step 15 | cosmetic in monitor; add an 'internal' provider enum value | Step 17 |
 | Admin 2FA beyond OTP (TOTP/WebAuthn for platform staff) | Step 15 | OTP is the second factor today | Step 24 |
+| Dispute evidence thumbnails in admin (presigned GET) | Step 16 | media ids listed; storage mock has no bytes | Step 17 |
+| Customer/partner dispute screens in the apps (open + chat) | Step 16 | API + admin room done; mobile UI pending | Step 23 |
+| `replace_part` / `no_action` decisions leave escrow frozen until a follow-up decision | Step 16 | intentional (documented), needs a 'pending follow-up' badge in admin | Step 17 |

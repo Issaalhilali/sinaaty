@@ -26,6 +26,6 @@ import { AdminPaymentsController, PaymentsController } from './interface/http/pa
     { provide: PSP_PORT, inject: [AppConfig, PspMockAdapter], useFactory: (c: AppConfig, mock: PspMockAdapter) => { if (c.get('INTEGRATION_PSP') !== 'mock') throw new Error('PSP live adapter not implemented — set INTEGRATION_PSP=mock'); return mock; } },
     { provide: PSP_DEV_HOOK_PORT, inject: [AppConfig, PspMockAdapter], useFactory: (c: AppConfig, mock: PspMockAdapter) => (c.get('INTEGRATION_PSP') === 'mock' ? mock : { makeWebhook: () => { throw new Error('dev hook unavailable in live'); } }) },
   ],
-  exports: [EscrowService, LEDGER_REPOSITORY, ESCROW_REPOSITORY, PAYMENT_REPOSITORY],
+  exports: [EscrowService, EscrowUseCases, LEDGER_REPOSITORY, ESCROW_REPOSITORY, PAYMENT_REPOSITORY],
 })
 export class PaymentsModule {}

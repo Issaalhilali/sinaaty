@@ -4,6 +4,7 @@ import { ORGANIZATION_REPOSITORY, type OrganizationRepository } from '../../../o
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../../work-orders/domain/repositories';
 import { NotificationService } from '../notification.service';
 
+const str = (v: unknown) => (typeof v === 'string' ? v : '');
 const money = (v: unknown) => Number(v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
 /**
  * Event → recipients → template. One handler per event; each is idempotent (dedupe on user+template+key).
@@ -20,6 +21,13 @@ export class NotificationOutboxHandlers implements OnModuleInit {
 
   onModuleInit() {
     const on = (event: string, name: string, fn: (ev: OutboxEnvelope) => Promise<void>) => this.registry.on(event, `notifications.${name}`, async (ev) => { try { await fn(ev); } catch (e) { this.log.warn(`${event} → ${name}: ${(e as Error).message}`); throw e; } });
+    const DECISION: Record<string, string> = { release_to_provider: 'تحرير المبلغ للمزوّد', refund_customer: 'استرداد كامل للعميل', split: 'تسوية بتقسيم المبلغ', replace_part: 'استبدال القطعة', no_action: 'بلا إجراء مالي' };
+    const disputeParties = async (p: Record<string, unknown>) => { const ids: string[] = []; if (typeof p['openedByUserId'] === 'string') ids.push(p['openedByUserId']); if (typeof p['respondentUserId'] === 'string') ids.push(p['respondentUserId']); for (const k of ['claimantOrgId', 'respondentOrgId']) if (typeof p[k] === 'string') ids.push(...(await this.orgStaff(p[k]))); return [...new Set(ids)]; };
+    const disputeRef = (p: Record<string, unknown>) => (typeof p['workOrderId'] === 'string' ? 'أمر إصلاح' : 'طلب قطع');
+    on('DisputeOpened', 'dispute-opened', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await disputeParties(p), { template: 'dispute.opened', data: { id: ev.aggregateId, number: str(p['number']), ref: disputeRef(p) }, dedupeKey: `dispute.opened:${ev.aggregateId}` }); });
+    on('DisputeMessagePosted', 'dispute-message', async (ev) => { const p = ev.payload; const author = p['authorUserId']; const ids = (await disputeParties(p)).filter((x) => x !== p['authorUserId']);
+      void author; await this.notify.notifyMany(ids, { template: 'dispute.message', data: { id: ev.aggregateId, number: str(p['number']) } }); });
+    on('DisputeResolved', 'dispute-resolved', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await disputeParties(p), { template: 'dispute.resolved', data: { id: ev.aggregateId, number: str(p['number']), decision: DECISION[str(p['resolution'])] ?? str(p['resolution']), to_customer: money(p['toCustomer']), to_provider: money(p['toProvider']) }, dedupeKey: `dispute.resolved:${ev.aggregateId}` }); });
 
     on('WorkOrderCreated', 'wo-created', async (ev) => { const c = await this.woCtx(ev.aggregateId); if (!c) return; await this.notify.notifyMany(await this.customers(c.wo), { template: 'wo.created', data: { id: c.wo.id, number: c.wo.number, org: c.org, vehicle: 'سيارتك' }, dedupeKey: `wo.created:${c.wo.id}` }); });
     on('WorkOrderApprovalRequested', 'wo-approval', async (ev) => { const c = await this.woCtx(ev.aggregateId); if (!c) return; const v = Number(ev.payload['version'] ?? c.wo.currentVersion); const tpl = v > 1 ? 'wo.change_order' : 'wo.awaiting_approval'; await this.notify.notifyMany(await this.customers(c.wo), { template: tpl, data: { id: c.wo.id, number: c.wo.number, org: c.org, total: money(ev.payload['total'] ?? c.wo.total), version: v, link: typeof ev.payload['approvalUrl'] === 'string' ? ` ${ev.payload['approvalUrl']}` : '' }, dedupeKey: `${tpl}:${c.wo.id}:v${v}` }); });

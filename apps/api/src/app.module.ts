@@ -20,6 +20,7 @@ import { PromissoryNotesModule } from './modules/promissory-notes/promissory-not
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PartsModule } from './modules/parts/parts.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { DisputesModule } from './modules/disputes/disputes.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard';
 
@@ -48,6 +49,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     PromissoryNotesModule,
     PartsModule,
     AdminModule,
+    DisputesModule,
     NotificationsModule,
   ],
   providers: [

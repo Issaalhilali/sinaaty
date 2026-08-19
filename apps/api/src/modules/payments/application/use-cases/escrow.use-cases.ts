@@ -43,5 +43,17 @@ export class EscrowUseCases {
     await this.payments.update(payment.id, { refundedAmount: (Number(payment.refundedAmount) + Number(amount)).toFixed(2), status: Number(payment.refundedAmount) + Number(amount) >= Number(payment.amount) ? 'refunded' : 'partially_refunded' });
     return { refund_id: refundId, psp_refund_id: r.refundId, amount, status: r.status };
   }
+  /**
+   * PSP side of a refund whose ledger entry was already posted inside another module's transaction
+   * (dispute decisions do the ledger + state atomically, then settle with the provider here).
+   */
+  async settleRefundWithPsp(holdId: string, refundId: string, amount: string, reason: string) {
+    const hold = await this.holds.findById(holdId); if (!hold) return null;
+    const payment = await this.payments.findById(hold.paymentId); if (!payment) return null;
+    const r = payment.pspChargeId ? await this.psp.refund(payment.pspChargeId, amount, reason) : { refundId, status: 'succeeded' as const };
+    const refunded = (Number(payment.refundedAmount) + Number(amount)).toFixed(2);
+    await this.payments.update(payment.id, { refundedAmount: refunded, status: Number(refunded) >= Number(payment.amount) ? 'refunded' : 'partially_refunded' });
+    return { psp_refund_id: r.refundId, status: r.status, amount };
+  }
   async get(u: AuthUser, holdId: string) { const h = await this.holds.findById(holdId); if (!h) throw new AppError('NOT_FOUND'); if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === h.beneficiaryOrgId)) { const p = await this.payments.findById(h.paymentId); if (p?.payerUserId !== u.id) throw new AppError('FORBIDDEN'); } return h; }
 }
