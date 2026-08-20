@@ -25,7 +25,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l = L10n.of(context); final t = Theme.of(context);
     return Scaffold(body: SafeArea(child: Padding(padding: const EdgeInsets.all(SinaatySpace.xl), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       const Spacer(), const _Logo(), const SizedBox(height: SinaatySpace.xl),
-      const BrandMark(size: 56), const SizedBox(height: SinaatySpace.xl), Text(l.loginTitle, style: t.textTheme.headlineMedium), const SizedBox(height: SinaatySpace.sm), Text(l.loginSubtitle, style: t.textTheme.bodyMedium?.copyWith(color: t.colorScheme.onSurfaceVariant)),
+      Text(l.loginTitle, style: t.textTheme.headlineMedium), const SizedBox(height: SinaatySpace.sm), Text(l.loginSubtitle, style: t.textTheme.bodyMedium?.copyWith(color: t.colorScheme.onSurfaceVariant)),
       const SizedBox(height: SinaatySpace.xl),
       TextField(controller: _phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, textAlign: TextAlign.left, autofillHints: const [AutofillHints.telephoneNumber], inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+٠-٩ ]'))], decoration: InputDecoration(labelText: l.phoneLabel, hintText: l.phoneHint, errorText: _error, prefixIcon: const Icon(Icons.phone_iphone)), onSubmitted: (_) => _send()),
       const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.sendCode, onPressed: _send, loading: _loading),
@@ -34,4 +34,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ]))));
   }
 }
-class _Logo extends StatelessWidget { const _Logo(); @override Widget build(BuildContext context) { final c = Theme.of(context).colorScheme; return Row(children: [Container(width: 44, height: 44, decoration: BoxDecoration(color: c.primary, borderRadius: BorderRadius.circular(12)), child: Icon(Icons.check_rounded, color: c.onPrimary)), const SizedBox(width: 12), Text(L10n.of(context).appName, style: Theme.of(context).textTheme.titleLarge)]); } }
+class _Logo extends StatelessWidget { const _Logo(); @override Widget build(BuildContext context) => Row(children: [const BrandMark(size: 44), const SizedBox(width: 12), Text(L10n.of(context).appName, style: Theme.of(context).textTheme.titleLarge)]); }
