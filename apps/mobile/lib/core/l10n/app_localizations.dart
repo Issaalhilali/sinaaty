@@ -1027,6 +1027,12 @@ abstract class L10n {
   /// **'تم'**
   String get approveDone;
 
+  /// No description provided for @approveNotPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد ما يتطلب اعتمادك في هذا الأمر الآن — حالته موضحة أعلاه.'**
+  String get approveNotPending;
+
   /// No description provided for @payHint.
   ///
   /// In ar, this message translates to:
@@ -1380,6 +1386,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'قطع لهذه السيارة'**
   String get wsPartsSoon;
+
+  /// No description provided for @wsPartsSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل رقم الهيكل في الأعلى لترى القطع المتوفرة لسيارتك بأسعارها الحية.'**
+  String get wsPartsSearchHint;
 
   /// No description provided for @wsPartsSoonBody.
   ///
@@ -1890,6 +1902,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'قُبل عرضك'**
   String get spWon;
+
+  /// No description provided for @spNoRequestsBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ستصلك إشعارات فور وجود طلب قريب يناسب قطعك — لا حاجة للمتابعة اليدوية.'**
+  String get spNoRequestsBody;
 
   /// No description provided for @spLost.
   ///

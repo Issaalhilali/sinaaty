@@ -232,6 +232,7 @@
   },
   "nafathNumber": "Nafath number",
   "approveDone": "Done",
+  "approveNotPending": "Nothing here needs your approval right now — the current status is shown above.",
   "payHint": "Secure payment — the amount stays held until you receive your car.",
   "clearanceIssued": "Clearance {number} issued",
   "@clearanceIssued": {
@@ -315,6 +316,7 @@
   "wsPayouts": "Payouts",
   "wsNoPayouts": "No payouts yet — scheduled automatically when balance is available.",
   "wsPartsSoon": "Parts for this car",
+  "wsPartsSearchHint": "Enter the VIN above to see live-priced parts for this car.",
   "wsPartsSoonBody": "Coming soon: search by VIN, buy from distributors on a secured trade account, or open a scrapyard auction.",
   "wsOrders": "Orders",
   "wsActive": "Active",
@@ -435,6 +437,7 @@
   "spNotes": "Notes",
   "spBidSent": "Bid sent — we'll tell you when accepted",
   "spWon": "Accepted",
+  "spNoRequestsBody": "You will be notified the moment a nearby request matches your parts.",
   "spLost": "Not accepted",
   "spOrdersToFulfil": "Orders to fulfil",
   "spPreparing": "Prepare",

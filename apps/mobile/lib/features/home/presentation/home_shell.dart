@@ -47,7 +47,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       (AppFlavor.partner, 1) => const OrdersScreen(),
       (AppFlavor.partner, 2) => const WorkshopPartsScreen(),
       (AppFlavor.partner, 3) => const OrgWalletScreen(),
-      _ => EmptyState(icon: Icons.hourglass_empty, title: l.comingSoon, body: me?.phone ?? ''),
+      _ => EmptyState(icon: Icons.hourglass_empty, title: l.comingSoon, body: ''),
     };
     final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
     return AppScaffold(title: title, subtitle: _index == 0 && name.isNotEmpty ? '${l.welcomeBack} $name' : null, leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,

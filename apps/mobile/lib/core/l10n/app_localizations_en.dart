@@ -506,6 +506,10 @@ class L10nEn extends L10n {
   String get approveDone => 'Done';
 
   @override
+  String get approveNotPending =>
+      'Nothing here needs your approval right now — the current status is shown above.';
+
+  @override
   String get payHint =>
       'Secure payment — the amount stays held until you receive your car.';
 
@@ -692,6 +696,10 @@ class L10nEn extends L10n {
 
   @override
   String get wsPartsSoon => 'Parts for this car';
+
+  @override
+  String get wsPartsSearchHint =>
+      'Enter the VIN above to see live-priced parts for this car.';
 
   @override
   String get wsPartsSoonBody =>
@@ -964,6 +972,10 @@ class L10nEn extends L10n {
 
   @override
   String get spWon => 'Accepted';
+
+  @override
+  String get spNoRequestsBody =>
+      'You will be notified the moment a nearby request matches your parts.';
 
   @override
   String get spLost => 'Not accepted';

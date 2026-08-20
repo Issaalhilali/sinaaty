@@ -505,6 +505,10 @@ class L10nAr extends L10n {
   String get approveDone => 'تم';
 
   @override
+  String get approveNotPending =>
+      'لا يوجد ما يتطلب اعتمادك في هذا الأمر الآن — حالته موضحة أعلاه.';
+
+  @override
   String get payHint => 'الدفع آمن — يبقى المبلغ محفوظاً حتى تستلم سيارتك.';
 
   @override
@@ -690,6 +694,10 @@ class L10nAr extends L10n {
 
   @override
   String get wsPartsSoon => 'قطع لهذه السيارة';
+
+  @override
+  String get wsPartsSearchHint =>
+      'أدخل رقم الهيكل في الأعلى لترى القطع المتوفرة لسيارتك بأسعارها الحية.';
 
   @override
   String get wsPartsSoonBody =>
@@ -959,6 +967,10 @@ class L10nAr extends L10n {
 
   @override
   String get spWon => 'قُبل عرضك';
+
+  @override
+  String get spNoRequestsBody =>
+      'ستصلك إشعارات فور وجود طلب قريب يناسب قطعك — لا حاجة للمتابعة اليدوية.';
 
   @override
   String get spLost => 'لم يُقبل';
