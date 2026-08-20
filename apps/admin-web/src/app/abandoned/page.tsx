@@ -34,7 +34,7 @@ export default function AbandonedPage() {
   const exposure = rows.reduce((a, r) => a + Number(r.claim.total), 0);
 
   return (
-    <Shell title="المركبات المهجورة" sub="سيارات جاهزة لم تُستلم — الإنذارات، رسوم الحفظ، والمطالبة">
+    <Shell title="سيارات لم تُستلم" sub="جاهزة ولم يستلمها أصحابها. بعد المهلة والإنذارات تُسجَّل نظاماً «مركبة مهجورة».">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <Kpi value={waiting.length} label="سيارة بانتظار الاستلام" />
         <Kpi value={declared.length} label="مُعلنة مهجورة" tone={declared.length ? 'warn' : undefined} sub={declared.length ? 'تحتاج متابعة تنفيذ' : undefined} />

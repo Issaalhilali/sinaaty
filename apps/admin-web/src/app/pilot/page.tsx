@@ -53,7 +53,7 @@ export default function PilotPage() {
   const f = funnel.data?.work_orders;
 
   return (
-    <Shell title="الطيار" sub="المناطق الصناعية · مفاتيح الميزات · قمع التحويل — آخر ٣٠ يوماً">
+    <Shell title="المناطق والميزات" sub="أين نعمل · أي خدمة مفتوحة لمن · ما الذي يتحوّل إلى دفع — آخر ٣٠ يوماً">
       {funnel.isLoading ? <Loading /> : funnel.error ? <ErrorBox error={funnel.error} retry={() => funnel.refetch()} /> : (
         <>
           <Eyebrow>القمع: من وصول السيارة إلى الدفع</Eyebrow>
