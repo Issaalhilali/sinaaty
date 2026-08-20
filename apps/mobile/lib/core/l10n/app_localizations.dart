@@ -2815,6 +2815,12 @@ abstract class L10n {
   /// **'مرجع التسجيل {ref}'**
   String accSubmittedRef(String ref);
 
+  /// No description provided for @accCoverage.
+  ///
+  /// In ar, this message translates to:
+  /// **'التأمين يغطي {amount}'**
+  String accCoverage(String amount);
+
   /// No description provided for @accActRepair.
   ///
   /// In ar, this message translates to:

@@ -678,6 +678,14 @@
       }
     }
   },
+  "accCoverage": "التأمين يغطي {amount}",
+  "@accCoverage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "accActRepair": "إصلاح",
   "accActReplace": "استبدال",
   "accActPaint": "سمكرة ودهان"

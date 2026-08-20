@@ -138,6 +138,13 @@ class _ReportCard extends StatelessWidget {
   final AccidentReport report;
   const _ReportCard({required this.report});
 
+  /// The customer's slice of (insurer-approved + customer share) — proportion only, never money math.
+  double? get _customerShare {
+    final c = double.tryParse(report.customerEstimatedTotal ?? ''); final a = double.tryParse(report.approvedAmount ?? '');
+    if (c == null || a == null || c + a <= 0) return null;
+    return c / (c + a);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
@@ -155,6 +162,13 @@ class _ReportCard extends StatelessWidget {
         if (report.actionable && report.customerEstimatedTotal != null) ...[
           Text(l.accCustomerPays, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))),
           MoneyText(Fmt.money(report.customerEstimatedTotal!, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
+          // The whole story in one glance: the solid slice is the customer's, the rest the insurer carries.
+          if (_customerShare != null) ...[
+            const SizedBox(height: SinaatySpace.md),
+            SealMeter(value: _customerShare!),
+            const SizedBox(height: SinaatySpace.sm),
+            Text(l.accCoverage(Fmt.money(report.approvedAmount!, locale: locale)), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85))),
+          ],
         ] else
           Text(l.accNotPriced, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .9))),
       ])),
@@ -173,7 +187,7 @@ class _ReportCard extends StatelessWidget {
         const SizedBox(height: SinaatySpace.sm),
         SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.xs), child: Column(children: [
           for (final s in report.suggestedItems)
-            AppListRow(icon: s.type == 'part' ? Icons.settings_input_component_outlined : s.type == 'paint' ? Icons.format_paint_outlined : Icons.build_outlined, title: s.descriptionAr, trailing: Text('× ${s.quantity}', style: t.bodySmall)),
+            AppListRow(icon: s.type == 'part' ? Icons.settings_input_component_outlined : s.type == 'paint' ? Icons.format_paint_outlined : Icons.build_outlined, title: s.descriptionAr, trailing: Text(Fmt.ltr('× ${s.quantity}'), style: t.bodySmall)),
         ])),
       ],
       if (report.submitted && report.repairSubmissionRef != null) ...[

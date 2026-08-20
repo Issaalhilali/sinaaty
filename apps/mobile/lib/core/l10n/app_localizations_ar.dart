@@ -1451,6 +1451,11 @@ class L10nAr extends L10n {
   }
 
   @override
+  String accCoverage(String amount) {
+    return 'التأمين يغطي $amount';
+  }
+
+  @override
   String get accActRepair => 'إصلاح';
 
   @override

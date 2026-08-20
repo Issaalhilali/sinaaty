@@ -1463,6 +1463,11 @@ class L10nEn extends L10n {
   }
 
   @override
+  String accCoverage(String amount) {
+    return 'Insurance covers $amount';
+  }
+
+  @override
   String get accActRepair => 'Repair';
 
   @override
