@@ -1376,4 +1376,86 @@ class L10nAr extends L10n {
 
   @override
   String get flRejectedDone => 'سُجّل الرفض — لن يبدأ العمل';
+
+  @override
+  String get accTitle => 'تقرير الحادث';
+
+  @override
+  String get accSub => 'ملف التأمين المرتبط بهذا الإصلاح';
+
+  @override
+  String get accOpen => 'تقرير الحادث';
+
+  @override
+  String get accLookupLabel => 'رقم بلاغ الحادث';
+
+  @override
+  String get accLookupHint => 'مثال: ACC-2026-000123';
+
+  @override
+  String get accLookup => 'استعلام';
+
+  @override
+  String get accNotLinked => 'لا يوجد تقرير مرتبط';
+
+  @override
+  String get accNotLinkedBody =>
+      'استعلم برقم البلاغ لدى شركة التأمين ثم اربطه بهذا الأمر.';
+
+  @override
+  String get accLink => 'اربط بهذا الأمر';
+
+  @override
+  String get accLinked => 'رُبط التقرير بالأمر';
+
+  @override
+  String get accInsurer => 'شركة التأمين';
+
+  @override
+  String get accClaimNo => 'رقم المطالبة';
+
+  @override
+  String get accApproved => 'اعتمده التأمين';
+
+  @override
+  String get accDeductible => 'التحمّل';
+
+  @override
+  String get accFault => 'نسبة الخطأ';
+
+  @override
+  String get accCustomerPays => 'المتوقع على العميل';
+
+  @override
+  String get accDamages => 'أضرار المُقيِّم';
+
+  @override
+  String get accSuggested => 'بنود مقترحة لأمر العمل';
+
+  @override
+  String get accSuggestedHint =>
+      'من تقرير المُقيِّم — راجعها وسعّرها بنفسك ثم أضفها.';
+
+  @override
+  String get accNotPriced => 'الملف قيد التقييم — لا مبالغ بعد. حدّث لاحقاً.';
+
+  @override
+  String get accSubmitRepair => 'سجّل تقرير الإصلاح لدى الجهة';
+
+  @override
+  String get accSubmitted => 'سُجّل تقرير الإصلاح';
+
+  @override
+  String accSubmittedRef(String ref) {
+    return 'مرجع التسجيل $ref';
+  }
+
+  @override
+  String get accActRepair => 'إصلاح';
+
+  @override
+  String get accActReplace => 'استبدال';
+
+  @override
+  String get accActPaint => 'سمكرة ودهان';
 }

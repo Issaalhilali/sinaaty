@@ -647,5 +647,38 @@
   "flDecisionHint": "Your decision is recorded in your name. The final signature is a separate step via Nafath or OTP.",
   "flReadyToSign": "Approvals complete — sign now",
   "flDecided": "Your decision was recorded",
-  "flRejectedDone": "Rejection recorded — work will not start"
+  "flRejectedDone": "Rejection recorded — work will not start",
+  "accTitle": "Accident report",
+  "accSub": "The insurance file linked to this repair",
+  "accOpen": "Accident report",
+  "accLookupLabel": "Accident reference",
+  "accLookupHint": "e.g. ACC-2026-000123",
+  "accLookup": "Look up",
+  "accNotLinked": "No report linked",
+  "accNotLinkedBody": "Look up the insurer's reference, then link it to this order.",
+  "accLink": "Link to this order",
+  "accLinked": "Report linked to the order",
+  "accInsurer": "Insurer",
+  "accClaimNo": "Claim no.",
+  "accApproved": "Insurer approved",
+  "accDeductible": "Deductible",
+  "accFault": "Fault share",
+  "accCustomerPays": "Customer expected to pay",
+  "accDamages": "Assessor's damages",
+  "accSuggested": "Suggested work-order lines",
+  "accSuggestedHint": "From the assessor's report — review, price them yourself, then add.",
+  "accNotPriced": "Still under assessment — no figures yet. Refresh later.",
+  "accSubmitRepair": "Register the repair with the provider",
+  "accSubmitted": "Repair report registered",
+  "accSubmittedRef": "Registration ref {ref}",
+  "@accSubmittedRef": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
+  "accActRepair": "Repair",
+  "accActReplace": "Replace",
+  "accActPaint": "Bodywork & paint"
 }

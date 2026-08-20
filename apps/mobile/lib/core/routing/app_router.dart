@@ -11,6 +11,7 @@ import '../../features/notifications/presentation/inbox_screen.dart';
 import '../../features/vehicles/presentation/add_vehicle_screen.dart';
 import '../../features/vehicles/presentation/vehicle_screen.dart';
 import '../../features/work_orders/presentation/approve_screen.dart';
+import '../../features/work_orders/presentation/accident_report_screen.dart';
 import '../../features/work_orders/presentation/inspection_diff_screen.dart';
 import '../../features/work_orders/presentation/work_order_screen.dart';
 import '../../features/workshop/presentation/inspection_screen.dart';
@@ -52,7 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
-      GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!))]),
+      GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!)), GoRoute(path: 'accident', builder: (_, s) => AccidentReportScreen(workOrderId: s.pathParameters['id']!))]),
     ],
   );
 });

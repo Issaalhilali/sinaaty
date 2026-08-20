@@ -21,3 +21,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# golden-test failure artifacts (debug output, never source)
+test/failures/

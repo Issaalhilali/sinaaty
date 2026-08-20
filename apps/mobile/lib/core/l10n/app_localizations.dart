@@ -2676,6 +2676,162 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'سُجّل الرفض — لن يبدأ العمل'**
   String get flRejectedDone;
+
+  /// No description provided for @accTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير الحادث'**
+  String get accTitle;
+
+  /// No description provided for @accSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف التأمين المرتبط بهذا الإصلاح'**
+  String get accSub;
+
+  /// No description provided for @accOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقرير الحادث'**
+  String get accOpen;
+
+  /// No description provided for @accLookupLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم بلاغ الحادث'**
+  String get accLookupLabel;
+
+  /// No description provided for @accLookupHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: ACC-2026-000123'**
+  String get accLookupHint;
+
+  /// No description provided for @accLookup.
+  ///
+  /// In ar, this message translates to:
+  /// **'استعلام'**
+  String get accLookup;
+
+  /// No description provided for @accNotLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد تقرير مرتبط'**
+  String get accNotLinked;
+
+  /// No description provided for @accNotLinkedBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'استعلم برقم البلاغ لدى شركة التأمين ثم اربطه بهذا الأمر.'**
+  String get accNotLinkedBody;
+
+  /// No description provided for @accLink.
+  ///
+  /// In ar, this message translates to:
+  /// **'اربط بهذا الأمر'**
+  String get accLink;
+
+  /// No description provided for @accLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'رُبط التقرير بالأمر'**
+  String get accLinked;
+
+  /// No description provided for @accInsurer.
+  ///
+  /// In ar, this message translates to:
+  /// **'شركة التأمين'**
+  String get accInsurer;
+
+  /// No description provided for @accClaimNo.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم المطالبة'**
+  String get accClaimNo;
+
+  /// No description provided for @accApproved.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتمده التأمين'**
+  String get accApproved;
+
+  /// No description provided for @accDeductible.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحمّل'**
+  String get accDeductible;
+
+  /// No description provided for @accFault.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسبة الخطأ'**
+  String get accFault;
+
+  /// No description provided for @accCustomerPays.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتوقع على العميل'**
+  String get accCustomerPays;
+
+  /// No description provided for @accDamages.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضرار المُقيِّم'**
+  String get accDamages;
+
+  /// No description provided for @accSuggested.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنود مقترحة لأمر العمل'**
+  String get accSuggested;
+
+  /// No description provided for @accSuggestedHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'من تقرير المُقيِّم — راجعها وسعّرها بنفسك ثم أضفها.'**
+  String get accSuggestedHint;
+
+  /// No description provided for @accNotPriced.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف قيد التقييم — لا مبالغ بعد. حدّث لاحقاً.'**
+  String get accNotPriced;
+
+  /// No description provided for @accSubmitRepair.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل تقرير الإصلاح لدى الجهة'**
+  String get accSubmitRepair;
+
+  /// No description provided for @accSubmitted.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجّل تقرير الإصلاح'**
+  String get accSubmitted;
+
+  /// No description provided for @accSubmittedRef.
+  ///
+  /// In ar, this message translates to:
+  /// **'مرجع التسجيل {ref}'**
+  String accSubmittedRef(String ref);
+
+  /// No description provided for @accActRepair.
+  ///
+  /// In ar, this message translates to:
+  /// **'إصلاح'**
+  String get accActRepair;
+
+  /// No description provided for @accActReplace.
+  ///
+  /// In ar, this message translates to:
+  /// **'استبدال'**
+  String get accActReplace;
+
+  /// No description provided for @accActPaint.
+  ///
+  /// In ar, this message translates to:
+  /// **'سمكرة ودهان'**
+  String get accActPaint;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -647,5 +647,38 @@
   "flDecisionHint": "قرارك يُسجَّل باسمك. التوقيع النهائي خطوة مستقلة عبر نفاذ أو رمز التحقق.",
   "flReadyToSign": "اكتمل الاعتماد — وقّع الآن",
   "flDecided": "سُجّل قرارك",
-  "flRejectedDone": "سُجّل الرفض — لن يبدأ العمل"
+  "flRejectedDone": "سُجّل الرفض — لن يبدأ العمل",
+  "accTitle": "تقرير الحادث",
+  "accSub": "ملف التأمين المرتبط بهذا الإصلاح",
+  "accOpen": "تقرير الحادث",
+  "accLookupLabel": "رقم بلاغ الحادث",
+  "accLookupHint": "مثال: ACC-2026-000123",
+  "accLookup": "استعلام",
+  "accNotLinked": "لا يوجد تقرير مرتبط",
+  "accNotLinkedBody": "استعلم برقم البلاغ لدى شركة التأمين ثم اربطه بهذا الأمر.",
+  "accLink": "اربط بهذا الأمر",
+  "accLinked": "رُبط التقرير بالأمر",
+  "accInsurer": "شركة التأمين",
+  "accClaimNo": "رقم المطالبة",
+  "accApproved": "اعتمده التأمين",
+  "accDeductible": "التحمّل",
+  "accFault": "نسبة الخطأ",
+  "accCustomerPays": "المتوقع على العميل",
+  "accDamages": "أضرار المُقيِّم",
+  "accSuggested": "بنود مقترحة لأمر العمل",
+  "accSuggestedHint": "من تقرير المُقيِّم — راجعها وسعّرها بنفسك ثم أضفها.",
+  "accNotPriced": "الملف قيد التقييم — لا مبالغ بعد. حدّث لاحقاً.",
+  "accSubmitRepair": "سجّل تقرير الإصلاح لدى الجهة",
+  "accSubmitted": "سُجّل تقرير الإصلاح",
+  "accSubmittedRef": "مرجع التسجيل {ref}",
+  "@accSubmittedRef": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
+  "accActRepair": "إصلاح",
+  "accActReplace": "استبدال",
+  "accActPaint": "سمكرة ودهان"
 }

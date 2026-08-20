@@ -1387,4 +1387,87 @@ class L10nEn extends L10n {
 
   @override
   String get flRejectedDone => 'Rejection recorded — work will not start';
+
+  @override
+  String get accTitle => 'Accident report';
+
+  @override
+  String get accSub => 'The insurance file linked to this repair';
+
+  @override
+  String get accOpen => 'Accident report';
+
+  @override
+  String get accLookupLabel => 'Accident reference';
+
+  @override
+  String get accLookupHint => 'e.g. ACC-2026-000123';
+
+  @override
+  String get accLookup => 'Look up';
+
+  @override
+  String get accNotLinked => 'No report linked';
+
+  @override
+  String get accNotLinkedBody =>
+      'Look up the insurer\'s reference, then link it to this order.';
+
+  @override
+  String get accLink => 'Link to this order';
+
+  @override
+  String get accLinked => 'Report linked to the order';
+
+  @override
+  String get accInsurer => 'Insurer';
+
+  @override
+  String get accClaimNo => 'Claim no.';
+
+  @override
+  String get accApproved => 'Insurer approved';
+
+  @override
+  String get accDeductible => 'Deductible';
+
+  @override
+  String get accFault => 'Fault share';
+
+  @override
+  String get accCustomerPays => 'Customer expected to pay';
+
+  @override
+  String get accDamages => 'Assessor\'s damages';
+
+  @override
+  String get accSuggested => 'Suggested work-order lines';
+
+  @override
+  String get accSuggestedHint =>
+      'From the assessor\'s report — review, price them yourself, then add.';
+
+  @override
+  String get accNotPriced =>
+      'Still under assessment — no figures yet. Refresh later.';
+
+  @override
+  String get accSubmitRepair => 'Register the repair with the provider';
+
+  @override
+  String get accSubmitted => 'Repair report registered';
+
+  @override
+  String accSubmittedRef(String ref) {
+    return 'Registration ref $ref';
+  }
+
+  @override
+  String get accActRepair => 'Repair';
+
+  @override
+  String get accActReplace => 'Replace';
+
+  @override
+  String get accActPaint => 'Bodywork & paint';
 }
