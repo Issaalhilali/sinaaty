@@ -78,5 +78,5 @@
 | Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) | Step 29 | API + notifications done | Step 30 |
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
 | Dispute parties viewing evidence photos from the apps (staff-only today via back-office) | media download | access rule documented in download-media.use-case.ts; lands with the dispute screens | Step 30 |
-| Live S3 storage adapter (mock serves generated placeholders; no bytes are kept in dev) | media download | presign PUT/GET contract already behind ObjectStoragePort | before pilot |
+| Point INTEGRATION_STORAGE=live at the production KSA object store and set S3_* secrets (adapter proven vs AWS vectors + real MinIO round-trip) | storage | local MinIO: brew services start minio, endpoint http://localhost:9000 | deployment |
 

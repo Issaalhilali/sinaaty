@@ -38,6 +38,13 @@ export const envSchema = z.object({
 
   S3_BUCKET_MEDIA: z.string().default('sinaaty-media'),
   S3_BUCKET_DOCS: z.string().default('sinaaty-docs'),
+  /** Object storage (INTEGRATION_STORAGE=live): any S3-compatible endpoint — MinIO locally, KSA object
+   *  storage in production. Required only in live mode; the factory refuses to boot live without them. */
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_REGION: z.string().default('me-south-1'),
+  S3_KEY: z.string().optional(),
+  S3_SECRET: z.string().optional(),
+  S3_PATH_STYLE: z.coerce.boolean().default(true),
   INTEGRATION_STORAGE: z.enum(['mock', 'live']).default('mock'),
   INTEGRATION_VIN: z.enum(['mock', 'live']).default('mock'),
 
