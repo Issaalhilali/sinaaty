@@ -40,6 +40,20 @@ class SealSteps extends StatelessWidget {
   final int total; final int current; const SealSteps({super.key, required this.total, required this.current});
   @override Widget build(BuildContext context) => Row(children: [for (var i = 0; i < total; i++) Expanded(child: Container(height: 4, margin: EdgeInsetsDirectional.only(end: i < total - 1 ? 5 : 0), decoration: BoxDecoration(borderRadius: BorderRadius.circular(2), color: i < current ? Colors.white : i == current ? SinaatyColors.dSeal : Colors.white.withValues(alpha: .22), boxShadow: i == current ? [BoxShadow(color: SinaatyColors.dSeal.withValues(alpha: .9), blurRadius: 10)] : null)))]);
 }
+/// Thin budget/progress meter for a SealCard: white fill on a translucent track, glowing softly;
+/// turns brass once the value nears its cap (≥ 80%) — a calm warning, not an alarm.
+class SealMeter extends StatelessWidget {
+  final double value; // 0..1
+  const SealMeter({super.key, required this.value});
+  @override Widget build(BuildContext context) {
+    final v = value.clamp(0.0, 1.0).toDouble(); final near = v >= .8;
+    return ClipRRect(borderRadius: BorderRadius.circular(999), child: SizedBox(height: 6, child: Stack(children: [
+      Positioned.fill(child: ColoredBox(color: Colors.white.withValues(alpha: .18))),
+      Positioned.fill(child: Align(alignment: AlignmentDirectional.centerStart, child: FractionallySizedBox(widthFactor: v < .02 ? .02 : v, heightFactor: 1,
+        child: DecoratedBox(decoration: BoxDecoration(color: near ? SinaatyColors.dBrass : Colors.white, borderRadius: BorderRadius.circular(999), boxShadow: [BoxShadow(color: (near ? SinaatyColors.dBrass : SinaatyColors.dSeal).withValues(alpha: .8), blurRadius: 10)]))))),
+    ])));
+  }
+}
 /// Floating pill navigation (UI v2): translucent surface, rounded, 3–4 items, selected item gets a soft seal fill.
 class FloatingNav extends StatelessWidget {
   final int index; final ValueChanged<int> onChanged; final List<({IconData icon, String label})> items;

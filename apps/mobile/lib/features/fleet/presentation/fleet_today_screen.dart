@@ -30,7 +30,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(decision == 'approved' ? l.flApprove : l.flReject, style: Theme.of(ctx).textTheme.titleLarge),
         const SizedBox(height: 4),
-        Text('${p.number} · ${Fmt.money(p.total, locale: locale)}${p.workshopNameAr != null ? ' · ${p.workshopNameAr}' : ''}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+        Text('${Fmt.ltr(p.number)} · ${Fmt.money(p.total, locale: locale)}${p.workshopNameAr != null ? ' · ${p.workshopNameAr}' : ''}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
         const SizedBox(height: SinaatySpace.md),
         TextField(controller: note, decoration: InputDecoration(labelText: l.flDecisionNote)),
         const SizedBox(height: SinaatySpace.sm),
@@ -50,6 +50,8 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
     );
   }
 
+  double? _usedPct(FleetOverview? o) => o?.budgetUsedPct == null ? null : double.tryParse(o!.budgetUsedPct!);
+
   String _policyLabel(L10n l, FleetPending p) => switch (p.outcome) {
         'auto' => l.flAutoOk,
         'two_approvers' => l.flNeedsTwo,
@@ -60,7 +62,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme;
     final overview = ref.watch(fleetOverviewProvider);
     final pending = ref.watch(fleetPendingProvider);
     final o = overview.value?.valueOrNull;
@@ -77,21 +79,34 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
           const SizedBox(height: SinaatySpace.md),
           Text(l.flMonthSpend, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))),
           MoneyText(Fmt.money(o?.monthSpend ?? '0', locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
+          if (_usedPct(o) != null) ...[
+            const SizedBox(height: SinaatySpace.md),
+            SealMeter(value: _usedPct(o)! / 100),
+          ],
           if (o?.budgetRemaining != null) ...[
             const SizedBox(height: SinaatySpace.sm),
-            Text(l.flBudgetLeft(Fmt.money(o!.budgetRemaining!, locale: locale)), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85))),
+            Row(children: [
+              Expanded(child: Text(l.flBudgetLeft(Fmt.money(o!.budgetRemaining!, locale: locale)), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85)))),
+              if (_usedPct(o) != null) Text('${_usedPct(o)!.round()}${locale == 'ar' ? '٪' : '%'}', style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85), fontWeight: FontWeight.w700)),
+            ]),
           ],
           const SizedBox(height: SinaatySpace.md),
           Wrap(spacing: 8, runSpacing: 6, children: [
             SealPill('${o?.vehicles ?? 0} ${l.flVehicles}', icon: Icons.directions_car_outlined),
             SealPill('${o?.openWorkOrders ?? 0} ${l.flOpenRepairs}', icon: Icons.build_outlined),
           ]),
+          const SizedBox(height: SinaatySpace.md),
+          Container(height: 1, color: Colors.white.withValues(alpha: .14)),
+          const SizedBox(height: SinaatySpace.sm),
+          Row(children: [
+            Icon(Icons.verified_user_outlined, size: 14, color: Colors.white.withValues(alpha: .85)),
+            const SizedBox(width: 6),
+            Expanded(child: Text(
+              o?.policyNameAr != null ? l.flPolicyLine(o!.policyNameAr!, Fmt.money(o.autoApproveBelow ?? '0', locale: locale)) : l.flNoPolicy,
+              style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85)),
+            )),
+          ]),
         ])),
-        const SizedBox(height: SinaatySpace.sm),
-        Text(
-          o?.policyNameAr != null ? l.flPolicyLine(o!.policyNameAr!, Fmt.money(o.autoApproveBelow ?? '0', locale: locale)) : l.flNoPolicy,
-          style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-        ),
         const SizedBox(height: SinaatySpace.lg),
         SectionTitle(l.flInboxTitle),
         if (pending.isLoading) const InlineLoading()
@@ -122,16 +137,17 @@ class _PendingCard extends StatelessWidget {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
     final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
     final tone = p.blocked ? BadgeTone.bad : p.readyToSign ? BadgeTone.seal : BadgeTone.brass;
-    return SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return SectionCard(glow: p.readyToSign, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(p.workshopNameAr ?? p.number, style: t.titleSmall),
-          Text([p.number, if (p.assetCode != null) p.assetCode! else if (p.plate != null) p.plate!, Fmt.date(p.requestedAt, locale: locale)].join(' · '), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+          Text('${Fmt.ltr(p.number)} · ${Fmt.date(p.requestedAt, locale: locale)}', maxLines: 1, overflow: TextOverflow.ellipsis, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
         ])),
         MoneyText(Fmt.money(p.total, locale: locale)),
       ]),
       const SizedBox(height: SinaatySpace.sm),
       Wrap(spacing: 6, runSpacing: 4, children: [
+        if (p.assetCode != null || p.plate != null) StatusBadge(Fmt.ltr(p.assetCode ?? p.plate!), icon: Icons.directions_car_outlined),
         StatusBadge(policyLabel, tone: tone),
         for (final a in p.approvals)
           StatusBadge(a.decision == 'approved' ? l.flApprovedBy(a.byNameAr ?? '—') : l.flRejectedBy(a.byNameAr ?? '—'), tone: a.decision == 'approved' ? BadgeTone.seal : BadgeTone.bad),

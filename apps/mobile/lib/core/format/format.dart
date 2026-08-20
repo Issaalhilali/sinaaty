@@ -7,4 +7,6 @@ abstract final class Fmt {
   static String date(DateTime d, {String locale = 'ar'}) => _western(DateFormat('d MMM yyyy', locale == 'ar' ? 'ar' : 'en').format(d.toLocal()));
   static String dateTime(DateTime d, {String locale = 'ar'}) => _western(DateFormat('d MMM yyyy · h:mm a', locale == 'ar' ? 'ar' : 'en').format(d.toLocal()));
   static DateTime? parseDate(Object? v) => v is String ? DateTime.tryParse(v) : null;
+  /// Bidi-isolate an LTR run (WO number, asset code, VIN) so it doesn't scramble inside an RTL sentence.
+  static String ltr(String s) => '\u2066$s\u2069';
 }
