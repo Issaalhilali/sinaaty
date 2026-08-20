@@ -58,7 +58,6 @@
 | Live tow tracking on a map (the API already streams `transport:{id}`) | Step 23 | status timeline + refresh for now | Step 30 |
 | Warranty claim from the wallet (open a claim on a warranty) | Step 23 | API supports claims; screen lists warranties only | Step 26 |
 | External penetration test before the pilot | Step 24 | internal review + 14 regression tests done | before pilot |
-| Media download endpoint must check ownership before signing a GET | Step 24 | endpoint not built yet; noted so it lands with the check | Step 26 |
 | PITR restore rehearsal on a real Supabase project (steps written, never executed here) | Step 24 | logical dump/restore drill passes locally | before pilot |
 | Soak test (1h) on the work-order path to watch memory + outbox depth | Step 24 | 60s ramp/hold runs pass with 0% failures | Step 25 |
 | Re-run k6 against production-like infra (managed DB + 2 API replicas) | Step 24 | numbers so far are one dev machine | Step 25 |
@@ -78,5 +77,6 @@
 | Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
 | Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) | Step 29 | API + notifications done | Step 30 |
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
-| Inspection-diff photos render as placeholders (media download endpoint not built) | Step 28 UI | counts and dates shown; bytes need the presigned-GET endpoint | Step 30 |
+| Dispute parties viewing evidence photos from the apps (staff-only today via back-office) | media download | access rule documented in download-media.use-case.ts; lands with the dispute screens | Step 30 |
+| Live S3 storage adapter (mock serves generated placeholders; no bytes are kept in dev) | media download | presign PUT/GET contract already behind ObjectStoragePort | before pilot |
 
