@@ -64,11 +64,11 @@ void main() {
   setUpAll(loadArabicFont);
   late FakeFleet fleet; late MemoryTokenStore ts;
 
-  Widget app(GoRouter router) => ProviderScope(key: UniqueKey(), overrides: [
+  Widget app(GoRouter router, {bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.fleet, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     fleetRepositoryProvider.overrideWithValue(fleet),
-  ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+  ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
     localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
 
   GoRouter router() => GoRouter(initialLocation: '/', routes: [
@@ -91,6 +91,8 @@ void main() {
     expect(find.text('تحت الحد — جاهز للتوقيع'), findsOneWidget);
     expect(find.text('اكتمل الاعتماد — وقّع الآن'), findsOneWidget);                // the auto one goes straight to signing
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/fleet_today_light.png'));
+    await tester.pumpWidget(app(router(), dark: true)); await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/fleet_today_dark.png'));
   });
 
   testWidgets('approving records the decision with its note; signing is its own separate step', (tester) async {

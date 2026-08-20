@@ -80,11 +80,11 @@ void main() {
   setUpAll(loadArabicFont);
   late FakeAccidents acc; late MemoryTokenStore ts;
 
-  Widget app() => ProviderScope(key: UniqueKey(), overrides: [
+  Widget app({bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     accidentsRepositoryProvider.overrideWithValue(acc),
-  ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+  ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
     localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
     routerConfig: GoRouter(initialLocation: '/', routes: [GoRoute(path: '/', builder: (_, _) => const AccidentReportScreen(workOrderId: 'wo1'))])));
 
@@ -103,6 +103,11 @@ void main() {
     expect(find.textContaining('500.00'), findsWidgets);                       // what the customer pays, on the seal card
     expect(find.text('استبدال — الصدام الأمامي'), findsOneWidget);             // the assessor's line, ready to reprice
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/accident_preview_light.png'));
+    // Same file, dark — pins the coverage meter's contrast on the seal card in both themes.
+    await tester.pumpWidget(app(dark: true)); await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'ACC-2026-000123');
+    await tester.tap(find.text('استعلام')); await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/accident_preview_dark.png'));
 
     await tester.tap(find.text('اربط بهذا الأمر')); await tester.pumpAndSettle();
     expect(acc.lastLink, isNotNull);
