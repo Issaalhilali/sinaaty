@@ -65,4 +65,8 @@
 | Admin-web page for zones/flags/funnel (API + runbook exist; ops uses curl today) | Step 25 | endpoints and reasons are enforced server-side | Step 26 |
 | Mobile: consume `/v1/config` to hide disabled features (today the app shows everything it can do) | Step 25 | flags are enforced by the API regardless | Step 26 |
 | Analytics retention/rollup (analytics_events grows unbounded) | Step 25 | small during the pilot | Step 30 |
+| Fleet screens in the mobile app (approvals inbox, statements, budget) — API complete | Step 26 | fleet flavor still shows the customer tabs | Step 27 |
+| Fleet statement PDF (`fleet_statements.pdf_media_id` is unused; CSV + JSON exist) | Step 26 | accountants asked for CSV first | Step 30 |
+| Part orders under fleet policy (only work orders are gated today) | Step 26 | fleet_approvals.part_order_id column already exists | Step 27 |
+| e2e fixtures use fixed plates/CR numbers, so a long-lived dev DB eventually collides | Step 26 | `test:e2e:clean` runs against a scratch DB like CI | Step 30 |
 

@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
 import Decimal from 'decimal.js';
 import type { InspectionType, PartCondition, PaymentTerms, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
+import { FleetUseCases } from '../../../fleet/application/fleet.use-cases';
 import { AppError } from '../../../../common/errors';
 import { AppConfig } from '../../../../config';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -48,6 +49,8 @@ export class WorkOrdersUseCases {
     private readonly outbox: OutboxWriter,
     private readonly config: AppConfig,
     @Optional() @Inject(REALTIME_PUBLISHER) private readonly rt?: RealtimePublisher,
+    // Optional: work orders exist without the fleet module (a private customer has no policy).
+    @Optional() @Inject(forwardRef(() => FleetUseCases)) private readonly fleet?: FleetUseCases,
     @Optional() @Inject(forwardRef(() => ApprovalLinkService)) private readonly approvalLinks?: ApprovalLinkService,
   ) {}
 
@@ -183,6 +186,9 @@ export class WorkOrdersUseCases {
   async approveInit(u: AuthUser, id: string, dto: ApproveInitDto) {
     const wo = await this.load(id); this.mustCustomer(wo, u);
     if (wo.status !== 'awaiting_approval') throw new AppError('CONFLICT', { messageAr: 'أمر العمل ليس بانتظار الاعتماد.', messageEn: 'Work order is not awaiting approval.' });
+    // Checked here too, not only at signing: sending an approver an SMS for a repair their own policy
+    // forbids wastes their time and teaches them to ignore the app (Step 26).
+    if (wo.customerOrgId && this.fleet) await this.fleet.assertMaySign(wo.customerOrgId, wo);
     const version = dto.version ?? wo.currentVersion; const v = await this.repo.getVersion(id, version); if (!v || version !== wo.currentVersion) throw new AppError('CONFLICT', { messageAr: 'هناك نسخة أحدث تحتاج اعتمادك.', messageEn: 'A newer version needs your approval.', details: { current_version: wo.currentVersion } });
     if (dto.method === 'nafath') {
       const user = await this.users.findById(u.id); if (!user?.nafathVerifiedAt) throw new AppError('FORBIDDEN', { messageAr: 'الاعتماد عبر نفاذ يتطلب تسجيل الدخول بنفاذ.', messageEn: 'Nafath approval requires a Nafath-verified login.' });
@@ -206,6 +212,9 @@ export class WorkOrdersUseCases {
     const wo = await this.load(id); this.mustCustomer(wo, u);
     if (wo.status !== 'awaiting_approval') throw new AppError('CONFLICT', { messageAr: 'أمر العمل ليس بانتظار الاعتماد.', messageEn: 'Not awaiting approval.' });
     const version = dto.version ?? wo.currentVersion; const v = await this.repo.getVersion(id, version); if (!v || version !== wo.currentVersion) throw new AppError('CONFLICT', { messageAr: 'هناك نسخة أحدث تحتاج اعتمادك.', messageEn: 'A newer version needs your approval.' });
+    // A fleet's own spending rules are checked before the signature is taken, never after: signing is the
+    // legal act, and the fleet must not be bound by a repair its policy forbids (Step 26).
+    if (wo.customerOrgId && this.fleet) await this.fleet.assertMaySign(wo.customerOrgId, wo);
     let providerTxRef: string | undefined; let payload: unknown; let method: 'nafath' | 'otp' = dto.method;
     if (dto.method === 'nafath') {
       if (!dto.transaction_id) throw new AppError('VALIDATION', { details: [{ path: 'transaction_id', message: 'required' }] });

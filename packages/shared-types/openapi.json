@@ -2464,6 +2464,438 @@
         ]
       }
     },
+    "/v1/fleet/{orgId}/overview": {
+      "get": {
+        "operationId": "FleetController_overview_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fleet home: vehicles, open repairs, what needs a decision, budget used",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/policies": {
+      "get": {
+        "operationId": "FleetController_policies_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      },
+      "post": {
+        "operationId": "FleetController_createPolicy_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Spending rules: auto-approve below, two approvers above, approved workshops, monthly budget",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/policies/{id}": {
+      "put": {
+        "operationId": "FleetController_updatePolicy_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/approvals": {
+      "get": {
+        "operationId": "FleetController_pending_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Repairs waiting on the fleet, each with what the policy requires",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/approvals/{workOrderId}": {
+      "post": {
+        "operationId": "FleetController_decide_v1",
+        "parameters": [
+          {
+            "name": "workOrderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or reject spending on one repair (per version)",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/vehicles/import": {
+      "post": {
+        "operationId": "FleetController_importVehicles_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk import: every row reports its own outcome, one bad row does not lose the rest",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/statements": {
+      "post": {
+        "operationId": "FleetController_generate_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate (or refresh) the monthly statement for the fleet",
+        "tags": [
+          "fleet"
+        ]
+      },
+      "get": {
+        "operationId": "FleetController_statements_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/statements/{id}": {
+      "get": {
+        "operationId": "FleetController_statement_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/statements/{id}/export.csv": {
+      "get": {
+        "operationId": "FleetController_statementCsv_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The statement as CSV for the accountant",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/reports/vehicles/export.csv": {
+      "get": {
+        "operationId": "FleetController_vehiclesCsv_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Spend per vehicle for a month",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/reports/vehicles": {
+      "get": {
+        "operationId": "FleetController_vehicles_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
     "/v1/invoices": {
       "post": {
         "operationId": "InvoicesController_issue_v1",

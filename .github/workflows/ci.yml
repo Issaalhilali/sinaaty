@@ -90,7 +90,9 @@ jobs:
       API_BASE_URL: http://localhost:3000
       CORS_ORIGINS: http://localhost:3001
       JOBS_ENABLED: 'false'
-      OTP_MAX_REQUESTS_PER_10MIN: '100'
+      # Every e2e suite logs in as the same seeded accounts, so one CI run mints far more codes for them
+      # than a person ever would. The production default is 3 (see env.schema.ts) and stays 3.
+      OTP_MAX_REQUESTS_PER_10MIN: '2000'
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4

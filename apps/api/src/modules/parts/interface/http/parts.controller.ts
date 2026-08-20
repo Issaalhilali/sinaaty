@@ -49,14 +49,14 @@ export class PartsController {
   @Get('orgs/:orgId/serials') listSerials(@CurrentUser() u: AuthUser, @Param('orgId') orgId: string, @Query('status') status?: string, @Query('batch') batch?: string) { return this.serials.listForOrg(u, orgId, { status: status?.split(','), batch }); }
   @Post('serials/transfer') @HttpCode(200) transferSerials(@CurrentUser() u: AuthUser, @Body(zod(SerialTransferDto)) dto: SerialTransferDto) { return this.serials.transfer(u, dto); }
   @Post('serials/install') @HttpCode(200) @ApiOperation({ summary: 'Workshop scans QR at install → part_and_labor warranty; duplicate install raises an alert' }) install(@CurrentUser() u: AuthUser, @Body(zod(SerialInstallDto)) dto: SerialInstallDto) { return this.serials.install(u, dto); }
-  @Public() @Throttle({ default: { limit: 20, ttl: 60_000 } }) @Get('verify/:token') @ApiOperation({ summary: 'Public genuine-part check by QR token' }) verify(@Param('token') token: string) { return this.serials.verify(token); }
+  @Public() @Throttle({ default: { limit: 60, ttl: 60_000 } }) @Get('verify/:token') @ApiOperation({ summary: 'Public genuine-part check by QR token' }) verify(@Param('token') token: string) { return this.serials.verify(token); }
   // ---- warranties
   @Get('warranties') myWarranties(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string) { return this.warranties.mine(u, orgId); }
   @Get('orgs/:orgId/warranties') issuedWarranties(@CurrentUser() u: AuthUser, @Param('orgId') orgId: string) { return this.warranties.issued(u, orgId); }
   @Get('warranties/:id') getWarranty(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.warranties.get(u, id); }
   @Post('warranties/:id/claims') @HttpCode(201) claim(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(ClaimDto)) dto: ClaimDto) { return this.warranties.claim(u, id, dto); }
   @Post('warranties/:id/claims/:claimId/resolve') @HttpCode(200) resolve(@CurrentUser() u: AuthUser, @Param('id') id: string, @Param('claimId') claimId: string, @Body(zod(ClaimResolveDto)) dto: ClaimResolveDto) { return this.warranties.resolveClaim(u, id, claimId, dto); }
-  @Public() @Throttle({ default: { limit: 20, ttl: 60_000 } }) @Get('warranty-check/:token') warrantyCheck(@Param('token') token: string) { return this.warranties.publicByToken(token); }
+  @Public() @Throttle({ default: { limit: 60, ttl: 60_000 } }) @Get('warranty-check/:token') warrantyCheck(@Param('token') token: string) { return this.warranties.publicByToken(token); }
   // ---- group buys
   @Post('group-buys') @HttpCode(201) openGb(@CurrentUser() u: AuthUser, @Body(zod(GroupBuyDto)) dto: GroupBuyDto) { return this.warranties.openGroupBuy(u, dto); }
   @Get('group-buys/:id') getGb(@Param('id') id: string) { return this.warranties.getGroupBuy(id); }

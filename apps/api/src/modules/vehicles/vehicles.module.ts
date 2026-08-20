@@ -19,6 +19,6 @@ import { VehiclesController } from './interface/http/vehicles.controller';
     { provide: VEHICLE_EVENT_REPOSITORY, useClass: VehicleEventPrismaRepository },
     { provide: VIN_DECODER_PORT, inject: [AppConfig, VinDecoderMockAdapter], useFactory: (c: AppConfig, mock: VinDecoderMockAdapter) => { if (c.get('INTEGRATION_VIN') !== 'mock') throw new Error('VIN decoder live adapter not implemented — set INTEGRATION_VIN=mock'); return mock; } },
   ],
-  exports: [VehicleEventsWriter, VEHICLE_REPOSITORY, VIN_DECODER_PORT],
+  exports: [VehicleEventsWriter, VehiclesUseCases, VEHICLE_REPOSITORY, VIN_DECODER_PORT],
 })
 export class VehiclesModule {}

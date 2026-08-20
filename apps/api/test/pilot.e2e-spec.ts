@@ -32,15 +32,23 @@ describe('Pilot config (e2e)', () => {
   afterAll(async () => { await app.close(); });
 
   it('a new location is tagged with the industrial zone it falls inside — nobody types the zone name', async () => {
+    // Its own organization: adding branches to the shared seeded workshop moves what other suites match
+    // against (a Dammam branch once broke PostGIS supplier matching in the parts suite).
+    const owner = await login(`+96656${suffix}`);
+    const own = await http().post('/v1/organizations').set(auth(owner))
+      .send({ type: 'workshop', legal_name_ar: `ورشة مناطق ${suffix}`, cr_number: `2${suffix}09` }).expect(201);
+    const ownOrg = own.body.id as string;
+    const ownerTok = await login(`+96656${suffix}`);   // the membership is minted into the token
+
     // A point inside «الصناعية الثانية» in Riyadh.
-    const r = await http().post(`/v1/organizations/${orgId}/locations`).set(auth(wsTok))
-      .send({ name_ar: `فرع الاختبار ${suffix}`, is_primary: false, city: 'الرياض', lat: 24.5745, lng: 46.8352, service_radius_km: 20 })
+    const r = await http().post(`/v1/organizations/${ownOrg}/locations`).set(auth(ownerTok))
+      .send({ name_ar: `فرع الاختبار ${suffix}`, is_primary: true, city: 'الرياض', lat: 24.5745, lng: 46.8352, service_radius_km: 20 })
       .expect(201);
     const row = await prisma.$queryRaw<Array<{ industrial_zone: string | null }>>`SELECT industrial_zone FROM organization_locations WHERE id = ${r.body.id}::uuid`;
     expect(row[0]!.industrial_zone).toBe('RUH-IND-2');
 
     // A workshop outside the pilot zones is simply untagged, not rejected.
-    const far = await http().post(`/v1/organizations/${orgId}/locations`).set(auth(wsTok))
+    const far = await http().post(`/v1/organizations/${ownOrg}/locations`).set(auth(ownerTok))
       .send({ name_ar: `فرع الدمام ${suffix}`, is_primary: false, city: 'الدمام', lat: 26.4207, lng: 50.0888 })
       .expect(201);
     const farRow = await prisma.$queryRaw<Array<{ industrial_zone: string | null }>>`SELECT industrial_zone FROM organization_locations WHERE id = ${far.body.id}::uuid`;
@@ -134,11 +142,12 @@ describe('Pilot config (e2e)', () => {
   });
 
   it('backfill tags locations that predate a zone being added', async () => {
-    await prisma.$executeRaw`UPDATE organization_locations SET industrial_zone = NULL WHERE org_id = ${orgId}::uuid`;
+    // Only this suite's own organizations — never the shared seeded workshop.
+    await prisma.$executeRaw`UPDATE organization_locations SET industrial_zone = NULL WHERE org_id IN (SELECT id FROM organizations WHERE cr_number = ${`2${suffix}09`})`;
     pilot.invalidate();
     const r = await http().post('/v1/admin/pilot/zones/backfill').set(auth(adminTok)).send({}).expect(200);
     expect(r.body.tagged).toBeGreaterThan(0);
-    const tagged = await prisma.$queryRaw<Array<{ n: bigint }>>`SELECT count(*) AS n FROM organization_locations WHERE org_id = ${orgId}::uuid AND industrial_zone IS NOT NULL`;
+    const tagged = await prisma.$queryRaw<Array<{ n: bigint }>>`SELECT count(*) AS n FROM organization_locations WHERE industrial_zone IS NOT NULL`;
     expect(Number(tagged[0]!.n)).toBeGreaterThan(0);
   });
 });
