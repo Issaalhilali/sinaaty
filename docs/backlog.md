@@ -69,4 +69,7 @@
 | Fleet statement PDF (`fleet_statements.pdf_media_id` is unused; CSV + JSON exist) | Step 26 | accountants asked for CSV first | Step 30 |
 | Part orders under fleet policy (only work orders are gated today) | Step 26 | fleet_approvals.part_order_id column already exists | Step 27 |
 | e2e fixtures use fixed plates/CR numbers, so a long-lived dev DB eventually collides | Step 26 | `test:e2e:clean` runs against a scratch DB like CI | Step 30 |
+| Flutter audio recording for voice-to-invoice (no `record`-style package in pubspec yet) | Step 27 | the API accepts a typed `hint_ar`, so the flow works end to end without audio | Step 30 |
+| Choose the speech provider (Saudi dialect, workshop noise, KSA residency) and write the live adapter | Step 27 | mock only; the module refuses INTEGRATION_SPEECH=live | before pilot |
+| Measure extraction accuracy on real pilot recordings before enabling INTEGRATION_AI=live widely | Step 27 | prices are verified against the transcript either way | Step 30 |
 

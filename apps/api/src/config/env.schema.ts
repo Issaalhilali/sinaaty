@@ -73,6 +73,10 @@ export const envSchema = z.object({
   INTEGRATION_ESCROW: integrationMode,
   INTEGRATION_SMS: integrationMode,
   INTEGRATION_AI: integrationMode,
+  /** Voice-to-invoice (Step 27). The key is optional: without it the offline Arabic rules are used. */
+  ANTHROPIC_API_KEY: z.string().optional(),
+  AI_MODEL: z.string().default('claude-sonnet-5'),
+  INTEGRATION_SPEECH: integrationMode,
   INTEGRATION_MAPS: integrationMode,
   /** منجز/تقدير — accident reports. Only `mock` exists: the provider contract is unconfirmed (PRD risk R3). */
   INTEGRATION_ACCIDENTS: integrationMode,

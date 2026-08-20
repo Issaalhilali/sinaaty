@@ -6888,6 +6888,146 @@
         ]
       }
     },
+    "/v1/work-orders/{id}/voice-notes": {
+      "post": {
+        "operationId": "VoiceController_create_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a dictation (media_id from /media/presign) → transcript + proposed lines for review",
+        "tags": [
+          "voice"
+        ]
+      },
+      "get": {
+        "operationId": "VoiceController_list_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "voice"
+        ]
+      }
+    },
+    "/v1/voice-notes/{id}": {
+      "get": {
+        "operationId": "VoiceController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "voice"
+        ]
+      }
+    },
+    "/v1/voice-notes/{id}/apply": {
+      "post": {
+        "operationId": "VoiceController_apply_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add the reviewed lines to the work order (the reviewer’s prices, not the model’s)",
+        "tags": [
+          "voice"
+        ]
+      }
+    },
+    "/v1/voice-notes/{id}/discard": {
+      "post": {
+        "operationId": "VoiceController_discard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "voice"
+        ]
+      }
+    },
     "/v1/me/notifications": {
       "get": {
         "operationId": "NotificationsController_list_v1",

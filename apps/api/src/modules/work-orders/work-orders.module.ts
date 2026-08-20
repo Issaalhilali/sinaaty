@@ -24,6 +24,6 @@ import { RealtimeGateway } from './interface/ws/realtime.gateway';
     { provide: PDF_RENDERER_PORT, useClass: HtmlWorkOrderRenderer },
     { provide: REALTIME_PUBLISHER, useExisting: RealtimeGateway },
   ],
-  exports: [WORK_ORDER_REPOSITORY, WoTransitionService, REALTIME_PUBLISHER, ApprovalLinkService],
+  exports: [WorkOrdersUseCases, WORK_ORDER_REPOSITORY, WoTransitionService, REALTIME_PUBLISHER, ApprovalLinkService],
 })
 export class WorkOrdersModule {}
