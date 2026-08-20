@@ -72,4 +72,5 @@
 | Flutter audio recording for voice-to-invoice (no `record`-style package in pubspec yet) | Step 27 | the API accepts a typed `hint_ar`, so the flow works end to end without audio | Step 30 |
 | Choose the speech provider (Saudi dialect, workshop noise, KSA residency) and write the live adapter | Step 27 | mock only; the module refuses INTEGRATION_SPEECH=live | before pilot |
 | Measure extraction accuracy on real pilot recordings before enabling INTEGRATION_AI=live widely | Step 27 | prices are verified against the transcript either way | Step 30 |
+| Intermittent 401 in whole-suite e2e runs (~1 run in 3, a different suite each time; every suite passes alone, and on a clean DB) | Step 27 | not reproduced in isolation; token verification fails on a token that was just minted — cause not yet identified, so it is written down rather than guessed at | Step 30 |
 
