@@ -2526,6 +2526,156 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'من {from} إلى {to}'**
   String diffFromTo(String from, String to);
+
+  /// No description provided for @flToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسطولك اليوم'**
+  String get flToday;
+
+  /// No description provided for @flVehicles.
+  ///
+  /// In ar, this message translates to:
+  /// **'مركبة'**
+  String get flVehicles;
+
+  /// No description provided for @flOpenRepairs.
+  ///
+  /// In ar, this message translates to:
+  /// **'إصلاح مفتوح'**
+  String get flOpenRepairs;
+
+  /// No description provided for @flAwaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار قرارك'**
+  String get flAwaiting;
+
+  /// No description provided for @flMonthSpend.
+  ///
+  /// In ar, this message translates to:
+  /// **'التزام هذا الشهر'**
+  String get flMonthSpend;
+
+  /// No description provided for @flBudgetLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتبقي من الميزانية {amount}'**
+  String flBudgetLeft(String amount);
+
+  /// No description provided for @flNoPolicy.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد سياسة صرف — كل إصلاح يحتاج اعتمادك.'**
+  String get flNoPolicy;
+
+  /// No description provided for @flPolicyLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة «{name}»: اعتماد تلقائي تحت {auto}'**
+  String flPolicyLine(String name, String auto);
+
+  /// No description provided for @flInboxTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار قرارك'**
+  String get flInboxTitle;
+
+  /// No description provided for @flInboxEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد ما ينتظر قرارك'**
+  String get flInboxEmpty;
+
+  /// No description provided for @flInboxEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل الإصلاحات إما معتمدة أو تحت حد الاعتماد التلقائي.'**
+  String get flInboxEmptyBody;
+
+  /// No description provided for @flNeedsOne.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج اعتماداً واحداً'**
+  String get flNeedsOne;
+
+  /// No description provided for @flNeedsTwo.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج اعتماد شخصين'**
+  String get flNeedsTwo;
+
+  /// No description provided for @flAutoOk.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحت الحد — جاهز للتوقيع'**
+  String get flAutoOk;
+
+  /// No description provided for @flBlockedWorkshop.
+  ///
+  /// In ar, this message translates to:
+  /// **'الورشة خارج القائمة المعتمدة'**
+  String get flBlockedWorkshop;
+
+  /// No description provided for @flOverBudget.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتجاوز ميزانية الشهر'**
+  String get flOverBudget;
+
+  /// No description provided for @flApprovedBy.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتمده {name}'**
+  String flApprovedBy(String name);
+
+  /// No description provided for @flRejectedBy.
+  ///
+  /// In ar, this message translates to:
+  /// **'رفضه {name}'**
+  String flRejectedBy(String name);
+
+  /// No description provided for @flApprove.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوافق على الصرف'**
+  String get flApprove;
+
+  /// No description provided for @flReject.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرفض'**
+  String get flReject;
+
+  /// No description provided for @flDecisionNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظة (اختياري)'**
+  String get flDecisionNote;
+
+  /// No description provided for @flDecisionHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'قرارك يُسجَّل باسمك. التوقيع النهائي خطوة مستقلة عبر نفاذ أو رمز التحقق.'**
+  String get flDecisionHint;
+
+  /// No description provided for @flReadyToSign.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتمل الاعتماد — وقّع الآن'**
+  String get flReadyToSign;
+
+  /// No description provided for @flDecided.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجّل قرارك'**
+  String get flDecided;
+
+  /// No description provided for @flRejectedDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُجّل الرفض — لن يبدأ العمل'**
+  String get flRejectedDone;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

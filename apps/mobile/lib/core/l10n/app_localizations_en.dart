@@ -1301,4 +1301,90 @@ class L10nEn extends L10n {
   String diffFromTo(String from, String to) {
     return 'from $from to $to';
   }
+
+  @override
+  String get flToday => 'Your fleet today';
+
+  @override
+  String get flVehicles => 'vehicles';
+
+  @override
+  String get flOpenRepairs => 'open repairs';
+
+  @override
+  String get flAwaiting => 'awaiting your decision';
+
+  @override
+  String get flMonthSpend => 'committed this month';
+
+  @override
+  String flBudgetLeft(String amount) {
+    return '$amount of the budget left';
+  }
+
+  @override
+  String get flNoPolicy =>
+      'No spending policy — every repair needs your approval.';
+
+  @override
+  String flPolicyLine(String name, String auto) {
+    return 'Policy “$name”: auto-approve below $auto';
+  }
+
+  @override
+  String get flInboxTitle => 'Awaiting your decision';
+
+  @override
+  String get flInboxEmpty => 'Nothing awaits your decision';
+
+  @override
+  String get flInboxEmptyBody =>
+      'Every repair is either approved or under the auto-approve limit.';
+
+  @override
+  String get flNeedsOne => 'Needs one approval';
+
+  @override
+  String get flNeedsTwo => 'Needs two approvers';
+
+  @override
+  String get flAutoOk => 'Under the limit — ready to sign';
+
+  @override
+  String get flBlockedWorkshop => 'Workshop is outside the approved list';
+
+  @override
+  String get flOverBudget => 'Exceeds this month\'s budget';
+
+  @override
+  String flApprovedBy(String name) {
+    return 'Approved by $name';
+  }
+
+  @override
+  String flRejectedBy(String name) {
+    return 'Rejected by $name';
+  }
+
+  @override
+  String get flApprove => 'Approve the spend';
+
+  @override
+  String get flReject => 'Reject';
+
+  @override
+  String get flDecisionNote => 'Note (optional)';
+
+  @override
+  String get flDecisionHint =>
+      'Your decision is recorded in your name. The final signature is a separate step via Nafath or OTP.';
+
+  @override
+  String get flReadyToSign => 'Approvals complete — sign now';
+
+  @override
+  String get flDecided => 'Your decision was recorded';
+
+  @override
+  String get flRejectedDone => 'Rejection recorded — work will not start';
 }

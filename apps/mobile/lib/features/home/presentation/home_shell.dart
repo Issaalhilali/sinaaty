@@ -16,6 +16,7 @@ import '../../workshop/presentation/providers.dart';
 import '../../workshop/presentation/today_screen.dart';
 import '../../parts/presentation/supplier_screens.dart';
 import 'request_hub_screen.dart';
+import '../../fleet/presentation/fleet_today_screen.dart';
 import '../../parts/presentation/workshop_parts_screen.dart';
 /// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
 class HomeShell extends ConsumerStatefulWidget { const HomeShell({super.key}); @override ConsumerState<HomeShell> createState() => _HomeShellState(); }
@@ -35,6 +36,10 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       (AppFlavor.customer, 1) => const RequestHubScreen(),
       (AppFlavor.customer, 2) => const WalletScreen(),
       (AppFlavor.customer, 3) => const AccountScreen(),
+      (AppFlavor.fleet, 0) => const FleetTodayScreen(),
+      (AppFlavor.fleet, 1) => const VehiclesScreen(),
+      (AppFlavor.fleet, 2) => const WalletScreen(),
+      (AppFlavor.fleet, 3) => const AccountScreen(),
       (AppFlavor.partner, 0) when isSupplier => const SupplierRequestsScreen(),
       (AppFlavor.partner, 1) when isSupplier => const SupplierSalesScreen(),
       (AppFlavor.partner, 2) when isSupplier => const OrgWalletScreen(),

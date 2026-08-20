@@ -591,5 +591,61 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flToday": "Your fleet today",
+  "flVehicles": "vehicles",
+  "flOpenRepairs": "open repairs",
+  "flAwaiting": "awaiting your decision",
+  "flMonthSpend": "committed this month",
+  "flBudgetLeft": "{amount} of the budget left",
+  "@flBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "flNoPolicy": "No spending policy — every repair needs your approval.",
+  "flPolicyLine": "Policy “{name}”: auto-approve below {auto}",
+  "@flPolicyLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "auto": {
+        "type": "String"
+      }
+    }
+  },
+  "flInboxTitle": "Awaiting your decision",
+  "flInboxEmpty": "Nothing awaits your decision",
+  "flInboxEmptyBody": "Every repair is either approved or under the auto-approve limit.",
+  "flNeedsOne": "Needs one approval",
+  "flNeedsTwo": "Needs two approvers",
+  "flAutoOk": "Under the limit — ready to sign",
+  "flBlockedWorkshop": "Workshop is outside the approved list",
+  "flOverBudget": "Exceeds this month's budget",
+  "flApprovedBy": "Approved by {name}",
+  "@flApprovedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flRejectedBy": "Rejected by {name}",
+  "@flRejectedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flApprove": "Approve the spend",
+  "flReject": "Reject",
+  "flDecisionNote": "Note (optional)",
+  "flDecisionHint": "Your decision is recorded in your name. The final signature is a separate step via Nafath or OTP.",
+  "flReadyToSign": "Approvals complete — sign now",
+  "flDecided": "Your decision was recorded",
+  "flRejectedDone": "Rejection recorded — work will not start"
 }

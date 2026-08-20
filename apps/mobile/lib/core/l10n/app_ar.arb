@@ -591,5 +591,61 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flToday": "أسطولك اليوم",
+  "flVehicles": "مركبة",
+  "flOpenRepairs": "إصلاح مفتوح",
+  "flAwaiting": "بانتظار قرارك",
+  "flMonthSpend": "التزام هذا الشهر",
+  "flBudgetLeft": "المتبقي من الميزانية {amount}",
+  "@flBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "flNoPolicy": "لا توجد سياسة صرف — كل إصلاح يحتاج اعتمادك.",
+  "flPolicyLine": "سياسة «{name}»: اعتماد تلقائي تحت {auto}",
+  "@flPolicyLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "auto": {
+        "type": "String"
+      }
+    }
+  },
+  "flInboxTitle": "بانتظار قرارك",
+  "flInboxEmpty": "لا يوجد ما ينتظر قرارك",
+  "flInboxEmptyBody": "كل الإصلاحات إما معتمدة أو تحت حد الاعتماد التلقائي.",
+  "flNeedsOne": "يحتاج اعتماداً واحداً",
+  "flNeedsTwo": "يحتاج اعتماد شخصين",
+  "flAutoOk": "تحت الحد — جاهز للتوقيع",
+  "flBlockedWorkshop": "الورشة خارج القائمة المعتمدة",
+  "flOverBudget": "يتجاوز ميزانية الشهر",
+  "flApprovedBy": "اعتمده {name}",
+  "@flApprovedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flRejectedBy": "رفضه {name}",
+  "@flRejectedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flApprove": "أوافق على الصرف",
+  "flReject": "أرفض",
+  "flDecisionNote": "ملاحظة (اختياري)",
+  "flDecisionHint": "قرارك يُسجَّل باسمك. التوقيع النهائي خطوة مستقلة عبر نفاذ أو رمز التحقق.",
+  "flReadyToSign": "اكتمل الاعتماد — وقّع الآن",
+  "flDecided": "سُجّل قرارك",
+  "flRejectedDone": "سُجّل الرفض — لن يبدأ العمل"
 }

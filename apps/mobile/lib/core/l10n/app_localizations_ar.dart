@@ -1291,4 +1291,89 @@ class L10nAr extends L10n {
   String diffFromTo(String from, String to) {
     return 'من $from إلى $to';
   }
+
+  @override
+  String get flToday => 'أسطولك اليوم';
+
+  @override
+  String get flVehicles => 'مركبة';
+
+  @override
+  String get flOpenRepairs => 'إصلاح مفتوح';
+
+  @override
+  String get flAwaiting => 'بانتظار قرارك';
+
+  @override
+  String get flMonthSpend => 'التزام هذا الشهر';
+
+  @override
+  String flBudgetLeft(String amount) {
+    return 'المتبقي من الميزانية $amount';
+  }
+
+  @override
+  String get flNoPolicy => 'لا توجد سياسة صرف — كل إصلاح يحتاج اعتمادك.';
+
+  @override
+  String flPolicyLine(String name, String auto) {
+    return 'سياسة «$name»: اعتماد تلقائي تحت $auto';
+  }
+
+  @override
+  String get flInboxTitle => 'بانتظار قرارك';
+
+  @override
+  String get flInboxEmpty => 'لا يوجد ما ينتظر قرارك';
+
+  @override
+  String get flInboxEmptyBody =>
+      'كل الإصلاحات إما معتمدة أو تحت حد الاعتماد التلقائي.';
+
+  @override
+  String get flNeedsOne => 'يحتاج اعتماداً واحداً';
+
+  @override
+  String get flNeedsTwo => 'يحتاج اعتماد شخصين';
+
+  @override
+  String get flAutoOk => 'تحت الحد — جاهز للتوقيع';
+
+  @override
+  String get flBlockedWorkshop => 'الورشة خارج القائمة المعتمدة';
+
+  @override
+  String get flOverBudget => 'يتجاوز ميزانية الشهر';
+
+  @override
+  String flApprovedBy(String name) {
+    return 'اعتمده $name';
+  }
+
+  @override
+  String flRejectedBy(String name) {
+    return 'رفضه $name';
+  }
+
+  @override
+  String get flApprove => 'أوافق على الصرف';
+
+  @override
+  String get flReject => 'أرفض';
+
+  @override
+  String get flDecisionNote => 'ملاحظة (اختياري)';
+
+  @override
+  String get flDecisionHint =>
+      'قرارك يُسجَّل باسمك. التوقيع النهائي خطوة مستقلة عبر نفاذ أو رمز التحقق.';
+
+  @override
+  String get flReadyToSign => 'اكتمل الاعتماد — وقّع الآن';
+
+  @override
+  String get flDecided => 'سُجّل قرارك';
+
+  @override
+  String get flRejectedDone => 'سُجّل الرفض — لن يبدأ العمل';
 }
