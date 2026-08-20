@@ -66,11 +66,11 @@ class InspectionDiffScreen extends ConsumerWidget {
               SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [Expanded(child: Text(l.diffCheckIn, style: t.titleSmall)), if (d.checkInAt != null) Text(Fmt.date(d.checkInAt!, locale: locale), style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))]),
                 const SizedBox(height: SinaatySpace.sm),
-                MediaStrip(mediaIds: d.checkInPhotos, size: 64),
+                MediaStrip(mediaIds: d.checkInPhotos, size: 64, showEmptyDash: true),
                 const SizedBox(height: SinaatySpace.md),
                 Row(children: [Expanded(child: Text(l.diffCheckOut, style: t.titleSmall)), if (d.checkOutAt != null) Text(Fmt.date(d.checkOutAt!, locale: locale), style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))]),
                 const SizedBox(height: SinaatySpace.sm),
-                d.comparable ? MediaStrip(mediaIds: d.checkOutPhotos, size: 64) : Text(l.diffWaiting, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                d.comparable ? MediaStrip(mediaIds: d.checkOutPhotos, size: 64, showEmptyDash: true) : Text(l.diffWaiting, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
               ])),
             ],
           ),

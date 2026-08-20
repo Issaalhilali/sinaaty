@@ -30,13 +30,16 @@ class MediaThumb extends ConsumerWidget {
 }
 
 /// A horizontal strip of [MediaThumb]s — the shape both inspection screens share.
+/// Empty renders nothing by default: a lone dash in a card is noise. Pass [showEmptyDash] only where
+/// "no photos" is itself information (the condition comparison, where an empty side means something).
 class MediaStrip extends StatelessWidget {
   final List<String> mediaIds;
   final double size;
-  const MediaStrip({super.key, required this.mediaIds, this.size = 72});
+  final bool showEmptyDash;
+  const MediaStrip({super.key, required this.mediaIds, this.size = 72, this.showEmptyDash = false});
   @override
   Widget build(BuildContext context) => mediaIds.isEmpty
-      ? Text('—', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
+      ? (showEmptyDash ? Text('—', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)) : const SizedBox.shrink())
       : SizedBox(height: size, child: ListView.separated(
           scrollDirection: Axis.horizontal, itemCount: mediaIds.length,
           separatorBuilder: (_, _) => const SizedBox(width: 8),
