@@ -10,6 +10,7 @@ final workOrderRealtimeProvider = Provider<WorkOrderRealtime>((ref) => WorkOrder
 final workOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) => ref.watch(workOrdersRepositoryProvider).list());
 final workOrderProvider = FutureProvider.autoDispose.family<Result<WorkOrder>, String>((ref, id) => ref.watch(workOrdersRepositoryProvider).get(id));
 final workOrderTimelineProvider = FutureProvider.autoDispose.family<Result<WoTimeline>, String>((ref, id) => ref.watch(workOrdersRepositoryProvider).timeline(id));
+final inspectionDiffProvider = FutureProvider.autoDispose.family<Result<InspectionDiff>, String>((ref, id) => ref.watch(workOrdersRepositoryProvider).inspectionDiff(id));
 final workOrderVersionProvider = FutureProvider.autoDispose.family<Result<WoVersion>, ({String id, int version})>((ref, k) => ref.watch(workOrdersRepositoryProvider).version(k.id, k.version));
 /// Subscribes to realtime for a work order and invalidates its providers on every tick.
 final workOrderLiveProvider = StreamProvider.autoDispose.family<void, String>((ref, id) { final s = ref.watch(workOrderRealtimeProvider).changes(id); return s.map((e) { ref.invalidate(workOrderProvider(id)); ref.invalidate(workOrderTimelineProvider(id)); ref.invalidate(workOrdersProvider); return e; }); });

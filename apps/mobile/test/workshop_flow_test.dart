@@ -56,6 +56,13 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<Result<WorkOrder>> approveComplete(String id, {required String method, int? version, String? transactionId, String? code}) async => const Result.err(UnknownFailure());
   @override Future<Result<WorkOrder>> cancel(String id, String reasonAr) => _g(() => _st(orders[id]!, 'cancelled'));
   @override Future<Result<void>> confirmReceipt(String id) => _g(() {});
+  @override Future<Result<InspectionDiff>> inspectionDiff(String id) async => Result.ok(InspectionDiff(
+    comparable: true, summaryAr: 'لا توجد أضرار جديدة مقارنة بالاستلام.',
+    appeared: const [], worsened: const [], repaired: const [],
+    unchanged: const [DamageEntry(zone: 'front_bumper', zoneAr: 'الصدام الأمامي', severity: 'minor', noteAr: 'خدش قديم', mediaIds: [], source: 'inspector')],
+    checkInAt: DateTime(2026, 8, 18, 9), checkOutAt: DateTime(2026, 8, 20, 15),
+    checkInPhotos: const ['a', 'b'], checkOutPhotos: const ['c'],
+  ));
   @override Stream<void> changes(String workOrderId) => const Stream.empty();
   Future<Result<Invoice>> invoice(String id) => _g(() => invoices.firstWhere((i) => i.id == id));
   Future<Result<PaymentIntent>> createPayment(String invoiceId, String method) async => const Result.err(UnknownFailure());

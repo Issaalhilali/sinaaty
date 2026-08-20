@@ -39,6 +39,10 @@ class WorkOrderScreen extends ConsumerWidget {
           const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()), KeyValueRow(l.vat, Fmt.money(o.vatAmount, locale: locale)), Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l.total, style: Theme.of(context).textTheme.titleMedium), MoneyText(Fmt.money(o.total, locale: locale))])),
         ])),
         if ((tl.value?.valueOrNull?.media.isNotEmpty ?? false) || (tl.value?.valueOrNull?.inspections.isNotEmpty ?? false)) ...[
+          if ((tl.value?.valueOrNull?.inspections ?? []).any((i) => i.type == 'check_in')) ...[
+            const SizedBox(height: SinaatySpace.lg),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.compare_outlined, title: l.diffOpen, subtitle: l.diffSub, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/work-orders/$id/condition'))),
+          ],
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.photos),
           SectionCard(child: Column(children: [
             for (final ins in tl.value!.valueOrNull!.inspections) AppListRow(icon: ins.type == 'check_in' ? Icons.login : Icons.logout, title: ins.type == 'check_in' ? l.checkIn : l.checkOut, subtitle: [Fmt.dateTime(ins.performedAt, locale: locale), if (ins.odometerKm != null) '${ins.odometerKm} ${l.km}', l.damages(ins.damagesCount)].join(' · '), trailing: StatusBadge(l.photosCount(ins.mediaIds.length))),

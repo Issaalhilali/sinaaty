@@ -20,3 +20,27 @@ class WoVersion {
 class ApproveInit { final String method; final int version; final String? transactionId; final String? random; final String? debugCode; const ApproveInit({required this.method, required this.version, this.transactionId, this.random, this.debugCode}); }
 /// Customer-visible order of statuses for the timeline.
 const woFlow = ['received', 'inspecting', 'awaiting_approval', 'in_progress', 'quality_check', 'ready', 'delivered', 'closed'];
+
+/// One damage as the comparison reports it. `source` tells the reader whether a person recorded it
+/// or the system suggested it — a dispute is never decided on a machine's word alone.
+class DamageEntry {
+  final String zone; final String zoneAr; final String severity; final String? noteAr;
+  final List<String> mediaIds; final String source; final double? aiConfidence;
+  const DamageEntry({required this.zone, required this.zoneAr, required this.severity, this.noteAr, required this.mediaIds, required this.source, this.aiConfidence});
+}
+
+class WorsenedEntry { final String zone; final String zoneAr; final String from; final String to; const WorsenedEntry({required this.zone, required this.zoneAr, required this.from, required this.to}); }
+
+/// Check-in vs check-out: the answer to «هل تضررت سيارتي عند الورشة؟», with photos on both sides.
+class InspectionDiff {
+  final bool comparable;
+  final String summaryAr;
+  final List<DamageEntry> appeared;
+  final List<WorsenedEntry> worsened;
+  final List<DamageEntry> repaired;
+  final List<DamageEntry> unchanged;
+  final DateTime? checkInAt; final DateTime? checkOutAt;
+  final List<String> checkInPhotos; final List<String> checkOutPhotos;
+  const InspectionDiff({required this.comparable, required this.summaryAr, required this.appeared, required this.worsened, required this.repaired, required this.unchanged, this.checkInAt, this.checkOutAt, required this.checkInPhotos, required this.checkOutPhotos});
+  bool get clean => comparable && appeared.isEmpty && worsened.isEmpty;
+}

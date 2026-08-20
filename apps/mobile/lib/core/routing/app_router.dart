@@ -11,6 +11,7 @@ import '../../features/notifications/presentation/inbox_screen.dart';
 import '../../features/vehicles/presentation/add_vehicle_screen.dart';
 import '../../features/vehicles/presentation/vehicle_screen.dart';
 import '../../features/work_orders/presentation/approve_screen.dart';
+import '../../features/work_orders/presentation/inspection_diff_screen.dart';
 import '../../features/work_orders/presentation/work_order_screen.dart';
 import '../../features/workshop/presentation/inspection_screen.dart';
 import '../../features/workshop/presentation/new_order_screen.dart';
@@ -40,7 +41,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vehicles/add', builder: (_, _) => const AddVehicleScreen()),
       GoRoute(path: '/vehicles/:id', builder: (_, s) => VehicleScreen(id: s.pathParameters['id']!)),
-      GoRoute(path: '/work-orders/:id', builder: (_, s) => WorkOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'approve', builder: (_, s) => ApproveScreen(id: s.pathParameters['id']!))]),
+      GoRoute(path: '/work-orders/:id', builder: (_, s) => WorkOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'approve', builder: (_, s) => ApproveScreen(id: s.pathParameters['id']!)), GoRoute(path: 'condition', builder: (_, s) => InspectionDiffScreen(id: s.pathParameters['id']!))]),
       GoRoute(path: '/invoices/:id', builder: (_, s) => InvoiceScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),

@@ -565,5 +565,31 @@
   "ptWarrantyActive": "ساري",
   "ptWarrantyIssuer": "الجهة الضامنة",
   "ptWarrantyFrom": "يبدأ",
-  "ptWarrantyNumber": "رقم الضمان"
+  "ptWarrantyNumber": "رقم الضمان",
+  "diffTitle": "مقارنة حالة السيارة",
+  "diffSub": "قبل الإصلاح وبعده — بالصور",
+  "diffOpen": "قارن حالة السيارة",
+  "diffCleanTitle": "سيارتك كما استلمناها",
+  "diffWaiting": "بانتظار فحص التسليم للمقارنة.",
+  "diffAppeared": "ظهر بعد الاستلام",
+  "diffWorsened": "ازداد سوءاً",
+  "diffRepaired": "تم إصلاحه",
+  "diffUnchanged": "كما كان عند الاستلام",
+  "diffCheckIn": "صور الاستلام",
+  "diffCheckOut": "صور التسليم",
+  "diffAiSuggested": "رصد آلي",
+  "sevMinor": "بسيط",
+  "sevModerate": "متوسط",
+  "sevSevere": "شديد",
+  "diffFromTo": "من {from} إلى {to}",
+  "@diffFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  }
 }

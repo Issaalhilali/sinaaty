@@ -1241,4 +1241,54 @@ class L10nAr extends L10n {
 
   @override
   String get ptWarrantyNumber => 'رقم الضمان';
+
+  @override
+  String get diffTitle => 'مقارنة حالة السيارة';
+
+  @override
+  String get diffSub => 'قبل الإصلاح وبعده — بالصور';
+
+  @override
+  String get diffOpen => 'قارن حالة السيارة';
+
+  @override
+  String get diffCleanTitle => 'سيارتك كما استلمناها';
+
+  @override
+  String get diffWaiting => 'بانتظار فحص التسليم للمقارنة.';
+
+  @override
+  String get diffAppeared => 'ظهر بعد الاستلام';
+
+  @override
+  String get diffWorsened => 'ازداد سوءاً';
+
+  @override
+  String get diffRepaired => 'تم إصلاحه';
+
+  @override
+  String get diffUnchanged => 'كما كان عند الاستلام';
+
+  @override
+  String get diffCheckIn => 'صور الاستلام';
+
+  @override
+  String get diffCheckOut => 'صور التسليم';
+
+  @override
+  String get diffAiSuggested => 'رصد آلي';
+
+  @override
+  String get sevMinor => 'بسيط';
+
+  @override
+  String get sevModerate => 'متوسط';
+
+  @override
+  String get sevSevere => 'شديد';
+
+  @override
+  String diffFromTo(String from, String to) {
+    return 'من $from إلى $to';
+  }
 }

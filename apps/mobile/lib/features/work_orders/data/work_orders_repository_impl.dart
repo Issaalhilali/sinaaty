@@ -34,5 +34,29 @@ class WorkOrdersRepositoryImpl implements WorkOrdersRepository {
   @override Future<Result<ApproveInit>> approveInit(String id, {required String method, int? version}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$id/approve', data: {'method': method, 'version': ?version})).data!; return ApproveInit(method: d['method'] as String, version: (d['version'] as num).toInt(), transactionId: d['transaction_id'] as String?, random: d['random']?.toString(), debugCode: d['debug_code'] as String?); });
   @override Future<Result<WorkOrder>> approveComplete(String id, {required String method, int? version, String? transactionId, String? code}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$id/approve/complete', data: {'method': method, 'version': ?version, 'transaction_id': ?transactionId, 'code': ?code})).data!; return workOrderFromJson((d['work_order'] ?? d) as Map<String, dynamic>); });
   @override Future<Result<WorkOrder>> cancel(String id, String reasonAr) => _run(() async => workOrderFromJson(((await api.dio.post<Map<String, dynamic>>('/work-orders/$id/cancel', data: {'reason_ar': reasonAr})).data!['work_order'] ?? (await api.dio.get<Map<String, dynamic>>('/work-orders/$id')).data!) as Map<String, dynamic>));
+  @override Future<Result<InspectionDiff>> inspectionDiff(String id) => _run(() async => inspectionDiffFromJson((await api.dio.get<Map<String, dynamic>>('/work-orders/$id/inspection-diff')).data!));
   @override Future<Result<void>> confirmReceipt(String id) => _run(() async { await api.dio.post<void>('/work-orders/$id/confirm-receipt'); });
+}
+
+DamageEntry _damageFromJson(Map<String, dynamic> j) => DamageEntry(
+  zone: j['zone'] as String, zoneAr: (j['zone_ar'] ?? j['zone']) as String, severity: j['severity'] as String,
+  noteAr: j['note_ar'] as String?, mediaIds: ((j['media_ids'] as List?) ?? []).cast<String>(),
+  source: (j['source'] ?? 'inspector') as String,
+  aiConfidence: (j['ai_confidence'] as num?)?.toDouble());
+
+InspectionDiff inspectionDiffFromJson(Map<String, dynamic> j) {
+  List<DamageEntry> list(String k) => ((j[k] as List?) ?? []).cast<Map<String, dynamic>>().map(_damageFromJson).toList();
+  final ci = j['check_in'] as Map<String, dynamic>?; final co = j['check_out'] as Map<String, dynamic>?;
+  return InspectionDiff(
+    comparable: j['comparable'] as bool? ?? false,
+    summaryAr: (j['summary_ar'] ?? '') as String,
+    appeared: list('appeared'),
+    worsened: ((j['worsened'] as List?) ?? []).cast<Map<String, dynamic>>().map((w) => WorsenedEntry(zone: w['zone'] as String, zoneAr: (w['zone_ar'] ?? w['zone']) as String, from: w['from'] as String, to: w['to'] as String)).toList(),
+    repaired: list('repaired'),
+    unchanged: list('unchanged'),
+    checkInAt: ci == null ? null : DateTime.tryParse((ci['performed_at'] ?? '') as String),
+    checkOutAt: co == null ? null : DateTime.tryParse((co['performed_at'] ?? '') as String),
+    checkInPhotos: ((ci?['photos'] as List?) ?? []).cast<String>(),
+    checkOutPhotos: ((co?['photos'] as List?) ?? []).cast<String>(),
+  );
 }

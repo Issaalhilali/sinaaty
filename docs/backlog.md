@@ -74,9 +74,9 @@
 | Measure extraction accuracy on real pilot recordings before enabling INTEGRATION_AI=live widely | Step 27 | prices are verified against the transcript either way | Step 30 |
 | Intermittent 401 in whole-suite e2e runs (~1 run in 3, a different suite each time; every suite passes alone, and on a clean DB) | Step 27 | not reproduced in isolation; token verification fails on a token that was just minted — cause not yet identified, so it is written down rather than guessed at | Step 30 |
 | Vision live adapter — needs a data-residency decision + ADR before any customer photo leaves | Step 28 | mock only; module refuses INTEGRATION_AI=live | before pilot |
-| Inspection-diff screen in the apps (workshop shows it at delivery, customer sees it in the order) | Step 28 | API returns the comparison with photos | Step 30 |
 | Measure false-positive rate on real pilot photos before enabling ai_inspection widely | Step 28 | a wrong suggestion costs the workshop trust, so precision matters more than recall | Step 30 |
 | Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
 | Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) | Step 29 | API + notifications done | Step 30 |
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
+| Inspection-diff photos render as placeholders (media download endpoint not built) | Step 28 UI | counts and dates shown; bytes need the presigned-GET endpoint | Step 30 |
 

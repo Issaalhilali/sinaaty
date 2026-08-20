@@ -1251,4 +1251,54 @@ class L10nEn extends L10n {
 
   @override
   String get ptWarrantyNumber => 'Warranty no.';
+
+  @override
+  String get diffTitle => 'Vehicle condition comparison';
+
+  @override
+  String get diffSub => 'Before and after the repair — with photos';
+
+  @override
+  String get diffOpen => 'Compare vehicle condition';
+
+  @override
+  String get diffCleanTitle => 'Your car, as we received it';
+
+  @override
+  String get diffWaiting => 'Waiting for the check-out inspection to compare.';
+
+  @override
+  String get diffAppeared => 'Appeared after intake';
+
+  @override
+  String get diffWorsened => 'Got worse';
+
+  @override
+  String get diffRepaired => 'Repaired';
+
+  @override
+  String get diffUnchanged => 'Same as at intake';
+
+  @override
+  String get diffCheckIn => 'Intake photos';
+
+  @override
+  String get diffCheckOut => 'Handover photos';
+
+  @override
+  String get diffAiSuggested => 'System-detected';
+
+  @override
+  String get sevMinor => 'Minor';
+
+  @override
+  String get sevModerate => 'Moderate';
+
+  @override
+  String get sevSevere => 'Severe';
+
+  @override
+  String diffFromTo(String from, String to) {
+    return 'from $from to $to';
+  }
 }

@@ -565,5 +565,31 @@
   "ptWarrantyActive": "Active",
   "ptWarrantyIssuer": "Guaranteed by",
   "ptWarrantyFrom": "Starts",
-  "ptWarrantyNumber": "Warranty no."
+  "ptWarrantyNumber": "Warranty no.",
+  "diffTitle": "Vehicle condition comparison",
+  "diffSub": "Before and after the repair — with photos",
+  "diffOpen": "Compare vehicle condition",
+  "diffCleanTitle": "Your car, as we received it",
+  "diffWaiting": "Waiting for the check-out inspection to compare.",
+  "diffAppeared": "Appeared after intake",
+  "diffWorsened": "Got worse",
+  "diffRepaired": "Repaired",
+  "diffUnchanged": "Same as at intake",
+  "diffCheckIn": "Intake photos",
+  "diffCheckOut": "Handover photos",
+  "diffAiSuggested": "System-detected",
+  "sevMinor": "Minor",
+  "sevModerate": "Moderate",
+  "sevSevere": "Severe",
+  "diffFromTo": "from {from} to {to}",
+  "@diffFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  }
 }

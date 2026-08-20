@@ -2430,6 +2430,102 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'رقم الضمان'**
   String get ptWarrantyNumber;
+
+  /// No description provided for @diffTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقارنة حالة السيارة'**
+  String get diffTitle;
+
+  /// No description provided for @diffSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل الإصلاح وبعده — بالصور'**
+  String get diffSub;
+
+  /// No description provided for @diffOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'قارن حالة السيارة'**
+  String get diffOpen;
+
+  /// No description provided for @diffCleanTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك كما استلمناها'**
+  String get diffCleanTitle;
+
+  /// No description provided for @diffWaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار فحص التسليم للمقارنة.'**
+  String get diffWaiting;
+
+  /// No description provided for @diffAppeared.
+  ///
+  /// In ar, this message translates to:
+  /// **'ظهر بعد الاستلام'**
+  String get diffAppeared;
+
+  /// No description provided for @diffWorsened.
+  ///
+  /// In ar, this message translates to:
+  /// **'ازداد سوءاً'**
+  String get diffWorsened;
+
+  /// No description provided for @diffRepaired.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إصلاحه'**
+  String get diffRepaired;
+
+  /// No description provided for @diffUnchanged.
+  ///
+  /// In ar, this message translates to:
+  /// **'كما كان عند الاستلام'**
+  String get diffUnchanged;
+
+  /// No description provided for @diffCheckIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'صور الاستلام'**
+  String get diffCheckIn;
+
+  /// No description provided for @diffCheckOut.
+  ///
+  /// In ar, this message translates to:
+  /// **'صور التسليم'**
+  String get diffCheckOut;
+
+  /// No description provided for @diffAiSuggested.
+  ///
+  /// In ar, this message translates to:
+  /// **'رصد آلي'**
+  String get diffAiSuggested;
+
+  /// No description provided for @sevMinor.
+  ///
+  /// In ar, this message translates to:
+  /// **'بسيط'**
+  String get sevMinor;
+
+  /// No description provided for @sevModerate.
+  ///
+  /// In ar, this message translates to:
+  /// **'متوسط'**
+  String get sevModerate;
+
+  /// No description provided for @sevSevere.
+  ///
+  /// In ar, this message translates to:
+  /// **'شديد'**
+  String get sevSevere;
+
+  /// No description provided for @diffFromTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'من {from} إلى {to}'**
+  String diffFromTo(String from, String to);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

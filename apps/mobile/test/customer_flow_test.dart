@@ -25,6 +25,7 @@ import 'package:sinaaty/features/vehicles/presentation/vehicles_screen.dart';
 import 'package:sinaaty/features/work_orders/domain/work_order.dart';
 import 'package:sinaaty/features/work_orders/domain/work_orders_repository.dart';
 import 'package:sinaaty/features/work_orders/presentation/approve_screen.dart';
+import 'package:sinaaty/features/work_orders/presentation/inspection_diff_screen.dart';
 import 'package:sinaaty/features/work_orders/presentation/providers.dart';
 import 'package:sinaaty/features/work_orders/presentation/work_order_screen.dart';
 
@@ -40,6 +41,14 @@ class FakeWorkOrders implements WorkOrdersRepository, WorkOrderRealtime {
   @override Future<Result<WorkOrder>> approveComplete(String id, {required String method, int? version, String? transactionId, String? code}) async { lastCode = code; if (method == 'otp' && code != '123456') return const Result.err(ApiFailure(400, 'OTP_INVALID', 'رمز غير صحيح', 'Invalid code')); status = 'in_progress'; return Result.ok(wo); }
   @override Future<Result<WorkOrder>> cancel(String id, String reasonAr) async { status = 'cancelled'; return Result.ok(wo); }
   @override Future<Result<void>> confirmReceipt(String id) async { status = 'closed'; return const Result.ok(null); }
+  InspectionDiff diff = InspectionDiff(
+    comparable: true, summaryAr: 'لا توجد أضرار جديدة مقارنة بالاستلام.',
+    appeared: const [], worsened: const [], repaired: const [],
+    unchanged: const [DamageEntry(zone: 'front_bumper', zoneAr: 'الصدام الأمامي', severity: 'minor', noteAr: 'خدش قديم', mediaIds: [], source: 'inspector')],
+    checkInAt: DateTime(2026, 8, 18, 9), checkOutAt: DateTime(2026, 8, 20, 15),
+    checkInPhotos: const ['a', 'b'], checkOutPhotos: const ['c'],
+  );
+  @override Future<Result<InspectionDiff>> inspectionDiff(String id) async => Result.ok(diff);
   @override Stream<void> changes(String workOrderId) => const Stream.empty();
 }
 extension<T> on T { R let<R>(R Function(T) f) => f(this); }
@@ -76,7 +85,7 @@ void main() {
     ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
   GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [
     GoRoute(path: '/', builder: (_, _) => const Scaffold(body: VehiclesScreen())),
-    GoRoute(path: '/work-orders/:id', builder: (_, s) => WorkOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'approve', builder: (_, s) => ApproveScreen(id: s.pathParameters['id']!))]),
+    GoRoute(path: '/work-orders/:id', builder: (_, s) => WorkOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'approve', builder: (_, s) => ApproveScreen(id: s.pathParameters['id']!)), GoRoute(path: 'condition', builder: (_, s) => InspectionDiffScreen(id: s.pathParameters['id']!))]),
     GoRoute(path: '/invoices/:id', builder: (_, s) => InvoiceScreen(id: s.pathParameters['id']!)),
     GoRoute(path: '/vehicles/:id', builder: (_, _) => const Scaffold(body: Text('vehicle'))),
   ]);
@@ -113,6 +122,36 @@ void main() {
     expect(find.text('اختر طريقة الدفع'), findsOneWidget);
     await tester.tap(find.textContaining('مدى')); await tester.pumpAndSettle();
     expect(billing.paidIds, ['p1']); expect(find.text('تم الدفع — شكراً لك'), findsOneWidget); expect(find.text('مدفوعة'), findsOneWidget); expect(find.textContaining('ادفع '), findsNothing);
+  });
+
+  testWidgets('condition comparison: clean handover leads with «سيارتك كما استلمناها»', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    await tester.pumpWidget(app(router('/work-orders/wo1'))); await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('قارن حالة السيارة'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('قارن حالة السيارة')); await tester.pumpAndSettle();
+    expect(find.text('سيارتك كما استلمناها'), findsOneWidget);
+    expect(find.text('الصدام الأمامي'), findsOneWidget);           // the old scratch, unchanged
+    expect(find.text('كما كان عند الاستلام'), findsOneWidget);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_diff_clean_light.png'));
+  });
+
+  testWidgets('condition comparison: new damage is named, counted, and marked when system-detected', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    wos.diff = InspectionDiff(
+      comparable: true, summaryAr: 'ضرر جديد (الباب الخلفي الأيسر) — راجع الصور قبل التسليم.',
+      appeared: const [DamageEntry(zone: 'rear_left_door', zoneAr: 'الباب الخلفي الأيسر', severity: 'severe', noteAr: 'انبعاج جديد', mediaIds: ['m9'], source: 'inspector')],
+      worsened: const [WorsenedEntry(zone: 'front_bumper', zoneAr: 'الصدام الأمامي', from: 'minor', to: 'moderate')],
+      repaired: const [DamageEntry(zone: 'hood', zoneAr: 'غطاء المحرك', severity: 'moderate', mediaIds: [], source: 'inspector')],
+      unchanged: const [], checkInAt: DateTime(2026, 8, 18, 9), checkOutAt: DateTime(2026, 8, 20, 15),
+      checkInPhotos: const ['a'], checkOutPhotos: const ['b'],
+    );
+    await tester.pumpWidget(app(router('/work-orders/wo1/condition'))); await tester.pumpAndSettle();
+    expect(find.textContaining('الباب الخلفي الأيسر'), findsWidgets);   // in the verdict and in the list
+    expect(find.text('ظهر بعد الاستلام: 1'), findsOneWidget);
+    expect(find.text('ازداد سوءاً: 1'), findsOneWidget);
+    expect(find.text('تم إصلاحه'), findsOneWidget);
+    expect(find.text('شديد'), findsOneWidget);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_diff_damage_light.png'));
   });
 
   testWidgets('dark theme: work order screen', (tester) async {
