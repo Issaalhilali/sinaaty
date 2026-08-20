@@ -33,6 +33,7 @@ export const NAV: NavGroup[] = [
     items: [
       { href: '/organizations', label: 'المنشآت', hint: 'الورش والموردون + التحقق قبل التفعيل', icon: s('M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5') },
       { href: '/abandoned', label: 'سيارات لم تُستلم', hint: 'جاهزة ولم يستلمها أصحابها — إنذارات ورسوم حفظ', icon: s('M5 17h14M6 17v-5l2-5h8l2 5v5M8 17v2M16 17v2M7 12h10') },
+      { href: '/fleets', label: 'الأساطيل', hint: 'شركات بمركبات كثيرة — سياساتها وكشوفها', icon: s('M3 16h13M4 16v-4l2-4h7l2 4v4M6 16v2M13 16v2M16 11h4l1 2v3h-2M17 16v2') },
       { href: '/disputes', label: 'النزاعات', hint: 'خلاف بين عميل ومزوّد — المال مُجمَّد حتى القرار', icon: s('M12 3v18M5 8l7-5 7 5M4 12h16M6 12l-2 5h4zM18 12l-2 5h4z') },
     ],
   },
