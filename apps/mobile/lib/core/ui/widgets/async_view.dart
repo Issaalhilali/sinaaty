@@ -12,7 +12,7 @@ class AsyncResultView<T> extends StatelessWidget {
     return value.when(
       loading: () => const InlineLoading(),
       error: (_, _) => InlineError(message: l.errorGeneric, retryLabel: l.retry, onRetry: onRetry),
-      data: (r) => r.when(ok: builder, err: (f) => InlineError(message: f.message(locale), retryLabel: l.retry, onRetry: onRetry)),
+      data: (r) => r.when(ok: builder, err: (f) => InlineError(icon: f is NetworkFailure ? Icons.cloud_off_outlined : Icons.error_outline, message: f.message(locale), retryLabel: l.retry, onRetry: onRetry)),
     );
   }
 }
