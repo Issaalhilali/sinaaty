@@ -7028,6 +7028,93 @@
         ]
       }
     },
+    "/v1/inspections/{id}/analyze": {
+      "post": {
+        "operationId": "VisionController_analyze_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Read the inspection photos → suggested damages (marked as the model’s, never overwriting the inspector)",
+        "tags": [
+          "inspections"
+        ]
+      }
+    },
+    "/v1/inspections/{id}/confirm-damages": {
+      "post": {
+        "operationId": "VisionController_confirm_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inspector accepts some suggestions and drops the rest",
+        "tags": [
+          "inspections"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/inspection-diff": {
+      "get": {
+        "operationId": "VisionController_diff_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check-in vs check-out: what appeared, what got worse, what was repaired — with photos",
+        "tags": [
+          "inspections"
+        ]
+      }
+    },
     "/v1/me/notifications": {
       "get": {
         "operationId": "NotificationsController_list_v1",
