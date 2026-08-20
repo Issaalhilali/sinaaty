@@ -24,7 +24,7 @@ export class JoseTokenAdapter implements TokenPort {
   }
   async verifyAccess(token: string): Promise<AuthUser> {
     try {
-      const { payload } = await jwtVerify<Claims>(token, this.pub, { issuer: this.issuer, audience: 'sinaaty-api' });
+      const { payload } = await jwtVerify<Claims>(token, this.pub, { issuer: this.issuer, audience: 'sinaaty-api', algorithms: ['EdDSA'] });
       return { id: payload.sub!, phone: payload.ph, status: payload.st as AuthUser['status'], platformRole: payload.role as AuthUser['platformRole'], nafathVerified: payload.nv, orgs: payload.orgs.map((o) => ({ orgId: o.o, role: o.r as AuthUser['orgs'][number]['role'] })), deviceId: payload.dev };
     } catch { throw new AppError('TOKEN_INVALID'); }
   }

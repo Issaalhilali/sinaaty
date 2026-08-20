@@ -57,4 +57,9 @@
 | Tow: pick the destination workshop from the nearby list instead of typing it | Step 23 | discovery API exists; mobile has no orgs repository yet | Step 23b/26 |
 | Live tow tracking on a map (the API already streams `transport:{id}`) | Step 23 | status timeline + refresh for now | Step 30 |
 | Warranty claim from the wallet (open a claim on a warranty) | Step 23 | API supports claims; screen lists warranties only | Step 26 |
+| External penetration test before the pilot | Step 24 | internal review + 14 regression tests done | before pilot |
+| Media download endpoint must check ownership before signing a GET | Step 24 | endpoint not built yet; noted so it lands with the check | Step 26 |
+| PITR restore rehearsal on a real Supabase project (steps written, never executed here) | Step 24 | logical dump/restore drill passes locally | before pilot |
+| Soak test (1h) on the work-order path to watch memory + outbox depth | Step 24 | 60s ramp/hold runs pass with 0% failures | Step 25 |
+| Re-run k6 against production-like infra (managed DB + 2 API replicas) | Step 24 | numbers so far are one dev machine | Step 25 |
 

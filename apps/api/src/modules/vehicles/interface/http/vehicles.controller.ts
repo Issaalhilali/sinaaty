@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddVehicleDto, OdometerDto } from '../../application/dto/vehicles.dto';
 import { VehiclesUseCases } from '../../application/use-cases/vehicles.use-cases';
@@ -27,6 +28,6 @@ export class VehiclesController {
   share(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.createShareLink(u, id); }
   @Delete('vehicles/:id/passport/share') @ApiBearerAuth() unshare(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.revokeShareLink(u, id); }
 
-  @Public() @Get('passport/:token') @ApiOperation({ summary: 'Public Car Passport by share token (masked VIN, no owner/plate)' })
+  @Public() @Throttle({ default: { limit: 20, ttl: 60_000 } }) @Get('passport/:token') @ApiOperation({ summary: 'Public Car Passport by share token (masked VIN, no owner/plate)' })
   publicPassport(@Param('token') token: string) { return this.uc.publicPassport(token); }
 }
