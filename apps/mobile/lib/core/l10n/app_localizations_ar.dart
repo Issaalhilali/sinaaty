@@ -323,6 +323,10 @@ class L10nAr extends L10n {
   String get notificationsEmpty => 'لا توجد إشعارات بعد';
 
   @override
+  String get notificationsEmptyBody =>
+      'كل ما يخص سياراتك وفواتيرك وضماناتك سيصلك هنا أولاً بأول.';
+
+  @override
   String get markAllRead => 'تعليم الكل كمقروء';
 
   @override
@@ -634,6 +638,10 @@ class L10nAr extends L10n {
 
   @override
   String get wsAddDamage => 'أضف ملاحظة';
+
+  @override
+  String get wsNoDamages =>
+      'لا ملاحظات على الهيكل بعد — سجّل أي خدش أو ضرر قبل بدء العمل؛ يحميك ويحمي العميل.';
 
   @override
   String get wsFuel => 'الوقود %';

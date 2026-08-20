@@ -324,6 +324,10 @@ class L10nEn extends L10n {
   String get notificationsEmpty => 'No notifications yet';
 
   @override
+  String get notificationsEmptyBody =>
+      'Updates about your cars, invoices and warranties land here first.';
+
+  @override
   String get markAllRead => 'Mark all read';
 
   @override
@@ -636,6 +640,10 @@ class L10nEn extends L10n {
 
   @override
   String get wsAddDamage => 'Add note';
+
+  @override
+  String get wsNoDamages =>
+      'No body notes yet — record any scratch or dent before work starts; it protects you and the customer.';
 
   @override
   String get wsFuel => 'Fuel %';

@@ -679,6 +679,12 @@ abstract class L10n {
   /// **'لا توجد إشعارات بعد'**
   String get notificationsEmpty;
 
+  /// No description provided for @notificationsEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل ما يخص سياراتك وفواتيرك وضماناتك سيصلك هنا أولاً بأول.'**
+  String get notificationsEmptyBody;
+
   /// No description provided for @markAllRead.
   ///
   /// In ar, this message translates to:
@@ -1278,6 +1284,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أضف ملاحظة'**
   String get wsAddDamage;
+
+  /// No description provided for @wsNoDamages.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا ملاحظات على الهيكل بعد — سجّل أي خدش أو ضرر قبل بدء العمل؛ يحميك ويحمي العميل.'**
+  String get wsNoDamages;
 
   /// No description provided for @wsFuel.
   ///
