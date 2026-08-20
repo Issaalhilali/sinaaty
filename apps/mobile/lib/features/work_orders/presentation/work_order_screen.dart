@@ -45,8 +45,8 @@ class WorkOrderScreen extends ConsumerWidget {
           ],
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.photos),
           SectionCard(child: Column(children: [
-            for (final ins in tl.value!.valueOrNull!.inspections) AppListRow(icon: ins.type == 'check_in' ? Icons.login : Icons.logout, title: ins.type == 'check_in' ? l.checkIn : l.checkOut, subtitle: [Fmt.dateTime(ins.performedAt, locale: locale), if (ins.odometerKm != null) '${ins.odometerKm} ${l.km}', l.damages(ins.damagesCount)].join(' · '), trailing: StatusBadge(l.photosCount(ins.mediaIds.length))),
-            _PhotoStrip(count: tl.value!.valueOrNull!.media.length),
+            for (final ins in tl.value!.valueOrNull!.inspections) AppListRow(icon: ins.type == 'check_in' ? Icons.login : Icons.logout, title: ins.type == 'check_in' ? l.checkIn : l.checkOut, subtitle: Fmt.meta([Fmt.dateTime(ins.performedAt, locale: locale), if (ins.odometerKm != null) '${ins.odometerKm} ${l.km}', l.damages(ins.damagesCount)]), trailing: StatusBadge(l.photosCount(ins.mediaIds.length))),
+            MediaStrip(mediaIds: tl.value!.valueOrNull!.media.map((m) => m.mediaId).toList()),
           ])),
         ],
         if (invoice != null) ...[const SizedBox(height: SinaatySpace.lg), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.receipt_long_outlined, title: l.invoiceNumber(invoice.number), subtitle: Fmt.money(invoice.total, locale: locale), trailing: StatusBadge(Labels.invoiceStatus(l, invoice.status), tone: invoice.isPaid ? BadgeTone.seal : BadgeTone.brass), onTap: () => context.push('/invoices/${invoice.id}')))],
@@ -71,4 +71,3 @@ class _Timeline extends StatelessWidget {
   }
 }
 /// Media objects live in object storage (mock in dev) — MVP shows a calm placeholder strip; thumbnails via presigned GET in backlog.
-class _PhotoStrip extends StatelessWidget { final int count; const _PhotoStrip({required this.count}); @override Widget build(BuildContext context) => count == 0 ? const SizedBox.shrink() : SizedBox(height: 72, child: ListView.separated(scrollDirection: Axis.horizontal, itemCount: count, separatorBuilder: (_, _) => const SizedBox(width: 8), itemBuilder: (_, _) => Container(width: 72, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)), child: Icon(Icons.photo_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant)))); }

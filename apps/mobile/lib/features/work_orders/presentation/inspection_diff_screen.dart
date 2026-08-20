@@ -66,11 +66,11 @@ class InspectionDiffScreen extends ConsumerWidget {
               SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [Expanded(child: Text(l.diffCheckIn, style: t.titleSmall)), if (d.checkInAt != null) Text(Fmt.date(d.checkInAt!, locale: locale), style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))]),
                 const SizedBox(height: SinaatySpace.sm),
-                _PhotoStrip(count: d.checkInPhotos.length),
+                MediaStrip(mediaIds: d.checkInPhotos, size: 64),
                 const SizedBox(height: SinaatySpace.md),
                 Row(children: [Expanded(child: Text(l.diffCheckOut, style: t.titleSmall)), if (d.checkOutAt != null) Text(Fmt.date(d.checkOutAt!, locale: locale), style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))]),
                 const SizedBox(height: SinaatySpace.sm),
-                d.comparable ? _PhotoStrip(count: d.checkOutPhotos.length) : Text(l.diffWaiting, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                d.comparable ? MediaStrip(mediaIds: d.checkOutPhotos, size: 64) : Text(l.diffWaiting, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
               ])),
             ],
           ),
@@ -135,14 +135,3 @@ class _DamageRow extends StatelessWidget {
 
 String _sev(L10n l, String s) => switch (s) { 'minor' => l.sevMinor, 'moderate' => l.sevModerate, 'severe' => l.sevSevere, _ => s };
 
-class _PhotoStrip extends StatelessWidget {
-  final int count;
-  const _PhotoStrip({required this.count});
-  @override
-  Widget build(BuildContext context) => count == 0
-      ? Text('—', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
-      : SizedBox(height: 64, child: ListView.separated(
-          scrollDirection: Axis.horizontal, itemCount: count,
-          separatorBuilder: (_, _) => const SizedBox(width: 8),
-          itemBuilder: (_, _) => Container(width: 64, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)), child: Icon(Icons.photo_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant))));
-}
