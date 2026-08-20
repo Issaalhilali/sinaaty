@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { useEffect, useState, type ReactNode } from 'react';
 import { api, session } from '@/lib/api';
 import { ROLE } from '@/lib/labels';
-const NAV = [['/', 'نظرة عامة'], ['/organizations', 'المنشآت و KYB'], ['/integrations', 'التكاملات'], ['/payments', 'الدفعات والضمان'], ['/notes', 'السندات'], ['/disputes', 'النزاعات'], ['/settings', 'الإعدادات'], ['/users', 'المستخدمون'], ['/audit', 'سجل التدقيق']] as const;
+const NAV = [['/', 'نظرة عامة'], ['/organizations', 'المنشآت و KYB'], ['/integrations', 'التكاملات'], ['/payments', 'الدفعات والضمان'], ['/notes', 'السندات'], ['/disputes', 'النزاعات'], ['/abandoned', 'المركبات المهجورة'], ['/pilot', 'الطيار'], ['/settings', 'الإعدادات'], ['/users', 'المستخدمون'], ['/audit', 'سجل التدقيق']] as const;
 const qc = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 15_000 } } });
 export function Providers({ children }: { children: ReactNode }) { return <QueryClientProvider client={qc}>{children}</QueryClientProvider>; }
 /** Sidebar shell; guards on a staff platform role (GET /me). */

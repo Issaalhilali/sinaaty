@@ -35,6 +35,8 @@ export interface WorkOrderRepository {
   abandonedClaimOf(woId: string): Promise<{ storage?: string; total?: string } | null>;
   /** Cars ready long enough that a notice may be due — the hourly job's candidate list. */
   readyAwaitingCollection(limit: number): Promise<string[]>;
+  /** Ops view: cars waiting collection or already declared, with the workshop and the customer's phone. */
+  abandonedQueue(limit: number): Promise<Array<{ id: string; number: string; status: string; readyAt: Date | null; total: string; storageFeePerDay: string; orgId: string; orgNameAr: string | null; plate: string | null; noticeCount: number }>>;
   listMedia(woId: string): Promise<Array<{ mediaId: string; entityType: string; entityId: string; label: string | null; mimeType: string; bucket: string; objectKey: string }>>;
 }
 export const WORK_ORDER_REPOSITORY = Symbol('WORK_ORDER_REPOSITORY');

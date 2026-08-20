@@ -6,11 +6,19 @@ import { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, ChangeOr
 import { AbandonedUseCases } from '../../application/abandoned.use-cases';
 import { WorkOrdersUseCases } from '../../application/use-cases/work-orders.use-cases';
 import type { AuthUser } from '../../../identity/domain/auth-user';
-import { CurrentUser, zod } from '../../../identity/interface/http';
+import { CurrentUser, Roles, zod } from '../../../identity/interface/http';
 import { z } from 'zod';
 
 const ReqApprovalDto = z.object({ reason_ar: z.string().max(1000).optional() });
 type ReqApprovalDto = z.infer<typeof ReqApprovalDto>;
+
+@ApiTags('admin/abandoned') @ApiBearerAuth() @Controller('admin/abandoned')
+@Roles({ platform: ['support', 'ops', 'compliance', 'super_admin'] })
+export class AdminAbandonedController {
+  constructor(private readonly abandoned: AbandonedUseCases) {}
+  @Get() @ApiOperation({ summary: 'Cars waiting collection or already declared, with notices, storage and the claim' })
+  queue(@CurrentUser() u: AuthUser) { return this.abandoned.queue(u); }
+}
 
 @ApiTags('work-orders') @ApiBearerAuth() @Controller('work-orders')
 export class WorkOrdersController {

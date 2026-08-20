@@ -97,6 +97,20 @@ export class WorkOrderPrismaRepository implements WorkOrderRepository {
     return rows.map((r) => r.id);
   }
 
+  async abandonedQueue(limit: number) {
+    const rows = await this.prisma.$queryRaw<Array<{ id: string; number: string; status: string; ready_at: Date | null; total: Prisma.Decimal; fee: Prisma.Decimal; org_id: string; org_name: string | null; plate: string | null; notices: number }>>`
+      SELECT w.id, w.number, w.status::text AS status, w.ready_at, w.total, w.storage_fee_per_day AS fee,
+             w.org_id, COALESCE(o.trade_name_ar, o.legal_name_ar) AS org_name, v.plate_number AS plate,
+             COALESCE(jsonb_array_length(w.metadata->'abandoned_notices'), 0) AS notices
+      FROM work_orders w
+      JOIN organizations o ON o.id = w.org_id
+      LEFT JOIN vehicles v ON v.id = w.vehicle_id
+      WHERE (w.status = 'abandoned')
+         OR (w.status = 'ready' AND w.ready_at IS NOT NULL AND w.ready_at < now() - interval '1 day')
+      ORDER BY w.ready_at ASC NULLS LAST LIMIT ${limit}`;
+    return rows.map((r) => ({ id: r.id, number: r.number, status: r.status, readyAt: r.ready_at, total: d(r.total), storageFeePerDay: d(r.fee), orgId: r.org_id, orgNameAr: r.org_name, plate: r.plate, noticeCount: Number(r.notices) }));
+  }
+
   async listMedia(woId: string) {
     const items = await this.prisma.workOrderItem.findMany({ where: { workOrderId: woId }, select: { id: true } });
     const insp = await this.prisma.inspection.findMany({ where: { workOrderId: woId }, select: { id: true } });

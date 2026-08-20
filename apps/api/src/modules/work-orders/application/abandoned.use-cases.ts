@@ -128,6 +128,25 @@ export class AbandonedUseCases {
     return { declared: true, claim, days_ready: eligibility.daysReady, notices: notices.length };
   }
 
+  /** Ops queue: every car waiting collection past a day, plus those already declared. */
+  async queue(u: AuthUser) {
+    if (!isPlatformStaff(u)) throw new AppError('FORBIDDEN');
+    const rows = await this.repo.abandonedQueue(100);
+    const now = new Date();
+    const noticeDays = this.config.get('ABANDONED_NOTICE_DAYS');
+    const freeDays = this.config.get('ABANDONED_STORAGE_FREE_DAYS');
+    return rows.map((r) => {
+      const fee = storageFee(r.readyAt ?? now, now, r.storageFeePerDay, freeDays);
+      const e = canDeclareAbandoned({ readyAt: r.readyAt, now, sentSteps: Array.from({ length: r.noticeCount }, (_, i) => i + 1), noticeDays, status: r.status });
+      return {
+        work_order_id: r.id, number: r.number, status: r.status, org_id: r.orgId, org_name_ar: r.orgNameAr, plate: r.plate,
+        ready_at: r.readyAt, days_ready: e.daysReady, notices_sent: r.noticeCount,
+        storage: feeView(fee), claim: abandonedClaim(r.total, fee),
+        can_declare: e.eligible, reason_ar: e.reasonAr,
+      };
+    });
+  }
+
   /** The claim a Najiz enforcement carries for this car — read by the promissory-notes module. */
   async claimFor(workOrderId: string): Promise<{ isAbandoned: boolean; storage: string; total: string } | null> {
     const wo = await this.repo.findById(workOrderId);

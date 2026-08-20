@@ -7,6 +7,7 @@ import { WORK_ORDER_REPOSITORY } from './domain/repositories';
 import { PDF_RENDERER_PORT } from './application/ports/pdf-renderer.port';
 import { REALTIME_PUBLISHER } from './application/ports/realtime.port';
 import { WoTransitionService } from './application/wo-transition.service';
+import { AdminAbandonedController } from './interface/http/work-orders.controller';
 import { AbandonedUseCases } from './application/abandoned.use-cases';
 import { WorkOrdersUseCases } from './application/use-cases/work-orders.use-cases';
 import { WorkOrderPrismaRepository } from './infrastructure/prisma/work-order.prisma-repository';
@@ -18,7 +19,7 @@ import { RealtimeGateway } from './interface/ws/realtime.gateway';
 
 @Module({
   imports: [forwardRef(() => FleetModule), IdentityModule, OrganizationsModule, VehiclesModule],
-  controllers: [WorkOrdersController, ApprovalPageController],
+  controllers: [AdminAbandonedController, WorkOrdersController, ApprovalPageController],
   providers: [
     AbandonedUseCases,
     WorkOrdersUseCases, WoTransitionService, RealtimeGateway, ApprovalLinkService,
