@@ -5,6 +5,8 @@ export interface WorkOrder {
   source: WorkOrderSource; status: WorkOrderStatus; paymentTerms: PaymentTerms; currentVersion: number; titleAr: string | null; complaintAr: string | null; diagnosisAr: string | null;
   subtotal: string; discount: string; vatAmount: string; total: string; depositRequired: string; dueDate: Date | null; promisedReadyAt: Date | null;
   receivedAt: Date | null; approvedAt: Date | null; readyAt: Date | null; deliveredAt: Date | null; closedAt: Date | null; cancelledAt: Date | null; cancelReason: string | null;
+  storageFeePerDay: string;
+  abandonedNoticeAt: Date | null;
   assignedTechnicianId: string | null; contractTermsVersion: string; createdBy: string | null; createdAt: Date; updatedAt: Date;
   items: WorkOrderItem[];
 }

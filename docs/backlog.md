@@ -76,4 +76,7 @@
 | Vision live adapter — needs a data-residency decision + ADR before any customer photo leaves | Step 28 | mock only; module refuses INTEGRATION_AI=live | before pilot |
 | Inspection-diff screen in the apps (workshop shows it at delivery, customer sees it in the order) | Step 28 | API returns the comparison with photos | Step 30 |
 | Measure false-positive rate on real pilot photos before enabling ai_inspection widely | Step 28 | a wrong suggestion costs the workshop trust, so precision matters more than recall | Step 30 |
+| Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
+| Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) | Step 29 | API + notifications done | Step 30 |
+| Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
 

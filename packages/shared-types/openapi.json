@@ -1862,6 +1862,93 @@
         ]
       }
     },
+    "/v1/work-orders/{id}/abandoned": {
+      "get": {
+        "operationId": "WorkOrdersController_abandonedStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Days waiting, notices sent, storage accrued, and whether a declaration is allowed yet",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/abandoned/notice": {
+      "post": {
+        "operationId": "WorkOrdersController_abandonedNotice_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send the next due notice (idempotent per step; the last one is formal)",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/abandoned/declare": {
+      "post": {
+        "operationId": "WorkOrdersController_abandonedDeclare_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Declare the car abandoned — refused until the period passed and every notice was sent",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
     "/v1/work-orders/{id}/timeline": {
       "get": {
         "operationId": "WorkOrdersController_timeline_v1",

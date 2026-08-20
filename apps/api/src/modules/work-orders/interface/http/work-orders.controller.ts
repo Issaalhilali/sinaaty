@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import type { WorkOrderStatus } from '@sinaaty/shared-types';
 import { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, ChangeOrderDto, CreateWorkOrderDto, InspectionDto, ItemDto, TransitionDto, UpdateItemDto, UpdateWorkOrderDto } from '../../application/dto/work-orders.dto';
+import { AbandonedUseCases } from '../../application/abandoned.use-cases';
 import { WorkOrdersUseCases } from '../../application/use-cases/work-orders.use-cases';
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { CurrentUser, zod } from '../../../identity/interface/http';
@@ -13,7 +14,7 @@ type ReqApprovalDto = z.infer<typeof ReqApprovalDto>;
 
 @ApiTags('work-orders') @ApiBearerAuth() @Controller('work-orders')
 export class WorkOrdersController {
-  constructor(private readonly uc: WorkOrdersUseCases) {}
+  constructor(private readonly uc: WorkOrdersUseCases, private readonly abandoned: AbandonedUseCases) {}
 
   @Post() @HttpCode(201) @ApiOperation({ summary: 'Workshop creates a work order (customer by phone, vehicle by id/VIN/plate, optional items)' })
   create(@CurrentUser() u: AuthUser, @Body(zod(CreateWorkOrderDto)) dto: CreateWorkOrderDto) { return this.uc.create(u, dto); }
@@ -23,6 +24,14 @@ export class WorkOrdersController {
     return this.uc.list(u, { org_id: orgId, status: status ? (status.split(',') as WorkOrderStatus[]) : undefined, limit: limit ? Number(limit) : undefined });
   }
   @Get(':id') get(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.get(u, id); }
+  // ---- abandoned vehicle (Step 29): notices → declaration. Nothing here happens automatically.
+  @Get(':id/abandoned') @ApiOperation({ summary: 'Days waiting, notices sent, storage accrued, and whether a declaration is allowed yet' })
+  abandonedStatus(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.abandoned.status(u, id); }
+  @Post(':id/abandoned/notice') @HttpCode(200) @ApiOperation({ summary: 'Send the next due notice (idempotent per step; the last one is formal)' })
+  abandonedNotice(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.abandoned.sendNotice(u, id); }
+  @Post(':id/abandoned/declare') @HttpCode(200) @ApiOperation({ summary: 'Declare the car abandoned — refused until the period passed and every notice was sent' })
+  abandonedDeclare(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body() body: { reason_ar?: string }) { return this.abandoned.declare(u, id, body?.reason_ar); }
+
   @Get(':id/timeline') @ApiOperation({ summary: 'History + versions + inspections + media (the live-tracking feed)' }) timeline(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.timeline(u, id); }
   @Patch(':id') update(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(UpdateWorkOrderDto)) dto: UpdateWorkOrderDto) { return this.uc.update(u, id, dto); }
 

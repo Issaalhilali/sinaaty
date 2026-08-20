@@ -52,6 +52,10 @@ export const envSchema = z.object({
   WEB_APPROVAL_BASE_URL: z.string().url().default('http://localhost:3000'),
   TRANSPORT_MARGIN_BPS: z.coerce.number().int().min(0).max(5000).default(1500),
   TRANSPORT_TRACK_MIN_SECONDS: z.coerce.number().int().min(1).max(300).default(10),
+  /** Abandoned-vehicle flow (Step 29): notices run to this many days after the car is ready, and storage
+   *  is free until then unless the workshop set its own rate. */
+  ABANDONED_NOTICE_DAYS: z.coerce.number().int().positive().default(15),
+  ABANDONED_STORAGE_FREE_DAYS: z.coerce.number().int().min(0).default(5),
   BIDDING_DEFAULT_MINUTES: z.coerce.number().int().positive().default(60),
   PART_ORDER_AUTO_CONFIRM_HOURS: z.coerce.number().int().positive().default(72),
   JOBS_ENABLED: z.coerce.boolean().default(true),

@@ -12,7 +12,7 @@ const q = (v: Prisma.Decimal) => v.toString();
 const woInclude = { workOrderItems: { orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] } } satisfies Prisma.WorkOrderInclude;
 type Row = Prisma.WorkOrderGetPayload<{ include: typeof woInclude }>;
 const toItem = (i: Row['workOrderItems'][number]): WorkOrderItem => ({ id: i.id, versionAdded: i.versionAdded, versionRemoved: i.versionRemoved, type: i.type, descriptionAr: i.descriptionAr, descriptionEn: i.descriptionEn, partCondition: i.partCondition, partNumber: i.partNumber, quantity: q(i.quantity), unitPrice: d(i.unitPrice), discount: d(i.discount), vatRate: i.vatRate.toFixed(2), lineTotal: d(i.lineTotal), warrantyDays: i.warrantyDays, isCompleted: i.isCompleted, sortOrder: i.sortOrder });
-const toWo = (r: Row): WorkOrder => ({ id: r.id, number: r.number, orgId: r.orgId, locationId: r.locationId, vehicleId: r.vehicleId, customerUserId: r.customerUserId, customerOrgId: r.customerOrgId, source: r.source, status: r.status, paymentTerms: r.paymentTerms, currentVersion: r.currentVersion, titleAr: r.titleAr, complaintAr: r.complaintAr, diagnosisAr: r.diagnosisAr, subtotal: d(r.subtotal), discount: d(r.discount), vatAmount: d(r.vatAmount), total: d(r.total), depositRequired: d(r.depositRequired), dueDate: r.dueDate, promisedReadyAt: r.promisedReadyAt, receivedAt: r.receivedAt, approvedAt: r.approvedAt, readyAt: r.readyAt, deliveredAt: r.deliveredAt, closedAt: r.closedAt, cancelledAt: r.cancelledAt, cancelReason: r.cancelReason, assignedTechnicianId: r.assignedTechnicianId, contractTermsVersion: r.contractTermsVersion, createdBy: r.createdBy, createdAt: r.createdAt, updatedAt: r.updatedAt, items: r.workOrderItems.map(toItem) });
+const toWo = (r: Row): WorkOrder => ({ id: r.id, number: r.number, orgId: r.orgId, locationId: r.locationId, vehicleId: r.vehicleId, customerUserId: r.customerUserId, customerOrgId: r.customerOrgId, source: r.source, status: r.status, paymentTerms: r.paymentTerms, currentVersion: r.currentVersion, titleAr: r.titleAr, complaintAr: r.complaintAr, diagnosisAr: r.diagnosisAr, subtotal: d(r.subtotal), discount: d(r.discount), vatAmount: d(r.vatAmount), total: d(r.total), depositRequired: d(r.depositRequired), dueDate: r.dueDate, promisedReadyAt: r.promisedReadyAt, receivedAt: r.receivedAt, approvedAt: r.approvedAt, readyAt: r.readyAt, deliveredAt: r.deliveredAt, closedAt: r.closedAt, cancelledAt: r.cancelledAt, cancelReason: r.cancelReason, storageFeePerDay: d(r.storageFeePerDay), abandonedNoticeAt: r.abandonedNoticeAt, assignedTechnicianId: r.assignedTechnicianId, contractTermsVersion: r.contractTermsVersion, createdBy: r.createdBy, createdAt: r.createdAt, updatedAt: r.updatedAt, items: r.workOrderItems.map(toItem) });
 
 @Injectable()
 export class WorkOrderPrismaRepository implements WorkOrderRepository {
@@ -66,6 +66,37 @@ export class WorkOrderPrismaRepository implements WorkOrderRepository {
     return rows.map((r) => ({ id: r.id, type: r.type, odometerKm: r.odometerKm, fuelLevelPct: r.fuelLevelPct, checklist: r.checklist, damages: r.damages, performedAt: r.performedAt, mediaIds: links.filter((l) => l.entityId === r.id).map((l) => l.mediaId) }));
   }
   async linkMedia(entityType: 'work_order' | 'work_order_item' | 'inspection', entityId: string, mediaIds: string[], label?: string, tx?: TxHandle) { await this.db(tx).mediaLink.createMany({ data: mediaIds.map((m, idx) => ({ mediaId: m, entityType, entityId, label, sortOrder: idx })), skipDuplicates: true }); }
+  // ---- abandoned vehicle
+  async abandonedNotices(woId: string) {
+    const rows = await this.prisma.$queryRaw<Array<{ notices: Array<{ step: number; at: string; formal: boolean; by: string | null }> | null }>>`
+      SELECT (metadata->'abandoned_notices') AS notices FROM work_orders WHERE id = ${woId}::uuid`;
+    return rows[0]?.notices ?? [];
+  }
+  async addAbandonedNotice(woId: string, notice: { step: number; at: string; formal: boolean; by: string | null }) {
+    await this.prisma.$executeRaw`
+      UPDATE work_orders
+      SET metadata = jsonb_set(metadata, '{abandoned_notices}',
+            COALESCE(metadata->'abandoned_notices', '[]'::jsonb) || ${JSON.stringify([notice])}::jsonb, true)
+      WHERE id = ${woId}::uuid`;
+  }
+  async setAbandonedClaim(woId: string, claim: unknown, tx?: TxHandle) {
+    await this.db(tx).$executeRaw`
+      UPDATE work_orders SET metadata = jsonb_set(metadata, '{abandoned_claim}', ${JSON.stringify(claim)}::jsonb, true)
+      WHERE id = ${woId}::uuid`;
+  }
+  async abandonedClaimOf(woId: string) {
+    const rows = await this.prisma.$queryRaw<Array<{ claim: { storage?: string; total?: string } | null }>>`
+      SELECT (metadata->'abandoned_claim') AS claim FROM work_orders WHERE id = ${woId}::uuid`;
+    return rows[0]?.claim ?? null;
+  }
+  async readyAwaitingCollection(limit: number) {
+    const rows = await this.prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM work_orders
+      WHERE status = 'ready' AND ready_at IS NOT NULL AND ready_at < now() - interval '1 day' AND total > 0
+      ORDER BY ready_at ASC LIMIT ${limit}`;
+    return rows.map((r) => r.id);
+  }
+
   async listMedia(woId: string) {
     const items = await this.prisma.workOrderItem.findMany({ where: { workOrderId: woId }, select: { id: true } });
     const insp = await this.prisma.inspection.findMany({ where: { workOrderId: woId }, select: { id: true } });

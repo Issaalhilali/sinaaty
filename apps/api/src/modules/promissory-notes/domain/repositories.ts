@@ -17,7 +17,7 @@ export interface NoteRepository {
   findSettlementByNote(noteId: string): Promise<Settlement | null>;
   addDunning(d: { noteId: string; invoiceId: string | null; step: number; channel: NotificationChannel; isFormal: boolean }, tx?: TxHandle): Promise<{ inserted: boolean }>;
   listDunning(noteId: string): Promise<Array<{ step: number; channel: NotificationChannel; isFormal: boolean; sentAt: Date }>>;
-  createEnforcement(e: { noteId: string; requestedBy: string; claimedAmount: string; timeline: unknown }, tx?: TxHandle): Promise<EnforcementCase>;
+  createEnforcement(e: { noteId: string; requestedBy: string; claimedAmount: string; timeline: unknown; isAbandonedVehicle?: boolean; storageFeesClaimed?: string }, tx?: TxHandle): Promise<EnforcementCase>;
   findEnforcementByNote(noteId: string): Promise<EnforcementCase | null>;
   updateEnforcement(id: string, patch: Partial<{ status: EnforcementStatus; najizCaseRef: string; filedAt: Date; closedAt: Date; recoveredAmount: string; timeline: unknown }>, tx?: TxHandle): Promise<void>;
 }

@@ -26,6 +26,15 @@ export interface WorkOrderRepository {
   addInspection(i: { woId: string; vehicleId: string; orgId: string; type: InspectionType; odometerKm?: number; fuelLevelPct?: number; checklist: unknown; damages: unknown; inspectorUserId: string; mediaIds: string[] }, tx?: TxHandle): Promise<{ id: string }>;
   listInspections(woId: string): Promise<Array<{ id: string; type: InspectionType; odometerKm: number | null; fuelLevelPct: number | null; checklist: unknown; damages: unknown; performedAt: Date; mediaIds: string[] }>>;
   linkMedia(entityType: 'work_order' | 'work_order_item' | 'inspection', entityId: string, mediaIds: string[], label?: string, tx?: TxHandle): Promise<void>;
+  // ---- abandoned vehicle (Step 29). Notices live on the work order's metadata: three rows per abandoned
+  // car, read only in this flow (docs/backlog.md if ops ever needs to report across them).
+  abandonedNotices(woId: string): Promise<Array<{ step: number; at: string; formal: boolean; by: string | null }>>;
+  addAbandonedNotice(woId: string, notice: { step: number; at: string; formal: boolean; by: string | null }): Promise<void>;
+  /** Freezes the claim at declaration: what is claimed later must be what was declared. */
+  setAbandonedClaim(woId: string, claim: unknown, tx?: TxHandle): Promise<void>;
+  abandonedClaimOf(woId: string): Promise<{ storage?: string; total?: string } | null>;
+  /** Cars ready long enough that a notice may be due — the hourly job's candidate list. */
+  readyAwaitingCollection(limit: number): Promise<string[]>;
   listMedia(woId: string): Promise<Array<{ mediaId: string; entityType: string; entityId: string; label: string | null; mimeType: string; bucket: string; objectKey: string }>>;
 }
 export const WORK_ORDER_REPOSITORY = Symbol('WORK_ORDER_REPOSITORY');

@@ -37,6 +37,19 @@ export class NotificationOutboxHandlers implements OnModuleInit {
     on('TransportProofRequested', 'transport-proof', async (ev) => { const p = ev.payload; if (typeof p['requesterUserId'] !== 'string') return; await this.notify.notifyMany([p['requesterUserId']], { template: 'transport.proof', data: { id: ev.aggregateId, number: str(p['number']), code: str(p['code']) } }); });
     on('TransportDelivered', 'transport-delivered', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await transportParties(p), { template: 'transport.delivered', data: { id: ev.aggregateId, number: str(p['number']), price: money(p['price']) }, dedupeKey: `transport.delivered:${ev.aggregateId}` }); });
 
+    // Abandoned vehicle (Step 29): the notices are the paper trail, so the formal one also goes by SMS.
+    on('AbandonedNoticeSent', 'abandoned-notice', async (ev) => {
+      const p = ev.payload; const c = await this.woCtx(ev.aggregateId); if (!c) return;
+      const storage = Number(p['storage'] ?? 0) > 0 ? ` (منها رسوم حفظ ${money(p['storage'])} ر.س)` : '';
+      const days = Math.max(0, Math.floor((Date.now() - (c.wo.readyAt?.getTime() ?? Date.now())) / 86_400_000));
+      await this.notify.notifyMany(await this.customers(c.wo), { template: 'wo.abandoned.notice', data: { id: c.wo.id, number: c.wo.number, days, total: money(p['total']), storage }, dedupeKey: `wo.abandoned.notice:${c.wo.id}:${String(p['step'])}` });
+    });
+    on('VehicleDeclaredAbandoned', 'abandoned-declared', async (ev) => {
+      const p = ev.payload; const c = await this.woCtx(ev.aggregateId); if (!c) return;
+      const claim = (p['claim'] ?? {}) as { total?: string; repair?: string; storage?: string };
+      await this.notify.notifyMany(await this.customers(c.wo), { template: 'wo.abandoned.declared', data: { id: c.wo.id, number: c.wo.number, total: money(claim.total), repair: money(claim.repair), storage: money(claim.storage) }, dedupeKey: `wo.abandoned.declared:${c.wo.id}` });
+    });
+
     // Accident files (Step 21): the customer's real question is "what do I pay?" — the answer leads the copy.
     const ACCIDENT_STATUS: Record<string, string> = { under_assessment: 'قيد التقييم من المُقيِّم.', assessed: 'تم التقييم.', approved: 'اعتمده التأمين.', rejected: 'رُفضت المطالبة — الإصلاح على حساب العميل.', closed: 'أُغلق الملف.', reported: 'مُسجَّل.' };
     on('AccidentReportLinked', 'accident-linked', async (ev) => {

@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { PnStatus } from '@sinaaty/shared-types';
+import { AbandonedUseCases } from '../../../work-orders/application/abandoned.use-cases';
 import { AppError } from '../../../../common/errors';
 import { AppConfig } from '../../../../config';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -24,6 +25,8 @@ export class NotesUseCases {
     @Inject(NOTE_REPOSITORY) private readonly notes: NoteRepository, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(USER_REPOSITORY) private readonly users: UserRepository,
     @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(INVOICE_REPOSITORY) private readonly invoices: InvoiceRepository, @Inject(SETTLEMENT_RENDERER_PORT) private readonly renderer: SettlementRendererPort,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork, private readonly audit: AuditLogWriter, private readonly outbox: OutboxWriter, private readonly config: AppConfig,
+    // Optional: notes exist without the abandoned-vehicle path (a note on a part order has no car in a yard).
+    @Optional() private readonly abandonedUseCases?: AbandonedUseCases,
   ) {}
   private canRead(n: PromissoryNote, u: AuthUser) { return isPlatformStaff(u) || u.orgs.some((o) => o.orgId === n.creditorOrgId) || n.debtorUserId === u.id || (n.debtorOrgId != null && u.orgs.some((o) => o.orgId === n.debtorOrgId)); }
   private async load(id: string) { const n = await this.notes.findById(id); if (!n) throw new AppError('NOT_FOUND'); return n; }
@@ -61,11 +64,20 @@ export class NotesUseCases {
     const dunning = await this.notes.listDunning(id);
     if (!isOverdue(n, new Date()) || !dunning.some((d) => d.isFormal)) throw new AppError('PN_NOT_OVERDUE');
     const bundle = await this.bundleFor(n);
+    const abandoned = n.workOrderId && this.abandonedUseCases ? await this.abandonedUseCases.claimFor(n.workOrderId) : null;
     return this.uow.run(async (tx) => {
-      const c = await this.notes.createEnforcement({ noteId: n.id, requestedBy: u.id, claimedAmount: n.outstandingAmount, timeline: [{ at: new Date().toISOString(), event: 'requested', by: u.id }] }, tx);
+      const c = await this.notes.createEnforcement({
+        noteId: n.id, requestedBy: u.id,
+        // An abandoned car is a different case in Najiz: the claim carries the storage fees that were
+        // frozen at the declaration, and the file is marked as such (Step 29).
+        claimedAmount: abandoned?.isAbandoned ? abandoned.total : n.outstandingAmount,
+        isAbandonedVehicle: abandoned?.isAbandoned ?? false,
+        storageFeesClaimed: abandoned?.storage ?? '0',
+        timeline: [{ at: new Date().toISOString(), event: 'requested', by: u.id, abandoned_vehicle: abandoned?.isAbandoned ?? false }],
+      }, tx);
       await this.notes.update(n.id, { status: 'in_enforcement' }, tx);
       await this.notes.addEvent({ noteId: n.id, from: n.status, to: 'in_enforcement', actorUserId: u.id, noteAr: 'طلب التنفيذ عبر ناجز — تم تجهيز حزمة المستندات' }, tx);
-      await this.audit.write(tx, { action: 'enforcement.request', entityType: 'enforcement_case', entityId: c.id, orgId: n.creditorOrgId, actorUserId: u.id, after: { note: n.number, claimed: n.outstandingAmount, files: bundle.manifest.files.length } });
+      await this.audit.write(tx, { action: 'enforcement.request', entityType: 'enforcement_case', entityId: c.id, orgId: n.creditorOrgId, actorUserId: u.id, after: { note: n.number, claimed: abandoned?.isAbandoned ? abandoned.total : n.outstandingAmount, abandoned_vehicle: abandoned?.isAbandoned ?? false, storage_fees: abandoned?.storage ?? '0', files: bundle.manifest.files.length } });
       await this.outbox.publish(tx, { eventType: 'EnforcementRequested', aggregateType: 'enforcement_case', aggregateId: c.id, payload: { noteId: n.id, number: n.number, creditorOrgId: n.creditorOrgId, debtorUserId: n.debtorUserId, claimed: n.outstandingAmount } });
       return { ...c, manifest: bundle.manifest };
     });
