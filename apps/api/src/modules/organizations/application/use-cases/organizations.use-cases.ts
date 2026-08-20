@@ -1,6 +1,7 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { KybDocStatus, KybDocType, OrgMemberRole, OrgStatus, OrgType } from '@sinaaty/shared-types';
 import { PilotService } from '../../../pilot/application/pilot.service';
+import { SEARCH_PORT, type SearchPort } from '../../../search/application/ports/search.port';
 import { AppError } from '../../../../common/errors';
 import { PiiCryptoService } from '../../../../common/crypto';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -26,10 +27,27 @@ export class OrganizationsUseCases {
     private readonly audit: AuditLogWriter,
     // Optional: organizations exist without the pilot module (tests, future deployments without zones).
     @Optional() private readonly pilot?: PilotService,
+    @Optional() @Inject(SEARCH_PORT) private readonly searchPort?: SearchPort,
   ) {}
 
   // ---- public / discovery ----
-  search(q: SearchOrgsDto) { return this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, limit: q.limit }); }
+  /** Discovery. Typed text goes through the search port (typo-tolerant Arabic) and the hits are hydrated
+   *  from the database; anything else — and any search failure — is answered by SQL+PostGIS directly.
+   *  Finding a workshop slightly worse always beats finding nothing. */
+  async search(q: SearchOrgsDto) {
+    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, limit: q.limit });
+    if (!q.q?.trim() || !this.searchPort) return sql();
+    try {
+      const hits = await this.searchPort.searchOrgs({ text: q.q.trim(), type: q.type, city: q.city, limit: q.limit ?? 20 });
+      if (!hits.length) return sql();
+      const rows = await this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, limit: (q.limit ?? 20) * 2 });
+      const rank = new Map(hits.map((h, i) => [h.id, i]));
+      const ranked = rows.filter((r) => rank.has(r.id)).sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+      return ranked.length ? ranked.slice(0, q.limit ?? 20) : sql();
+    } catch {
+      return sql();
+    }
+  }
   async getPublic(id: string) { const o = await this.orgs.findById(id); if (!o || !['active', 'suspended'].includes(o.status)) throw new AppError('NOT_FOUND'); return { ...o, locations: await this.orgs.listLocations(id) }; }
 
   // ---- owner/manager ----

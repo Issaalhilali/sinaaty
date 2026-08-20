@@ -91,6 +91,10 @@ export const envSchema = z.object({
   INTEGRATION_MAPS: integrationMode,
   /** منجز/تقدير — accident reports. Only `mock` exists: the provider contract is unconfirmed (PRD risk R3). */
   INTEGRATION_ACCIDENTS: integrationMode,
+  /** Discovery search (Step 30). mock = in-memory Arabic-normalising index; live = Meilisearch. */
+  INTEGRATION_SEARCH: integrationMode,
+  MEILI_HOST: z.string().url().default('http://localhost:7700'),
+  MEILI_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

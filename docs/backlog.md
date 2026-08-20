@@ -79,4 +79,7 @@
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
 | Dispute parties viewing evidence photos from the apps (staff-only today via back-office) | media download | access rule documented in download-media.use-case.ts; lands with the dispute screens | Step 30 |
 | Point INTEGRATION_STORAGE=live at the production KSA object store and set S3_* secrets (adapter proven vs AWS vectors + real MinIO round-trip) | storage | local MinIO: brew services start minio, endpoint http://localhost:9000 | deployment |
+| Meilisearch ranking tuning (a typo query can surface an extra hit above the intended one; findability is pinned by tests, ordering is not) | Step 30 | measure on real pilot queries before tuning rules | after pilot |
+| Index parts catalog in Meilisearch for part-name search (organizations only today) | Step 30 | fit-by-VIN covers the main path | after pilot |
+| Analytics rollup + media lifecycle rules (cost tuning items from Step 30) | Step 30 | small volumes during the pilot | after pilot |
 
