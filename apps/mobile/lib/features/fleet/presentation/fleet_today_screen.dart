@@ -141,7 +141,7 @@ class _PendingCard extends StatelessWidget {
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(p.workshopNameAr ?? p.number, style: t.titleSmall),
-          Text('${Fmt.ltr(p.number)} · ${Fmt.date(p.requestedAt, locale: locale)}', maxLines: 1, overflow: TextOverflow.ellipsis, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+          Text(Fmt.meta([p.number, Fmt.date(p.requestedAt, locale: locale)]), maxLines: 1, overflow: TextOverflow.ellipsis, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
         ])),
         MoneyText(Fmt.money(p.total, locale: locale)),
       ]),

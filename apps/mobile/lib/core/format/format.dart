@@ -9,4 +9,11 @@ abstract final class Fmt {
   static DateTime? parseDate(Object? v) => v is String ? DateTime.tryParse(v) : null;
   /// Bidi-isolate an LTR run (WO number, asset code, VIN) so it doesn't scramble inside an RTL sentence.
   static String ltr(String s) => '\u2066$s\u2069';
+  /// Compose a meta line ("WO-... - TRK-001 - 20 Aug 2026"): drops empty parts and bidi-isolates
+  /// Latin/code runs so the line reads in order and never breaks around a dangling separator.
+  static String meta(Iterable<String?> parts) => parts
+      .whereType<String>()
+      .where((p) => p.trim().isNotEmpty)
+      .map((p) => RegExp(r'^[\x00-\xFF\u00d7]+$').hasMatch(p) && RegExp('[A-Za-z0-9]').hasMatch(p) ? ltr(p) : p)
+      .join('\u00a0\u00b7 '); // NBSP before the dot: a line may end with a separator but never start with one
 }

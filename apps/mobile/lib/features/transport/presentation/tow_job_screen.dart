@@ -56,7 +56,7 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(Labels.transportStatus(l, j.status), style: t.titleLarge?.copyWith(color: Colors.white)),
-                Text([j.number, if (j.distanceKm != null) l.towKm(j.distanceKm!)].join(' · '), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75))),
+                Text(Fmt.meta([j.number, if (j.distanceKm != null) l.towKm(j.distanceKm!)]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75))),
               ])),
               if (j.isLive && j.etaMinutes != null) SealPill(l.towEta(j.etaMinutes!), icon: Icons.timer_outlined),
             ]),

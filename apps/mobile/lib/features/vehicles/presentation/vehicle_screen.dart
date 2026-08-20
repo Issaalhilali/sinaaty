@@ -26,10 +26,10 @@ class VehicleScreen extends ConsumerWidget {
             Wrap(spacing: 8, runSpacing: 4, children: [if (v.plate != null) StatusBadge(v.plate!), if (v.vin != null) StatusBadge('VIN ${v.vin}'), if (v.odometerKm != null) StatusBadge('${l.odometer} ${v.odometerKm} ${l.km}')]),
           ])),
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.activeOrders),
-          if (mine.isEmpty) Text(l.noOrdersForCar, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in mine) AppListRow(icon: Icons.build_outlined, title: w.titleAr ?? w.number, subtitle: '${w.number} · ${Fmt.date(w.createdAt, locale: locale)}', trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : BadgeTone.plain), onTap: () => context.push('/work-orders/${w.id}'))])),
+          if (mine.isEmpty) Text(l.noOrdersForCar, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in mine) AppListRow(icon: Icons.build_outlined, title: w.titleAr ?? w.number, subtitle: Fmt.meta([w.number, Fmt.date(w.createdAt, locale: locale)]), trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : BadgeTone.plain), onTap: () => context.push('/work-orders/${w.id}'))])),
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.carPassport),
           if (pp.events.isEmpty) Text(l.noPassportEvents, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
-          else SectionCard(child: StatusTimeline(steps: [for (final e in pp.events) TimelineStep(title: locale == 'ar' ? e.summaryAr : (e.summaryEn ?? e.summaryAr), subtitle: [Fmt.date(e.occurredAt, locale: locale), e.orgNameAr, if (e.odometerKm != null) '${e.odometerKm} ${l.km}'].whereType<String>().join(' · '), done: true)])),
+          else SectionCard(child: StatusTimeline(steps: [for (final e in pp.events) TimelineStep(title: locale == 'ar' ? e.summaryAr : (e.summaryEn ?? e.summaryAr), subtitle: Fmt.meta([Fmt.date(e.occurredAt, locale: locale), e.orgNameAr, if (e.odometerKm != null) '${e.odometerKm} ${l.km}']), done: true)])),
         ]);
       }));
   }

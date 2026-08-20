@@ -154,7 +154,7 @@ class _ReportCard extends StatelessWidget {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(report.insurerNameAr ?? l.accTitle, style: t.titleLarge?.copyWith(color: Colors.white)),
-            Text([report.ref, if (report.claimNo != null) report.claimNo!].join(' · '), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)), textDirection: TextDirection.ltr),
+            Text(Fmt.meta([report.ref, report.claimNo]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75))),
           ])),
           if (report.submitted) SealPill(l.accSubmitted, icon: Icons.task_alt),
         ]),

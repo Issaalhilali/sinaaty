@@ -42,7 +42,7 @@ class WarrantiesScreen extends ConsumerWidget {
         Widget row(Warranty w) => AppListRow(
           icon: w.valid ? Icons.verified_outlined : Icons.history,
           title: w.coverageAr.isEmpty ? Labels.covers(l, w.covers) : w.coverageAr,
-          subtitle: [w.number, if (w.issuerAr != null) w.issuerAr!].join(' · '),
+          subtitle: Fmt.meta([w.number, w.issuerAr]),
           trailing: StatusBadge(w.valid ? l.ptValidUntil(Fmt.date(w.endsAt, locale: locale)) : l.ptExpired, tone: w.valid ? BadgeTone.seal : BadgeTone.plain),
           onTap: () => _details(context, w),
         );

@@ -107,7 +107,7 @@ class RequestHubScreen extends ConsumerWidget {
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
             for (final r in requests.take(5)) AppListRow(
               icon: Icons.gavel_outlined, title: r.partNameAr,
-              subtitle: '${r.number} · ${r.open ? l.ptEndsIn(r.remaining.inMinutes.clamp(0, 99999)) : l.ptEnded}',
+              subtitle: Fmt.meta([r.number, r.open ? l.ptEndsIn(r.remaining.inMinutes.clamp(0, 99999)) : l.ptEnded]),
               trailing: StatusBadge(r.bidsCount > 0 ? l.ptBidsCount(r.bidsCount) : l.ptNoBidsYet.split(' —').first, tone: r.bidsCount > 0 ? BadgeTone.brass : BadgeTone.plain),
               onTap: () => context.push('/parts/requests/${r.id}'),
             ),
@@ -118,7 +118,7 @@ class RequestHubScreen extends ConsumerWidget {
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
             for (final j in tows.take(5)) AppListRow(
               icon: Icons.local_shipping_outlined, title: Labels.transportStatus(l, j.status),
-              subtitle: '${j.number} · ${Fmt.date(j.createdAt, locale: locale)}',
+              subtitle: Fmt.meta([j.number, Fmt.date(j.createdAt, locale: locale)]),
               trailing: Text(Fmt.money(j.price, locale: locale), style: const TextStyle(fontWeight: FontWeight.w600)),
               onTap: () => context.push('/tow/${j.id}'),
             ),
