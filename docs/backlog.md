@@ -62,4 +62,7 @@
 | PITR restore rehearsal on a real Supabase project (steps written, never executed here) | Step 24 | logical dump/restore drill passes locally | before pilot |
 | Soak test (1h) on the work-order path to watch memory + outbox depth | Step 24 | 60s ramp/hold runs pass with 0% failures | Step 25 |
 | Re-run k6 against production-like infra (managed DB + 2 API replicas) | Step 24 | numbers so far are one dev machine | Step 25 |
+| Admin-web page for zones/flags/funnel (API + runbook exist; ops uses curl today) | Step 25 | endpoints and reasons are enforced server-side | Step 26 |
+| Mobile: consume `/v1/config` to hide disabled features (today the app shows everything it can do) | Step 25 | flags are enforced by the API regardless | Step 26 |
+| Analytics retention/rollup (analytics_events grows unbounded) | Step 25 | small during the pilot | Step 30 |
 

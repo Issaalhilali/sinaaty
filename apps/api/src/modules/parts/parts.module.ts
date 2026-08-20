@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { PilotModule } from '../pilot/pilot.module';
 import { IdentityModule } from '../identity/identity.module';
 import { IntegrationsModule } from '../integrations/integrations.module';
 import { InvoicingModule } from '../invoicing/invoicing.module';
@@ -21,7 +22,7 @@ import { PartsController } from './interface/http/parts.controller';
 
 /** Parts marketplace + distributors hub (Steps 18/18b): catalog & fitments, live inventory, VIN fit search, reverse auction, Buy Now, trade accounts (Nafez-secured), QR serials, warranties, group buys. */
 @Module({
-  imports: [IdentityModule, OrganizationsModule, VehiclesModule, IntegrationsModule, forwardRef(() => InvoicingModule), forwardRef(() => PaymentsModule), forwardRef(() => PromissoryNotesModule), forwardRef(() => WorkOrdersModule)],
+  imports: [PilotModule, IdentityModule, OrganizationsModule, VehiclesModule, IntegrationsModule, forwardRef(() => InvoicingModule), forwardRef(() => PaymentsModule), forwardRef(() => PromissoryNotesModule), forwardRef(() => WorkOrdersModule)],
   controllers: [PartsController],
   providers: [{ provide: PARTS_REPOSITORY, useClass: PartsPrismaRepository }, CatalogUseCases, MarketplaceUseCases, OrdersUseCases, SerialsUseCases, TradeAccountsUseCases, WarrantiesUseCases, PartsHandlers, PartsJobs],
   exports: [PARTS_REPOSITORY, OrdersUseCases],

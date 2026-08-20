@@ -149,7 +149,25 @@ async function seedPlatformSettings() {
     'note.issuance_fee_sar': 15,
     'trade_account.default_credit_limit_sar': 5000,
     'trade_account.default_terms_days': 30,
-    'pilot.industrial_zones': ['الرياض — الصناعية الثانية'],
+    // Pilot zones as structured configuration — ops edit them from the back-office, no deploy (Step 25).
+    'pilot.industrial_zones': [
+      { code: 'RUH-IND-1', nameAr: 'المدينة الصناعية الأولى — الرياض', city: 'الرياض', lat: 24.6408, lng: 46.7728, radiusKm: 6 },
+      { code: 'RUH-IND-2', nameAr: 'المدينة الصناعية الثانية — الرياض', city: 'الرياض', lat: 24.5741, lng: 46.8347, radiusKm: 8 },
+      { code: 'RUH-SULAY', nameAr: 'السلي — الرياض', city: 'الرياض', lat: 24.6167, lng: 46.8333, radiusKm: 5 },
+      { code: 'RUH-NASEEM', nameAr: 'ورش النسيم — الرياض', city: 'الرياض', lat: 24.7333, lng: 46.85, radiusKm: 4 },
+      { code: 'JED-IND-1', nameAr: 'المدينة الصناعية الأولى — جدة', city: 'جدة', lat: 21.4114, lng: 39.22, radiusKm: 7 },
+    ],
+    // Feature flags: the pilot ships with the core on and the unfinished/advanced surfaces off.
+    // A flag that does not exist is off, so new code stays inert until ops turn it on.
+    'feature.parts_marketplace': { enabled: true },
+    'feature.trade_accounts': { enabled: true },
+    'feature.tow': { enabled: true },
+    'feature.accident_reports': { enabled: true },
+    'feature.warranty_wallet': { enabled: true },
+    'feature.disputes': { enabled: true },
+    'feature.group_buys': { enabled: false, zones: ['RUH-IND-2'] },   // one zone first — it needs density to work
+    'feature.voice_to_invoice': { enabled: false },                    // Step 27, not built
+    'feature.ai_inspection': { enabled: false },                       // Step 28, not built
   };
   for (const [key, value] of Object.entries(settings)) {
     await prisma.platformSetting.upsert({ where: { key }, update: { value }, create: { key, value } });
@@ -181,6 +199,10 @@ async function upsertOrg(input: { cr: string; type: Prisma.OrganizationCreateInp
   });
   // geo column is PostGIS (Unsupported in Prisma) → raw SQL, idempotent per (org, primary)
   const existing = await prisma.$queryRaw<Array<{ id: string }>>`SELECT id FROM organization_locations WHERE org_id = ${org.id}::uuid AND is_primary = true LIMIT 1`;
+  if (existing.length > 0 && input.zone) {
+    // Older databases carry the free-text zone; move them onto the code.
+    await prisma.$executeRaw`UPDATE organization_locations SET industrial_zone = ${input.zone} WHERE id = ${existing[0]!.id}::uuid`;
+  }
   if (existing.length === 0) {
     await prisma.$executeRaw`INSERT INTO organization_locations (org_id, name_ar, is_primary, city, industrial_zone, geo)
       VALUES (${org.id}::uuid, ${'الفرع الرئيسي'}, true, ${input.city}, ${input.zone ?? null}, ST_SetSRID(ST_MakePoint(${input.lng}, ${input.lat}), 4326)::geography)`;
@@ -189,7 +211,8 @@ async function upsertOrg(input: { cr: string; type: Prisma.OrganizationCreateInp
 }
 
 async function seedDemo() {
-  const zone = 'الرياض — الصناعية الثانية';
+  // Zone *codes* (Step 25): the pilot groups by a stable code, not by however someone typed the name.
+  const zone = 'RUH-IND-2';
   const owner1 = await upsertUser('+966500000001', 'أبو محمد — مالك ورشة النور');
   const owner2 = await upsertUser('+966500000002', 'عبدالله — تشليح الشرق');
   const owner3 = await upsertUser('+966500000003', 'خالد — وكيل بوش الرياض');

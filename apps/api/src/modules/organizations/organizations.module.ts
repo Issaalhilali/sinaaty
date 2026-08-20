@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { PilotModule } from '../pilot/pilot.module';
 import { IdentityModule } from '../identity/identity.module';
 import { ORGANIZATION_REPOSITORY, SUBSCRIPTION_REPOSITORY } from './domain/repositories';
 import { OrgTransitionService } from './application/org-transition.service';
@@ -9,7 +10,7 @@ import { OrganizationsController } from './interface/http/organizations.controll
 import { AdminOrganizationsController } from './interface/http/admin-organizations.controller';
 
 @Module({
-  imports: [IdentityModule],
+  imports: [forwardRef(() => PilotModule), IdentityModule],
   controllers: [OrganizationsController, AdminOrganizationsController],
   providers: [OrganizationsUseCases, OrgTransitionService, { provide: ORGANIZATION_REPOSITORY, useClass: OrganizationPrismaRepository }, { provide: SUBSCRIPTION_REPOSITORY, useClass: SubscriptionPrismaRepository }],
   exports: [ORGANIZATION_REPOSITORY, OrgTransitionService],

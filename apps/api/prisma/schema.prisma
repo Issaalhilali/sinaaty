@@ -680,6 +680,7 @@ model Organization {
   updatedAt                    DateTime                  @default(now()) @map("updated_at") @db.Timestamptz(6)
   deletedAt                    DateTime?                 @map("deleted_at") @db.Timestamptz(6)
   accidentReports              AccidentReport[]
+  analyticsEvents              AnalyticsEvent[]
   disputesAsClaimantOrg        Dispute[]                 @relation("disputes_claimant_org_idToorganizations")
   disputesAsRespondentOrg      Dispute[]                 @relation("disputes_respondent_org_idToorganizations")
   driverProfiles               DriverProfile[]
@@ -1504,6 +1505,7 @@ model User {
   updatedAt                      DateTime                 @default(now()) @map("updated_at") @db.Timestamptz(6)
   deletedAt                      DateTime?                @map("deleted_at") @db.Timestamptz(6)
   accidentReports                AccidentReport[]
+  analyticsEvents                AnalyticsEvent[]
   devices                        Device[]
   disputeMessages                DisputeMessage[]
   disputesAsAssignedTo           Dispute[]                @relation("disputes_assigned_toTousers")
@@ -1982,6 +1984,26 @@ model AccidentReport {
   @@index([vehicleId, accidentAt(sort: Desc)], map: "idx_accident_reports_vehicle")
   @@index([workOrderId], map: "idx_accident_reports_wo")
   @@map("accident_reports")
+}
+
+model AnalyticsEvent {
+  id             BigInt        @id @default(autoincrement())
+  occurredAt     DateTime      @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  event          String        @db.VarChar(60)
+  orgId          String?       @map("org_id") @db.Uuid
+  actorUserId    String?       @map("actor_user_id") @db.Uuid
+  entityType     String?       @map("entity_type") @db.VarChar(40)
+  entityId       String?       @map("entity_id") @db.Uuid
+  industrialZone String?       @map("industrial_zone") @db.VarChar(120)
+  props          Json          @default("{}")
+  users          User?         @relation(fields: [actorUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organizations  Organization? @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([event, entityType, entityId])
+  @@index([event, occurredAt(sort: Desc)], map: "idx_analytics_event_time")
+  @@index([orgId, occurredAt(sort: Desc)], map: "idx_analytics_org_time")
+  @@index([industrialZone, occurredAt(sort: Desc)], map: "idx_analytics_zone_time")
+  @@map("analytics_events")
 }
 
 enum bid_status {

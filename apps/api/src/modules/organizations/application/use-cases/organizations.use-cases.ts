@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { KybDocStatus, KybDocType, OrgMemberRole, OrgStatus, OrgType } from '@sinaaty/shared-types';
+import { PilotService } from '../../../pilot/application/pilot.service';
 import { AppError } from '../../../../common/errors';
 import { PiiCryptoService } from '../../../../common/crypto';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -23,6 +24,8 @@ export class OrganizationsUseCases {
     private readonly pii: PiiCryptoService,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
     private readonly audit: AuditLogWriter,
+    // Optional: organizations exist without the pilot module (tests, future deployments without zones).
+    @Optional() private readonly pilot?: PilotService,
   ) {}
 
   // ---- public / discovery ----
@@ -39,7 +42,12 @@ export class OrganizationsUseCases {
   }
   async get(id: string) { const o = await this.orgs.findById(id); if (!o) throw new AppError('NOT_FOUND'); return { ...o, locations: await this.orgs.listLocations(id), members: await this.orgs.listMembers(id), kyb_documents: await this.orgs.listKybDocs(id), subscription: await this.subs.current(id) }; }
   update(id: string, dto: UpdateOrgDto) { return this.orgs.update(id, { legalNameAr: dto.legal_name_ar, legalNameEn: dto.legal_name_en, tradeNameAr: dto.trade_name_ar, phone: dto.phone, email: dto.email, descriptionAr: dto.description_ar, vatNumber: dto.vat_number, vatRegistered: dto.vat_number ? true : undefined }); }
-  addLocation(id: string, dto: AddLocationDto) { return this.orgs.addLocation(id, { nameAr: dto.name_ar, isPrimary: dto.is_primary, city: dto.city, district: dto.district, industrialZone: dto.industrial_zone, addressLine: dto.address_line, lat: dto.lat, lng: dto.lng, serviceRadiusKm: dto.service_radius_km }); }
+  /** The industrial zone is derived from the point when the workshop does not name one — pilot cohorts
+   *  must not depend on someone typing «الصناعية الثانية» the same way twice (Step 25). */
+  async addLocation(id: string, dto: AddLocationDto) {
+    const zone = dto.industrial_zone ?? (await this.pilot?.zoneOf({ lat: dto.lat, lng: dto.lng }))?.code;
+    return this.orgs.addLocation(id, { nameAr: dto.name_ar, isPrimary: dto.is_primary, city: dto.city, district: dto.district, industrialZone: zone, addressLine: dto.address_line, lat: dto.lat, lng: dto.lng, serviceRadiusKm: dto.service_radius_km });
+  }
   listLocations(id: string) { return this.orgs.listLocations(id); }
   async setSpecialties(id: string, dto: SetSpecialtiesDto) { await this.orgs.setSpecialties(id, dto.items.map((i) => ({ makeId: i.make_id, categoryId: i.category_id }))); return { count: dto.items.length }; }
 

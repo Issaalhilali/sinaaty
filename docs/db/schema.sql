@@ -1527,6 +1527,22 @@ CREATE TABLE platform_settings (
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE analytics_events (                                -- funnel/telemetry for the pilot (no PII)
+  id           bigserial PRIMARY KEY,
+  occurred_at  timestamptz NOT NULL DEFAULT now(),
+  event        varchar(60) NOT NULL,                           -- work_order.created, work_order.approved, invoice.paid ...
+  org_id       uuid REFERENCES organizations(id),
+  actor_user_id uuid REFERENCES users(id),
+  entity_type  varchar(40),
+  entity_id    uuid,
+  industrial_zone varchar(120),                                -- denormalised so pilot cohorts survive org edits
+  props        jsonb NOT NULL DEFAULT '{}',                    -- amounts/counters only — never names, phones or ids of people
+  UNIQUE (event, entity_type, entity_id)                       -- one row per (event, entity): replays stay idempotent
+);
+CREATE INDEX idx_analytics_event_time ON analytics_events(event, occurred_at DESC);
+CREATE INDEX idx_analytics_org_time ON analytics_events(org_id, occurred_at DESC);
+CREATE INDEX idx_analytics_zone_time ON analytics_events(industrial_zone, occurred_at DESC);
+
 CREATE TABLE sequences_counters (                              -- platform-wide human numbers (WO-, PN-, PR-, ...)
   prefix      varchar(8) NOT NULL,
   year        smallint NOT NULL,
