@@ -47,6 +47,10 @@ jobs:
       PII_ENC_KEY: dGVzdC1vbmx5LTMyLWJ5dGUta2V5LWZvci1jaS0xMjM0NTY=
       APP_ENV: test
       NODE_ENV: test
+      # The whole e2e suite reuses a few seeded phones and one runner IP; production defaults (3 codes /
+      # 10 min, 120 req/min) would fail CI for reasons that have nothing to do with the code.
+      OTP_MAX_REQUESTS_PER_10MIN: '2000'
+      THROTTLE_LIMIT: '100000'
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
