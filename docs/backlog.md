@@ -30,9 +30,9 @@
 | Maker/checker (two-person) approval on escrow refunds | Step 15 | single reason-gated action + audit for pilot; needs an approvals table | Step 16 |
 | Outbox integration_requests hardcode provider='nafez' (skews the integrations-by-provider table) | Step 15 | cosmetic in monitor; add an 'internal' provider enum value | Step 17 |
 | Admin 2FA beyond OTP (TOTP/WebAuthn for platform staff) | Step 15 | OTP is the second factor today | Step 24 |
-| Dispute evidence thumbnails in admin (presigned GET) | Step 16 | media ids listed; storage mock has no bytes | Step 17 |
+| ~~Dispute evidence thumbnails in admin (presigned GET)~~ ✅ 2026-08-21 — shared `MediaThumb` over the download-URL endpoint renders the evidence strip in the dispute room (a8c4d57); needed a `cross-origin` CORP header on mock-download (browsers block :3001 embedding :3000 under helmet's default — real S3 sends no CORP) | Step 16 | — | done |
 | ~~Customer/partner dispute screens in the apps (open + chat)~~ ✅ 2026-08-21 — `features/disputes` (open sheet + one conversation screen with photo evidence, behind the `disputes` flag; commit a9bbef2) | Step 16 | — | done |
-| `replace_part` / `no_action` decisions leave escrow frozen until a follow-up decision | Step 16 | intentional (documented), needs a 'pending follow-up' badge in admin | Step 17 |
+| ~~`replace_part` / `no_action` decisions leave escrow frozen until a follow-up decision~~ ✅ 2026-08-21 — the dispute room now wears a «بانتظار قرار لاحق — المبلغ ما زال مجمّداً» pill on exactly that state (a8c4d57); the behaviour itself stays intentional | Step 16 | — | done |
 | Invite flow for platform staff (email/SMS invite instead of the grant:role CLI) | Step 15 | CLI + in-dashboard role change cover the pilot | Step 24 |
 | Build/push the container images (needs a reachable registry) | Step 17 | Docker Hub unreachable from the dev machine; CI builds them | first CI run on main |
 | `helm lint` / `helm template` the chart (helm not installed locally) | Step 17 | templates written against the k8s API spec | Step 24 |
@@ -50,7 +50,7 @@
 | `job_locks` rows for one-shot jobs are never garbage-collected | Security/concurrency batch | a handful of fixed names, rows are reused in place | — |
 | Rotate the production secrets through KMS instead of env vars | Security/concurrency batch | boot now refuses dev defaults in prod; rotation is still manual | Step 24 |
 | Live منجز/تقدير adapter (provider + API unconfirmed) | Step 21 | port + mock only; module refuses INTEGRATION_ACCIDENTS=live | after the agreement is signed |
-| Accept `suggested_items` into the work order in one tap (API returns them; the app must post them) | Step 21 | avoids cross-module item writes from the accidents module | Step 22/23 |
+| ~~Accept `suggested_items` into the work order in one tap~~ ✅ 2026-08-21 — «أضفها لأمر العمل» with per-line pricing sheet (the report carries no prices), riding the normal addItem path so versioning/re-approval behave as if typed (14907b1) | Step 21 | — | done |
 | Attach check-out photos to the accident claim file | Step 21 | photo count is sent; upload needs the provider's attachment API | after the agreement is signed |
 | Scheduled refresh of open accident files (assessment lands days later) | Step 21 | manual refresh endpoint exists | Step 25 |
 | Tow: «استخدم موقعي الحالي» + map picker (needs a location plugin + platform permissions) | Step 23 | pasted maps link / coordinates covers the pilot | Step 25 |
@@ -75,7 +75,7 @@
 | Vision live adapter — needs a data-residency decision + ADR before any customer photo leaves | Step 28 | mock only; module refuses INTEGRATION_AI=live | before pilot |
 | Measure false-positive rate on real pilot photos before enabling ai_inspection widely | Step 28 | a wrong suggestion costs the workshop trust, so precision matters more than recall | Step 30 |
 | Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
-| Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) — **admin queue shipped** (`admin-web/src/app/abandoned`, commit e69aa0b); the two mobile screens remain | Step 29 | API + notifications done | Step 30 |
+| ~~Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning)~~ ✅ 2026-08-21 — admin queue (e69aa0b) + mobile: notice timeline, storage fees, declare button built only from the server's `can_declare` (client counts no days), customer warning cards (14907b1) | Step 29 | — | done |
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
 | ~~Dispute parties viewing evidence photos from the apps~~ ✅ 2026-08-21 — a `media_links` row of type `dispute` now grants download to the dispute's parties (`isDisputeParty` shared from the disputes domain); pinned by e2e (respondent 200, stranger 403) | media download | — | done |
 | Point INTEGRATION_STORAGE=live at the production KSA object store and set S3_* secrets (adapter proven vs AWS vectors + real MinIO round-trip) | storage | local MinIO: brew services start minio, endpoint http://localhost:9000 | deployment |

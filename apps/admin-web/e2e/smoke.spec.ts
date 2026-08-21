@@ -14,4 +14,9 @@ test('login → overview → KYB → integrations', async ({ page }) => {
   await page.getByRole('button', { name: 'الكل' }).click(); await page.getByRole('link', { name: 'فتح الغرفة' }).first().click();
   await expect(page.getByText('المبلغ محل النزاع')).toBeVisible(); await expect(page.getByText('المحادثة')).toBeVisible();
   await page.getByRole('link', { name: 'سجل التدقيق' }).click(); await expect(page.getByRole('heading', { name: 'سجل التدقيق' })).toBeVisible(); await expect(page.getByText('تفاصيل').first()).toBeVisible();
+  // pilot ops page: flags render (static list, data-independent) and the scope editor opens and closes
+  await page.getByRole('link', { name: /المناطق والميزات/ }).click(); await expect(page.getByRole('heading', { name: 'المناطق والميزات' })).toBeVisible();
+  await expect(page.getByText('مفاتيح الميزات')).toBeVisible();
+  await page.getByRole('button', { name: 'تخصيص' }).first().click(); await expect(page.getByText(/نطاق «/)).toBeVisible();
+  await page.getByRole('button', { name: 'إلغاء' }).click(); await expect(page.getByText(/نطاق «/)).toBeHidden();
 });
