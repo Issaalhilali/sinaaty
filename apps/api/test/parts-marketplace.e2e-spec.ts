@@ -13,7 +13,7 @@ describe('Parts marketplace — reverse auction (e2e)', () => {
   let wsTok: string; let scrapTok: string; let dealerTok: string; let distTok: string; let wsOrg: string; let scrapOrg: string; let dealerOrg: string; let distOrg: string; let reqId: string; let bids: Record<string, string> = {}; let orderId: string; let invoiceId: string;
   const orgOf = async (tok: string) => { const me = await http().get('/v1/me').set(auth(tok)).expect(200); for (const o of me.body.orgs as Array<{ org_id: string }>) { const org = await http().get(`/v1/organizations/${o.org_id}`).set(auth(tok)); if (org.status === 200 && org.body.status === 'active' && /^10100000/.test(org.body.crNumber ?? '')) return o.org_id; } return me.body.orgs[0].org_id as string; };
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); outbox = app.get(OutboxProcessor);
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); outbox = app.get(OutboxProcessor);
     wsTok = await login('+966500000001'); scrapTok = await login('+966500000002'); distTok = await login('+966500000003'); dealerTok = await login('+966500000004');
     wsOrg = await orgOf(wsTok); scrapOrg = await orgOf(scrapTok); distOrg = await orgOf(distTok); dealerOrg = await orgOf(dealerTok);
   });

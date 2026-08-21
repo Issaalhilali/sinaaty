@@ -22,7 +22,7 @@ describe('Invoicing (e2e)', () => {
     await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'ready' }).expect(200);
     return { id: wo.body.id as string, total: ra.body.work_order.total as string, vat: ra.body.work_order.vatAmount as string };
   };
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); wsTok = await login(wsPhone); custTok = await login(custPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); wsTok = await login(wsPhone); custTok = await login(custPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
   afterAll(async () => { await app.close(); });
 
   it('cannot invoice a work order that is not approved/ready', async () => {

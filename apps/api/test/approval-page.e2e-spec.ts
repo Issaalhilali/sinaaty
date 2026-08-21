@@ -16,7 +16,7 @@ describe('Web approval page (e2e)', () => {
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init();
+    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
     links = app.get(ApprovalLinkService); outbox = app.get(OutboxProcessor); sms = app.get(SmsMockAdapter); wsTok = await login('+966500000001'); await login(customerPhone);
     const me = await http().get('/v1/me').set(auth(wsTok)).expect(200); orgId = me.body.orgs[0].org_id;
     const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: customerPhone, vin: `JTDKN3DU0A0${suffix.slice(0, 6)}`, title_ar: 'تغيير زيت وفلاتر', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'تغيير زيت', quantity: 1, unit_price: '150' }] }).expect(201);

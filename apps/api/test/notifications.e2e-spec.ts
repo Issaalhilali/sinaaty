@@ -17,7 +17,7 @@ describe('Notifications (e2e)', () => {
   const drain = async () => { await outbox.drain(500); await outbox.drain(500); };
   const codes = async (tok: string) => (await http().get('/v1/me/notifications?limit=100').set(auth(tok)).expect(200)).body.map((n: { templateCode: string }) => n.templateCode) as string[];
 
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); outbox = app.get(OutboxProcessor); sms = app.get(SmsMockAdapter); push = app.get(PushMockAdapter); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; await drain(); });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); outbox = app.get(OutboxProcessor); sms = app.get(SmsMockAdapter); push = app.get(PushMockAdapter); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; await drain(); });
   afterAll(async () => { await app.close(); });
 
   let woId: string;

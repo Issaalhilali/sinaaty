@@ -15,7 +15,7 @@ describe('Parts distributors hub (e2e)', () => {
   const orgOf = async (tok: string) => { const me = await http().get('/v1/me').set(auth(tok)).expect(200); for (const o of me.body.orgs as Array<{ org_id: string }>) { const org = await http().get(`/v1/organizations/${o.org_id}`).set(auth(tok)); if (org.status === 200 && org.body.status === 'active' && /^10100000/.test(org.body.crNumber ?? '')) return o.org_id; } return me.body.orgs[0].org_id as string; };
   const drain = async () => { await outbox.drain(500); await outbox.drain(500); };
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); outbox = app.get(OutboxProcessor);
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); outbox = app.get(OutboxProcessor);
     wsTok = await login('+966500000001'); distTok = await login('+966500000003'); wsOrg = await orgOf(wsTok); distOrg = await orgOf(distTok); custTok = await login(`+96658${suffix}`);
     // re-runnable: reset any trade account left by a previous run (unique per seller/buyer pair)
     await app.get(PrismaService).tradeAccount.updateMany({ where: { sellerOrgId: distOrg, buyerOrgId: wsOrg }, data: { status: 'pending', creditLimit: 0, outstanding: 0, discountBps: 0 } });

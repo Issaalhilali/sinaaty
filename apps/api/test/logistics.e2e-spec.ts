@@ -15,7 +15,7 @@ describe('Logistics — tow request (e2e)', () => {
   const DROPOFF = { lat: 24.6300, lng: 46.7900 };  // ورشة النور — الصناعية الثانية
   let custTok: string; let driverTok: string; let otherTok: string; let adminTok: string; let jobId: string; let mediaId: string; let vehicleId: string;
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init();
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
     prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
     custTok = await login(custPhone); driverTok = await login(driverPhone); otherTok = await login(otherDriverPhone); adminTok = await login('+966500000099');
     const v = await http().post('/v1/vehicles').set(auth(custTok)).send({ vin: `JTDKN3DU9A0${suffix.slice(0, 6)}`, plate: `س ط ح ${suffix.slice(0, 4)}` }).expect(201); vehicleId = v.body.id;

@@ -11,7 +11,7 @@ describe('AuditLogWriter + OutboxWriter (db)', () => {
   beforeAll(async () => {
     process.env['NODE_ENV'] = 'test'; process.env['LOG_LEVEL'] = 'silent';
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    const app = mod.createNestApplication(); await app.init();
+    const app = mod.createNestApplication(); await app.init(); await app.listen(0, '127.0.0.1');
     prisma = app.get(PrismaService); audit = app.get(AuditLogWriter); outbox = app.get(OutboxWriter);
     close = () => app.close();
   });

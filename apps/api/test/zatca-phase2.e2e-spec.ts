@@ -25,7 +25,7 @@ describe('ZATCA Phase 2 (e2e)', () => {
   /** Submissions reference the device, so they go first. */
   const resetDevices = async () => { const ids = (await prisma.zatcaDevice.findMany({ where: { orgId }, select: { id: true } })).map((d) => d.id); if (ids.length) await prisma.zatcaSubmission.deleteMany({ where: { deviceId: { in: ids } } }); await prisma.zatcaDevice.deleteMany({ where: { orgId } }); };
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
     wsTok = await login('+966500000001'); custTok = await login(custPhone);
     orgId = (await http().get('/v1/me').set(auth(wsTok)).expect(200)).body.orgs[0].org_id;
     await resetDevices();   // re-runnable
@@ -72,7 +72,9 @@ describe('ZATCA Phase 2 (e2e)', () => {
     expect((await prisma.invoice.findUnique({ where: { id: inv } }))!.zatcaStatus).toBe('not_required');
     await outbox.drain(500); await outbox.drain(500);
     const row = await prisma.invoice.findUnique({ where: { id: inv } });
-    expect(row!.zatcaStatus).toBe('reported'); expect(row!.zatcaIcv).toBe(3n); expect(verifySignedInvoice(row!.zatcaXml!).valid).toBe(true);
+    // Not toBe(3n): any suite's drain() also submits other suites' pending invoices through this
+    // device, so the absolute ICV depends on jest file order — only "the chain advanced" is ours.
+    expect(row!.zatcaStatus).toBe('reported'); expect(row!.zatcaIcv! >= 3n).toBe(true); expect(verifySignedInvoice(row!.zatcaXml!).valid).toBe(true);
   });
   it('is idempotent, and a tampered archived document no longer verifies', async () => {
     const again = await http().post(`/v1/invoices/${invoice1}/zatca/submit`).set(auth(wsTok)).expect(200);

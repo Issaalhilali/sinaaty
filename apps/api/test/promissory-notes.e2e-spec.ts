@@ -35,7 +35,7 @@ describe('Promissory notes (e2e)', () => {
   const payOnline = async (invId: string) => { const p = await http().post('/v1/payments').set(auth(custTok)).send({ invoice_id: invId, method: 'mada' }).expect(201); await http().post(`/v1/payments/${p.body.payment_id}/mock-pay`).set(auth(custTok)).expect(200); };
   const noteFor = async (woId: string) => (await http().get(`/v1/promissory-notes?org_id=${orgId}&limit=200`).set(auth(wsTok)).expect(200)).body.find((n: { workOrderId: string }) => n.workOrderId === woId);
 
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; await outbox.drain(1000); await outbox.drain(1000); });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; await outbox.drain(1000); await outbox.drain(1000); });
   afterAll(async () => { await app.close(); });
 
   let woId: string; let noteId: string;

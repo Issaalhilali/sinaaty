@@ -10,7 +10,7 @@ describe('Vehicles (e2e)', () => {
   let tokA: string; let tokB: string; let vehicleId: string; let shareToken: string;
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); tokA = await login(`+96653${suffix}`); tokB = await login(`+96652${suffix}`); });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); tokA = await login(`+96653${suffix}`); tokB = await login(`+96652${suffix}`); });
   afterAll(async () => { await app.close(); });
 
   it('decodes a VIN (mock: Toyota Camry 2019)', async () => {

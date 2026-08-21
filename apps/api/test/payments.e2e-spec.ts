@@ -40,7 +40,7 @@ describe('Payments + Escrow + Ledger (e2e)', () => {
     return p.body.payment_id as string;
   };
 
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); prisma = app.get(PrismaService); psp = app.get(PspMockAdapter); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); psp = app.get(PspMockAdapter); wsTok = await login(wsPhone); custTok = await login(custPhone); adminTok = await login(adminPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
   afterAll(async () => { await app.close(); });
 
   let woId: string; let invId: string; let paymentId: string; let holdId: string; let total: string; let escrowBefore = 0; let commissionBefore = 0;

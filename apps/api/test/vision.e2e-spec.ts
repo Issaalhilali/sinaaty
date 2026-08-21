@@ -28,7 +28,7 @@ describe('AI inspection (e2e)', () => {
 
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init();
+    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
     prisma = app.get(PrismaService);
     wsTok = await login(workshopPhone); custTok = await login(customerPhone); adminTok = await login(adminPhone);
     const me = await http().get('/v1/me').set(auth(wsTok)).expect(200); orgId = me.body.orgs[0].org_id;
@@ -74,7 +74,9 @@ describe('AI inspection (e2e)', () => {
 
   it('the inspector accepts what they agree with and the rest disappears', async () => {
     const before = (await http().post(`/v1/inspections/${checkInId}/analyze`).set(auth(wsTok)).send({}).expect(200)).body;
-    const suggestion = before.damages.find((d: { source: string }) => d.source === 'ai') as { zone: string } | undefined;
+    // The mock derives its zone from the (random) media id; rear_left_door is reserved as the damage
+    // that must APPEAR at check-out below, so an unlucky suggestion on it is left unaccepted.
+    const suggestion = before.damages.find((d: { source: string; zone: string }) => d.source === 'ai' && d.zone !== 'rear_left_door') as { zone: string } | undefined;
 
     const r = await http().post(`/v1/inspections/${checkInId}/confirm-damages`).set(auth(wsTok))
       .send({ accept_zones: suggestion ? [suggestion.zone] : [] }).expect(200);

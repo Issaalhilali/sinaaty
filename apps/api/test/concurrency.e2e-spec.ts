@@ -16,7 +16,7 @@ describe('Multi-replica safety (e2e)', () => {
   let app: INestApplication; let prisma: PrismaService; let registry: OutboxHandlerRegistry; let outbox: OutboxWriter; let uow: UnitOfWork; let lock: LeaderLock;
   const suffix = String(Date.now()).slice(-7);
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); await app.init();
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); await app.init(); await app.listen(0, '127.0.0.1');
     prisma = app.get(PrismaService); registry = app.get(OutboxHandlerRegistry); outbox = app.get(OutboxWriter); uow = app.get<UnitOfWork>(UNIT_OF_WORK); lock = app.get(LeaderLock);
   });
   afterAll(async () => { await app.close(); });

@@ -13,7 +13,7 @@ describe('Disputes (e2e)', () => {
   let wsTok: string; let custTok: string; let adminTok: string; let orgId: string; let woId: string; let holdId: string; let disputeId: string; let invoiceId: string;
   const imbalance = async () => (await prisma.$queryRaw<Array<{ b: string }>>`SELECT COALESCE(SUM(debit) - SUM(credit), 0)::text AS b FROM ledger_lines`)[0]!.b;
   beforeAll(async () => {
-    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
+    const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
     wsTok = await login('+966500000001'); custTok = await login(custPhone); adminTok = await login('+966500000099');
     orgId = (await http().get('/v1/me').set(auth(wsTok)).expect(200)).body.orgs[0].org_id;
     // work order → approved → executed → delivered, paid (money sits in escrow)

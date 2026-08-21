@@ -18,7 +18,7 @@ describe('Work orders (e2e)', () => {
 
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0);
+    app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
     const addr = app.getHttpServer().address() as { port: number }; baseUrl = `http://127.0.0.1:${addr.port}`;
     prisma = app.get(PrismaService);
     wsTok = await login(workshopPhone); custTok = await login(customerPhone);
