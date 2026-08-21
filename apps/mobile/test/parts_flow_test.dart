@@ -65,6 +65,8 @@ class FakeWorkshop implements WorkshopRepository {
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) async => const Result.ok(null);
   @override Future<Result<String>> issueInvoice(String woId) async => const Result.err(UnknownFailure());
   @override Future<Result<OrgWallet>> wallet(String orgId) async => const Result.ok(OrgWallet(held: '0', available: '0', inTransit: '0', payouts: []));
+  @override Future<Result<AbandonedStatus>> abandonedStatus(String woId) async => const Result.err(UnknownFailure());
+  @override Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr}) async => const Result.ok(null);
 }
 class FakeAuth implements AuthRepository {
   final String Function() org; FakeAuth(this.org);

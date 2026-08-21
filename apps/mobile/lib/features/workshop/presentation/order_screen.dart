@@ -24,6 +24,55 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
     final r = await ref.read(syncControllerProvider.notifier).run('transition', {'woId': widget.id, 'to': to}); if (!mounted) return; setState(() => _busy = false);
     if (r.queued) { _toast(l.wsOffline); } else if (r.failure != null) { _toast(r.failure!.message(Localizations.localeOf(context).languageCode)); } else { _refresh(); }
   }
+  /// The uncollected-car ledger (Step 29): the three notices, the accruing storage, and — only when
+  /// the server says every condition is met — the legal declaration. The client never computes days.
+  List<Widget> _abandoned(BuildContext context, L10n l, String locale, TextTheme t) {
+    final a = ref.watch(abandonedStatusProvider(widget.id)).value?.valueOrNull;
+    if (a == null) return const [];
+    final scheme = Theme.of(context).colorScheme;
+    final next = a.steps.where((s) => !s.sent).firstOrNull;
+    return [
+      const SizedBox(height: SinaatySpace.xl), SectionTitle(l.abTitle),
+      SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(l.abDaysReady(a.daysReady), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+        const SizedBox(height: SinaatySpace.sm),
+        StatusTimeline(steps: [for (final s in a.steps) TimelineStep(title: s.formal ? '${l.abNotice(s.step)} — ${l.abFormal}' : l.abNotice(s.step), subtitle: s.sent ? Fmt.date(s.sentAt!, locale: locale) : l.abDueAfter(s.afterDays), done: s.sent, current: s == next)]),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()),
+        KeyValueRow(l.abStorage, Fmt.money(a.storageAmount, locale: locale), emphasized: true),
+        Text(l.abFreeThen(a.freeDays, Fmt.money(a.perDay, locale: locale)), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+        if (a.canDeclare) ...[
+          const SizedBox(height: SinaatySpace.md),
+          SizedBox(width: double.infinity, child: OutlinedButton.icon(style: OutlinedButton.styleFrom(foregroundColor: scheme.error, side: BorderSide(color: scheme.error.withValues(alpha: .6))), onPressed: _busy ? null : _declareAbandoned, icon: const Icon(Icons.gavel_outlined, size: 18), label: Text(l.abDeclare))),
+        ] else if (a.reasonAr != null && a.status != 'abandoned') ...[
+          const SizedBox(height: SinaatySpace.sm),
+          Text(a.reasonAr!, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+        ],
+      ])),
+    ];
+  }
+
+  Future<void> _declareAbandoned() async {
+    final l = L10n.of(context); final reason = TextEditingController();
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => Padding(
+      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l.abDeclare, style: Theme.of(ctx).textTheme.titleLarge),
+        const SizedBox(height: SinaatySpace.sm),
+        Text(l.abDeclareWarn, style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Theme.of(ctx).colorScheme.error)),
+        const SizedBox(height: SinaatySpace.md),
+        TextField(controller: reason, decoration: InputDecoration(labelText: l.abReason)),
+        const SizedBox(height: SinaatySpace.lg),
+        PrimaryButton(label: l.abDeclare, icon: Icons.gavel_outlined, onPressed: () => Navigator.pop(ctx, true)),
+      ]),
+    ));
+    if (ok != true || !mounted) return;
+    setState(() => _busy = true);
+    final r = await ref.read(workshopRepositoryProvider).abandonedDeclare(widget.id, reasonAr: reason.text.trim().isEmpty ? null : reason.text.trim());
+    if (!mounted) return;
+    setState(() => _busy = false);
+    r.when(ok: (_) { _refresh(); ref.invalidate(abandonedStatusProvider(widget.id)); _toast(l.abDeclared); }, err: (f) => _toast(f.message(Localizations.localeOf(context).languageCode)));
+  }
+
   Future<void> _requestApproval() async { setState(() => _busy = true); final r = await ref.read(workshopRepositoryProvider).requestApproval(widget.id); if (!mounted) return; setState(() => _busy = false); r.when(ok: (_) => _refresh(), err: (f) => _toast(f.message(Localizations.localeOf(context).languageCode))); }
   Future<void> _issueInvoice() async { setState(() => _busy = true); final r = await ref.read(workshopRepositoryProvider).issueInvoice(widget.id); if (!mounted) return; setState(() => _busy = false); r.when(ok: (id) { _refresh(); context.push('/invoices/$id'); }, err: (f) => _toast(f.message(Localizations.localeOf(context).languageCode))); }
   Future<void> _addPhoto() async {
@@ -73,6 +122,7 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
         if ((tl.value?.valueOrNull?.inspections.isNotEmpty ?? false) || (tl.value?.valueOrNull?.media.isNotEmpty ?? false)) ...[const SizedBox(height: SinaatySpace.xl), SectionTitle(l.photos, trailing: TextButton.icon(onPressed: _busy ? null : _addPhoto, icon: const Icon(Icons.add_a_photo_outlined, size: 18), label: Text(l.wsAddPhoto))),
           SectionCard(child: Column(children: [for (final ins in tl.value!.valueOrNull!.inspections) AppListRow(icon: Icons.login, title: ins.type == 'check_in' ? l.checkIn : l.checkOut, subtitle: Fmt.meta([Fmt.dateTime(ins.performedAt, locale: locale), l.damages(ins.damagesCount)]), trailing: StatusBadge(l.photosCount(ins.mediaIds.length))), Padding(padding: const EdgeInsets.only(top: SinaatySpace.sm), child: Align(alignment: AlignmentDirectional.centerStart, child: MediaStrip(mediaIds: tl.value!.valueOrNull!.media.map((m) => m.mediaId).toList())))]))],
         if (invoice != null) ...[const SizedBox(height: SinaatySpace.md), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.receipt_long_outlined, title: l.invoiceNumber(invoice.number), subtitle: Fmt.money(invoice.total, locale: locale), trailing: StatusBadge(Labels.invoiceStatus(l, invoice.status), tone: invoice.isPaid ? BadgeTone.seal : BadgeTone.brass), onTap: () => context.push('/invoices/${invoice.id}')))],
+        if (o.status == 'ready' || o.status == 'abandoned') ..._abandoned(context, l, locale, t),
       ]))));
   }
   Future<void> _addItemSheet() async {

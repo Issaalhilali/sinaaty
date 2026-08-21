@@ -1574,4 +1574,66 @@ class L10nAr extends L10n {
 
   @override
   String get dsStClosed => 'مغلق';
+
+  @override
+  String get abTitle => 'مركبة لم تُستلم';
+
+  @override
+  String abNotice(int n) {
+    return 'إنذار $n';
+  }
+
+  @override
+  String get abFormal => 'رسمي';
+
+  @override
+  String abDueAfter(int days) {
+    return 'يُستحق بعد $days يوماً من الجاهزية';
+  }
+
+  @override
+  String abDaysReady(int days) {
+    return 'جاهزة منذ $days يوماً';
+  }
+
+  @override
+  String get abStorage => 'رسوم التخزين';
+
+  @override
+  String abFreeThen(int free, String perDay) {
+    return '$free أيام سماح ثم $perDay يومياً';
+  }
+
+  @override
+  String get abDeclare => 'إعلان مركبة مهجورة';
+
+  @override
+  String get abDeclareWarn =>
+      'إجراء نظامي لا رجعة فيه: تُسجَّل السيارة مهجورة وتُضاف رسوم التخزين إلى المطالبة تمهيداً للتنفيذ.';
+
+  @override
+  String get abDeclared => 'أُعلنت المركبة مهجورة';
+
+  @override
+  String get abReason => 'السبب (اختياري)';
+
+  @override
+  String get abCustomerReady =>
+      'سيارتك جاهزة — استلمها الآن. التأخر يرتب رسوم تخزين وقد تُعدّ السيارة مهجورة نظاماً.';
+
+  @override
+  String get abCustomerDeclared =>
+      'أُعلنت السيارة مهجورة لعدم الاستلام — تواصل مع الورشة فوراً لتسوية المستحقات.';
+
+  @override
+  String get accAddItems => 'أضفها لأمر العمل';
+
+  @override
+  String get accAddItemsHint => 'تُضاف كنسخة جديدة تحتاج إعادة اعتماد العميل.';
+
+  @override
+  String get accItemsAdded => 'أُضيفت البنود — أرسلها للاعتماد';
+
+  @override
+  String get accPriceEach => 'سعّر كل بند قبل الإضافة';
 }

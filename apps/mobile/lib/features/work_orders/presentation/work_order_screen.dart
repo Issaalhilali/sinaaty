@@ -39,6 +39,15 @@ class WorkOrderScreen extends ConsumerWidget {
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.balance_outlined, title: l.dsActive, subtitle: l.dsMoneyHeld, trailing: StatusBadge(Labels.disputeStatus(l, dispute.status), tone: BadgeTone.warn), onTap: () => context.push('/disputes/${dispute.id}'))),
           const SizedBox(height: SinaatySpace.lg),
         ],
+        // The uncollected-car warning (Step 29): tell the customer what happens and what to do — collect the car.
+        if (o.status == 'ready' || o.status == 'abandoned') ...[
+          SectionCard(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Icon(o.status == 'abandoned' ? Icons.gavel_outlined : Icons.schedule_outlined, size: 20, color: o.status == 'abandoned' ? Theme.of(context).colorScheme.error : SinaatyColors.warn),
+            const SizedBox(width: SinaatySpace.sm),
+            Expanded(child: Text(o.status == 'abandoned' ? l.abCustomerDeclared : l.abCustomerReady, style: Theme.of(context).textTheme.bodySmall?.copyWith(height: 1.5))),
+          ])),
+          const SizedBox(height: SinaatySpace.lg),
+        ],
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
           const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),

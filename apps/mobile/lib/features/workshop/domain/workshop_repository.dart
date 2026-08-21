@@ -15,6 +15,9 @@ abstract interface class WorkshopRepository {
   Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'});
   Future<Result<String>> issueInvoice(String woId);
   Future<Result<OrgWallet>> wallet(String orgId);
+  /// Abandoned-vehicle path (Step 29): the machine may remind; only a person declares.
+  Future<Result<AbandonedStatus>> abandonedStatus(String woId);
+  Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr});
 }
 /// Offline queue port: actions that must not be lost when the network drops (status updates, photo attachments).
 abstract interface class PendingActions {

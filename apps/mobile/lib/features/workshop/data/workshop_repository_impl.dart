@@ -14,6 +14,20 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) => _run(() async => (await api.dio.get<List<dynamic>>('/work-orders', queryParameters: {'org_id': orgId, 'limit': 100, if (status != null) 'status': status.join(',')})).data!.map((e) => workOrderFromJson(e as Map<String, dynamic>)).toList());
   @override Future<Result<WorkOrder>> create(NewWorkOrder w) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders', data: {'org_id': w.orgId, 'vin': ?w.vin, 'plate': ?w.plate, 'customer_phone': w.customerPhone, 'title_ar': w.titleAr, 'payment_terms': w.paymentTerms, 'complaint_ar': ?w.complaintAr, 'items': w.items.map(_item).toList()})).data!));
   @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/items', data: _item(item))).data!));
+  @override Future<Result<AbandonedStatus>> abandonedStatus(String woId) => _run(() async {
+    final j = (await api.dio.get<Map<String, dynamic>>('/work-orders/$woId/abandoned')).data!;
+    final sent = {for (final n in ((j['notices_sent'] as List?) ?? []).cast<Map<String, dynamic>>()) (n['step'] as num).toInt(): DateTime.tryParse((n['at'] ?? '') as String)};
+    final storage = (j['storage'] as Map?)?.cast<String, dynamic>() ?? const <String, dynamic>{};
+    return AbandonedStatus(
+      status: (j['status'] ?? '') as String,
+      daysReady: (j['days_ready'] as num?)?.toInt() ?? 0,
+      steps: [for (final s in ((j['schedule'] as List?) ?? []).cast<Map<String, dynamic>>()) AbandonedNoticeStep(step: (s['step'] as num).toInt(), afterDays: (s['after_days'] as num).toInt(), formal: s['formal'] as bool? ?? false, sentAt: sent[(s['step'] as num).toInt()])],
+      storageAmount: (storage['amount'] ?? '0').toString(), perDay: (storage['per_day'] ?? '0').toString(),
+      freeDays: (storage['free_days'] as num?)?.toInt() ?? 0, chargeableDays: (storage['chargeable_days'] as num?)?.toInt() ?? 0,
+      canDeclare: j['can_declare'] as bool? ?? false, reasonAr: j['reason_ar'] as String?,
+    );
+  });
+  @override Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr}) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/abandoned/declare', data: {'reason_ar': ?reasonAr})).data);
   @override Future<Result<WorkOrder>> removeItem(String woId, String itemId) => _run(() async => workOrderFromJson((await api.dio.delete<Map<String, dynamic>>('/work-orders/$woId/items/$itemId')).data!));
   @override Future<Result<WorkOrder>> transition(String woId, String to, {String? noteAr}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/transition', data: {'to': to, 'note_ar': ?noteAr})).data!; return workOrderFromJson((d['work_order'] ?? d) as Map<String, dynamic>); });
   @override Future<Result<void>> requestApproval(String woId) => _run(() async { await api.dio.post<void>('/work-orders/$woId/request-approval', data: {}); });

@@ -6,7 +6,8 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/result/result.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
-import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
+import '../../workshop/domain/workshop.dart' show NewItem;
+import '../../workshop/presentation/providers.dart' show currentOrgIdProvider, workshopRepositoryProvider;
 import '../domain/accident_report.dart';
 import 'providers.dart';
 
@@ -65,6 +66,44 @@ class _AccidentReportScreenState extends ConsumerState<AccidentReportScreen> {
       err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
   }
 
+  /// One tap from the assessor's report to work-order lines (backlog 53): the advisor prices each
+  /// line — the report never carries prices — and the addition rides the normal versioning path,
+  /// so re-approval behaves exactly as if the lines were typed.
+  Future<void> _addSuggested(AccidentReport r) async {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final prices = [for (final _ in r.suggestedItems) TextEditingController()];
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => Padding(
+      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
+      child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l.accAddItems, style: Theme.of(ctx).textTheme.titleLarge),
+        const SizedBox(height: 4),
+        Text('${l.accPriceEach} — ${l.accAddItemsHint}', style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+        const SizedBox(height: SinaatySpace.md),
+        for (final (i, s) in r.suggestedItems.indexed) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm), child: Row(children: [
+          Expanded(child: Text(Fmt.meta([s.descriptionAr, '× ${s.quantity}']), style: Theme.of(ctx).textTheme.bodyMedium)),
+          const SizedBox(width: SinaatySpace.sm),
+          SizedBox(width: 110, child: TextField(controller: prices[i], keyboardType: const TextInputType.numberWithOptions(decimal: true), textDirection: TextDirection.ltr, inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))], decoration: const InputDecoration(hintText: '0.00', isDense: true))),
+        ])),
+        const SizedBox(height: SinaatySpace.md),
+        PrimaryButton(label: l.accAddItems, icon: Icons.playlist_add, onPressed: () { if (prices.any((c) => (double.tryParse(c.text) ?? 0) > 0)) Navigator.pop(ctx, true); }),
+      ])),
+    ));
+    if (ok != true || !mounted) return;
+    setState(() => _busy = true);
+    final repo = ref.read(workshopRepositoryProvider);
+    Failure? firstFailure; var added = 0;
+    for (final (i, s) in r.suggestedItems.indexed) {
+      final price = double.tryParse(prices[i].text) ?? 0;
+      if (price <= 0) continue;
+      final res = await repo.addItem(widget.workOrderId, NewItem(type: s.type, descriptionAr: s.descriptionAr, quantity: s.quantity, unitPrice: price.toStringAsFixed(2)));
+      res.when(ok: (_) => added++, err: (f) => firstFailure ??= f);
+    }
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (firstFailure != null) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(firstFailure!.message(locale)))); }
+    else if (added > 0) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.accItemsAdded))); }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = L10n.of(context);
@@ -88,7 +127,7 @@ class _AccidentReportScreenState extends ConsumerState<AccidentReportScreen> {
       body: v.isLoading
           ? const InlineLoading()
           : linked != null
-              ? _LinkedView(report: linked, onRefresh: _refresh)
+              ? _LinkedView(report: linked, onRefresh: _refresh, onAddItems: linked.suggestedItems.isEmpty ? null : () => _addSuggested(linked))
               : ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
                   if (notLinked && _preview == null) ...[
                     EmptyState(icon: Icons.shield_outlined, title: l.accNotLinked, body: l.accNotLinkedBody),
@@ -120,13 +159,14 @@ class _AccidentReportScreenState extends ConsumerState<AccidentReportScreen> {
 class _LinkedView extends StatelessWidget {
   final AccidentReport report;
   final VoidCallback onRefresh;
-  const _LinkedView({required this.report, required this.onRefresh});
+  final VoidCallback? onAddItems;
+  const _LinkedView({required this.report, required this.onRefresh, this.onAddItems});
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
       child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
-        _ReportCard(report: report),
+        _ReportCard(report: report, onAddItems: onAddItems),
       ]),
     );
   }
@@ -136,7 +176,8 @@ class _LinkedView extends StatelessWidget {
 /// what linking will attach.
 class _ReportCard extends StatelessWidget {
   final AccidentReport report;
-  const _ReportCard({required this.report});
+  final VoidCallback? onAddItems;
+  const _ReportCard({required this.report, this.onAddItems});
 
   /// The customer's slice of (insurer-approved + customer share) — proportion only, never money math.
   double? get _customerShare {
@@ -189,6 +230,12 @@ class _ReportCard extends StatelessWidget {
           for (final s in report.suggestedItems)
             AppListRow(icon: s.type == 'part' ? Icons.settings_input_component_outlined : s.type == 'paint' ? Icons.format_paint_outlined : Icons.build_outlined, title: s.descriptionAr, trailing: Text(Fmt.ltr('× ${s.quantity}'), style: t.bodySmall)),
         ])),
+        if (onAddItems != null) ...[
+          const SizedBox(height: SinaatySpace.sm),
+          SizedBox(width: double.infinity, child: FilledButton.tonalIcon(onPressed: onAddItems, icon: const Icon(Icons.playlist_add, size: 18), label: Text(l.accAddItems))),
+          const SizedBox(height: 4),
+          Text(l.accAddItemsHint, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant), textAlign: TextAlign.center),
+        ],
       ],
       if (report.submitted && report.repairSubmissionRef != null) ...[
         const SizedBox(height: SinaatySpace.md),

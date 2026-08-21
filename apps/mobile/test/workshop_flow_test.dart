@@ -37,7 +37,8 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<Result<({String type, String nameAr})>> orgInfo(String orgId) => _g(() => (type: 'workshop', nameAr: 'ورشة النور'));
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) => _g(() => orders.values.toList());
   @override Future<Result<WorkOrder>> create(NewWorkOrder n) => _g(() { seq++; final sub = n.items.fold<double>(0, (a, i) => a + double.parse(i.unitPrice) * double.parse(i.quantity)); final w = WorkOrder(id: 'wo$seq', number: 'WO-2026-00004$seq', status: 'draft', paymentTerms: n.paymentTerms, currentVersion: 0, titleAr: n.titleAr, vehicleId: 'v1', orgId: n.orgId, subtotal: sub.toStringAsFixed(2), vatAmount: (sub * .15).toStringAsFixed(2), total: (sub * 1.15).toStringAsFixed(2), depositRequired: '0', createdAt: DateTime(2026, 8, 18, 8), items: [for (final (i, it) in n.items.indexed) WoItem(id: 'i$i', type: it.type, descriptionAr: it.descriptionAr, quantity: it.quantity, unitPrice: it.unitPrice, lineTotal: (double.parse(it.unitPrice) * double.parse(it.quantity)).toStringAsFixed(2), warrantyDays: it.warrantyDays)]); history[w.id] = [WoHistory(to: 'draft', at: w.createdAt)]; return _set(w); });
-  @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) => _g(() => orders[woId]!);
+  final addedItems = <NewItem>[];
+  @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) => _g(() { addedItems.add(item); return orders[woId]!; });
   @override Future<Result<WorkOrder>> removeItem(String woId, String itemId) => _g(() => orders[woId]!);
   @override Future<Result<WorkOrder>> transition(String woId, String to, {String? noteAr}) => _g(() { transitions.add('$woId:$to'); return _st(orders[woId]!, to); });
   @override Future<Result<void>> requestApproval(String woId) => _g(() { _st(orders[woId]!, 'awaiting_approval'); });
@@ -47,6 +48,9 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) => _g(() { media.putIfAbsent(woId, () => []).addAll(mediaIds.map((m) => WoMedia(mediaId: m, mimeType: 'image/jpeg', label: label))); });
   @override Future<Result<String>> issueInvoice(String woId) => _g(() { final w = orders[woId]!; final inv = Invoice(id: 'inv${invoices.length + 1}', number: 'INV-2026-00000${invoices.length + 1}', type: 'simplified_tax', status: 'issued', workOrderId: woId, sellerNameAr: 'ورشة النور', subtotal: w.subtotal, vatTotal: w.vatAmount, total: w.total, paidTotal: '0', paymentTerms: w.paymentTerms, lines: const []); invoices.add(inv); return inv.id; });
   @override Future<Result<OrgWallet>> wallet(String orgId) => _g(() => const OrgWallet(held: '1368.50', available: '3940.00', inTransit: '0', payouts: []));
+  AbandonedStatus? abandoned; String? declaredReason;
+  @override Future<Result<AbandonedStatus>> abandonedStatus(String woId) async => abandoned != null ? Result.ok(abandoned!) : const Result.err(UnknownFailure());
+  @override Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr}) async { declaredReason = reasonAr ?? ''; final a = abandoned!; abandoned = AbandonedStatus(status: 'abandoned', daysReady: a.daysReady, steps: a.steps, storageAmount: a.storageAmount, perDay: a.perDay, freeDays: a.freeDays, chargeableDays: a.chargeableDays, canDeclare: false); orders['wo1'] = orders['wo1']!; return const Result.ok(null); }
   // customer-side ports reused by the shared screens
   @override Future<Result<List<WorkOrder>>> list() => _g(() => orders.values.toList());
   @override Future<Result<WorkOrder>> get(String id) => _g(() => orders[id]!);

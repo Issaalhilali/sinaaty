@@ -1587,4 +1587,67 @@ class L10nEn extends L10n {
 
   @override
   String get dsStClosed => 'Closed';
+
+  @override
+  String get abTitle => 'Uncollected vehicle';
+
+  @override
+  String abNotice(int n) {
+    return 'Notice $n';
+  }
+
+  @override
+  String get abFormal => 'formal';
+
+  @override
+  String abDueAfter(int days) {
+    return 'Due $days days after ready';
+  }
+
+  @override
+  String abDaysReady(int days) {
+    return 'Ready for $days days';
+  }
+
+  @override
+  String get abStorage => 'Storage fees';
+
+  @override
+  String abFreeThen(int free, String perDay) {
+    return '$free free days, then $perDay per day';
+  }
+
+  @override
+  String get abDeclare => 'Declare vehicle abandoned';
+
+  @override
+  String get abDeclareWarn =>
+      'A legal, irreversible step: the car is recorded as abandoned and storage fees join the enforcement claim.';
+
+  @override
+  String get abDeclared => 'Vehicle declared abandoned';
+
+  @override
+  String get abReason => 'Reason (optional)';
+
+  @override
+  String get abCustomerReady =>
+      'Your car is ready — collect it now. Delays accrue storage fees and the car may legally be deemed abandoned.';
+
+  @override
+  String get abCustomerDeclared =>
+      'The car was declared abandoned for non-collection — contact the workshop immediately to settle and collect.';
+
+  @override
+  String get accAddItems => 'Add to the work order';
+
+  @override
+  String get accAddItemsHint =>
+      'Added as a new version that needs the customer\'s re-approval.';
+
+  @override
+  String get accItemsAdded => 'Items added — send for approval';
+
+  @override
+  String get accPriceEach => 'Price each item before adding';
 }

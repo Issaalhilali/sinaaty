@@ -17,6 +17,7 @@ final currentOrgIdProvider = Provider<String?>((ref) => ref.watch(authController
 final currentOrgInfoProvider = FutureProvider<({String type, String nameAr})?>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return null; return (await ref.watch(workshopRepositoryProvider).orgInfo(org)).valueOrNull; });
 const supplierOrgTypes = {'scrapyard', 'parts_dealer', 'parts_distributor', 'parts_brand_agent'};
 final orgOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(workshopRepositoryProvider).orgOrders(org); });
+final abandonedStatusProvider = FutureProvider.autoDispose.family<Result<AbandonedStatus>, String>((ref, woId) => ref.watch(workshopRepositoryProvider).abandonedStatus(woId));
 final orgWalletProvider = FutureProvider.autoDispose<Result<OrgWallet>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.err(UnknownFailure()); return ref.watch(workshopRepositoryProvider).wallet(org); });
 
 /// Offline-first for the two daily actions (status update, photo attach): try now; on network failure queue and replay later.

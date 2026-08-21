@@ -3048,6 +3048,108 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'مغلق'**
   String get dsStClosed;
+
+  /// No description provided for @abTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'مركبة لم تُستلم'**
+  String get abTitle;
+
+  /// No description provided for @abNotice.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنذار {n}'**
+  String abNotice(int n);
+
+  /// No description provided for @abFormal.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسمي'**
+  String get abFormal;
+
+  /// No description provided for @abDueAfter.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُستحق بعد {days} يوماً من الجاهزية'**
+  String abDueAfter(int days);
+
+  /// No description provided for @abDaysReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاهزة منذ {days} يوماً'**
+  String abDaysReady(int days);
+
+  /// No description provided for @abStorage.
+  ///
+  /// In ar, this message translates to:
+  /// **'رسوم التخزين'**
+  String get abStorage;
+
+  /// No description provided for @abFreeThen.
+  ///
+  /// In ar, this message translates to:
+  /// **'{free} أيام سماح ثم {perDay} يومياً'**
+  String abFreeThen(int free, String perDay);
+
+  /// No description provided for @abDeclare.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعلان مركبة مهجورة'**
+  String get abDeclare;
+
+  /// No description provided for @abDeclareWarn.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجراء نظامي لا رجعة فيه: تُسجَّل السيارة مهجورة وتُضاف رسوم التخزين إلى المطالبة تمهيداً للتنفيذ.'**
+  String get abDeclareWarn;
+
+  /// No description provided for @abDeclared.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُعلنت المركبة مهجورة'**
+  String get abDeclared;
+
+  /// No description provided for @abReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب (اختياري)'**
+  String get abReason;
+
+  /// No description provided for @abCustomerReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك جاهزة — استلمها الآن. التأخر يرتب رسوم تخزين وقد تُعدّ السيارة مهجورة نظاماً.'**
+  String get abCustomerReady;
+
+  /// No description provided for @abCustomerDeclared.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُعلنت السيارة مهجورة لعدم الاستلام — تواصل مع الورشة فوراً لتسوية المستحقات.'**
+  String get abCustomerDeclared;
+
+  /// No description provided for @accAddItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضفها لأمر العمل'**
+  String get accAddItems;
+
+  /// No description provided for @accAddItemsHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تُضاف كنسخة جديدة تحتاج إعادة اعتماد العميل.'**
+  String get accAddItemsHint;
+
+  /// No description provided for @accItemsAdded.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُضيفت البنود — أرسلها للاعتماد'**
+  String get accItemsAdded;
+
+  /// No description provided for @accPriceEach.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعّر كل بند قبل الإضافة'**
+  String get accPriceEach;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
