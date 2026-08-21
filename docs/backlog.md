@@ -19,7 +19,7 @@
 | Customer «اطلب» tab (service/parts/tow requests) | Step 13 | placeholder empty state | Step 23 |
 | Offline cache of orders + queue in drift (replace JSON-file `PendingActions`) | Step 14 | queue is small; drift adds codegen weight for MVP | Step 22 |
 | Plate/VIN camera scan (OCR) in new order | Step 14 | manual entry works; OCR needs ML Kit | Step 22 |
-| Progress-photo capture from order screen via camera (currently placeholder bytes path; inspection flow has real camera) | Step 14 | — | Step 22 |
+| ~~Progress-photo capture from order screen via camera~~ ✅ 2026-08-21 — real camera capture through the inspection flow's injectable, real sha256 (was 1KB of zeros with a fake hash); offline path unchanged (7abfeaf) | Step 14 | — | done |
 | Group buy fulfilment (reached → orders per participant at group price) | Step 18b | open/join/reached implemented; ordering needs payment UX | Step 22 |
 | Trade-account agreement signed by workshop owner via Nafath (`guarantor_signature_id`) | Step 18b | needs live Nafath contract; approval by supplier suffices for mock | Step 20+ |
 | InventorySync REST adapter (pull from distributor ERP) | Step 18b | CSV push covers pilot; REST needs a real ERP contract | Step 22 |
@@ -64,7 +64,8 @@
 | ~~Admin-web page for zones/flags/funnel~~ ✅ 2026-08-21 — shipped as «المناطق والميزات» (`/pilot`: funnel KPIs, zones + backfill, flag toggles behind `ReasonDialog`, activation table) | Step 25 | — | done |
 | Mobile: consume `/v1/config` to hide disabled features (today the app shows everything it can do) | Step 25 | flags are enforced by the API regardless | Step 26 |
 | Analytics retention/rollup (analytics_events grows unbounded) | Step 25 | small during the pilot | Step 30 |
-| Fleet screens in the mobile app — approvals inbox + budget meter shipped («أسطولك اليوم», commits 6add95d, 6cc6493); **statements screen still pending** | Step 26 | CSV/JSON exports exist server-side | Step 27 |
+| ~~Fleet screens in the mobile app~~ ✅ 2026-08-21 — «أسطولك اليوم» (6add95d) + monthly statements: month list, idempotent generate, month screen with per-asset lines and CSV copy (7abfeaf); file-share via share_plus stays open below | Step 26 | — | done |
+| Fleet statement «مشاركة كملف» (needs `share_plus`; CSV copy-to-clipboard shipped) | Step 26 | one package + platform perms | Step 30 |
 | Fleet statement PDF (`fleet_statements.pdf_media_id` is unused; CSV + JSON exist) | Step 26 | accountants asked for CSV first | Step 30 |
 | Part orders under fleet policy (only work orders are gated today) | Step 26 | fleet_approvals.part_order_id column already exists | Step 27 |
 | e2e fixtures use fixed plates/CR numbers, so a long-lived dev DB eventually collides | Step 26 | `test:e2e:clean` runs against a scratch DB like CI | Step 30 |
