@@ -1497,6 +1497,9 @@ class L10nEn extends L10n {
   String get accActPaint => 'Bodywork & paint';
 
   @override
+  String get towVatIncluded => 'VAT included';
+
+  @override
   String get dsTitle => 'Dispute';
 
   @override

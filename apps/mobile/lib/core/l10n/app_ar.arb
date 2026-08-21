@@ -694,6 +694,7 @@
   "accActRepair": "إصلاح",
   "accActReplace": "استبدال",
   "accActPaint": "سمكرة ودهان",
+  "towVatIncluded": "شامل الضريبة",
   "dsTitle": "نزاع",
   "dsOpen": "فتح نزاع",
   "dsActive": "نزاع مفتوح على هذا الطلب",

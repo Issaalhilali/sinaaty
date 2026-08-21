@@ -98,7 +98,8 @@ class _TowRequestScreenState extends ConsumerState<TowRequestScreen> {
           const SizedBox(height: SinaatySpace.md),
           if (_quoting) Text(l.towCalculating, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .85)))
           else if (_quote != null) ...[
-            MoneyText(Fmt.money(_quote!.price, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
+            MoneyText(Fmt.money(_quote!.displayTotal, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
+            if (_quote!.total != null) Text(l.towVatIncluded, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))),
             const SizedBox(height: 4),
             Text(l.towQuoteLine(_quote!.distanceKm, _quote!.etaMinutes), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85))),
           ] else Text(l.towQuoteHint, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .85))),

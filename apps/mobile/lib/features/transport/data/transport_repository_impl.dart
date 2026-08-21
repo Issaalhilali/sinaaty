@@ -24,6 +24,7 @@ TransportJob jobFromJson(Map<String, dynamic> j) {
     assignedAt: _d(j['assignedAt']), pickedUpAt: _d(j['pickedUpAt']), deliveredAt: _d(j['deliveredAt']),
     notesAr: j['notesAr'] as String?, createdAt: _d(j['createdAt']) ?? DateTime.now(),
     driver: dr == null ? null : TowDriver(nameAr: dr['name_ar'] as String?, phone: dr['phone'] as String?, truckPlate: dr['truck_plate'] as String?, rating: dr['rating']?.toString()),
+    invoice: j['invoice'] is Map ? (id: (j['invoice'] as Map)['id'] as String, total: _s((j['invoice'] as Map)['total']), status: ((j['invoice'] as Map)['status'] ?? 'issued') as String) : null,
   );
 }
 
@@ -35,7 +36,7 @@ class TransportRepositoryImpl implements TransportRepository {
 
   @override Future<Result<TowQuote>> quote({required String type, required GeoPoint pickup, required GeoPoint dropoff}) => _run(() async {
     final d = (await api.dio.post<Map<String, dynamic>>('/transport/quote', data: {'type': type, 'pickup': _p(pickup), 'dropoff': _p(dropoff)})).data!;
-    return TowQuote(type: d['type'] as String, distanceKm: _s(d['distance_km']), etaMinutes: (d['eta_minutes'] as num?)?.toInt() ?? 0, price: _s(d['price']));
+    return TowQuote(type: d['type'] as String, distanceKm: _s(d['distance_km']), etaMinutes: (d['eta_minutes'] as num?)?.toInt() ?? 0, price: _s(d['price']), total: d['total']?.toString());
   });
 
   @override Future<Result<TransportJob>> createJob({required String type, required GeoPoint pickup, required GeoPoint dropoff, String? vehicleId, String? workOrderId, String? pickupAddress, String? dropoffAddress, String? notesAr}) => _run(() async =>

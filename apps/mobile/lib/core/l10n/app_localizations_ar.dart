@@ -1485,6 +1485,9 @@ class L10nAr extends L10n {
   String get accActPaint => 'سمكرة ودهان';
 
   @override
+  String get towVatIncluded => 'شامل الضريبة';
+
+  @override
   String get dsTitle => 'نزاع';
 
   @override

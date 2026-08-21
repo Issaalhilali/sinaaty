@@ -13,8 +13,12 @@ class TowQuote {
   final String type;
   final String distanceKm;
   final int etaMinutes;
-  final String price;
-  const TowQuote({required this.type, required this.distanceKm, required this.etaMinutes, required this.price});
+  final String price;        // pre-VAT (kept for compatibility)
+  /// VAT-inclusive figure from the API — computed by the invoice's own line math, so what the
+  /// customer sees before requesting is exactly what the invoice will say (p1 scope §2).
+  final String? total;
+  const TowQuote({required this.type, required this.distanceKm, required this.etaMinutes, required this.price, this.total});
+  String get displayTotal => total ?? price;
 }
 
 class TowDriver {

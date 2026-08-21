@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -47,6 +48,8 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
     final done = towSteps.indexWhere((s) => s == j?.status);
     return AppScaffold(
       title: j?.number ?? l.towTitle,
+      // The invoice is issued automatically on proven delivery; paying it is the one action left.
+      primaryAction: j != null && j.payable ? PrimaryButton(label: l.payAmount(Fmt.money(j.invoice!.total, locale: locale)), icon: Icons.lock_outline, onPressed: () => context.push('/invoices/${j.invoice!.id}')) : null,
       moreItems: j != null && j.canCancel ? [PopupMenuItem(value: 'cancel', child: Text(l.towCancelAction))] : null,
       onMore: (val) { if (val == 'cancel' && j != null && !_busy) _cancel(j); },
       body: AsyncResultView<TransportJob>(value: v, onRetry: _refresh, builder: (j) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(
@@ -72,6 +75,8 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
           SectionCard(child: StatusTimeline(steps: [
             for (var i = 0; i < towSteps.length; i++)
               TimelineStep(title: Labels.transportStatus(l, towSteps[i]), done: done >= i && done >= 0, current: done == i),
+            // Payment closes the journey (p1 scope §2): the step appears once the invoice exists.
+            if (j.invoice != null) TimelineStep(title: l.paid, done: j.invoice!.status == 'paid', current: j.payable),
           ])),
           const SizedBox(height: SinaatySpace.lg),
           SectionTitle(l.towRoute),

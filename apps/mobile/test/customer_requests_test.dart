@@ -88,7 +88,7 @@ class FakeTransport implements TransportRepository {
   ({String type, GeoPoint pickup, GeoPoint dropoff, String? notes})? lastCreate;
   @override Future<Result<TowQuote>> quote({required String type, required GeoPoint pickup, required GeoPoint dropoff}) async {
     quotes++;
-    return Result.ok(TowQuote(type: type, distanceKm: '18.40', etaMinutes: 22, price: type == 'heavy_tow' ? '410.00' : '236.00'));
+    return Result.ok(TowQuote(type: type, distanceKm: '18.40', etaMinutes: 22, price: type == 'heavy_tow' ? '410.00' : '236.00', total: type == 'heavy_tow' ? '471.50' : '271.40'));
   }
   @override Future<Result<TransportJob>> createJob({required String type, required GeoPoint pickup, required GeoPoint dropoff, String? vehicleId, String? workOrderId, String? pickupAddress, String? dropoffAddress, String? notesAr}) async {
     lastCreate = (type: type, pickup: pickup, dropoff: dropoff, notes: notesAr);
@@ -141,6 +141,7 @@ void main() {
     GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
     GoRoute(path: '/tow/new', builder: (_, _) => const TowRequestScreen()),
     GoRoute(path: '/tow/:id', builder: (_, s) => TowJobScreen(id: s.pathParameters['id']!)),
+    GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('pay:${s.pathParameters['id']}'))),
     GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)),
     GoRoute(path: '/parts/orders/:id', builder: (_, _) => const Scaffold(body: Text('order'))),
   ]);
@@ -218,7 +219,9 @@ void main() {
     await tester.enterText(links.at(1), '24.6300, 46.7900');
     await tester.pumpAndSettle();
     expect(transport.quotes, greaterThan(0));
-    expect(find.textContaining('236.00'), findsWidgets);                   // the price, before sending
+    expect(find.textContaining('271.40'), findsWidgets);                   // VAT-inclusive — what the invoice will actually say
+    expect(find.text('شامل الضريبة'), findsOneWidget);
+    expect(find.textContaining('236.00'), findsNothing);                   // never the pre-VAT figure (p1 scope §2)
     expect(find.textContaining('18.40'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_tow_request_light.png'));
 
@@ -226,6 +229,16 @@ void main() {
     expect(transport.lastCreate?.pickup, const GeoPoint(24.7136, 46.6753));
     expect(find.textContaining('TJ-2026-000031'), findsWidgets);
     expect(find.text('بانتظار سائق'), findsWidgets);   // header + first timeline step
+  });
+
+  testWidgets('delivered tow: the auto-issued invoice becomes the one pay button, through the existing flow', (tester) async {
+    size(tester);
+    transport.jobs['tj7'] = TransportJob(id: 'tj7', number: 'TJ-2026-000032', type: 'flatbed_tow', status: 'delivered', quotedPrice: '236.00', finalPrice: '236.00', createdAt: DateTime(2026, 8, 20, 12), invoice: (id: 'inv-t1', total: '271.40', status: 'issued'));
+    await tester.pumpWidget(app(router('/tow/tj7'))); await tester.pumpAndSettle();
+    expect(find.textContaining('271.40'), findsWidgets);                   // the pay button carries the invoice total
+    expect(find.text('مدفوعة'), findsOneWidget);                            // payment closes the timeline — pending step visible
+    await tester.tap(find.textContaining('ادفع')); await tester.pumpAndSettle();
+    expect(find.text('pay:inv-t1'), findsOneWidget);                       // the existing billing flow, no new component
   });
 
   testWidgets('warranty wallet separates what is still covered from what has expired', (tester) async {

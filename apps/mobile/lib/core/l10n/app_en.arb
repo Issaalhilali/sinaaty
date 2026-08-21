@@ -694,6 +694,7 @@
   "accActRepair": "Repair",
   "accActReplace": "Replace",
   "accActPaint": "Bodywork & paint",
+  "towVatIncluded": "VAT included",
   "dsTitle": "Dispute",
   "dsOpen": "Open a dispute",
   "dsActive": "An open dispute on this order",

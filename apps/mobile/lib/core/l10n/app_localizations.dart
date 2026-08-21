@@ -2869,6 +2869,12 @@ abstract class L10n {
   /// **'سمكرة ودهان'**
   String get accActPaint;
 
+  /// No description provided for @towVatIncluded.
+  ///
+  /// In ar, this message translates to:
+  /// **'شامل الضريبة'**
+  String get towVatIncluded;
+
   /// No description provided for @dsTitle.
   ///
   /// In ar, this message translates to:

@@ -53,7 +53,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
 
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
-    final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
     final v = ref.watch(disputeProvider(widget.id));
     final d = v.value?.valueOrNull;
     return AppScaffold(
