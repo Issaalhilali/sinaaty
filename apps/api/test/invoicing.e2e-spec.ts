@@ -71,6 +71,10 @@ describe('Invoicing (e2e)', () => {
     const cn = await http().post(`/v1/invoices/${invId}/credit-notes`).set(auth(wsTok)).send({ reason_ar: 'إرجاع قطعة واحدة', lines: [{ invoice_line_id: part.id, quantity: 1 }] }).expect(201);
     expect(cn.body.type).toBe('credit_note'); expect(cn.body.number).toMatch(/^CN-/); expect(cn.body.parentInvoiceId).toBe(invId); expect(cn.body.total).toBe('241.50'); // 210 + 15%
     expect(decodeQr(cn.body.zatcaQr).fields.total).toBe('241.50');
+    // BR-KSA-56: the note's BillingReference carries the ORIGINAL invoice number, never its own CN- number.
+    const cnXml = await http().get(`/v1/invoices/${cn.body.id}/xml`).set(auth(wsTok)).expect(200);
+    expect(cnXml.text).toContain(`<cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>${inv.body.number}</cbc:ID>`);
+    expect(cnXml.text).not.toContain(`<cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>${cn.body.number}</cbc:ID>`);
     const tooBig = await http().post(`/v1/invoices/${invId}/credit-notes`).set(auth(wsTok)).send({ reason_ar: 'x'.repeat(5), lines: [{ invoice_line_id: part.id, quantity: 100 }] }).expect(400);
     expect(tooBig.body.code).toBe('VALIDATION');
     const still = await http().get(`/v1/invoices/${invId}`).set(auth(wsTok)).expect(200); expect(still.body.status).toBe('issued');

@@ -144,7 +144,11 @@ export class InvoicesUseCases {
     });
   }
 
-  private xmlFor(inv: Invoice): string {
+  /** A credit/debit note's BillingReference carries the ORIGINAL invoice number (BR-KSA-56), never its own. */
+  private async parentNumberOf(inv: Invoice): Promise<string | null> {
+    return inv.parentInvoiceId ? (await this.invoices.findById(inv.parentInvoiceId))?.number ?? null : null;
+  }
+  private xmlFor(inv: Invoice, parentNumber: string | null): string {
     const issue = (inv.issueDate ?? inv.createdAt).toISOString();
     const b2b = !!(inv.buyerSnapshot.org_id || inv.buyerSnapshot.vat_number);
     return buildInvoiceXml({
@@ -156,9 +160,9 @@ export class InvoicesUseCases {
       buyer: b2b ? { registrationName: inv.buyerSnapshot.name_ar, vatNumber: inv.buyerSnapshot.vat_number } : null,
       lines: inv.lines.map((l) => ({ id: String(l.sortOrder + 1), name: l.descriptionAr, quantity: l.quantity, unitPrice: l.unitPrice, lineExtension: l.lineTotal, taxPercent: l.vatRate, taxAmount: l.vatAmount, roundingAmount: Money.of(l.lineTotal).plus(Money.of(l.vatAmount)).toString() })),
       taxExclusive: inv.subtotal, taxInclusive: inv.total, taxAmount: inv.vatTotal, allowanceTotal: inv.discountTotal, payableAmount: inv.total, qrBase64: inv.zatcaQr ?? '', note: inv.notesAr,
-      billingReferenceId: null,
+      billingReferenceId: parentNumber,
     });
   }
-  async xml(u: AuthUser, id: string) { return this.xmlFor(await this.get(u, id)); }
-  async document(u: AuthUser, id: string) { const inv = await this.get(u, id); return this.renderer.render(inv, { qrBase64: inv.zatcaQr ?? '', xml: this.xmlFor(inv) }); }
+  async xml(u: AuthUser, id: string) { const inv = await this.get(u, id); return this.xmlFor(inv, await this.parentNumberOf(inv)); }
+  async document(u: AuthUser, id: string) { const inv = await this.get(u, id); return this.renderer.render(inv, { qrBase64: inv.zatcaQr ?? '', xml: this.xmlFor(inv, await this.parentNumberOf(inv)) }); }
 }

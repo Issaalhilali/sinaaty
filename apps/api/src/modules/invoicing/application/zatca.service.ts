@@ -90,9 +90,12 @@ export class ZatcaService {
     if (!device?.isProduction) return null;
     const material = this.material(device.csidEnc);
     const mode = submissionMode(invoice.type);
+    // A credit/debit note must reference the ORIGINAL invoice's number in BillingReference (BR-KSA-56),
+    // not its own — resolved before the transaction because it is a plain read.
+    const parentNumber = invoice.parentInvoiceId ? (await this.invoices.findById(invoice.parentInvoiceId))?.number ?? null : null;
     const result = await this.uow.run(async (tx) => {
       const { icv, pih } = await this.repo.advanceChain(device.id, tx);      // row-locked: no duplicate counters
-      const xml = buildInvoiceXml(this.toUbl(invoice, icv, pih));
+      const xml = buildInvoiceXml(this.toUbl(invoice, icv, pih, parentNumber));
       const signed = signInvoice({ invoiceXml: xml, privateKeyPem: material.privateKeyPem, certificatePem: material.certificatePem });
       const cert = readCertificate(material.certificatePem);
       const issuedAt = (invoice.issueDate ?? invoice.createdAt).toISOString().replace(/\.\d{3}Z$/, 'Z');
@@ -115,7 +118,7 @@ export class ZatcaService {
     });
     return result;
   }
-  private toUbl(inv: Invoice, icv: number, pih: string): UblInvoice {
+  private toUbl(inv: Invoice, icv: number, pih: string, parentNumber: string | null = null): UblInvoice {
     const issue = (inv.issueDate ?? inv.createdAt).toISOString();
     const b2b = inv.type === 'standard_tax';
     return {
@@ -125,7 +128,7 @@ export class ZatcaService {
       buyer: b2b ? { registrationName: inv.buyerSnapshot.name_ar, vatNumber: inv.buyerSnapshot.vat_number, otherId: inv.buyerSnapshot.cr_number ? { scheme: 'CRN', value: inv.buyerSnapshot.cr_number } : null } : (inv.buyerSnapshot.name_ar ? { registrationName: inv.buyerSnapshot.name_ar } : null),
       lines: inv.lines.map((l) => ({ id: String(l.sortOrder + 1), name: l.descriptionAr, quantity: l.quantity, unitPrice: l.unitPrice, lineExtension: l.lineTotal, discount: l.discount, taxPercent: l.vatRate, taxAmount: l.vatAmount, roundingAmount: (Number(l.lineTotal) + Number(l.vatAmount)).toFixed(2) })),
       taxExclusive: inv.subtotal, taxInclusive: inv.total, taxAmount: inv.vatTotal, allowanceTotal: inv.discountTotal, payableAmount: inv.total,
-      qrBase64: '', billingReferenceId: inv.parentInvoiceId ? inv.number : null,
+      qrBase64: '', billingReferenceId: parentNumber,
     };
   }
 }
