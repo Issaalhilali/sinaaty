@@ -54,6 +54,32 @@ export function escrowReleased(p: {
     .build();
 }
 
+/**
+ * Transport escrow release: the platform's cut is the margin FROZEN ON THE JOB when it was quoted
+ * (not the org's commission bps) → platform_revenue:transport_margin + VAT on the margin; the
+ * remainder becomes available to the provider. Balanced like every release.
+ */
+export function transportEscrowReleased(p: {
+  escrowHoldId: string;
+  orgId: string;
+  gross: AmountInput;
+  margin: AmountInput;
+  vatRatePct: number;
+}): LedgerEntryDraft {
+  const gross = round2(p.gross);
+  const margin = round2(p.margin);
+  const vatOnMargin = round2(margin.mul(p.vatRatePct).div(100));
+  const net = gross.minus(margin).minus(vatOnMargin);
+  if (net.lt(0)) throw new RangeError('transport margin exceeds gross amount');
+  return entry('escrow_release', `escrow_release:${p.escrowHoldId}`)
+    .ref('escrow_holds', p.escrowHoldId)
+    .debit(Accounts.escrowLiability(p.orgId), gross)
+    .credit(Accounts.orgAvailable(p.orgId), net)
+    .credit(Accounts.revenue('transport_margin'), margin)
+    .credit(Accounts.vatPayable, vatOnMargin)
+    .build();
+}
+
 /** Escrow refunded to customer (full or partial) — before PSP executes the refund. */
 export function escrowRefunded(p: { escrowHoldId: string; refundId: string; orgId: string; amount: AmountInput }): LedgerEntryDraft {
   return entry('refund', `refund:${p.refundId}`)

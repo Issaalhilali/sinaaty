@@ -1495,4 +1495,93 @@ class L10nEn extends L10n {
 
   @override
   String get accActPaint => 'Bodywork & paint';
+
+  @override
+  String get dsTitle => 'Dispute';
+
+  @override
+  String get dsOpen => 'Open a dispute';
+
+  @override
+  String get dsActive => 'An open dispute on this order';
+
+  @override
+  String get dsView => 'View dispute';
+
+  @override
+  String get dsMoneyHeld =>
+      'The amount stays held until the dispute is resolved';
+
+  @override
+  String get dsPlatformDecides =>
+      'The platform reviews both sides and decides — nothing else is needed from you.';
+
+  @override
+  String get dsDescribe => 'Describe the problem';
+
+  @override
+  String get dsDescribeHint => 'What happened, and what are you asking for?';
+
+  @override
+  String get dsCategory => 'Problem type';
+
+  @override
+  String get dsAttach => 'Attach a photo';
+
+  @override
+  String get dsOpenCta => 'Open the dispute';
+
+  @override
+  String get dsOpened => 'Dispute opened — the amount is held until resolved';
+
+  @override
+  String get dsMessageHint => 'Write your message…';
+
+  @override
+  String get dsEvidence => 'Photos & evidence';
+
+  @override
+  String get dsConversation => 'Conversation';
+
+  @override
+  String get dsResolved => 'Platform decision';
+
+  @override
+  String get dsCatScope => 'Scope of work';
+
+  @override
+  String get dsCatQuality => 'Workmanship';
+
+  @override
+  String get dsCatPrice => 'Price';
+
+  @override
+  String get dsCatDelay => 'Delay';
+
+  @override
+  String get dsCatDamage => 'Damage to the car';
+
+  @override
+  String get dsCatPartDefect => 'Defective part';
+
+  @override
+  String get dsCatNoShow => 'No-show';
+
+  @override
+  String get dsStOpen => 'Open';
+
+  @override
+  String get dsStUnderReview => 'Under review';
+
+  @override
+  String get dsStAwaiting => 'Awaiting the parties';
+
+  @override
+  String get dsStEscalated => 'Escalated';
+
+  @override
+  String get dsStResolved => 'Decided';
+
+  @override
+  String get dsStClosed => 'Closed';
 }

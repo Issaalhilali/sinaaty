@@ -2868,6 +2868,180 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'سمكرة ودهان'**
   String get accActPaint;
+
+  /// No description provided for @dsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نزاع'**
+  String get dsTitle;
+
+  /// No description provided for @dsOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح نزاع'**
+  String get dsOpen;
+
+  /// No description provided for @dsActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'نزاع مفتوح على هذا الطلب'**
+  String get dsActive;
+
+  /// No description provided for @dsView.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض النزاع'**
+  String get dsView;
+
+  /// No description provided for @dsMoneyHeld.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ محفوظ حتى يُحل النزاع'**
+  String get dsMoneyHeld;
+
+  /// No description provided for @dsPlatformDecides.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع المنصة الطرفين وتقرر — لا يلزمك إجراء آخر.'**
+  String get dsPlatformDecides;
+
+  /// No description provided for @dsDescribe.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف المشكلة'**
+  String get dsDescribe;
+
+  /// No description provided for @dsDescribeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما الذي حدث؟ وما الذي تطلبه؟'**
+  String get dsDescribeHint;
+
+  /// No description provided for @dsCategory.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع المشكلة'**
+  String get dsCategory;
+
+  /// No description provided for @dsAttach.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرفق صورة'**
+  String get dsAttach;
+
+  /// No description provided for @dsOpenCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتح النزاع'**
+  String get dsOpenCta;
+
+  /// No description provided for @dsOpened.
+  ///
+  /// In ar, this message translates to:
+  /// **'فُتح النزاع — المبلغ محفوظ حتى يُحل'**
+  String get dsOpened;
+
+  /// No description provided for @dsMessageHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب رسالتك…'**
+  String get dsMessageHint;
+
+  /// No description provided for @dsEvidence.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصور والأدلة'**
+  String get dsEvidence;
+
+  /// No description provided for @dsConversation.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحادثة'**
+  String get dsConversation;
+
+  /// No description provided for @dsResolved.
+  ///
+  /// In ar, this message translates to:
+  /// **'قرار المنصة'**
+  String get dsResolved;
+
+  /// No description provided for @dsCatScope.
+  ///
+  /// In ar, this message translates to:
+  /// **'نطاق العمل'**
+  String get dsCatScope;
+
+  /// No description provided for @dsCatQuality.
+  ///
+  /// In ar, this message translates to:
+  /// **'جودة التنفيذ'**
+  String get dsCatQuality;
+
+  /// No description provided for @dsCatPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر'**
+  String get dsCatPrice;
+
+  /// No description provided for @dsCatDelay.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأخير'**
+  String get dsCatDelay;
+
+  /// No description provided for @dsCatDamage.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضرر بالسيارة'**
+  String get dsCatDamage;
+
+  /// No description provided for @dsCatPartDefect.
+  ///
+  /// In ar, this message translates to:
+  /// **'عيب في القطعة'**
+  String get dsCatPartDefect;
+
+  /// No description provided for @dsCatNoShow.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدم حضور'**
+  String get dsCatNoShow;
+
+  /// No description provided for @dsStOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفتوح'**
+  String get dsStOpen;
+
+  /// No description provided for @dsStUnderReview.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد المراجعة'**
+  String get dsStUnderReview;
+
+  /// No description provided for @dsStAwaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار الأطراف'**
+  String get dsStAwaiting;
+
+  /// No description provided for @dsStEscalated.
+  ///
+  /// In ar, this message translates to:
+  /// **'مصعّد'**
+  String get dsStEscalated;
+
+  /// No description provided for @dsStResolved.
+  ///
+  /// In ar, this message translates to:
+  /// **'صدر القرار'**
+  String get dsStResolved;
+
+  /// No description provided for @dsStClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مغلق'**
+  String get dsStClosed;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

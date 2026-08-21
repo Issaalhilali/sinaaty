@@ -26,7 +26,7 @@ export const Accounts = {
   /** Refunds owed back to a payer, before PSP executes them (liability). */
   refundsPayable: { code: 'refunds_payable', type: 'liability' } satisfies AccountRef,
   /** Platform revenue by stream. */
-  revenue: (stream: 'commission' | 'note_fee' | 'logistics' | 'subscription' | 'serial_fee'): AccountRef => ({
+  revenue: (stream: 'commission' | 'note_fee' | 'logistics' | 'subscription' | 'serial_fee' | 'transport_margin'): AccountRef => ({
     code: `platform_revenue:${stream}`,
     type: 'revenue',
   }),

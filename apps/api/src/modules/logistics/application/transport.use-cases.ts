@@ -14,6 +14,7 @@ import { USER_REPOSITORY, type UserRepository } from '../../identity/domain/repo
 import { VehicleEventsWriter } from '../../vehicles/application/vehicle-events.writer';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../work-orders/domain/repositories';
 import { REALTIME_PUBLISHER, type RealtimePublisher } from '../../work-orders/application/ports/realtime.port';
+import { INVOICE_REPOSITORY, type InvoiceRepository } from '../../invoicing/domain/repositories';
 import { ACTIVE_TRANSPORT, canComplete, canTransitionTransport, DEFAULT_TOW_RATES, quotePrice, type GeoPoint, type TowRates, type TransportJob } from '../domain/transport';
 import { TRANSPORT_REPOSITORY, type TransportRepository } from '../domain/repositories';
 import { MAPS_PORT, type MapsPort } from './ports/maps.port';
@@ -32,6 +33,7 @@ export class TransportUseCases {
     @Inject(OTP_REPOSITORY) private readonly otps: OtpRepository, @Inject(HASHER_PORT) private readonly hasher: HasherPort,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork, private readonly audit: AuditLogWriter, private readonly outbox: OutboxWriter,
     private readonly config: AppConfig, private readonly passport: VehicleEventsWriter,
+    @Inject(INVOICE_REPOSITORY) private readonly invoices: InvoiceRepository,
     @Optional() @Inject(REALTIME_PUBLISHER) private readonly rt?: RealtimePublisher,
   ) {}
   /** Rates live in platform_settings so ops can tune pricing without a deploy (CLAUDE.md §5.7). */
@@ -62,7 +64,13 @@ export class TransportUseCases {
     const nearby = await this.repo.driversNear(dto.pickup, 30, dto.type as TransportType, 10);
     return { ...job, eta_minutes: route.durationMinutes, drivers_nearby: nearby.length };
   }
-  async get(u: AuthUser, id: string) { const j = await this.repo.findById(id); if (!j) throw new AppError('NOT_FOUND'); this.mustRead(j, u); const driver = j.driverUserId ? await this.repo.findDriver(j.driverUserId) : null; return { ...j, driver: driver ? { name_ar: driver.fullNameAr, phone: driver.phone, truck_plate: driver.truckPlate, rating: driver.ratingAvg, last_geo: driver.lastGeo } : null, tracking: await this.repo.listTracking(id, 50) }; }
+  async get(u: AuthUser, id: string) {
+    const j = await this.repo.findById(id); if (!j) throw new AppError('NOT_FOUND'); this.mustRead(j, u);
+    const driver = j.driverUserId ? await this.repo.findDriver(j.driverUserId) : null;
+    // The tow invoice (auto-issued on proven delivery) rides along so the app can offer «ادفع» without a second call.
+    const inv = j.status === 'delivered' ? await this.invoices.findByTransportJob(id) : null;
+    return { ...j, driver: driver ? { name_ar: driver.fullNameAr, phone: driver.phone, truck_plate: driver.truckPlate, rating: driver.ratingAvg, last_geo: driver.lastGeo } : null, invoice: inv ? { id: inv.id, number: inv.number, total: inv.total, status: inv.status, paid_total: inv.paidTotal } : null, tracking: await this.repo.listTracking(id, 50) };
+  }
   async list(u: AuthUser, q: { org_id?: string; as?: 'requester' | 'driver' | 'provider'; status?: TransportStatus[]; limit?: number }) {
     if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     if (q.as === 'driver') return this.repo.list({ driverUserId: u.id, status: q.status, limit: q.limit ?? 50 });

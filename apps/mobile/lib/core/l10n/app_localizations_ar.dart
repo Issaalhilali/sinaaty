@@ -1483,4 +1483,92 @@ class L10nAr extends L10n {
 
   @override
   String get accActPaint => 'سمكرة ودهان';
+
+  @override
+  String get dsTitle => 'نزاع';
+
+  @override
+  String get dsOpen => 'فتح نزاع';
+
+  @override
+  String get dsActive => 'نزاع مفتوح على هذا الطلب';
+
+  @override
+  String get dsView => 'عرض النزاع';
+
+  @override
+  String get dsMoneyHeld => 'المبلغ محفوظ حتى يُحل النزاع';
+
+  @override
+  String get dsPlatformDecides =>
+      'تراجع المنصة الطرفين وتقرر — لا يلزمك إجراء آخر.';
+
+  @override
+  String get dsDescribe => 'صف المشكلة';
+
+  @override
+  String get dsDescribeHint => 'ما الذي حدث؟ وما الذي تطلبه؟';
+
+  @override
+  String get dsCategory => 'نوع المشكلة';
+
+  @override
+  String get dsAttach => 'أرفق صورة';
+
+  @override
+  String get dsOpenCta => 'افتح النزاع';
+
+  @override
+  String get dsOpened => 'فُتح النزاع — المبلغ محفوظ حتى يُحل';
+
+  @override
+  String get dsMessageHint => 'اكتب رسالتك…';
+
+  @override
+  String get dsEvidence => 'الصور والأدلة';
+
+  @override
+  String get dsConversation => 'المحادثة';
+
+  @override
+  String get dsResolved => 'قرار المنصة';
+
+  @override
+  String get dsCatScope => 'نطاق العمل';
+
+  @override
+  String get dsCatQuality => 'جودة التنفيذ';
+
+  @override
+  String get dsCatPrice => 'السعر';
+
+  @override
+  String get dsCatDelay => 'تأخير';
+
+  @override
+  String get dsCatDamage => 'ضرر بالسيارة';
+
+  @override
+  String get dsCatPartDefect => 'عيب في القطعة';
+
+  @override
+  String get dsCatNoShow => 'عدم حضور';
+
+  @override
+  String get dsStOpen => 'مفتوح';
+
+  @override
+  String get dsStUnderReview => 'قيد المراجعة';
+
+  @override
+  String get dsStAwaiting => 'بانتظار الأطراف';
+
+  @override
+  String get dsStEscalated => 'مصعّد';
+
+  @override
+  String get dsStResolved => 'صدر القرار';
+
+  @override
+  String get dsStClosed => 'مغلق';
 }

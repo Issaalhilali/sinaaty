@@ -15,7 +15,7 @@ import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../work-orde
 import { WoTransitionService } from '../../work-orders/application/wo-transition.service';
 import { canTransition } from '../../work-orders/domain/state-machine';
 import { PARTS_REPOSITORY, type PartsRepository } from '../../parts/domain/repositories';
-import { type Dispute, canTransitionDispute, decisionAmounts, DISPUTABLE_WO_STATUSES, OPEN_STATUSES } from '../domain/dispute';
+import { type Dispute, canTransitionDispute, decisionAmounts, DISPUTABLE_WO_STATUSES, isDisputeParty, OPEN_STATUSES } from '../domain/dispute';
 import { DISPUTE_REPOSITORY, type DisputeRepository } from '../domain/repositories';
 import type { AssignDto, MessageDto, OpenDisputeDto, ResolveDto, ReviewDto, StatusDto } from './dto/disputes.dto';
 
@@ -31,7 +31,7 @@ export class DisputesUseCases {
     @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(PARTS_REPOSITORY) private readonly parts: PartsRepository,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork, private readonly escrow: EscrowService, private readonly escrowUseCases: EscrowUseCases, private readonly woTransitions: WoTransitionService, private readonly audit: AuditLogWriter, private readonly outbox: OutboxWriter,
   ) {}
-  private isParty(d: Dispute, u: AuthUser) { return d.openedByUserId === u.id || d.respondentUserId === u.id || (!!d.claimantOrgId && !!membership(u, d.claimantOrgId)) || (!!d.respondentOrgId && !!membership(u, d.respondentOrgId)); }
+  private isParty(d: Dispute, u: AuthUser) { return isDisputeParty(d, u); }
   private mustRead(d: Dispute, u: AuthUser) { if (!this.isParty(d, u) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN'); }
   private staff(u: AuthUser) { if (!isPlatformStaff(u)) throw new AppError('FORBIDDEN'); }
 

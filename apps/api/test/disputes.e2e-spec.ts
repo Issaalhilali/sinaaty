@@ -10,7 +10,7 @@ describe('Disputes (e2e)', () => {
   let app: INestApplication; let prisma: PrismaService; let outbox: OutboxProcessor; const http = () => request(app.getHttpServer());
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` }); const suffix = String(Date.now()).slice(-7); const custPhone = `+96659${suffix}`;
-  let wsTok: string; let custTok: string; let adminTok: string; let orgId: string; let woId: string; let holdId: string; let disputeId: string; let invoiceId: string;
+  let wsTok: string; let custTok: string; let adminTok: string; let orgId: string; let woId: string; let holdId: string; let disputeId: string; let invoiceId: string; let evidenceMediaId: string;
   const imbalance = async () => (await prisma.$queryRaw<Array<{ b: string }>>`SELECT COALESCE(SUM(debit) - SUM(credit), 0)::text AS b FROM ledger_lines`)[0]!.b;
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
@@ -34,7 +34,8 @@ describe('Disputes (e2e)', () => {
   it('customer opens a dispute → escrow frozen, work order moves to disputed through its own state machine (history row)', async () => {
     expect(await imbalance()).toBe('0.00');
     const media = await http().post('/v1/media/presign').set(auth(custTok)).send({ kind: 'image', mime_type: 'image/jpeg', size_bytes: 900, sha256: 'd'.repeat(64), purpose: 'dispute' }).expect(200);
-    const d = await http().post('/v1/disputes').set(auth(custTok)).send({ work_order_id: woId, category: 'quality', description_ar: 'الأعطال ما زالت موجودة بعد الاستلام والصوت يتكرر', claimed_amount: '600', media_ids: [media.body.media_id] }).expect(201);
+    evidenceMediaId = media.body.media_id;
+    const d = await http().post('/v1/disputes').set(auth(custTok)).send({ work_order_id: woId, category: 'quality', description_ar: 'الأعطال ما زالت موجودة بعد الاستلام والصوت يتكرر', claimed_amount: '600', media_ids: [evidenceMediaId] }).expect(201);
     disputeId = d.body.id; expect(d.body.number).toMatch(/^DS-\d{4}-\d{6}$/); expect(d.body.escrow_frozen).toBe(true); expect(d.body.status).toBe('open');
     const hold = await prisma.escrowHold.findUnique({ where: { id: holdId } }); expect(hold!.status).toBe('frozen'); expect(hold!.disputeId).toBe(disputeId);
     const wo = await http().get(`/v1/work-orders/${woId}`).set(auth(wsTok)).expect(200); expect(wo.body.status).toBe('disputed');
@@ -42,6 +43,13 @@ describe('Disputes (e2e)', () => {
     // a second dispute on the same order is refused; a stranger cannot read this one
     await http().post('/v1/disputes').set(auth(wsTok)).send({ work_order_id: woId, category: 'price', description_ar: 'اعتراض مقابل على السعر المطلوب' }).expect(409);
     const stranger = await login(`+96653${suffix}`); await http().get(`/v1/disputes/${disputeId}`).set(auth(stranger)).expect(403);
+  });
+  it('evidence photos belong to the dispute parties: the respondent workshop sees them, a stranger does not', async () => {
+    // The workshop member did not upload the file and is not on the work-order media link — the
+    // dispute link alone is what grants access (P1 scope doc §3, backlog item 80).
+    const asWorkshop = await http().get(`/v1/media/${evidenceMediaId}/download`).set(auth(wsTok)).expect(200);
+    expect(asWorkshop.body.url).toContain('http'); expect(asWorkshop.body.expires_in).toBe(300);
+    await http().get(`/v1/media/${evidenceMediaId}/download`).set(auth(await login(`+96658${suffix}`))).expect(403);
   });
   it('frozen escrow is skipped by the auto-release job (money cannot leave during a dispute)', async () => {
     await prisma.escrowHold.update({ where: { id: holdId }, data: { autoReleaseAt: new Date(Date.now() - 3_600_000) } });

@@ -30,9 +30,75 @@ function scopeOf(rule: Flag['rule']): { label: string; tone: string } {
   return { label: 'مغلق', tone: 'pill-plain' };
 }
 
+const ORG_TYPE_AR: Record<string, string> = {
+  workshop: 'ورشة', factory: 'مصنع', service_center: 'مركز صيانة', body_shop: 'سمكرة ودهان',
+  parts_dealer: 'محل قطع', parts_distributor: 'موزّع قطع', parts_brand_agent: 'وكيل علامة',
+  scrapyard: 'تشليح', fleet_company: 'أسطول', logistics: 'نقل وسطحات', inspection_center: 'مركز فحص',
+};
+
+type ScopeMode = 'all' | 'zones' | 'org_types' | 'pct' | 'off';
+
+/** Gradual rollout is the pilot's actual operating mode; the quick button only flips all-or-nothing. */
+function ScopeDialog({ flag, zones, onConfirm, onClose }: { flag: Flag; zones: Zone[]; onConfirm: (rule: Flag['rule'], reason: string) => Promise<void>; onClose: () => void }) {
+  const r = flag.rule;
+  const [mode, setMode] = useState<ScopeMode>(r.enabled ? 'all' : r.zones?.length ? 'zones' : r.org_types?.length ? 'org_types' : r.pct ? 'pct' : 'off');
+  const [zoneSel, setZoneSel] = useState<string[]>(r.zones ?? []);
+  const [typeSel, setTypeSel] = useState<string[]>(r.org_types ?? []);
+  const [pct, setPct] = useState<number>(r.pct ?? 10);
+  const [reason, setReason] = useState(''); const [busy, setBusy] = useState(false); const [err, setErr] = useState<string | null>(null);
+  const toggle = (list: string[], set: (v: string[]) => void, v: string) => set(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const rule: Flag['rule'] =
+    mode === 'all' ? { enabled: true } : mode === 'off' ? { enabled: false }
+    : mode === 'zones' ? { zones: zoneSel } : mode === 'org_types' ? { org_types: typeSel } : { pct };
+  const incomplete = (mode === 'zones' && !zoneSel.length) || (mode === 'org_types' && !typeSel.length) || (mode === 'pct' && (pct < 1 || pct > 100));
+  const modes: Array<{ v: ScopeMode; label: string }> = [
+    { v: 'all', label: 'للجميع' }, { v: 'zones', label: 'مناطق محددة' }, { v: 'org_types', label: 'أنواع منشآت' }, { v: 'pct', label: 'نسبة تدريجية' }, { v: 'off', label: 'مغلق' },
+  ];
+  return <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4" onClick={onClose}><div className="card w-full max-w-md p-5" onClick={(e) => e.stopPropagation()}>
+    <h3 className="text-lg font-bold">نطاق «{FLAG_AR[flag.key] ?? flag.key}»</h3>
+    <p className="text-sm text-muted mt-1">لمن تُفتح هذه الخدمة؟ النطاق يُطبَّق في الـ API نفسه، لا في الواجهة فقط.</p>
+    <div className="mt-4 flex flex-wrap gap-2">
+      {modes.map((m) => (
+        <button key={m.v} className={mode === m.v ? 'btn text-xs' : 'btn-ghost text-xs'} onClick={() => setMode(m.v)}>{m.label}</button>
+      ))}
+    </div>
+    {mode === 'zones' && <div className="mt-3 space-y-1">
+      {zones.map((z) => (
+        <label key={z.code} className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={zoneSel.includes(z.code)} onChange={() => toggle(zoneSel, setZoneSel, z.code)} />
+          <span>{z.nameAr}</span><span className="text-xs text-muted num">{z.code}</span>
+        </label>
+      ))}
+    </div>}
+    {mode === 'org_types' && <div className="mt-3 grid grid-cols-2 gap-1">
+      {Object.entries(ORG_TYPE_AR).map(([v, label]) => (
+        <label key={v} className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={typeSel.includes(v)} onChange={() => toggle(typeSel, setTypeSel, v)} />
+          <span>{label}</span>
+        </label>
+      ))}
+    </div>}
+    {mode === 'pct' && <div className="mt-3 flex items-center gap-2 text-sm">
+      <input type="number" min={1} max={100} className="input w-24 num" value={pct} onChange={(e) => setPct(Number(e.target.value))} />
+      <span className="text-muted">٪ من المنشآت — التوزيع ثابت لكل منشأة، لا يتقلب بين الجلسات.</span>
+    </div>}
+    <label className="block text-xs font-bold text-muted mt-4 mb-1">السبب (يُسجَّل في سجل التدقيق)</label>
+    <textarea className="input h-24 py-2" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="اكتب سبباً واضحاً…" />
+    {err && <p className="text-sm text-bad mt-2">{err}</p>}
+    <div className="mt-4 flex gap-2 justify-end">
+      <button className="btn-ghost" onClick={onClose}>إلغاء</button>
+      <button className="btn" disabled={reason.trim().length < 3 || incomplete || busy}
+        onClick={async () => { setBusy(true); setErr(null); try { await onConfirm(rule, reason.trim()); onClose(); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); } }}>
+        {busy ? '…' : 'حفظ النطاق'}
+      </button>
+    </div>
+  </div></div>;
+}
+
 export default function PilotPage() {
   const qc = useQueryClient();
   const [toggling, setToggling] = useState<Flag | null>(null);
+  const [editing, setEditing] = useState<Flag | null>(null);
 
   const flags = useQuery({ queryKey: ['pilot', 'flags'], queryFn: () => api<Flag[]>('/admin/pilot/flags') });
   const zones = useQuery({ queryKey: ['pilot', 'zones'], queryFn: () => api<Zone[]>('/admin/pilot/zones') });
@@ -114,6 +180,7 @@ export default function PilotPage() {
                     <div className="text-xs text-muted num">{flag.key}</div>
                   </div>
                   <Pill label={scope.label} tone={scope.tone} />
+                  <button className="btn-ghost text-xs" onClick={() => setEditing(flag)}>تخصيص</button>
                   <button className="btn-ghost text-xs" onClick={() => setToggling(flag)}>{flag.rule.enabled ? 'إغلاق' : 'تفعيل للجميع'}</button>
                 </div>;
               })}
@@ -144,6 +211,15 @@ export default function PilotPage() {
           </div>
         )}
       </section>
+
+      {editing && (
+        <ScopeDialog
+          flag={editing}
+          zones={zones.data ?? []}
+          onClose={() => setEditing(null)}
+          onConfirm={async (rule, reason) => { await setFlag.mutateAsync({ key: editing.key, rule, reason }); }}
+        />
+      )}
 
       {toggling && (
         <ReasonDialog

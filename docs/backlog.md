@@ -38,7 +38,7 @@
 | `helm lint` / `helm template` the chart (helm not installed locally) | Step 17 | templates written against the k8s API spec | Step 24 |
 | App metrics beyond auto-instrumentation (outbox backlog, ledger imbalance, integration counters as OTEL metrics) | Step 17 | dashboard panels reference them; emit from the jobs | Step 24 |
 | Staging deploy workflow (helm upgrade on tag) | Step 17 | images job publishes to GHCR; deploy stays manual for the pilot | Step 25 |
-| Transport payment + ledger posting (customer pays the tow; margin split like escrow) | Step 19 | job stores price/margin and audits them; no payment flow yet | Step 23 |
+| ~~Transport payment + ledger posting~~ ✅ 2026-08-21 — tow invoice auto-issues on proven delivery and rides the existing payment line; release splits by the job's frozen margin into `platform_revenue:transport_margin` (+VAT); paid-after-proof releases in the same transaction (the receiver's OTP was the confirmation); e2e incl. imbalance 0.00 | Step 19 | mobile «ادفع» button lands with sinaaty-d0 (P1 doc §2) | done |
 | Tow rates in `platform_settings` instead of code defaults | Step 19 | margin bps is configurable; base/per-km are constants | Step 25 |
 | Driver app screens (offers, active job, tracking, proof capture) | Step 19 | API complete and tested | Step 22/23 |
 | Assign a specific provider org (dispatcher flow) instead of first-to-accept | Step 19 | first-to-accept fits the pilot | Step 26 |
@@ -75,9 +75,9 @@
 | Vision live adapter — needs a data-residency decision + ADR before any customer photo leaves | Step 28 | mock only; module refuses INTEGRATION_AI=live | before pilot |
 | Measure false-positive rate on real pilot photos before enabling ai_inspection widely | Step 28 | a wrong suggestion costs the workshop trust, so precision matters more than recall | Step 30 |
 | Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
-| Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) | Step 29 | API + notifications done | Step 30 |
+| Abandoned-vehicle screens (workshop: notice timeline + declare; customer: the warning) — **admin queue shipped** (`admin-web/src/app/abandoned`, commit e69aa0b); the two mobile screens remain | Step 29 | API + notifications done | Step 30 |
 | Storage rate per workshop in platform_settings / plan instead of per work order | Step 29 | work_orders.storage_fee_per_day is set per car today | Step 30 |
-| Dispute parties viewing evidence photos from the apps (staff-only today via back-office) | media download | access rule documented in download-media.use-case.ts; lands with the dispute screens | Step 30 |
+| ~~Dispute parties viewing evidence photos from the apps~~ ✅ 2026-08-21 — a `media_links` row of type `dispute` now grants download to the dispute's parties (`isDisputeParty` shared from the disputes domain); pinned by e2e (respondent 200, stranger 403) | media download | — | done |
 | Point INTEGRATION_STORAGE=live at the production KSA object store and set S3_* secrets (adapter proven vs AWS vectors + real MinIO round-trip) | storage | local MinIO: brew services start minio, endpoint http://localhost:9000 | deployment |
 | Meilisearch ranking tuning (a typo query can surface an extra hit above the intended one; findability is pinned by tests, ordering is not) | Step 30 | measure on real pilot queries before tuning rules | after pilot |
 | Index parts catalog in Meilisearch for part-name search (organizations only today) | Step 30 | fit-by-VIN covers the main path | after pilot |

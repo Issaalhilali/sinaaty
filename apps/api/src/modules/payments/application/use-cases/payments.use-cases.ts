@@ -12,6 +12,7 @@ import { isPlatformStaff } from '../../../identity/domain/auth-user';
 import { HASHER_PORT, type HasherPort } from '../../../identity/application/ports/hasher.port';
 import { OTP_REPOSITORY, type OtpRepository, USER_REPOSITORY, type UserRepository } from '../../../identity/domain/repositories';
 import { INVOICE_REPOSITORY, type InvoiceRepository } from '../../../invoicing/domain/repositories';
+import { TRANSPORT_REPOSITORY, type TransportRepository } from '../../../logistics/domain/repositories';
 import type { Invoice } from '../../../invoicing/domain/invoice';
 import { REALTIME_PUBLISHER, type RealtimePublisher } from '../../../work-orders/application/ports/realtime.port';
 import { ESCROW_REPOSITORY, type EscrowRepository, PAYMENT_REPOSITORY, type PaymentRepository, WEBHOOK_INBOX, type WebhookInbox } from '../../domain/repositories';
@@ -28,6 +29,7 @@ export class PaymentsUseCases {
     @Inject(ESCROW_REPOSITORY) private readonly holds: EscrowRepository,
     @Inject(INVOICE_REPOSITORY) private readonly invoices: InvoiceRepository,
     @Inject(WEBHOOK_INBOX) private readonly inbox: WebhookInbox,
+    @Inject(TRANSPORT_REPOSITORY) private readonly transport: TransportRepository,
     @Inject(PSP_PORT) private readonly psp: PspPort,
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
     @Inject(OTP_REPOSITORY) private readonly otps: OtpRepository,
@@ -74,13 +76,20 @@ export class PaymentsUseCases {
     const p = await this.payments.findByIntent(this.psp.provider, ev.intentId); if (!p) throw new AppError('NOT_FOUND', { messageEn: `payment for intent ${ev.intentId} not found` });
     if (p.status === 'captured') return; // idempotent at the payment level too
     if (Money.of(ev.amount).toString() !== Money.of(p.amount).toString()) throw new AppError('CONFLICT', { messageEn: 'webhook amount mismatch', details: { expected: p.amount, got: ev.amount } });
+    const inv = p.invoiceId ? await this.invoices.findById(p.invoiceId) : null;
+    const job = inv?.transportJobId ? await this.transport.findById(inv.transportJobId) : null;
     await this.uow.run(async (tx) => {
       await this.payments.update(p.id, { status: 'captured', pspChargeId: ev.chargeId, capturedAt: ev.occurredAt, pspPayload: ev.raw }, tx);
-      await this.escrow.hold(tx, { paymentId: p.id, orgId: p.payeeOrgId, amount: p.amount, workOrderId: p.workOrderId, partOrderId: p.partOrderId, providerRef: ev.chargeId });
+      const hold = await this.escrow.hold(tx, { paymentId: p.id, orgId: p.payeeOrgId, amount: p.amount, workOrderId: p.workOrderId, partOrderId: p.partOrderId, providerRef: ev.chargeId });
       if (p.invoiceId) await this.markInvoicePaid(tx, p.invoiceId, p.amount, p.id, p.method);
+      // Tow paid AFTER proven delivery: the receiver's OTP was the receipt confirmation, so the money
+      // releases in the same transaction — no window where the customer sees it "held" for no reason.
+      // Paid before proof, the normal auto-release clock governs.
+      if (job?.status === 'delivered' && job.proofOtpVerified) await this.escrow.release(tx, hold.id, 'customer_confirmed', null);
       await this.audit.write(tx, { action: 'payment.captured', entityType: 'payment', entityId: p.id, orgId: p.payeeOrgId, actorType: 'webhook', after: { amount: p.amount, method: p.method, chargeId: ev.chargeId } });
     });
     if (p.workOrderId) this.rt?.publish(`work-order:${p.workOrderId}`, 'payment', { work_order_id: p.workOrderId, payment_id: p.id, amount: p.amount, status: 'captured' });
+    if (inv?.transportJobId) this.rt?.publish(`transport:${inv.transportJobId}`, 'payment', { job_id: inv.transportJobId, payment_id: p.id, amount: p.amount, status: 'captured' });
   }
   private async onPaymentFailed(ev: PspWebhookEvent) {
     const p = await this.payments.findByIntent(this.psp.provider, ev.intentId); if (!p || p.status === 'captured') return;

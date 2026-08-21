@@ -8,6 +8,8 @@ import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../billing/presentation/providers.dart';
+import '../../disputes/presentation/open_dispute_sheet.dart';
+import '../../disputes/presentation/providers.dart' as disputes;
 import '../domain/work_order.dart';
 import 'providers.dart';
 /// Repair order for the customer: status + live timeline, items/total, photos, and ONE primary action
@@ -19,6 +21,10 @@ class WorkOrderScreen extends ConsumerWidget {
     ref.watch(workOrderLiveProvider(id)); final wo = ref.watch(workOrderProvider(id)); final tl = ref.watch(workOrderTimelineProvider(id)); final invoices = ref.watch(invoicesProvider);
     void refresh() { ref.invalidate(workOrderProvider(id)); ref.invalidate(workOrderTimelineProvider(id)); ref.invalidate(invoicesProvider); }
     final order = wo.value?.valueOrNull; final invoice = invoices.value?.valueOrNull?.where((i) => i.workOrderId == id && i.status != 'void').firstOrNull;
+    // Disputes ride behind their flag from day one (p1 scope §3): one entry in «المزيد», a status card once open.
+    final disputesOn = (ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible).enabled(Flags.disputes);
+    final dispute = !disputesOn ? null : (ref.watch(disputes.myDisputesProvider).value?.valueOrNull ?? const []).where((d) => d.workOrderId == id && d.live).firstOrNull;
+    final canDispute = disputesOn && dispute == null && order != null && const {'approved', 'awaiting_parts', 'in_progress', 'quality_check', 'ready', 'delivered'}.contains(order.status);
     Widget? primary;
     if (order != null) {
       if (order.awaitingApproval) { primary = PrimaryButton(label: l.approveNow, onPressed: () => context.push('/work-orders/$id/approve')); }
@@ -26,7 +32,13 @@ class WorkOrderScreen extends ConsumerWidget {
       else if (order.status == 'delivered' && invoice != null && invoice.isPaid) { primary = PrimaryButton(label: l.confirmReceipt, onPressed: () => _confirm(context, ref)); }
     }
     return AppScaffold(title: order?.number == null ? l.workOrder : l.workOrderNumber(order!.number), primaryAction: primary,
+      moreItems: canDispute ? [PopupMenuItem(value: 'dispute', child: Text(l.dsOpen))] : null,
+      onMore: (v) { if (v == 'dispute') openDisputeSheet(context, ref, workOrderId: id); },
       body: AsyncResultView<WorkOrder>(value: wo, onRetry: refresh, builder: (o) => RefreshIndicator(onRefresh: () async => refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
+        if (dispute != null) ...[
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.balance_outlined, title: l.dsActive, subtitle: l.dsMoneyHeld, trailing: StatusBadge(Labels.disputeStatus(l, dispute.status), tone: BadgeTone.warn), onTap: () => context.push('/disputes/${dispute.id}'))),
+          const SizedBox(height: SinaatySpace.lg),
+        ],
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
           const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),

@@ -4,6 +4,8 @@ import type { AuthUser } from '../../identity/domain/auth-user';
 import { isPlatformStaff } from '../../identity/domain/auth-user';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../work-orders/domain/repositories';
 import { isCustomer, isWorkshopMember } from '../../work-orders/domain/work-order';
+import { DISPUTE_REPOSITORY, type DisputeRepository } from '../../disputes/domain/repositories';
+import { isDisputeParty } from '../../disputes/domain/dispute';
 import { MEDIA_REPOSITORY, type MediaRepository } from '../domain/media';
 import { OBJECT_STORAGE_PORT, type ObjectStoragePort } from './storage.port';
 
@@ -16,13 +18,15 @@ const URL_TTL_SECONDS = 300;
  * read that work order (the workshop's staff and the customer it is about), never to whoever guesses the
  * id (docs/security/review-2026-08.md flagged exactly this before the endpoint existed). The uploader and
  * platform staff always may. Dispute evidence is read from the back-office, which is staff — party access
- * from the apps lands with the dispute screens (docs/backlog.md).
+ * platform staff always may. Dispute evidence belongs to the dispute's parties — either side, from the
+ * apps — exactly like the back-office (P1 scope doc §3).
  */
 @Injectable()
 export class DownloadMediaUseCase {
   constructor(
     @Inject(MEDIA_REPOSITORY) private readonly media: MediaRepository,
     @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository,
+    @Inject(DISPUTE_REPOSITORY) private readonly disputes: DisputeRepository,
     @Inject(OBJECT_STORAGE_PORT) private readonly storage: ObjectStoragePort,
   ) {}
 
@@ -38,6 +42,11 @@ export class DownloadMediaUseCase {
     if (isPlatformStaff(u) || (uploadedBy != null && uploadedBy === u.id)) return true;
     const viewer = { id: u.id, orgs: u.orgs, platformRole: u.platformRole };
     for (const link of await this.media.linksOf(mediaId)) {
+      if (link.entityType === 'dispute') {
+        const d = await this.disputes.findById(link.entityId);
+        if (d && isDisputeParty(d, viewer)) return true;
+        continue;
+      }
       const woId = await this.media.workOrderIdOf(link);
       if (!woId) continue;
       const wo = await this.workOrders.findById(woId);

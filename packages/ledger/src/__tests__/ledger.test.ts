@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Accounts, allocate, computeSplit, Decimal, disputeSplit, entry, escrowReleased, escrowRefunded, paymentCaptured, payoutSent, round2, totals, UnbalancedEntryError } from '..';
+import { Accounts, allocate, computeSplit, Decimal, disputeSplit, entry, escrowReleased, escrowRefunded, paymentCaptured, payoutSent, round2, totals, transportEscrowReleased, UnbalancedEntryError } from '..';
 
 const ORG = '86272482-86d0-43b3-b6b2-4a9191dd492d';
 
@@ -52,6 +52,18 @@ describe('postings', () => {
     expect(by[`org_available:${ORG}`]).toBe('1068.87');
     const t = totals(e.lines);
     expect(t.debit.eq(t.credit)).toBe(true);
+  });
+  it('transport release takes the job margin (not commission bps) + VAT on it, and stays balanced', () => {
+    // Quote 200.00 → margin 30.00 (15%); customer paid 230.00 (price + 15% VAT line).
+    const e = transportEscrowReleased({ escrowHoldId: 'h9', orgId: ORG, gross: '230.00', margin: '30.00', vatRatePct: 15 });
+    const by = Object.fromEntries(e.lines.map((l) => [l.account.code, l.credit.gt(0) ? l.credit.toFixed(2) : `-${l.debit.toFixed(2)}`]));
+    expect(by[`escrow_liability:${ORG}`]).toBe('-230.00');
+    expect(by['platform_revenue:transport_margin']).toBe('30.00');
+    expect(by['vat_payable']).toBe('4.50');
+    expect(by[`org_available:${ORG}`]).toBe('195.50');
+    const t = totals(e.lines);
+    expect(t.debit.eq(t.credit)).toBe(true);
+    expect(() => transportEscrowReleased({ escrowHoldId: 'h9', orgId: ORG, gross: '20.00', margin: '30.00', vatRatePct: 15 })).toThrow(RangeError);
   });
   it('computeSplit rejects fees exceeding gross', () => {
     expect(() => computeSplit('10.00', 500, 15, 20)).toThrow(RangeError);
