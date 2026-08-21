@@ -5,6 +5,7 @@ import { AppConfig } from '../../../config';
 import { AuditLogWriter } from '../../../common/audit';
 import { OutboxWriter } from '../../../common/outbox';
 import { Money } from '../../../common/domain/money';
+import { computeLine } from '../../../common/domain/vat';
 import { UNIT_OF_WORK, type UnitOfWork } from '../../../common/ports/unit-of-work.port';
 import type { AuthUser } from '../../identity/domain/auth-user';
 import { isPlatformStaff, membership } from '../../identity/domain/auth-user';
@@ -45,7 +46,11 @@ export class TransportUseCases {
   async quote(dto: QuoteDto) {
     const r = await this.maps.route(dto.pickup, dto.dropoff);
     const q = quotePrice(r.distanceKm, dto.type as TransportType, this.rates());
-    return { type: dto.type, distance_km: r.distanceKm.toFixed(2), eta_minutes: r.durationMinutes, price: q.price, platform_margin: q.margin, currency: 'SAR', source: r.source };
+    // The same arithmetic as the invoice line (quantity 1 × price, 15% VAT), so the number the
+    // customer sees before requesting is the number the invoice bills — to the halala. A consumer
+    // quote is shown VAT-inclusive (P1 scope arbitration).
+    const l = computeLine({ quantity: '1', unitPrice: Money.of(q.price), vatRatePct: 15 });
+    return { type: dto.type, distance_km: r.distanceKm.toFixed(2), eta_minutes: r.durationMinutes, price: q.price, vat: l.vat.toString(), total: l.net.plus(l.vat).toString(), platform_margin: q.margin, currency: 'SAR', source: r.source };
   }
   async create(u: AuthUser, dto: CreateJobDto) {
     if (dto.org_id && !membership(u, dto.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');

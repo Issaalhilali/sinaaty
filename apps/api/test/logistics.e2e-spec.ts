@@ -26,6 +26,9 @@ describe('Logistics — tow request (e2e)', () => {
     const q = await http().post('/v1/transport/quote').set(auth(custTok)).send({ type: 'flatbed_tow', pickup: PICKUP, dropoff: DROPOFF }).expect(200);
     expect(Number(q.body.distance_km)).toBeGreaterThan(15);         // haversine × road factor
     expect(Number(q.body.price)).toBeGreaterThan(120); expect(q.body.currency).toBe('SAR'); expect(q.body.eta_minutes).toBeGreaterThan(5);
+    // The quote is VAT-inclusive with the invoice line's own arithmetic: what you see is what you pay.
+    expect(Number(q.body.total)).toBeCloseTo(Number(q.body.price) + Number(q.body.vat), 2);
+    expect(Number(q.body.vat)).toBeCloseTo(Number(q.body.price) * 0.15, 1);
     const heavy = await http().post('/v1/transport/quote').set(auth(custTok)).send({ type: 'heavy_tow', pickup: PICKUP, dropoff: DROPOFF }).expect(200);
     expect(Number(heavy.body.price)).toBeGreaterThan(Number(q.body.price));
     const short = await http().post('/v1/transport/quote').set(auth(custTok)).send({ type: 'flatbed_tow', pickup: PICKUP, dropoff: { lat: PICKUP.lat + 0.001, lng: PICKUP.lng } }).expect(200);

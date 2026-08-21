@@ -47,11 +47,13 @@ class TransportJob {
   final String? notesAr;
   final DateTime createdAt;
   final TowDriver? driver;
+  /// Issued automatically on proven delivery (p1 scope §2); paying it releases the held amount.
+  final ({String id, String total, String status})? invoice;
   const TransportJob({
     required this.id, required this.number, required this.type, required this.status,
     this.vehicleId, this.workOrderId, this.pickup, this.pickupAddress, this.dropoff, this.dropoffAddress,
     this.distanceKm, required this.quotedPrice, this.finalPrice, this.etaMinutes, this.driversNearby = 0,
-    this.assignedAt, this.pickedUpAt, this.deliveredAt, this.notesAr, required this.createdAt, this.driver,
+    this.assignedAt, this.pickedUpAt, this.deliveredAt, this.notesAr, required this.createdAt, this.driver, this.invoice,
   });
 
   static const _live = ['requested', 'searching', 'assigned', 'en_route_pickup', 'picked_up', 'en_route_dropoff'];
@@ -60,6 +62,7 @@ class TransportJob {
   /// Cancelling stops being fair once the car is on the truck (the API enforces the same rule).
   bool get canCancel => ['requested', 'searching', 'assigned', 'en_route_pickup'].contains(status);
   String get price => finalPrice ?? quotedPrice;
+  bool get payable => invoice != null && invoice!.status != 'paid';
 }
 
 /// Ordered steps for the customer's timeline — one row per real milestone, nothing else.
