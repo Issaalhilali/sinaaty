@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -73,7 +74,10 @@ class RequestHubScreen extends ConsumerWidget {
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
     final requests = ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[];
     final tows = ref.watch(myTowJobsProvider).value?.valueOrNull ?? const <TransportJob>[];
-    final liveTow = tows.where((j) => j.isLive).firstOrNull;
+    // Flags hide entry points only (charter §5.0 #3); the server enforces regardless.
+    final flags = ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible;
+    final towOn = flags.enabled(Flags.tow); final partsOn = flags.enabled(Flags.partsMarketplace);
+    final liveTow = towOn ? tows.where((j) => j.isLive).firstOrNull : null;
 
     return RefreshIndicator(
       onRefresh: () async { ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider); },
@@ -99,10 +103,10 @@ class RequestHubScreen extends ConsumerWidget {
           Text(l.reqHubBody, style: t.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: SinaatySpace.lg),
         ],
-        _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => _requestPart(context, ref, vehicles)),
-        const SizedBox(height: SinaatySpace.md),
-        _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
-        if (requests.isNotEmpty) ...[
+        if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => _requestPart(context, ref, vehicles)),
+        if (partsOn && towOn) const SizedBox(height: SinaatySpace.md),
+        if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        if (partsOn && requests.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.reqMyRequests),
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
             for (final r in requests.take(5)) AppListRow(
@@ -113,7 +117,7 @@ class RequestHubScreen extends ConsumerWidget {
             ),
           ])),
         ],
-        if (tows.isNotEmpty) ...[
+        if (towOn && tows.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.reqMyTows),
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
             for (final j in tows.take(5)) AppListRow(

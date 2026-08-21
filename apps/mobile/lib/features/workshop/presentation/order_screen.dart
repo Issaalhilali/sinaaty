@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -53,7 +54,7 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
       };
     }
     return AppScaffold(title: o?.number ?? l.workOrder, primaryAction: primary,
-      moreItems: [if (o != null && o.status == 'inspecting') PopupMenuItem(value: 'item', child: Text(l.wsAddItem)), if (o != null && !const {'draft', 'closed', 'cancelled'}.contains(o.status)) PopupMenuItem(value: 'photo', child: Text(l.wsAddPhoto)), if (o != null) PopupMenuItem(value: 'accident', child: Text(l.accOpen))],
+      moreItems: [if (o != null && o.status == 'inspecting') PopupMenuItem(value: 'item', child: Text(l.wsAddItem)), if (o != null && !const {'draft', 'closed', 'cancelled'}.contains(o.status)) PopupMenuItem(value: 'photo', child: Text(l.wsAddPhoto)), if (o != null && (ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.accidentReports)) PopupMenuItem(value: 'accident', child: Text(l.accOpen))],
       onMore: (v) { if (v == 'photo') _addPhoto(); if (v == 'item') _addItemSheet(); if (v == 'accident') context.push('/ws/orders/${widget.id}/accident'); },
       body: AsyncResultView<WorkOrder>(value: wo, onRetry: _refresh, builder: (o) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 96), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

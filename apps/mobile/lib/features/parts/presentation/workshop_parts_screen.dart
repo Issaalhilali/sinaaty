@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -19,12 +20,14 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
   final _vin = TextEditingController(); AsyncValue<Result<FitResult>>? _fit; String? _lastVin;
   Future<void> _search() async { final vin = _vin.text.trim().toUpperCase(); if (vin.length != 17) return; setState(() { _fit = const AsyncValue.loading(); _lastVin = vin; }); final r = await ref.read(partsRepositoryProvider).fit(vin: vin, buyerOrgId: ref.read(currentOrgIdProvider)); if (mounted) setState(() => _fit = AsyncValue.data(r)); }
   Future<void> _buy(PartOffer o) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; var qty = 1; var terms = o.tradeAccountId != null ? 'deferred' : 'prepaid';
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; var qty = 1;
+    final tradeOn = (ref.read(featureFlagsProvider(ref.read(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.tradeAccounts);
+    var terms = tradeOn && o.tradeAccountId != null ? 'deferred' : 'prepaid';
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(o.titleAr, style: Theme.of(ctx).textTheme.titleLarge), Text(Fmt.meta([o.supplierNameAr, o.partNumber, Labels.condition(l, o.condition)]), style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md),
       Row(children: [Text(l.ptQty, style: Theme.of(ctx).textTheme.titleSmall), const Spacer(), IconButton(onPressed: qty > 1 ? () => setS(() => qty--) : null, icon: const Icon(Icons.remove_circle_outline)), Text('$qty', style: Theme.of(ctx).textTheme.titleLarge), IconButton(onPressed: qty < o.quantity ? () => setS(() => qty++) : null, icon: const Icon(Icons.add_circle_outline))]),
       const SizedBox(height: SinaatySpace.sm),
-      if (o.tradeAccountId != null) RadioGroup<String>(groupValue: terms, onChanged: (v) => setS(() => terms = v!), child: Column(children: [RadioListTile<String>(value: 'deferred', title: Text(l.ptTermsDeferred), contentPadding: EdgeInsets.zero), RadioListTile<String>(value: 'prepaid', title: Text(l.ptTermsPrepaid), contentPadding: EdgeInsets.zero)])) else Text(l.ptTermsPrepaid, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+      if (tradeOn && o.tradeAccountId != null) RadioGroup<String>(groupValue: terms, onChanged: (v) => setS(() => terms = v!), child: Column(children: [RadioListTile<String>(value: 'deferred', title: Text(l.ptTermsDeferred), contentPadding: EdgeInsets.zero), RadioListTile<String>(value: 'prepaid', title: Text(l.ptTermsPrepaid), contentPadding: EdgeInsets.zero)])) else Text(l.ptTermsPrepaid, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
       const SizedBox(height: SinaatySpace.lg),
       PrimaryButton(label: '${l.ptBuyNow} · ${Fmt.money(((double.tryParse((terms == 'deferred' ? o.tradePrice : o.price) ?? o.bestPrice ?? '0') ?? 0) * qty * 1.15).toStringAsFixed(2), locale: locale)}', icon: Icons.shopping_bag_outlined, onPressed: () => Navigator.pop(ctx, true)),
     ]))));
@@ -48,7 +51,8 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
   }
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final s = Theme.of(context).colorScheme;
-    final tas = ref.watch(buyerTradeAccountsProvider).value?.valueOrNull ?? const <TradeAccount>[]; final active = tas.where((a) => a.status == 'active').toList(); final reqs = ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[]; final orders = ref.watch(myPartOrdersProvider).value?.valueOrNull ?? const <PartOrder>[];
+    final tradeOn = (ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.tradeAccounts);
+    final tas = tradeOn ? (ref.watch(buyerTradeAccountsProvider).value?.valueOrNull ?? const <TradeAccount>[]) : const <TradeAccount>[]; final active = tas.where((a) => a.status == 'active').toList(); final reqs = ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[]; final orders = ref.watch(myPartOrdersProvider).value?.valueOrNull ?? const <PartOrder>[];
     return RefreshIndicator(onRefresh: () async { ref.invalidate(buyerTradeAccountsProvider); ref.invalidate(myPartRequestsProvider); ref.invalidate(myPartOrdersProvider); }, child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
       if (active.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.ptTradeAccount, style: t.titleLarge?.copyWith(color: Colors.white)), Text(active.map((a) => a.counterpartyAr ?? '').where((x) => x.isNotEmpty).join(' · '), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)), maxLines: 1, overflow: TextOverflow.ellipsis)])), SealPill(l.securedByNote, icon: Icons.verified_outlined)]), const SizedBox(height: SinaatySpace.md), Text(l.ptTradeAvailable, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))), MoneyText(Fmt.money(active.fold<double>(0, (a, x) => a + (double.tryParse(x.available) ?? 0)).toStringAsFixed(2), locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)), const SizedBox(height: SinaatySpace.sm), Text('${l.ptTradeOutstanding} ${Fmt.money(active.fold<double>(0, (a, x) => a + (double.tryParse(x.outstanding) ?? 0)).toStringAsFixed(2), locale: locale)} · ${l.ptTradeLimit} ${Fmt.money(active.fold<double>(0, (a, x) => a + (double.tryParse(x.creditLimit) ?? 0)).toStringAsFixed(2), locale: locale)}', style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85)))]))),
       SectionTitle(l.ptSearchByVin, trailing: TextButton.icon(onPressed: () => startQrInstall(context, ref), icon: const Icon(Icons.qr_code_scanner, size: 18), label: Text(l.ptScanQr))),

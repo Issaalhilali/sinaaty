@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -39,7 +40,7 @@ class WorkOrderScreen extends ConsumerWidget {
           const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()), KeyValueRow(l.vat, Fmt.money(o.vatAmount, locale: locale)), Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l.total, style: Theme.of(context).textTheme.titleMedium), MoneyText(Fmt.money(o.total, locale: locale))])),
         ])),
         if ((tl.value?.valueOrNull?.media.isNotEmpty ?? false) || (tl.value?.valueOrNull?.inspections.isNotEmpty ?? false)) ...[
-          if ((tl.value?.valueOrNull?.inspections ?? []).any((i) => i.type == 'check_in')) ...[
+          if ((ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible).enabled(Flags.aiInspection) && (tl.value?.valueOrNull?.inspections ?? []).any((i) => i.type == 'check_in')) ...[
             const SizedBox(height: SinaatySpace.lg),
             SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.compare_outlined, title: l.diffOpen, subtitle: l.diffSub, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/work-orders/$id/condition'))),
           ],
