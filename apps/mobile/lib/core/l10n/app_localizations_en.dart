@@ -1650,4 +1650,35 @@ class L10nEn extends L10n {
 
   @override
   String get accPriceEach => 'Price each item before adding';
+
+  @override
+  String get flStatements => 'Monthly statements';
+
+  @override
+  String get flStatementsBody =>
+      'A monthly summary of your fleet\'s invoices — accounting-ready.';
+
+  @override
+  String get flStatementsEmpty => 'No statements yet';
+
+  @override
+  String get flStatementsEmptyBody =>
+      'Generate this month\'s statement to get your fleet\'s invoices in one file.';
+
+  @override
+  String get flGenerateStatement => 'Generate this month';
+
+  @override
+  String get flStatementGenerated => 'Statement ready';
+
+  @override
+  String flInvoicesCount(int n) {
+    return '$n invoices';
+  }
+
+  @override
+  String get flCopyCsv => 'Copy CSV';
+
+  @override
+  String get flCsvCopied => 'Statement copied — paste it into your sheets';
 }

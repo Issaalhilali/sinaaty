@@ -17,3 +17,9 @@ final fleetPendingProvider = FutureProvider.autoDispose<Result<List<FleetPending
   if (org == null) return const Result.ok([]);
   return ref.watch(fleetRepositoryProvider).pending(org);
 });
+final fleetStatementsProvider = FutureProvider.autoDispose<Result<List<FleetStatement>>>((ref) async {
+  final org = ref.watch(currentOrgIdProvider);
+  if (org == null) return const Result.ok([]);
+  return ref.watch(fleetRepositoryProvider).statements(org);
+});
+final fleetStatementProvider = FutureProvider.autoDispose.family<Result<FleetStatement>, String>((ref, id) => ref.watch(fleetRepositoryProvider).statement(id));

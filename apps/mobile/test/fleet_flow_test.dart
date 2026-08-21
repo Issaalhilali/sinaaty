@@ -16,6 +16,7 @@ import 'package:sinaaty/features/auth/domain/auth_repository.dart';
 import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'package:sinaaty/features/fleet/domain/fleet.dart';
 import 'package:sinaaty/features/fleet/domain/fleet_repository.dart';
+import 'package:sinaaty/features/fleet/presentation/fleet_statements_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_today_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/providers.dart';
 
@@ -43,6 +44,16 @@ class FakeFleet implements FleetRepository {
     lastDecision = (id: workOrderId, decision: decision, note: noteAr);
     return const Result.ok(FleetDecision(decision: 'approved', approvals: 2, approvalsRequired: 2, readyToSign: true));
   }
+
+  String? generatedMonth; String? copiedCsvId;
+  final stmt = FleetStatement(id: 's1', periodStart: DateTime(2026, 7, 1), periodEnd: DateTime(2026, 7, 31), total: '12650.00', status: 'final', invoiceCount: 2, lines: [
+    FleetStatementLine(invoiceId: 'i1', number: 'INV-2026-000201', issueDate: DateTime(2026, 7, 5), workOrderNumber: 'WO-2026-004201', assetCode: 'TRK-001', total: '8280.00', status: 'paid'),
+    FleetStatementLine(invoiceId: 'i2', number: 'INV-2026-000202', issueDate: DateTime(2026, 7, 19), workOrderNumber: 'WO-2026-004202', assetCode: 'VAN-001', total: '4370.00', status: 'issued'),
+  ]);
+  @override Future<Result<List<FleetStatement>>> statements(String orgId) async => Result.ok([stmt]);
+  @override Future<Result<FleetStatement>> statement(String id) async => Result.ok(stmt);
+  @override Future<Result<FleetStatement>> generateStatement(String orgId, String month) async { generatedMonth = month; return Result.ok(stmt); }
+  @override Future<Result<String>> statementCsv(String id) async { copiedCsvId = id; return const Result.ok('رقم الفاتورة,التاريخ,المركبة,الإجمالي\nINV-2026-000201,2026-07-05,TRK-001,8280.00\n'); }
 }
 
 class FakeAuth implements AuthRepository {
@@ -112,5 +123,30 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('اكتمل الاعتماد — وقّع الآن')); await tester.pumpAndSettle();
     expect(find.text('sign:w3'), findsOneWidget);
+  });
+
+  testWidgets('monthly statements: list → month detail with its lines → CSV one copy away', (tester) async {
+    size(tester);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async => null);   // Clipboard.setData resolves in tests
+    final r = GoRouter(initialLocation: '/fleet/statements', routes: [
+      GoRoute(path: '/fleet/statements', builder: (_, _) => const FleetStatementsScreen()),
+      GoRoute(path: '/fleet/statements/:id', builder: (_, s) => FleetStatementScreen(id: s.pathParameters['id']!)),
+    ]);
+    await tester.pumpWidget(app(r)); await tester.pumpAndSettle();
+    expect(find.textContaining('يوليو'), findsOneWidget);                         // the month, named
+    expect(find.textContaining('12,650.00'), findsOneWidget);
+    expect(find.text('2 فاتورة'), findsOneWidget);
+    // Generation is one tap and idempotent on the API — it lands on the month it made.
+    await tester.tap(find.text('أنشئ كشف هذا الشهر')); await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 5)); await tester.pumpAndSettle();  // let the «جُهّز» snackbar expire so the copy toast isn't queued behind it
+    expect(fleet.generatedMonth, matches(RegExp(r'^\d{4}-\d{2}$')));
+    expect(find.text('TRK-001'), findsOneWidget);                                 // the fleet reads by asset code
+    expect(find.textContaining('INV-2026-000201'), findsOneWidget);
+    expect(find.text('مدفوعة'), findsOneWidget);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/fleet_statement_light.png'));
+    await tester.tap(find.byIcon(Icons.more_horiz)); await tester.pumpAndSettle();
+    await tester.tap(find.text('نسخ CSV')); await tester.pumpAndSettle();
+    expect(fleet.copiedCsvId, 's1');
+    expect(find.text('نُسخ الكشف — ألصقه في جداولك'), findsOneWidget);
   });
 }

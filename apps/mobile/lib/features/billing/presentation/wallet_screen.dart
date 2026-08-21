@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/config/app_config.dart';
+import '../../../core/di/core_providers.dart';
 import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
@@ -15,6 +17,7 @@ class WalletScreen extends ConsumerWidget {
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final inv = ref.watch(invoicesProvider); final notes = ref.watch(notesProvider);
     final warrantiesOn = (ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible).enabled(Flags.warrantyWallet);
+    final isFleet = ref.watch(appConfigProvider).flavor == AppFlavor.fleet;
     Future<void> refresh() async { ref.invalidate(invoicesProvider); ref.invalidate(notesProvider); }
     return AsyncResultView<List<Invoice>>(value: inv, onRetry: refresh, builder: (list) {
       final ns = notes.value?.valueOrNull ?? const <PromissoryNote>[]; final due = list.where((i) => i.payable).toList(); final rest = list.where((i) => !i.payable).toList();
@@ -28,6 +31,10 @@ class WalletScreen extends ConsumerWidget {
           const SizedBox(height: SinaatySpace.lg), SealButton(label: l.payNow, onPressed: () => context.push('/invoices/${due.first.id}')),
         ])), const SizedBox(height: SinaatySpace.md), SectionTitle(l.due), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final i in due) invRow(i)])), const SizedBox(height: SinaatySpace.lg)],
         if (ns.isNotEmpty) ...[SectionTitle(l.notes), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final n in ns) AppListRow(icon: Icons.verified_outlined, title: l.noteNumber(n.number), subtitle: n.dueDate != null && n.isOpen ? l.dueOn(Fmt.date(n.dueDate!, locale: locale)) : Labels.noteStatus(l, n.status), trailing: Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [Text(Fmt.money(n.isOpen ? n.outstanding : n.amount, locale: locale), style: const TextStyle(fontWeight: FontWeight.w600)), StatusBadge(n.overdue ? l.overdue : Labels.noteStatus(l, n.status), tone: n.overdue ? BadgeTone.bad : n.isOpen ? BadgeTone.brass : BadgeTone.seal)]), onTap: () => context.push('/notes/${n.id}'))])), const SizedBox(height: SinaatySpace.lg)],
+        if (isFleet) ...[
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.receipt_long_outlined, title: l.flStatements, subtitle: l.flStatementsBody, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/fleet/statements'))),
+          const SizedBox(height: SinaatySpace.lg),
+        ],
         if (warrantiesOn) ...[
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.verified_outlined, title: l.ptWarranties, subtitle: l.ptWarrantiesEmptyBody, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/warranties'))),
           const SizedBox(height: SinaatySpace.lg),

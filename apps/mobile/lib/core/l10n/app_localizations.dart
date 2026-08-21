@@ -3150,6 +3150,60 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'سعّر كل بند قبل الإضافة'**
   String get accPriceEach;
+
+  /// No description provided for @flStatements.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكشوف الشهرية'**
+  String get flStatements;
+
+  /// No description provided for @flStatementsBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملخص شهري لفواتير أسطولك — جاهز للمحاسبة.'**
+  String get flStatementsBody;
+
+  /// No description provided for @flStatementsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا كشوف بعد'**
+  String get flStatementsEmpty;
+
+  /// No description provided for @flStatementsEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ كشف الشهر لتحصل على ملخص فواتير أسطولك في ملف واحد.'**
+  String get flStatementsEmptyBody;
+
+  /// No description provided for @flGenerateStatement.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ كشف هذا الشهر'**
+  String get flGenerateStatement;
+
+  /// No description provided for @flStatementGenerated.
+  ///
+  /// In ar, this message translates to:
+  /// **'جُهّز كشف الشهر'**
+  String get flStatementGenerated;
+
+  /// No description provided for @flInvoicesCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} فاتورة'**
+  String flInvoicesCount(int n);
+
+  /// No description provided for @flCopyCsv.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخ CSV'**
+  String get flCopyCsv;
+
+  /// No description provided for @flCsvCopied.
+  ///
+  /// In ar, this message translates to:
+  /// **'نُسخ الكشف — ألصقه في جداولك'**
+  String get flCsvCopied;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

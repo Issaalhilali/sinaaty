@@ -22,6 +22,7 @@ import '../../features/parts/presentation/part_order_screen.dart';
 import '../../features/parts/presentation/request_screen.dart';
 import '../../features/parts/presentation/warranties_screen.dart';
 import '../../features/disputes/presentation/dispute_screen.dart';
+import '../../features/fleet/presentation/fleet_statements_screen.dart';
 import '../../features/transport/presentation/tow_job_screen.dart';
 import '../../features/transport/presentation/tow_request_screen.dart';
 import '../di/core_providers.dart';
@@ -50,6 +51,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
       GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
       GoRoute(path: '/disputes/:id', builder: (_, s) => DisputeScreen(id: s.pathParameters['id']!)),
+      GoRoute(path: '/fleet/statements', builder: (_, _) => const FleetStatementsScreen()),
+      GoRoute(path: '/fleet/statements/:id', builder: (_, s) => FleetStatementScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/tow/new', builder: (_, s) => TowRequestScreen(vehicleId: (s.extra as Map?)?['vehicle_id'] as String?, workOrderId: (s.extra as Map?)?['work_order_id'] as String?)),
       GoRoute(path: '/tow/:id', builder: (_, s) => TowJobScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)),

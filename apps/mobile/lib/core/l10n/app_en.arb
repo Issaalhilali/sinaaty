@@ -744,5 +744,15 @@
   "accAddItems": "Add to the work order",
   "accAddItemsHint": "Added as a new version that needs the customer's re-approval.",
   "accItemsAdded": "Items added — send for approval",
-  "accPriceEach": "Price each item before adding"
+  "accPriceEach": "Price each item before adding",
+  "flStatements": "Monthly statements",
+  "flStatementsBody": "A monthly summary of your fleet's invoices — accounting-ready.",
+  "flStatementsEmpty": "No statements yet",
+  "flStatementsEmptyBody": "Generate this month's statement to get your fleet's invoices in one file.",
+  "flGenerateStatement": "Generate this month",
+  "flStatementGenerated": "Statement ready",
+  "flInvoicesCount": "{n} invoices",
+  "@flInvoicesCount": {"placeholders": {"n": {"type": "int"}}},
+  "flCopyCsv": "Copy CSV",
+  "flCsvCopied": "Statement copied — paste it into your sheets"
 }

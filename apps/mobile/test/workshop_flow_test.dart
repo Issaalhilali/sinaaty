@@ -98,7 +98,7 @@ void main() {
     GoRoute(path: '/', builder: (_, _) => const Scaffold(body: TodayScreen())),
     GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
     GoRoute(path: '/ws/orders', builder: (_, _) => const Scaffold(body: Text('orders'))),
-    GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg))]),
+    GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg))]),
     GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}'))),
   ]);
   setUp(() async { be = FakeBackend(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });

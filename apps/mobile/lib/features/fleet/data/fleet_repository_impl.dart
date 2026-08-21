@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' show Options, ResponseType;
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_error_mapper.dart';
 import '../../../core/result/result.dart';
@@ -48,4 +49,22 @@ class FleetRepositoryImpl implements FleetRepository {
     final d = (await api.dio.post<Map<String, dynamic>>('/fleet/approvals/$workOrderId', data: {'decision': decision, 'note_ar': ?noteAr})).data!;
     return FleetDecision(decision: d['decision'] as String, approvals: (d['approvals'] as num).toInt(), approvalsRequired: (d['approvals_required'] as num).toInt(), readyToSign: d['ready_to_sign'] as bool? ?? false);
   });
+  @override Future<Result<List<FleetStatement>>> statements(String orgId) => _run(() async => (await api.dio.get<List<dynamic>>('/fleet/$orgId/statements')).data!.cast<Map<String, dynamic>>().map(statementFromJson).toList());
+  @override Future<Result<FleetStatement>> statement(String id) => _run(() async => statementFromJson((await api.dio.get<Map<String, dynamic>>('/fleet/statements/$id')).data!));
+  @override Future<Result<FleetStatement>> generateStatement(String orgId, String month) => _run(() async => statementFromJson((await api.dio.post<Map<String, dynamic>>('/fleet/$orgId/statements', data: {'month': month})).data!));
+  @override Future<Result<String>> statementCsv(String id) => _run(() async => (await api.dio.get<String>('/fleet/statements/$id/export.csv', options: Options(responseType: ResponseType.plain))).data!);
 }
+
+FleetStatement statementFromJson(Map<String, dynamic> j) => FleetStatement(
+  id: j['id'] as String,
+  periodStart: DateTime.tryParse((j['periodStart'] ?? '') as String) ?? DateTime.now(),
+  periodEnd: DateTime.tryParse((j['periodEnd'] ?? '') as String) ?? DateTime.now(),
+  total: _s(j['total']), status: (j['status'] ?? '') as String,
+  invoiceCount: ((j['invoiceIds'] as List?) ?? []).length,
+  lines: ((j['lines'] as List?) ?? []).cast<Map<String, dynamic>>().map((r) => FleetStatementLine(
+    invoiceId: r['invoiceId'] as String, number: (r['number'] ?? '') as String,
+    issueDate: DateTime.tryParse((r['issueDate'] ?? '') as String) ?? DateTime.now(),
+    workOrderNumber: r['workOrderNumber'] as String?, plate: r['plate'] as String?, assetCode: r['assetCode'] as String?,
+    total: _s(r['total']), status: (r['status'] ?? '') as String,
+  )).toList(),
+);

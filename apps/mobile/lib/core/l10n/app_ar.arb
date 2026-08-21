@@ -744,5 +744,15 @@
   "accAddItems": "أضفها لأمر العمل",
   "accAddItemsHint": "تُضاف كنسخة جديدة تحتاج إعادة اعتماد العميل.",
   "accItemsAdded": "أُضيفت البنود — أرسلها للاعتماد",
-  "accPriceEach": "سعّر كل بند قبل الإضافة"
+  "accPriceEach": "سعّر كل بند قبل الإضافة",
+  "flStatements": "الكشوف الشهرية",
+  "flStatementsBody": "ملخص شهري لفواتير أسطولك — جاهز للمحاسبة.",
+  "flStatementsEmpty": "لا كشوف بعد",
+  "flStatementsEmptyBody": "أنشئ كشف الشهر لتحصل على ملخص فواتير أسطولك في ملف واحد.",
+  "flGenerateStatement": "أنشئ كشف هذا الشهر",
+  "flStatementGenerated": "جُهّز كشف الشهر",
+  "flInvoicesCount": "{n} فاتورة",
+  "@flInvoicesCount": {"placeholders": {"n": {"type": "int"}}},
+  "flCopyCsv": "نسخ CSV",
+  "flCsvCopied": "نُسخ الكشف — ألصقه في جداولك"
 }

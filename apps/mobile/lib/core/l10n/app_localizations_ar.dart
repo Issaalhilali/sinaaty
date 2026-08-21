@@ -1636,4 +1636,34 @@ class L10nAr extends L10n {
 
   @override
   String get accPriceEach => 'سعّر كل بند قبل الإضافة';
+
+  @override
+  String get flStatements => 'الكشوف الشهرية';
+
+  @override
+  String get flStatementsBody => 'ملخص شهري لفواتير أسطولك — جاهز للمحاسبة.';
+
+  @override
+  String get flStatementsEmpty => 'لا كشوف بعد';
+
+  @override
+  String get flStatementsEmptyBody =>
+      'أنشئ كشف الشهر لتحصل على ملخص فواتير أسطولك في ملف واحد.';
+
+  @override
+  String get flGenerateStatement => 'أنشئ كشف هذا الشهر';
+
+  @override
+  String get flStatementGenerated => 'جُهّز كشف الشهر';
+
+  @override
+  String flInvoicesCount(int n) {
+    return '$n فاتورة';
+  }
+
+  @override
+  String get flCopyCsv => 'نسخ CSV';
+
+  @override
+  String get flCsvCopied => 'نُسخ الكشف — ألصقه في جداولك';
 }

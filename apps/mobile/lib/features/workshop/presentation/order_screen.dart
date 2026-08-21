@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../core/flags/feature_flags.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
@@ -14,9 +17,10 @@ import '../domain/workshop.dart';
 import 'providers.dart';
 /// Workshop view of an order: hero (status + total), one primary action for the current step, items, timeline, photos.
 /// Status updates and photo attachments go through SyncController (queued when offline).
-class WorkshopOrderScreen extends ConsumerStatefulWidget { final String id; const WorkshopOrderScreen({super.key, required this.id}); @override ConsumerState<WorkshopOrderScreen> createState() => _WorkshopOrderScreenState(); }
+class WorkshopOrderScreen extends ConsumerStatefulWidget { final String id; final Future<Uint8List?> Function()? pickImage; const WorkshopOrderScreen({super.key, required this.id, this.pickImage}); @override ConsumerState<WorkshopOrderScreen> createState() => _WorkshopOrderScreenState(); }
 class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
   bool _busy = false;
+  Future<Uint8List?> _capture() async { if (widget.pickImage != null) return widget.pickImage!(); final x = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 80, maxWidth: 1600); return x?.readAsBytes(); }
   void _refresh() { ref.invalidate(workOrderProvider(widget.id)); ref.invalidate(workOrderTimelineProvider(widget.id)); ref.invalidate(orgOrdersProvider); ref.invalidate(invoicesProvider); }
   void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
   Future<void> _transition(String to) async {
@@ -77,9 +81,10 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
   Future<void> _issueInvoice() async { setState(() => _busy = true); final r = await ref.read(workshopRepositoryProvider).issueInvoice(widget.id); if (!mounted) return; setState(() => _busy = false); r.when(ok: (id) { _refresh(); context.push('/invoices/$id'); }, err: (f) => _toast(f.message(Localizations.localeOf(context).languageCode))); }
   Future<void> _addPhoto() async {
     final l = L10n.of(context); final repo = ref.read(workshopRepositoryProvider);
-    // Camera capture lives in the inspection flow; here we presign a progress photo (bytes from camera on device; test path uses a stub).
+    // A real photo from the camera (backlog 22) — same injectable capture the inspection flow uses.
+    final bytes = await _capture(); if (bytes == null || !mounted) return;
     setState(() => _busy = true);
-    final bytes = List<int>.filled(1024, 0); final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: 'a' * 64, purpose: 'work_order');
+    final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: crypto.sha256.convert(bytes).toString(), purpose: 'work_order');
     if (!mounted) return;
     await p.when(ok: (pre) async { await repo.upload(pre, bytes, 'image/jpeg'); final r = await ref.read(syncControllerProvider.notifier).run('attach_media', {'woId': widget.id, 'mediaIds': [pre.mediaId], 'label': 'progress'}); if (!mounted) return; if (r.queued) { _toast(l.wsOffline); } else if (r.failure == null) { _toast(l.wsPhotoAdded); _refresh(); } }, err: (f) async => _toast(f.message(Localizations.localeOf(context).languageCode)));
     if (mounted) setState(() => _busy = false);

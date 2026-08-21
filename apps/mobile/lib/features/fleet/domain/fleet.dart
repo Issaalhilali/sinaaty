@@ -36,3 +36,8 @@ class FleetPending {
 }
 
 class FleetDecision { final String decision; final int approvals; final int approvalsRequired; final bool readyToSign; const FleetDecision({required this.decision, required this.approvals, required this.approvalsRequired, required this.readyToSign}); }
+
+/// One invoice line inside a monthly statement.
+class FleetStatementLine { final String invoiceId; final String number; final DateTime issueDate; final String? workOrderNumber; final String? plate; final String? assetCode; final String total; final String status; const FleetStatementLine({required this.invoiceId, required this.number, required this.issueDate, this.workOrderNumber, this.plate, this.assetCode, required this.total, required this.status}); }
+/// The month's invoices as one accounting-ready document (Step 26; idempotent per period on the API).
+class FleetStatement { final String id; final DateTime periodStart; final DateTime periodEnd; final String total; final String status; final int invoiceCount; final List<FleetStatementLine> lines; const FleetStatement({required this.id, required this.periodStart, required this.periodEnd, required this.total, required this.status, required this.invoiceCount, this.lines = const []}); }
