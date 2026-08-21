@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { AppConfig } from '../../../config';
+import { MetricsService } from '../../../common/metrics/metrics.service';
 import { PrismaService } from '../../../prisma';
 import { OutboxHandlerRegistry, type OutboxEnvelope } from './outbox-handler.registry';
 
@@ -14,7 +15,7 @@ const LEASE_SECONDS = 120; const MAX_ATTEMPTS = 6; const backoffMs = (attempt: n
 @Injectable()
 export class OutboxProcessor {
   private readonly log = new Logger(OutboxProcessor.name); private running = false;
-  constructor(private readonly prisma: PrismaService, private readonly registry: OutboxHandlerRegistry, private readonly config: AppConfig) {}
+  constructor(private readonly prisma: PrismaService, private readonly registry: OutboxHandlerRegistry, private readonly config: AppConfig, private readonly metrics: MetricsService) {}
   @Interval(10_000) async tick() { if (!this.config.get('JOBS_ENABLED')) return; await this.drain(50); }   // safe on every replica: rows are claimed with SKIP LOCKED
 
   async drain(limit = 50): Promise<{ processed: number; succeeded: number; failed: number; deadLettered: number }> {
@@ -45,11 +46,12 @@ export class OutboxProcessor {
           try {
             await h.fn(ev);
             await this.prisma.integrationRequest.upsert({ where: { idempotencyKey: key }, update: { status: 'succeeded', attempts, latencyMs: Date.now() - started, errorMessage: null, nextAttemptAt: null }, create: { provider: 'nafez', operation: h.name.slice(0, 60), idempotencyKey: key, refTable: 'outbox', status: 'succeeded', attempts, latencyMs: Date.now() - started, requestPayload: { event_type: ev.eventType, aggregate_id: ev.aggregateId } } });
-            stats.succeeded++;
+            stats.succeeded++; this.metrics.recordIntegration('nafez', h.name, 'succeeded');
           } catch (e) {
             const dead = attempts >= MAX_ATTEMPTS; allDone = allDone && dead; if (!dead) allDone = false;
             const msg = (e as Error).message?.slice(0, 500) ?? 'error';
             await this.prisma.integrationRequest.upsert({ where: { idempotencyKey: key }, update: { status: dead ? 'dead_letter' : 'failed', attempts, errorMessage: msg, nextAttemptAt: dead ? null : new Date(Date.now() + backoffMs(attempts)) }, create: { provider: 'nafez', operation: h.name.slice(0, 60), idempotencyKey: key, refTable: 'outbox', status: dead ? 'dead_letter' : 'failed', attempts, errorMessage: msg, nextAttemptAt: dead ? null : new Date(Date.now() + backoffMs(attempts)), requestPayload: { event_type: ev.eventType, aggregate_id: ev.aggregateId } } });
+            this.metrics.recordIntegration('nafez', h.name, dead ? 'dead_letter' : 'failed');
             if (dead) { stats.deadLettered++; this.log.error(`outbox ${row.id} ${ev.eventType} → ${h.name} dead-lettered: ${msg}`); } else { stats.failed++; this.log.warn(`outbox ${row.id} ${ev.eventType} → ${h.name} failed (attempt ${attempts}): ${msg}`); }
           }
         }

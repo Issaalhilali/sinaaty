@@ -28,8 +28,8 @@ describe('Multi-replica safety (e2e)', () => {
     const ids = Array.from({ length: 6 }, (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`);
     await uow.run(async (tx) => { for (const id of ids) await outbox.publish(tx, { eventType, aggregateType: 'probe', aggregateId: id, payload: {} }); });
     // Two independent dispatcher instances, exactly like two pods draining at the same moment.
-    const a = new OutboxProcessor(prisma, registry, app.get(OutboxProcessor)['config']);
-    const b = new OutboxProcessor(prisma, registry, app.get(OutboxProcessor)['config']);
+    const a = new OutboxProcessor(prisma, registry, app.get(OutboxProcessor)['config'], app.get(OutboxProcessor)['metrics']);
+    const b = new OutboxProcessor(prisma, registry, app.get(OutboxProcessor)['config'], app.get(OutboxProcessor)['metrics']);
     const [ra, rb] = await Promise.all([a.drain(50), b.drain(50)]);
     expect(calls).toBe(ids.length);                                  // each event handled exactly once
     expect(new Set(seen).size).toBe(ids.length);

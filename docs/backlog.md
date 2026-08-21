@@ -36,7 +36,7 @@
 | Invite flow for platform staff (email/SMS invite instead of the grant:role CLI) | Step 15 | CLI + in-dashboard role change cover the pilot | Step 24 |
 | Build/push the container images (needs a reachable registry) | Step 17 | Docker Hub unreachable from the dev machine; CI builds them | first CI run on main |
 | `helm lint` / `helm template` the chart (helm not installed locally) | Step 17 | templates written against the k8s API spec | Step 24 |
-| App metrics beyond auto-instrumentation (outbox backlog, ledger imbalance, integration counters as OTEL metrics) | Step 17 | dashboard panels reference them; emit from the jobs | Step 24 |
+| ~~App metrics beyond auto-instrumentation~~ ✅ 2026-08-21 — `MetricsService` (CommonModule) emits the exact names the Grafana panels query: `sinaaty_outbox_pending`, `sinaaty_ledger_imbalance`, `sinaaty_integration_requests_total{provider,status}` + bonus gauges `sinaaty_outbox_stalled`, `sinaaty_integration_dead_letters`; one batched SQL per 30s export, no-op when OTEL is off; e2e proves the values move under a real dispatch (in-memory OTel reader) | Step 17 | — | done |
 | Staging deploy workflow (helm upgrade on tag) | Step 17 | images job publishes to GHCR; deploy stays manual for the pilot | Step 25 |
 | ~~Transport payment + ledger posting~~ ✅ 2026-08-21 — tow invoice auto-issues on proven delivery and rides the existing payment line; release splits by the job's frozen margin into `platform_revenue:transport_margin` (+VAT); paid-after-proof releases in the same transaction (the receiver's OTP was the confirmation); e2e incl. imbalance 0.00 | Step 19 | mobile «ادفع» button lands with sinaaty-d0 (P1 doc §2) | done |
 | Tow rates in `platform_settings` instead of code defaults | Step 19 | margin bps is configurable; base/per-km are constants | Step 25 |
@@ -46,7 +46,7 @@
 | Map ZATCA business-rule errors (BR-KSA-*) to Arabic messages in the admin monitor | Step 20 | stored per submission already | Step 24 |
 | Move archived `zatca_xml` to cold object storage after N months | Step 20 | kept in the database for the pilot (6-year retention) | Step 30 |
 | ~~Credit/debit notes: BillingReference must carry the original invoice number~~ ✅ 2026-08-21 — parent number threaded through both the Phase-2 signing path and the Phase-1 XML endpoint; pinned by e2e | Step 20 | — | done |
-| Outbox metrics as OTEL gauges (backlog depth, claimed-but-stalled, dead-letter count) | Security/concurrency batch | admin monitor shows them; alerting needs metrics | Step 24 |
+| ~~Outbox metrics as OTEL gauges~~ ✅ 2026-08-21 — backlog depth, claimed-but-stalled and dead-letter count all observed by `MetricsService` (same batch callback); alert rules can now bite | Security/concurrency batch | — | done |
 | `job_locks` rows for one-shot jobs are never garbage-collected | Security/concurrency batch | a handful of fixed names, rows are reused in place | — |
 | Rotate the production secrets through KMS instead of env vars | Security/concurrency batch | boot now refuses dev defaults in prod; rotation is still manual | Step 24 |
 | Live منجز/تقدير adapter (provider + API unconfirmed) | Step 21 | port + mock only; module refuses INTEGRATION_ACCIDENTS=live | after the agreement is signed |
