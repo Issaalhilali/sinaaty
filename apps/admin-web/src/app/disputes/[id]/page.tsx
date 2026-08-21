@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Shell } from '@/components/shell';
-import { ErrorBox, Eyebrow, Loading, Pill, ReasonDialog } from '@/components/ui';
+import { ErrorBox, Eyebrow, Loading, MediaThumb, Pill, ReasonDialog } from '@/components/ui';
 import { api, fmtDate, fmtMoney } from '@/lib/api';
 import { DISPUTE_CATEGORY, DISPUTE_STATUS, ESCROW, RESOLUTION, tone } from '@/lib/labels';
 type Msg = { id: string; authorUserId: string; authorNameAr: string | null; isInternal: boolean; bodyAr: string; createdAt: string };
@@ -23,7 +23,8 @@ export default function DisputeRoom() {
     {d && <div className="grid grid-cols-[1fr_340px] gap-4">
       <div className="space-y-4">
         <div className="card p-5"><div className="flex items-start justify-between gap-3"><div><div className="text-xs text-muted">شكوى مقدّم الطلب</div><p className="mt-1">{d.descriptionAr}</p></div><Pill label={DISPUTE_STATUS[d.status] ?? d.status} tone={tone(d.status)} /></div>
-          <div className="flex gap-4 mt-3 text-sm text-muted"><span>المطالبة: <b className="num text-ink">{d.claimedAmount ? fmtMoney(d.claimedAmount) : '—'}</b></span><span>الأدلة: <b className="num text-ink">{d.media.length}</b></span>{d.workOrderId && <span className="num">WO {d.workOrderId.slice(0, 8)}</span>}{d.partOrderId && <span className="num">PO {d.partOrderId.slice(0, 8)}</span>}</div></div>
+          <div className="flex gap-4 mt-3 text-sm text-muted"><span>المطالبة: <b className="num text-ink">{d.claimedAmount ? fmtMoney(d.claimedAmount) : '—'}</b></span><span>الأدلة: <b className="num text-ink">{d.media.length}</b></span>{d.workOrderId && <span className="num">WO {d.workOrderId.slice(0, 8)}</span>}{d.partOrderId && <span className="num">PO {d.partOrderId.slice(0, 8)}</span>}</div>
+          {d.media.length > 0 && <div className="flex flex-wrap gap-2 mt-3">{d.media.map((m) => <MediaThumb key={m.mediaId} id={m.mediaId} label={m.label} />)}</div>}</div>
         <div className="card p-5"><Eyebrow right={`${d.messages.length} رسالة`}>المحادثة</Eyebrow>
           <div className="space-y-2 max-h-[380px] overflow-auto">{d.messages.map((m) => <div key={m.id} className={`rounded-xl p-3 text-sm ${m.isInternal ? 'bg-brass-soft border border-brass/30' : 'bg-ground'}`}><div className="flex justify-between text-xs text-muted mb-1"><span className="font-bold text-ink">{m.authorNameAr ?? 'مستخدم'}{m.isInternal ? ' · ملاحظة داخلية' : ''}</span><span className="num">{fmtDate(m.createdAt)}</span></div>{m.bodyAr}</div>)}{d.messages.length === 0 && <p className="text-sm text-muted">لا رسائل بعد</p>}</div>
           <div className="mt-3"><textarea className="input h-20 py-2" placeholder="اكتب رداً…" value={body} onChange={(e) => setBody(e.target.value)} />
@@ -32,6 +33,7 @@ export default function DisputeRoom() {
       <div className="space-y-3">
         <div className="seal-card"><div className="text-sm opacity-80">المبلغ محل النزاع</div><div className="num text-3xl font-bold mt-1">{d.escrow ? fmtMoney(d.escrow.amount) : '—'}</div>
           {d.escrow && <div className="text-xs opacity-85 mt-1">الحالة: {ESCROW[d.escrow.status] ?? d.escrow.status} · مسترد {fmtMoney(d.escrow.refunded)} · محرَّر {fmtMoney(d.escrow.released)}</div>}
+          {d.escrow?.status === 'frozen' && d.resolution && ['replace_part', 'no_action'].includes(d.resolution) && <div className="mt-2"><Pill label="بانتظار قرار لاحق — المبلغ ما زال مجمّداً" tone="pill-warn" /></div>}
           {!d.escrow && <div className="text-xs opacity-85 mt-1">لا يوجد مبلغ محفوظ — القرار بلا حركة مالية</div>}</div>
         {d.status === 'resolved' || d.status === 'closed' ? <div className="card p-4"><Eyebrow>القرار</Eyebrow><div className="font-bold">{RESOLUTION[d.resolution ?? ''] ?? d.resolution}</div>{d.resolutionAmountToCustomer && <div className="num text-sm mt-1">للعميل: {fmtMoney(d.resolutionAmountToCustomer)}</div>}<p className="text-sm text-muted mt-2">{d.resolutionNoteAr}</p>
           {d.status === 'resolved' && <button className="btn-ghost w-full mt-3" onClick={() => setStatusDlg('closed')}>إغلاق النزاع</button>}</div>

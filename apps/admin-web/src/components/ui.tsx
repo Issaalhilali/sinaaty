@@ -1,5 +1,20 @@
 'use client';
 import { type ReactNode, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+
+/** Thumbnail over `GET /media/:id/download` — the short-lived URL grants access, never the raw id. */
+export function MediaThumb({ id, label, size = 72 }: { id: string; label?: string | null; size?: number }) {
+  const q = useQuery({ queryKey: ['media-url', id], queryFn: () => api<{ url: string; mime_type: string }>(`/media/${id}/download`), staleTime: 240_000 });
+  if (q.isLoading) return <div className="rounded-lg bg-line animate-pulse" style={{ width: size, height: size }} />;
+  if (!q.data) return <div className="rounded-lg border border-line grid place-items-center text-[11px] text-muted" style={{ width: size, height: size }}>تعذّر</div>;
+  const isImage = q.data.mime_type?.startsWith('image/');
+  return <a href={q.data.url} target="_blank" rel="noreferrer" title={label ?? undefined} className="block shrink-0">
+    {isImage
+      ? <img src={q.data.url} alt={label ?? 'مرفق'} className="rounded-lg object-cover border border-line" style={{ width: size, height: size }} />
+      : <div className="rounded-lg border border-line grid place-items-center text-[11px] text-muted" style={{ width: size, height: size }}>ملف</div>}
+  </a>;
+}
 export function Pill({ label, tone = 'pill-plain' }: { label: string; tone?: string }) { return <span className={`pill ${tone}`}><i className="h-1.5 w-1.5 rounded-full bg-current" />{label}</span>; }
 export function Kpi({ value, label, sub, tone }: { value: ReactNode; label: string; sub?: string; tone?: 'good' | 'warn' }) { return <div className="card p-4"><div className="num text-2xl font-bold">{value}</div><div className="text-xs text-muted mt-0.5">{label}</div>{sub && <div className={`text-[11.5px] font-bold mt-1 ${tone === 'warn' ? 'text-warn' : 'text-seal'}`}>{sub}</div>}</div>; }
 export function Eyebrow({ children, right }: { children: ReactNode; right?: ReactNode }) { return <div className="eyebrow"><span>{children}</span>{right && <span className="ms-auto text-seal font-semibold">{right}</span>}</div>; }
