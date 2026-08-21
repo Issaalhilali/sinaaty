@@ -40,9 +40,11 @@ export class OrganizationsUseCases {
     try {
       const hits = await this.searchPort.searchOrgs({ text: q.q.trim(), type: q.type, city: q.city, limit: q.limit ?? 20 });
       if (!hits.length) return sql();
-      const rows = await this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, limit: (q.limit ?? 20) * 2 });
+      // Hydrate BY ID — intersecting with a windowed listing silently dropped hits once active orgs
+      // outgrew the window (a search that "finds" a workshop the response then omits).
+      const rows = await this.orgs.search({ ids: hits.map((h) => h.id), type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, limit: hits.length });
       const rank = new Map(hits.map((h, i) => [h.id, i]));
-      const ranked = rows.filter((r) => rank.has(r.id)).sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+      const ranked = rows.sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
       return ranked.length ? ranked.slice(0, q.limit ?? 20) : sql();
     } catch {
       return sql();

@@ -14,7 +14,7 @@ export interface OrganizationRepository {
   update(id: string, patch: Partial<Pick<Organization, 'legalNameAr' | 'legalNameEn' | 'tradeNameAr' | 'phone' | 'email' | 'descriptionAr' | 'vatNumber' | 'vatRegistered'>>): Promise<Organization>;
   setStatus(id: string, status: OrgStatus, extra?: { verifiedAt?: Date | null }, tx?: TxHandle): Promise<Organization>;
   setCommission(id: string, bps: number): Promise<void>;
-  search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; limit: number }): Promise<OrgSearchHit[]>;
+  search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; limit: number }): Promise<OrgSearchHit[]>;
   listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }): Promise<Organization[]>;
   // members
   listMembers(orgId: string): Promise<OrgMember[]>;

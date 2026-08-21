@@ -21,7 +21,7 @@ export class SearchSyncService implements OnModuleInit {
   async onModuleInit() {
     await this.reindexAll().catch((e: unknown) => this.log.warn(`boot reindex skipped: ${String(e)}`));
     this.registry?.on('OrganizationStatusChanged', 'search.org-status', async (ev) => {
-      const to = String(ev.payload['to'] ?? '');
+      const to = typeof ev.payload['to'] === 'string' ? ev.payload['to'] : '';
       if (to === 'active') await this.indexOne(ev.aggregateId);
       else await this.search.removeOrg(ev.aggregateId);
     });

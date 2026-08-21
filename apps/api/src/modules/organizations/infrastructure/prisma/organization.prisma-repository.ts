@@ -30,7 +30,7 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
   async setStatus(id: string, status: OrgStatus, extra?: { verifiedAt?: Date | null }, tx?: TxHandle) { const db = tx ? asTx(tx) : this.prisma; const r = await db.organization.update({ where: { id }, data: { status, verifiedAt: extra?.verifiedAt }, select: orgSelect }); return toOrg(r); }
   async setCommission(id: string, bps: number) { await this.prisma.organization.update({ where: { id }, data: { commissionRateBps: bps } }); }
 
-  async search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; limit: number }): Promise<OrgSearchHit[]> {
+  async search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; limit: number }): Promise<OrgSearchHit[]> {
     const hasGeo = q.lat !== undefined && q.lng !== undefined;
     const point = hasGeo ? Prisma.sql`ST_SetSRID(ST_MakePoint(${q.lng}, ${q.lat}), 4326)::geography` : null;
     const rows = await this.prisma.$queryRaw<Array<{ id: string; type: OrgType; trade_name_ar: string | null; legal_name_ar: string; rating_avg: Prisma.Decimal; rating_count: number; city: string | null; distance_km: number | null; lat: number | null; lng: number | null }>>`
@@ -40,6 +40,7 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
       FROM organizations o
       LEFT JOIN organization_locations l ON l.org_id = o.id AND l.is_primary = true
       WHERE o.status = 'active' AND o.deleted_at IS NULL
+        ${q.ids ? Prisma.sql`AND o.id = ANY(${q.ids}::uuid[])` : Prisma.empty}
         ${q.type ? Prisma.sql`AND o.type = ${q.type}::org_type` : Prisma.empty}
         ${q.city ? Prisma.sql`AND l.city = ${q.city}` : Prisma.empty}
         ${q.text ? Prisma.sql`AND (o.trade_name_ar ILIKE ${'%' + q.text + '%'} OR o.legal_name_ar ILIKE ${'%' + q.text + '%'} OR similarity(o.trade_name_ar, ${q.text}) > 0.3)` : Prisma.empty}
