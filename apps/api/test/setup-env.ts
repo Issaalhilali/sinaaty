@@ -1,4 +1,25 @@
 // Runs before each e2e test file is loaded (jest setupFiles) — overrides .env for tests.
+
+// Diagnostic for the intermittent whole-suite flake: when a supertest assertion fails, print the full
+// target URL (the port says WHICH listener answered), the response headers (x-powered-by identifies our
+// Express apps; its absence means a foreign process answered) and the error envelope body.
+import supertest from 'supertest';
+
+// `assert` is not part of supertest's public typings — reach it through a structural cast.
+const proto = supertest.Test.prototype as unknown as { assert: (resError: unknown, res: unknown, fn?: (err: unknown, res: unknown) => void) => unknown };
+const origAssert = proto.assert;
+proto.assert = function (resError: unknown, res: unknown, fn?: (err: unknown, res: unknown) => void) {
+  return origAssert.call(this, resError, res, (err: unknown, rr: unknown) => {
+    const r = rr as { status?: number; headers?: unknown; body?: unknown } | undefined;
+    if (err) {
+      const head = r ? JSON.stringify(r.headers) : '';
+      const body = r ? JSON.stringify(r.body ?? {}).slice(0, 400) : String((resError as Error | undefined)?.message ?? '');
+      console.error(`E2E-DIAG ${(this as { method?: string }).method} ${(this as { url?: string }).url} -> ${r?.status ?? 'NO-RESPONSE'} headers=${head} body=${body}`);
+    }
+    if (fn) fn(err, r);
+  });
+};
+
 Object.assign(process.env, {
   NODE_ENV: 'test',
   APP_ENV: 'test',

@@ -71,7 +71,9 @@ describe('Parts distributors hub (e2e)', () => {
     const inv = await http().get(`/v1/parts/orgs/${distOrg}/inventory`).set(auth(distTok)).expect(200); expect(inv.body.find((x: { id: string }) => x.id === inventoryId).quantity).toBe(14);
   });
   it('workshop scans the QR at install → serial installed on the vehicle, part_and_labor warranty for the customer, Car Passport event; second install of the same serial → duplicate alert', async () => {
-    const r = await http().post('/v1/parts/serials/install').set(auth(wsTok)).send({ qr_token: serials[0]!.qr_token, work_order_item_id: woItemId, labor_warranty_days: 180 }).expect(200);
+    const r = await http().post('/v1/parts/serials/install').set(auth(wsTok)).send({ qr_token: serials[0]!.qr_token, work_order_item_id: woItemId, labor_warranty_days: 180 });
+    // Diagnosing the whole-suite flake: on failure show the error envelope, not just the status.
+    if (r.status !== 200) throw new Error(`install ${r.status}: ${JSON.stringify(r.body).slice(0, 500)}`);
     expect(r.body.serial.status).toBe('installed'); expect(r.body.warranty.covers).toBe('part_and_labor'); expect(r.body.warranty.installerOrgId).toBe(wsOrg); expect(r.body.warranty.issuerOrgId).toBe(distOrg);
     const v = await http().get(`/v1/parts/verify/${serials[0]!.qr_token}`).expect(200); expect(v.body.status).toBe('installed');
     // customer sees the warranty in their wallet + passport event

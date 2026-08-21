@@ -24,6 +24,11 @@ export class RolesGuard implements CanActivate {
       if (m && spec.org.includes(m.role)) return true;
     }
     if (!spec.platform && !spec.org && isPlatformStaff(user)) return true;
-    throw new AppError('FORBIDDEN');
+    // Flake hunt (docs/backlog.md): a super_admin token intermittently 403s. That is only possible if
+    // the request was evaluated as some OTHER user — so outside production the refusal names who the
+    // server thought was calling, and the next occurrence carries its own diagnosis.
+    // console, not pino: pino runs silent in e2e and this must reach the jest output
+    if (process.env['NODE_ENV'] === 'test') console.error(`[roles.guard] refused user=${user.id} role=${user.platformRole} path=${req.path}`);
+    throw new AppError('FORBIDDEN', process.env['NODE_ENV'] === 'production' ? {} : { details: { as: user.id, role: user.platformRole, orgs: user.orgs.length } });
   }
 }

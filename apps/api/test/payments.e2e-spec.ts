@@ -21,8 +21,12 @@ describe('Payments + Escrow + Ledger (e2e)', () => {
     const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: 'ب ح د 1122', items }).expect(201);
     await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(wsTok)).send({}).expect(200);
     const init = await http().post(`/v1/work-orders/${wo.body.id}/approve`).set(auth(custTok)).send({ method: 'otp' }).expect(200);
-    await http().post(`/v1/work-orders/${wo.body.id}/approve/complete`).set(auth(custTok)).send({ method: 'otp', code: init.body.debug_code }).expect(200);
-    const st = (await http().get(`/v1/work-orders/${wo.body.id}`).set(auth(wsTok))).body.status;
+    const comp = await http().post(`/v1/work-orders/${wo.body.id}/approve/complete`).set(auth(custTok)).send({ method: 'otp', code: init.body.debug_code }).expect(200);
+    // Diagnosing the whole-suite flake: a 200 whose body is not the approval result means the response
+    // belongs to some other request — dump it instead of failing two lines later with a bare 409.
+    if (comp.body.approved !== true) throw new Error(`approve/complete 200 but body=${JSON.stringify(comp.body).slice(0, 500)}`);
+    const stRes = await http().get(`/v1/work-orders/${wo.body.id}`).set(auth(wsTok)).expect(200);
+    const st = stRes.body.status;
     if (st === 'awaiting_parts') await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'in_progress' }).expect(200);
     await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'ready' }).expect(200);
     await http().post(`/v1/work-orders/${wo.body.id}/inspections`).set(auth(wsTok)).send({ type: 'check_out', media_ids: [] }).expect(201);

@@ -45,7 +45,7 @@
 | Run the ZATCA SDK validator + sandbox onboarding against the real portal | Step 20 | crypto verified locally; portal needs credentials + network | before pilot |
 | Map ZATCA business-rule errors (BR-KSA-*) to Arabic messages in the admin monitor | Step 20 | stored per submission already | Step 24 |
 | Move archived `zatca_xml` to cold object storage after N months | Step 20 | kept in the database for the pilot (6-year retention) | Step 30 |
-| Credit/debit notes: BillingReference must carry the original invoice number, not the note's | Step 20 | single-invoice flows correct; note flow needs the parent number threaded | Step 21 |
+| ~~Credit/debit notes: BillingReference must carry the original invoice number~~ ✅ 2026-08-21 — parent number threaded through both the Phase-2 signing path and the Phase-1 XML endpoint; pinned by e2e | Step 20 | — | done |
 | Outbox metrics as OTEL gauges (backlog depth, claimed-but-stalled, dead-letter count) | Security/concurrency batch | admin monitor shows them; alerting needs metrics | Step 24 |
 | `job_locks` rows for one-shot jobs are never garbage-collected | Security/concurrency batch | a handful of fixed names, rows are reused in place | — |
 | Rotate the production secrets through KMS instead of env vars | Security/concurrency batch | boot now refuses dev defaults in prod; rotation is still manual | Step 24 |
@@ -61,7 +61,7 @@
 | PITR restore rehearsal on a real Supabase project (steps written, never executed here) | Step 24 | logical dump/restore drill passes locally | before pilot |
 | Soak test (1h) on the work-order path to watch memory + outbox depth | Step 24 | 60s ramp/hold runs pass with 0% failures | Step 25 |
 | Re-run k6 against production-like infra (managed DB + 2 API replicas) | Step 24 | numbers so far are one dev machine | Step 25 |
-| Admin-web page for zones/flags/funnel (API + runbook exist; ops uses curl today) | Step 25 | endpoints and reasons are enforced server-side | Step 26 |
+| ~~Admin-web page for zones/flags/funnel~~ ✅ 2026-08-21 — shipped as «المناطق والميزات» (`/pilot`: funnel KPIs, zones + backfill, flag toggles behind `ReasonDialog`, activation table) | Step 25 | — | done |
 | Mobile: consume `/v1/config` to hide disabled features (today the app shows everything it can do) | Step 25 | flags are enforced by the API regardless | Step 26 |
 | Analytics retention/rollup (analytics_events grows unbounded) | Step 25 | small during the pilot | Step 30 |
 | Fleet screens in the mobile app — approvals inbox + budget meter shipped («أسطولك اليوم», commits 6add95d, 6cc6493); **statements screen still pending** | Step 26 | CSV/JSON exports exist server-side | Step 27 |
@@ -71,7 +71,7 @@
 | Flutter audio recording for voice-to-invoice (no `record`-style package in pubspec yet) | Step 27 | the API accepts a typed `hint_ar`, so the flow works end to end without audio | Step 30 |
 | Choose the speech provider (Saudi dialect, workshop noise, KSA residency) and write the live adapter | Step 27 | mock only; the module refuses INTEGRATION_SPEECH=live | before pilot |
 | Measure extraction accuracy on real pilot recordings before enabling INTEGRATION_AI=live widely | Step 27 | prices are verified against the transcript either way | Step 30 |
-| Intermittent 401 in whole-suite e2e runs (~1 run in 3, a different suite each time; every suite passes alone, and on a clean DB) | Step 27 | not reproduced in isolation; token verification fails on a token that was just minted — cause not yet identified, so it is written down rather than guessed at | Step 30 |
+| Intermittent whole-suite e2e failure (~1 run in 3, a different suite each time; every suite passes alone) | Step 27 | 2026-08-21: shape refined — it is a read-after-write anomaly across requests, not auth-specific (seen as a 401 on a just-minted token at Step 27, and as a 404 on a just-created dispute on a clean scratch DB today). Token rejections now carry jose's reason in the error details outside production, so the next 401 occurrence names itself; the 404 shape still lacks instrumentation | Step 30 |
 | Vision live adapter — needs a data-residency decision + ADR before any customer photo leaves | Step 28 | mock only; module refuses INTEGRATION_AI=live | before pilot |
 | Measure false-positive rate on real pilot photos before enabling ai_inspection widely | Step 28 | a wrong suggestion costs the workshop trust, so precision matters more than recall | Step 30 |
 | Abandoned notices stored on work_orders.metadata rather than their own table | Step 29 | three rows per car, read only in this flow; promote to a table if ops needs cross-car reporting | Step 30 |
