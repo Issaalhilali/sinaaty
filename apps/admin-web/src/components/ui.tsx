@@ -9,6 +9,11 @@ export function MediaThumb({ id, label, size = 72 }: { id: string; label?: strin
   if (q.isLoading) return <div className="rounded-lg bg-line animate-pulse" style={{ width: size, height: size }} />;
   if (!q.data) return <div className="rounded-lg border border-line grid place-items-center text-[11px] text-muted" style={{ width: size, height: size }}>تعذّر</div>;
   const isImage = q.data.mime_type?.startsWith('image/');
+  const isAudio = q.data.mime_type?.startsWith('audio/');
+  if (isAudio) return <figure className="rounded-lg border border-line p-2 shrink-0 bg-white" style={{ width: 250 }}>
+    <figcaption className="text-[11px] text-muted mb-1 truncate">{label ?? 'تسجيل صوتي'}</figcaption>
+    <audio controls preload="none" src={q.data.url} className="w-full" style={{ height: 32 }} />
+  </figure>;
   return <a href={q.data.url} target="_blank" rel="noreferrer" title={label ?? undefined} className="block shrink-0">
     {isImage
       ? <img src={q.data.url} alt={label ?? 'مرفق'} className="rounded-lg object-cover border border-line" style={{ width: size, height: size }} />
