@@ -1,0 +1,87 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../l10n/app_localizations.dart';
+import '../theme/tokens.dart';
+import '../ui/ui.dart';
+import 'voice_input.dart';
+
+/// The one dictation surface used everywhere: a pulsing seal mic, the words appearing as they are
+/// spoken, and two honest buttons — أعد or تم. Returns the final transcript, or null.
+Future<String?> showVoiceSheet(BuildContext context, WidgetRef ref, {String? title}) async {
+  final voice = ref.read(voiceInputProvider);
+  return showModalBottomSheet<String>(context: context, showDragHandle: true, isScrollControlled: true, isDismissible: false,
+    builder: (ctx) => _VoiceSheetBody(voice: voice, title: title));
+}
+
+class _VoiceSheetBody extends StatefulWidget {
+  final VoiceInput voice; final String? title;
+  const _VoiceSheetBody({required this.voice, this.title});
+  @override State<_VoiceSheetBody> createState() => _VoiceSheetBodyState();
+}
+
+class _VoiceSheetBodyState extends State<_VoiceSheetBody> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  String _text = ''; bool _listening = false;
+
+  @override void initState() { super.initState(); _listen(); }
+  @override void dispose() { _pulse.dispose(); widget.voice.stop(); super.dispose(); }
+
+  Future<void> _listen() async {
+    setState(() { _listening = true; });
+    _pulse.repeat(reverse: true);                     // the pulse runs only while listening — animations must settle
+    await for (final t in widget.voice.start()) {
+      if (!mounted) return;
+      setState(() => _text = t);
+    }
+    if (mounted) { _pulse.stop(); setState(() => _listening = false); }
+  }
+
+  Future<void> _again() async { await widget.voice.stop(); if (mounted) { setState(() => _text = ''); unawaited(_listen()); } }
+  Future<void> _done() async { await widget.voice.stop(); if (mounted) Navigator.pop(context, _text.trim().isEmpty ? null : _text.trim()); }
+
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(widget.title ?? l.voSpeak, style: t.titleLarge, textAlign: TextAlign.center),
+        const SizedBox(height: SinaatySpace.lg),
+        Center(child: AnimatedBuilder(animation: _pulse, builder: (_, _) => Container(
+          width: 96 + (_listening ? _pulse.value * 14 : 0), height: 96 + (_listening ? _pulse.value * 14 : 0),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: SinaatyColors.seal,
+            boxShadow: [BoxShadow(color: SinaatyColors.seal.withValues(alpha: _listening ? .25 + _pulse.value * .2 : .2), blurRadius: 34, spreadRadius: _listening ? 6 + _pulse.value * 8 : 2)]),
+          child: Icon(_listening ? Icons.mic : Icons.mic_none, color: Colors.white, size: 40),
+        ))),
+        const SizedBox(height: SinaatySpace.lg),
+        ConstrainedBox(constraints: const BoxConstraints(minHeight: 64),
+          child: Text(_text.isEmpty ? (_listening ? l.voListening : l.voHeardNothing) : _text,
+            textAlign: TextAlign.center,
+            style: _text.isEmpty ? t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant) : t.titleMedium?.copyWith(height: 1.6))),
+        const SizedBox(height: SinaatySpace.lg),
+        Row(children: [
+          Expanded(child: OutlinedButton.icon(onPressed: _again, icon: const Icon(Icons.refresh, size: 18), label: Text(l.voAgain))),
+          const SizedBox(width: SinaatySpace.sm),
+          Expanded(flex: 2, child: PrimaryButton(label: l.voDone, icon: Icons.check, onPressed: _done)),
+        ]),
+      ]),
+    );
+  }
+}
+
+/// A mic that sticks to any TextField in one line — and does not exist at all on a device
+/// that cannot dictate (voice-input scope §2: no flag, availability is the gate).
+class VoiceMicButton extends ConsumerWidget {
+  final TextEditingController controller; final String? title;
+  const VoiceMicButton({super.key, required this.controller, this.title});
+  @override Widget build(BuildContext context, WidgetRef ref) {
+    final available = ref.watch(voiceAvailableProvider).value ?? false;
+    if (!available) return const SizedBox.shrink();
+    final l = L10n.of(context);
+    return IconButton(tooltip: l.voSpeak, icon: const Icon(Icons.mic_none), onPressed: () async {
+      final text = await showVoiceSheet(context, ref, title: title);
+      if (text == null) return;
+      controller.text = controller.text.trim().isEmpty ? text : '${controller.text.trim()} $text';
+    });
+  }
+}

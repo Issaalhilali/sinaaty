@@ -17,6 +17,7 @@ import '../../features/work_orders/presentation/work_order_screen.dart';
 import '../../features/workshop/presentation/inspection_screen.dart';
 import '../../features/workshop/presentation/new_order_screen.dart';
 import '../../features/workshop/presentation/order_screen.dart';
+import '../../features/workshop/presentation/voice_invoice_screen.dart';
 import '../../features/workshop/presentation/orders_screen.dart';
 import '../../features/parts/presentation/part_order_screen.dart';
 import '../../features/parts/presentation/request_screen.dart';
@@ -63,7 +64,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
-      GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!)), GoRoute(path: 'accident', builder: (_, s) => AccidentReportScreen(workOrderId: s.pathParameters['id']!))]),
+      GoRoute(path: '/ws/orders/:id', builder: (_, s) => WorkshopOrderScreen(id: s.pathParameters['id']!), routes: [GoRoute(path: 'inspect', builder: (_, s) => InspectionScreen(id: s.pathParameters['id']!)), GoRoute(path: 'accident', builder: (_, s) => AccidentReportScreen(workOrderId: s.pathParameters['id']!)), GoRoute(path: 'voice', builder: (_, s) => VoiceInvoiceScreen(workOrderId: s.pathParameters['id']!))]),
     ],
   );
 });

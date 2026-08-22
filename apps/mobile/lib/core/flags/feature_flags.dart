@@ -24,6 +24,7 @@ abstract final class Flags {
   static const aiInspection = 'ai_inspection';
   static const disputes = 'disputes';
   static const serviceMarketplace = 'service_marketplace';
+  static const voiceToInvoice = 'voice_to_invoice';
 }
 
 abstract interface class FlagsRepository {

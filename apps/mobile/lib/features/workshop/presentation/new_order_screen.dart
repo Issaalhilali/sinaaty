@@ -6,6 +6,7 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../auth/domain/normalize_phone.dart';
 import '../domain/workshop.dart';
@@ -21,7 +22,7 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
     final item = await showModalBottomSheet<NewItem>(context: context, isScrollControlled: true, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(l.wsAddItem, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
       SegmentedButton<String>(segments: [ButtonSegment(value: 'labor', label: Text(l.wsLabor)), ButtonSegment(value: 'part', label: Text(l.wsPart))], selected: {type}, onSelectionChanged: (s) => setS(() => type = s.first), showSelectedIcon: false), const SizedBox(height: SinaatySpace.md),
-      TextField(controller: desc, decoration: InputDecoration(labelText: l.wsItemDesc), autofocus: true), const SizedBox(height: SinaatySpace.md),
+      TextField(controller: desc, decoration: InputDecoration(labelText: l.wsItemDesc, suffixIcon: VoiceMicButton(controller: desc, title: l.wsItemDesc)), autofocus: true), const SizedBox(height: SinaatySpace.md),
       Row(children: [Expanded(child: TextField(controller: price, keyboardType: const TextInputType.numberWithOptions(decimal: true), textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.wsItemPrice, suffixText: 'ر.س'))), const SizedBox(width: SinaatySpace.md), SizedBox(width: 90, child: TextField(controller: qty, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.wsItemQty)))]),
       if (type == 'part') ...[const SizedBox(height: SinaatySpace.md), TextField(controller: warranty, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.wsWarranty))],
       const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.wsAddItem, onPressed: () { if (desc.text.trim().length < 2 || double.tryParse(price.text) == null) return; Navigator.pop(ctx, NewItem(type: type, descriptionAr: desc.text.trim(), unitPrice: price.text.trim(), quantity: qty.text.trim().isEmpty ? '1' : qty.text.trim(), warrantyDays: int.tryParse(warranty.text) ?? 0, partCondition: type == 'part' ? 'oem_new' : null)); }),

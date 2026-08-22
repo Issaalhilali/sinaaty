@@ -6,6 +6,7 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../domain/dispute.dart';
 import 'providers.dart';
@@ -59,7 +60,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
     return AppScaffold(
       title: d == null ? l.dsTitle : '${l.dsTitle} ${Fmt.ltr(d.number)}',
       primaryAction: d != null && d.live ? Row(children: [
-        Expanded(child: TextField(controller: _msg, decoration: InputDecoration(hintText: l.dsMessageHint), onSubmitted: (_) => _send())),
+        Expanded(child: TextField(controller: _msg, decoration: InputDecoration(hintText: l.dsMessageHint, suffixIcon: VoiceMicButton(controller: _msg, title: l.dsMessageHint)), onSubmitted: (_) => _send())),
         IconButton(tooltip: l.dsAttach, onPressed: _busy ? null : () => _send(withPhoto: true), icon: const Icon(Icons.add_a_photo_outlined)),
         IconButton.filled(onPressed: _busy ? null : _send, icon: _busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send)),
       ]) : null,

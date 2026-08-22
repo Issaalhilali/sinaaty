@@ -798,5 +798,20 @@
   "srCancelRequest": "ألغِ الطلب",
   "srSpecialistBadge": "متخصصون في سيارتك",
   "srRespondsIn": "يرد خلال ~{n} دقيقة",
-  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}}
+  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}},
+  "voSpeak": "تكلم الآن",
+  "voListening": "أستمع…",
+  "voHeardNothing": "لم أسمع شيئاً — جرّب مرة أخرى",
+  "voAgain": "أعد",
+  "voDone": "تم",
+  "voDictateItems": "أملِ البنود صوتاً",
+  "voReviewTitle": "راجع ما سُمع",
+  "voHeard": "سُمع: {text}",
+  "@voHeard": {"placeholders": {"text": {"type": "String"}}},
+  "voNeedsPrice": "يحتاج سعراً",
+  "voApply": "أضف البنود المسعّرة",
+  "voApplied": "أُضيفت البنود — تحتاج إعادة اعتماد العميل",
+  "voDiscard": "تجاهل",
+  "voUploadFailed": "لم يُرفع التسجيل — نصك محفوظ، أعد المحاولة",
+  "voRetryUpload": "أعد الرفع"
 }

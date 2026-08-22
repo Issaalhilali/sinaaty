@@ -18,6 +18,10 @@ abstract interface class WorkshopRepository {
   /// Abandoned-vehicle path (Step 29): the machine may remind; only a person declares.
   Future<Result<AbandonedStatus>> abandonedStatus(String woId);
   Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr});
+  /// Voice → items (Step 27): the raw recording must be uploaded FIRST (audio/*, purpose voice_note);
+  /// the on-device transcript rides as hint_ar. Returns the proposals for human review.
+  Future<Result<VoiceNote>> createVoiceNote(String woId, {required String mediaId, String? hintAr});
+  Future<Result<void>> applyVoiceNote(String noteId, List<NewItem> items);
 }
 /// Offline queue port: actions that must not be lost when the network drops (status updates, photo attachments).
 abstract interface class PendingActions {

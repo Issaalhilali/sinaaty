@@ -10,6 +10,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../../core/voice/voice_input.dart';
 import '../../billing/presentation/providers.dart';
 import '../../work_orders/domain/work_order.dart';
 import '../../work_orders/presentation/providers.dart';
@@ -108,8 +109,8 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
       };
     }
     return AppScaffold(title: o?.number ?? l.workOrder, primaryAction: primary,
-      moreItems: [if (o != null && o.status == 'inspecting') PopupMenuItem(value: 'item', child: Text(l.wsAddItem)), if (o != null && !const {'draft', 'closed', 'cancelled'}.contains(o.status)) PopupMenuItem(value: 'photo', child: Text(l.wsAddPhoto)), if (o != null && (ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.accidentReports)) PopupMenuItem(value: 'accident', child: Text(l.accOpen))],
-      onMore: (v) { if (v == 'photo') _addPhoto(); if (v == 'item') _addItemSheet(); if (v == 'accident') context.push('/ws/orders/${widget.id}/accident'); },
+      moreItems: [if (o != null && o.status == 'inspecting') PopupMenuItem(value: 'item', child: Text(l.wsAddItem)), if (o != null && !const {'draft', 'closed', 'cancelled'}.contains(o.status)) PopupMenuItem(value: 'photo', child: Text(l.wsAddPhoto)), if (o != null && (ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.accidentReports)) PopupMenuItem(value: 'accident', child: Text(l.accOpen)), if (o != null && (ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.voiceToInvoice) && (ref.watch(voiceAvailableProvider).value ?? false)) PopupMenuItem(value: 'voice', child: Text(l.voDictateItems))],
+      onMore: (v) { if (v == 'photo') _addPhoto(); if (v == 'item') _addItemSheet(); if (v == 'accident') context.push('/ws/orders/${widget.id}/accident'); if (v == 'voice') context.push('/ws/orders/${widget.id}/voice'); },
       body: AsyncResultView<WorkOrder>(value: wo, onRetry: _refresh, builder: (o) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 96), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: t.titleLarge?.copyWith(color: Colors.white)), Text(Fmt.meta([o.number, Fmt.dateTime(o.createdAt, locale: locale)]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),

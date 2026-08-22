@@ -798,5 +798,20 @@
   "srCancelRequest": "Cancel request",
   "srSpecialistBadge": "Specialists in your car",
   "srRespondsIn": "Replies in ~{n} min",
-  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}}
+  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}},
+  "voSpeak": "Speak now",
+  "voListening": "Listening…",
+  "voHeardNothing": "Heard nothing — try again",
+  "voAgain": "Again",
+  "voDone": "Done",
+  "voDictateItems": "Dictate the items",
+  "voReviewTitle": "Review what was heard",
+  "voHeard": "Heard: {text}",
+  "@voHeard": {"placeholders": {"text": {"type": "String"}}},
+  "voNeedsPrice": "Needs a price",
+  "voApply": "Add the priced items",
+  "voApplied": "Items added — customer re-approval needed",
+  "voDiscard": "Discard",
+  "voUploadFailed": "The recording did not upload — your text is kept, try again",
+  "voRetryUpload": "Retry upload"
 }

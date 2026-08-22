@@ -1814,4 +1814,49 @@ class L10nEn extends L10n {
   String srRespondsIn(int n) {
     return 'Replies in ~$n min';
   }
+
+  @override
+  String get voSpeak => 'Speak now';
+
+  @override
+  String get voListening => 'Listening…';
+
+  @override
+  String get voHeardNothing => 'Heard nothing — try again';
+
+  @override
+  String get voAgain => 'Again';
+
+  @override
+  String get voDone => 'Done';
+
+  @override
+  String get voDictateItems => 'Dictate the items';
+
+  @override
+  String get voReviewTitle => 'Review what was heard';
+
+  @override
+  String voHeard(String text) {
+    return 'Heard: $text';
+  }
+
+  @override
+  String get voNeedsPrice => 'Needs a price';
+
+  @override
+  String get voApply => 'Add the priced items';
+
+  @override
+  String get voApplied => 'Items added — customer re-approval needed';
+
+  @override
+  String get voDiscard => 'Discard';
+
+  @override
+  String get voUploadFailed =>
+      'The recording did not upload — your text is kept, try again';
+
+  @override
+  String get voRetryUpload => 'Retry upload';
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../vehicles/domain/vehicle.dart';
 import '../../vehicles/presentation/providers.dart';
@@ -121,7 +122,7 @@ class _TowRequestScreenState extends ConsumerState<TowRequestScreen> {
         SectionCard(child: Column(children: [
           Wrap(spacing: 8, children: [for (final ty in ['flatbed_tow', 'wheel_lift_tow', 'heavy_tow']) ChoiceChip(label: Text(_typeLabel(l, ty)), selected: _type == ty, showCheckmark: false, onSelected: (_) { setState(() { _type = ty; _quote = null; }); if (_pickup != null && _dropoff != null) unawaitedQuote(); })]),
           const SizedBox(height: SinaatySpace.md),
-          TextField(controller: _notes, decoration: InputDecoration(labelText: l.towNotes, hintText: l.towNotesHint)),
+          TextField(controller: _notes, decoration: InputDecoration(labelText: l.towNotes, hintText: l.towNotesHint, suffixIcon: VoiceMicButton(controller: _notes, title: l.towNotes))),
         ])),
       ]),
     );

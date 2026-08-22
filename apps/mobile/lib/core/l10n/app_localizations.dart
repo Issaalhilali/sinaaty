@@ -3438,6 +3438,90 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'يرد خلال ~{n} دقيقة'**
   String srRespondsIn(int n);
+
+  /// No description provided for @voSpeak.
+  ///
+  /// In ar, this message translates to:
+  /// **'تكلم الآن'**
+  String get voSpeak;
+
+  /// No description provided for @voListening.
+  ///
+  /// In ar, this message translates to:
+  /// **'أستمع…'**
+  String get voListening;
+
+  /// No description provided for @voHeardNothing.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم أسمع شيئاً — جرّب مرة أخرى'**
+  String get voHeardNothing;
+
+  /// No description provided for @voAgain.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد'**
+  String get voAgain;
+
+  /// No description provided for @voDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم'**
+  String get voDone;
+
+  /// No description provided for @voDictateItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'أملِ البنود صوتاً'**
+  String get voDictateItems;
+
+  /// No description provided for @voReviewTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'راجع ما سُمع'**
+  String get voReviewTitle;
+
+  /// No description provided for @voHeard.
+  ///
+  /// In ar, this message translates to:
+  /// **'سُمع: {text}'**
+  String voHeard(String text);
+
+  /// No description provided for @voNeedsPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج سعراً'**
+  String get voNeedsPrice;
+
+  /// No description provided for @voApply.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف البنود المسعّرة'**
+  String get voApply;
+
+  /// No description provided for @voApplied.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُضيفت البنود — تحتاج إعادة اعتماد العميل'**
+  String get voApplied;
+
+  /// No description provided for @voDiscard.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل'**
+  String get voDiscard;
+
+  /// No description provided for @voUploadFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يُرفع التسجيل — نصك محفوظ، أعد المحاولة'**
+  String get voUploadFailed;
+
+  /// No description provided for @voRetryUpload.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد الرفع'**
+  String get voRetryUpload;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

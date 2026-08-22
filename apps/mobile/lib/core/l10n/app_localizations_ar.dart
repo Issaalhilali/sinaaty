@@ -1796,4 +1796,48 @@ class L10nAr extends L10n {
   String srRespondsIn(int n) {
     return 'يرد خلال ~$n دقيقة';
   }
+
+  @override
+  String get voSpeak => 'تكلم الآن';
+
+  @override
+  String get voListening => 'أستمع…';
+
+  @override
+  String get voHeardNothing => 'لم أسمع شيئاً — جرّب مرة أخرى';
+
+  @override
+  String get voAgain => 'أعد';
+
+  @override
+  String get voDone => 'تم';
+
+  @override
+  String get voDictateItems => 'أملِ البنود صوتاً';
+
+  @override
+  String get voReviewTitle => 'راجع ما سُمع';
+
+  @override
+  String voHeard(String text) {
+    return 'سُمع: $text';
+  }
+
+  @override
+  String get voNeedsPrice => 'يحتاج سعراً';
+
+  @override
+  String get voApply => 'أضف البنود المسعّرة';
+
+  @override
+  String get voApplied => 'أُضيفت البنود — تحتاج إعادة اعتماد العميل';
+
+  @override
+  String get voDiscard => 'تجاهل';
+
+  @override
+  String get voUploadFailed => 'لم يُرفع التسجيل — نصك محفوظ، أعد المحاولة';
+
+  @override
+  String get voRetryUpload => 'أعد الرفع';
 }

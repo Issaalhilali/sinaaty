@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../transport/domain/transport.dart' show parseLocationLink;
 import '../../vehicles/domain/vehicle.dart';
@@ -38,7 +39,7 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
           onChanged: (v) => setS(() => vehicleId = v)),
       ],
       const SizedBox(height: SinaatySpace.md),
-      TextField(controller: desc, minLines: 2, maxLines: 4, autofocus: vehicles.length <= 1, decoration: InputDecoration(labelText: l.srDescribe, hintText: l.srDescribeHint)),
+      TextField(controller: desc, minLines: 2, maxLines: 4, autofocus: vehicles.length <= 1, decoration: InputDecoration(labelText: l.srDescribe, hintText: l.srDescribeHint, suffixIcon: VoiceMicButton(controller: desc, title: l.srDescribe))),
       const SizedBox(height: SinaatySpace.sm),
       Row(children: [
         TextButton.icon(onPressed: () async { final b = await capture(); if (b != null) setS(() => photos.add(b)); }, icon: const Icon(Icons.add_a_photo_outlined, size: 18), label: Text(l.dsAttach)),

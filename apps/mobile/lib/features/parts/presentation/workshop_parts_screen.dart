@@ -8,6 +8,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/result/result.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../workshop/presentation/providers.dart';
 import '../domain/parts.dart';
@@ -39,7 +40,7 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
     final l = L10n.of(context); final name = TextEditingController(); final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'}; var minutes = 60;
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(l.ptOpenAuction, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
-      TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint)), const SizedBox(height: SinaatySpace.md),
+      TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint, suffixIcon: VoiceMicButton(controller: name, title: l.ptPartName))), const SizedBox(height: SinaatySpace.md),
       Text(l.ptAcceptedConditions, style: Theme.of(ctx).textTheme.titleSmall), const SizedBox(height: 6),
       Wrap(spacing: 8, children: [for (final c in ['oem_new', 'aftermarket_new', 'used_scrapyard', 'refurbished']) FilterChip(label: Text(Labels.condition(l, c)), selected: conds.contains(c), onSelected: (s) => setS(() => s ? conds.add(c) : conds.remove(c)), showCheckmark: false)]),
       const SizedBox(height: SinaatySpace.md), Row(children: [Text(l.ptBiddingMinutes, style: Theme.of(ctx).textTheme.titleSmall), const Spacer(), SegmentedButton<int>(segments: const [ButtonSegment(value: 30, label: Text('30')), ButtonSegment(value: 60, label: Text('60')), ButtonSegment(value: 240, label: Text('240'))], selected: {minutes}, onSelectionChanged: (s) => setS(() => minutes = s.first), showSelectedIcon: false)]),

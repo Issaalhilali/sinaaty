@@ -18,3 +18,8 @@ class AbandonedStatus {
 const workshopNext = <String, String>{'draft': 'received', 'received': 'inspecting', 'approved': 'in_progress', 'awaiting_parts': 'in_progress', 'in_progress': 'quality_check', 'quality_check': 'ready', 'ready': 'delivered'};
 /// The 8 check-in angles (order matters for the grid).
 const inspectionAngles = ['front', 'front_right', 'right', 'rear_right', 'rear', 'rear_left', 'left', 'front_left'];
+
+/// One proposed line from the voice extraction — a DRAFT the advisor reviews and prices;
+/// the review is the decision, never the model (Step 27).
+class VoiceProposal { final String type; final String descriptionAr; final String quantity; final String? unitPrice; final String? heardAr; final bool needsPrice; const VoiceProposal({required this.type, required this.descriptionAr, required this.quantity, this.unitPrice, this.heardAr, required this.needsPrice}); }
+class VoiceNote { final String id; final String? transcriptAr; final List<VoiceProposal> items; const VoiceNote({required this.id, this.transcriptAr, this.items = const []}); }

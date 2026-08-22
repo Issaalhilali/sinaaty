@@ -27,6 +27,17 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
       canDeclare: j['can_declare'] as bool? ?? false, reasonAr: j['reason_ar'] as String?,
     );
   });
+  @override Future<Result<VoiceNote>> createVoiceNote(String woId, {required String mediaId, String? hintAr}) => _run(() async {
+    final j = (await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/voice-notes', data: {'media_id': mediaId, 'hint_ar': ?hintAr})).data!;
+    return VoiceNote(id: j['id'] as String, transcriptAr: j['transcript_ar'] as String?,
+      items: ((j['items'] as List?) ?? []).cast<Map<String, dynamic>>().map((i) => VoiceProposal(
+        type: (i['type'] ?? 'labor') as String, descriptionAr: (i['description_ar'] ?? '') as String,
+        quantity: (i['quantity'] ?? '1').toString(), unitPrice: i['unit_price']?.toString(),
+        heardAr: i['heard_ar'] as String?, needsPrice: i['needs_price'] as bool? ?? i['unit_price'] == null,
+      )).toList());
+  });
+  @override Future<Result<void>> applyVoiceNote(String noteId, List<NewItem> items) => _run(() async =>
+    (await api.dio.post<Map<String, dynamic>>('/voice-notes/$noteId/apply', data: {'items': [for (final i in items) {'type': i.type, 'description_ar': i.descriptionAr, 'quantity': i.quantity, 'unit_price': i.unitPrice, 'warranty_days': i.warrantyDays}]})).data);
   @override Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr}) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/abandoned/declare', data: {'reason_ar': ?reasonAr})).data);
   @override Future<Result<WorkOrder>> removeItem(String woId, String itemId) => _run(() async => workOrderFromJson((await api.dio.delete<Map<String, dynamic>>('/work-orders/$woId/items/$itemId')).data!));
   @override Future<Result<WorkOrder>> transition(String woId, String to, {String? noteAr}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/transition', data: {'to': to, 'note_ar': ?noteAr})).data!; return workOrderFromJson((d['work_order'] ?? d) as Map<String, dynamic>); });

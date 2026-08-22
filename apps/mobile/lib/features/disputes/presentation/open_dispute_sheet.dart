@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../domain/dispute.dart';
 import 'providers.dart';
@@ -33,7 +34,7 @@ Future<void> openDisputeSheet(BuildContext context, WidgetRef ref, {String? work
       const SizedBox(height: 6),
       Wrap(spacing: 8, runSpacing: 6, children: [for (final c in disputeCategories) ChoiceChip(label: Text(Labels.disputeCategory(l, c)), selected: category == c, showCheckmark: false, onSelected: (_) => setS(() => category = c))]),
       const SizedBox(height: SinaatySpace.md),
-      TextField(controller: desc, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: l.dsDescribe, hintText: l.dsDescribeHint)),
+      TextField(controller: desc, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: l.dsDescribe, hintText: l.dsDescribeHint, suffixIcon: VoiceMicButton(controller: desc, title: l.dsDescribe))),
       const SizedBox(height: SinaatySpace.sm),
       Row(children: [
         TextButton.icon(onPressed: () async { final b = await capture(); if (b != null) setS(() => photos.add(b)); }, icon: const Icon(Icons.add_a_photo_outlined, size: 18), label: Text(l.dsAttach)),

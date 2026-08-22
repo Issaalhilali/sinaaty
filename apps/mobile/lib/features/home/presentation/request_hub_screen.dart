@@ -6,6 +6,7 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../parts/domain/parts.dart';
 import '../../parts/presentation/providers.dart';
@@ -38,7 +39,7 @@ class RequestHubScreen extends ConsumerWidget {
           Text(l.reqPart, style: Theme.of(ctx).textTheme.titleLarge),
           const SizedBox(height: 4), Text(l.reqPartBody, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
           const SizedBox(height: SinaatySpace.md),
-          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint)),
+          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint, suffixIcon: VoiceMicButton(controller: name, title: l.ptPartName))),
           if (vehicles.isNotEmpty) ...[
             const SizedBox(height: SinaatySpace.md),
             DropdownButtonFormField<String>(
