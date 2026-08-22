@@ -726,15 +726,42 @@
   "dsStClosed": "Closed",
   "abTitle": "Uncollected vehicle",
   "abNotice": "Notice {n}",
-  "@abNotice": {"placeholders": {"n": {"type": "int"}}},
+  "@abNotice": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "abFormal": "formal",
   "abDueAfter": "Due {days} days after ready",
-  "@abDueAfter": {"placeholders": {"days": {"type": "int"}}},
+  "@abDueAfter": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "abDaysReady": "Ready for {days} days",
-  "@abDaysReady": {"placeholders": {"days": {"type": "int"}}},
+  "@abDaysReady": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "abStorage": "Storage fees",
   "abFreeThen": "{free} free days, then {perDay} per day",
-  "@abFreeThen": {"placeholders": {"free": {"type": "int"}, "perDay": {"type": "String"}}},
+  "@abFreeThen": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "perDay": {
+        "type": "String"
+      }
+    }
+  },
   "abDeclare": "Declare vehicle abandoned",
   "abDeclareWarn": "A legal, irreversible step: the car is recorded as abandoned and storage fees join the enforcement claim.",
   "abDeclared": "Vehicle declared abandoned",
@@ -752,7 +779,13 @@
   "flGenerateStatement": "Generate this month",
   "flStatementGenerated": "Statement ready",
   "flInvoicesCount": "{n} invoices",
-  "@flInvoicesCount": {"placeholders": {"n": {"type": "int"}}},
+  "@flInvoicesCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "flCopyCsv": "Copy CSV",
   "flCsvCopied": "Statement copied — paste it into your sheets",
   "srFix": "Fix my car",
@@ -763,7 +796,13 @@
   "srWhereHint": "Paste a maps link or coordinates like 24.71, 46.67",
   "srRadius": "Search radius",
   "srKm": "{n} km",
-  "@srKm": {"placeholders": {"n": {"type": "int"}}},
+  "@srKm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srWhen": "When do you want the repair?",
   "srNow": "Now",
   "srToday": "Today",
@@ -774,12 +813,27 @@
   "srOffers": "Offers",
   "srNoOffers": "No offers yet — nearby workshops are reviewing your request.",
   "srWiden": "Widen to {n} km",
-  "@srWiden": {"placeholders": {"n": {"type": "int"}}},
+  "@srWiden": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srWidened": "Search radius widened",
   "srFreeInspection": "Free inspection",
   "srEstimate": "Estimate",
   "srPriceRange": "{min} to {max}",
-  "@srPriceRange": {"placeholders": {"min": {"type": "String"}, "max": {"type": "String"}}},
+  "@srPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
   "srFinalPriceNote": "The final price is approved after inspection, with your signature — no surprises.",
   "srAccepted": "Offer accepted — work order created",
   "srNearestBadge": "Nearest",
@@ -787,7 +841,13 @@
   "srPrevUsedBadge": "You have used them before",
   "srNearby": "Nearby repair requests",
   "srNearbyCount": "{n} nearby repair requests",
-  "@srNearbyCount": {"placeholders": {"n": {"type": "int"}}},
+  "@srNearbyCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srRespond": "Make your offer",
   "srDiagnosis": "Your diagnosis",
   "srDiagnosisHint": "One line on what you think it is — it is what sets your offer apart.",
@@ -798,7 +858,13 @@
   "srCancelRequest": "Cancel request",
   "srSpecialistBadge": "Specialists in your car",
   "srRespondsIn": "Replies in ~{n} min",
-  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}},
+  "@srRespondsIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "voSpeak": "Speak now",
   "voListening": "Listening…",
   "voHeardNothing": "Heard nothing — try again",
@@ -807,11 +873,22 @@
   "voDictateItems": "Dictate the items",
   "voReviewTitle": "Review what was heard",
   "voHeard": "Heard: {text}",
-  "@voHeard": {"placeholders": {"text": {"type": "String"}}},
+  "@voHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "voNeedsPrice": "Needs a price",
   "voApply": "Add the priced items",
   "voApplied": "Items added — customer re-approval needed",
   "voDiscard": "Discard",
   "voUploadFailed": "The recording did not upload — your text is kept, try again",
-  "voRetryUpload": "Retry upload"
+  "voRetryUpload": "Retry upload",
+  "assistantTooltip": "Voice assistant",
+  "assistantTitle": "Speak — I am listening",
+  "assistantAck": "On it —",
+  "assistantTryCustomer": "Did not catch that — try: “order a tow” or “fix my car”",
+  "assistantTryPartner": "Did not catch that — try: “new order” or “nearby requests”"
 }

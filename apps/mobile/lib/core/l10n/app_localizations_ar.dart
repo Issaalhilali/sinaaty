@@ -1840,4 +1840,21 @@ class L10nAr extends L10n {
 
   @override
   String get voRetryUpload => 'أعد الرفع';
+
+  @override
+  String get assistantTooltip => 'المساعد الصوتي';
+
+  @override
+  String get assistantTitle => 'تكلّم — أنا أسمع';
+
+  @override
+  String get assistantAck => 'حاضر —';
+
+  @override
+  String get assistantTryCustomer =>
+      'لم أفهم — جرّب: «اطلب سطحة» أو «أصلح سيارتي»';
+
+  @override
+  String get assistantTryPartner =>
+      'لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»';
 }

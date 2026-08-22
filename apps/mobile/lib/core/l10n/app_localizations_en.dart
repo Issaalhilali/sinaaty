@@ -1859,4 +1859,21 @@ class L10nEn extends L10n {
 
   @override
   String get voRetryUpload => 'Retry upload';
+
+  @override
+  String get assistantTooltip => 'Voice assistant';
+
+  @override
+  String get assistantTitle => 'Speak — I am listening';
+
+  @override
+  String get assistantAck => 'On it —';
+
+  @override
+  String get assistantTryCustomer =>
+      'Did not catch that — try: “order a tow” or “fix my car”';
+
+  @override
+  String get assistantTryPartner =>
+      'Did not catch that — try: “new order” or “nearby requests”';
 }

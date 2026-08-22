@@ -3522,6 +3522,36 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أعد الرفع'**
   String get voRetryUpload;
+
+  /// No description provided for @assistantTooltip.
+  ///
+  /// In ar, this message translates to:
+  /// **'المساعد الصوتي'**
+  String get assistantTooltip;
+
+  /// No description provided for @assistantTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تكلّم — أنا أسمع'**
+  String get assistantTitle;
+
+  /// No description provided for @assistantAck.
+  ///
+  /// In ar, this message translates to:
+  /// **'حاضر —'**
+  String get assistantAck;
+
+  /// No description provided for @assistantTryCustomer.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم أفهم — جرّب: «اطلب سطحة» أو «أصلح سيارتي»'**
+  String get assistantTryCustomer;
+
+  /// No description provided for @assistantTryPartner.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»'**
+  String get assistantTryPartner;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

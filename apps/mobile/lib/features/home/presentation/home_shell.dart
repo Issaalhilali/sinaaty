@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
@@ -5,6 +6,9 @@ import '../../../core/di/core_providers.dart';
 import '../../../core/flags/feature_flags.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/ui/ui.dart';
+import '../../../core/voice/assistant.dart';
+import '../../../core/voice/voice_input.dart';
+import '../../../core/voice/voice_sheet.dart';
 import 'package:go_router/go_router.dart';
 import '../../account/presentation/account_screen.dart';
 import '../../auth/presentation/providers.dart';
@@ -55,10 +59,51 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     if (_index >= tabs.length) _index = 0; final title = tabs[_index].$1; final name = me?.fullNameAr ?? '';
     final body = tabs[_index].$3;
     final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
+    final voiceOk = ref.watch(voiceAvailableProvider).value ?? false;
+    final partner = flavor == AppFlavor.partner;
     return AppScaffold(title: title, subtitle: _index == 0 && name.isNotEmpty ? '${l.welcomeBack} $name' : null, leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
-      trailing: flavor == AppFlavor.partner && !isSupplier ? Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))) : null,
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (voiceOk) IconButton(tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none), onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier)),
+        if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
+      ]),
       moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],
-      onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') context.push('/notifications'); },
+      onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') unawaited(context.push('/notifications')); },
       bottom: FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i), items: [for (final t in tabs) (icon: t.$2, label: t.$1)]));
+  }
+
+  /// One sentence in → the right screen out. Money and legal actions are never voice-executed;
+  /// the assistant delivers the user to the action, the action keeps its own explicit tap.
+  Future<void> _assistant(L10n l, List<(String, IconData, Widget)> tabs, {required bool partner}) async {
+    final said = await showVoiceSheet(context, ref, title: l.assistantTitle);
+    if (said == null || said.trim().isEmpty || !mounted) return;
+    final cmd = parseAssistant(said, partner: partner);
+    if (cmd == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(partner ? l.assistantTryPartner : l.assistantTryCustomer)));
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.assistantAck} ${cmd.labelAr}'), duration: const Duration(seconds: 2)));
+    switch (cmd.target) {
+      case AssistantTarget.tow: unawaited(context.push('/tow/new'));
+      case AssistantTarget.warranties: unawaited(context.push('/warranties'));
+      case AssistantTarget.notifications: unawaited(context.push('/notifications'));
+      case AssistantTarget.newOrder: unawaited(context.push('/ws/new'));
+      case AssistantTarget.nearbyRequests: unawaited(context.push('/ws/service-requests'));
+      default: _goTab(cmd.target, l, tabs);
+    }
+  }
+
+  void _goTab(AssistantTarget t, L10n l, List<(String, IconData, Widget)> tabs) {
+    final label = switch (t) {
+      AssistantTarget.wallet => l.tabWallet,
+      AssistantTarget.vehicles => l.tabMyCars,
+      AssistantTarget.account => l.tabAccount,
+      AssistantTarget.serviceRequest || AssistantTarget.partRequest => l.tabRequest,
+      AssistantTarget.ordersTab => l.tabOrders,
+      AssistantTarget.partsTab => l.tabParts,
+      AssistantTarget.today => l.tabToday,
+      _ => null,
+    };
+    final i = label == null ? -1 : tabs.indexWhere((x) => x.$1 == label);
+    if (i >= 0) setState(() => _index = i);
   }
 }

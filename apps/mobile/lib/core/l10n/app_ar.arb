@@ -726,15 +726,42 @@
   "dsStClosed": "مغلق",
   "abTitle": "مركبة لم تُستلم",
   "abNotice": "إنذار {n}",
-  "@abNotice": {"placeholders": {"n": {"type": "int"}}},
+  "@abNotice": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "abFormal": "رسمي",
   "abDueAfter": "يُستحق بعد {days} يوماً من الجاهزية",
-  "@abDueAfter": {"placeholders": {"days": {"type": "int"}}},
+  "@abDueAfter": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "abDaysReady": "جاهزة منذ {days} يوماً",
-  "@abDaysReady": {"placeholders": {"days": {"type": "int"}}},
+  "@abDaysReady": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "abStorage": "رسوم التخزين",
   "abFreeThen": "{free} أيام سماح ثم {perDay} يومياً",
-  "@abFreeThen": {"placeholders": {"free": {"type": "int"}, "perDay": {"type": "String"}}},
+  "@abFreeThen": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "perDay": {
+        "type": "String"
+      }
+    }
+  },
   "abDeclare": "إعلان مركبة مهجورة",
   "abDeclareWarn": "إجراء نظامي لا رجعة فيه: تُسجَّل السيارة مهجورة وتُضاف رسوم التخزين إلى المطالبة تمهيداً للتنفيذ.",
   "abDeclared": "أُعلنت المركبة مهجورة",
@@ -752,7 +779,13 @@
   "flGenerateStatement": "أنشئ كشف هذا الشهر",
   "flStatementGenerated": "جُهّز كشف الشهر",
   "flInvoicesCount": "{n} فاتورة",
-  "@flInvoicesCount": {"placeholders": {"n": {"type": "int"}}},
+  "@flInvoicesCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "flCopyCsv": "نسخ CSV",
   "flCsvCopied": "نُسخ الكشف — ألصقه في جداولك",
   "srFix": "أصلح سيارتي",
@@ -763,7 +796,13 @@
   "srWhereHint": "الصق رابط خرائط أو إحداثيات مثل 24.71, 46.67",
   "srRadius": "نطاق البحث",
   "srKm": "{n} كم",
-  "@srKm": {"placeholders": {"n": {"type": "int"}}},
+  "@srKm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srWhen": "متى تريد الإصلاح؟",
   "srNow": "الآن",
   "srToday": "اليوم",
@@ -774,12 +813,27 @@
   "srOffers": "العروض",
   "srNoOffers": "لا عروض بعد — الورش القريبة تدرس طلبك.",
   "srWiden": "وسّع النطاق إلى {n} كم",
-  "@srWiden": {"placeholders": {"n": {"type": "int"}}},
+  "@srWiden": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srWidened": "وُسّع نطاق البحث",
   "srFreeInspection": "معاينة مجانية",
   "srEstimate": "سعر تقديري",
   "srPriceRange": "من {min} إلى {max}",
-  "@srPriceRange": {"placeholders": {"min": {"type": "String"}, "max": {"type": "String"}}},
+  "@srPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
   "srFinalPriceNote": "السعر النهائي يُعتمد بعد الفحص وبتوقيعك — لا مفاجآت.",
   "srAccepted": "قُبل العرض — أُنشئ أمر العمل",
   "srNearestBadge": "الأقرب",
@@ -787,7 +841,13 @@
   "srPrevUsedBadge": "سبق تعاملك معها",
   "srNearby": "طلبات إصلاح قريبة",
   "srNearbyCount": "{n} طلبات إصلاح قريبة",
-  "@srNearbyCount": {"placeholders": {"n": {"type": "int"}}},
+  "@srNearbyCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "srRespond": "قدّم عرضك",
   "srDiagnosis": "تحليلك للمشكلة",
   "srDiagnosisHint": "سطر يشرح ما تظنه السبب — هو ما يميّز عرضك.",
@@ -798,7 +858,13 @@
   "srCancelRequest": "ألغِ الطلب",
   "srSpecialistBadge": "متخصصون في سيارتك",
   "srRespondsIn": "يرد خلال ~{n} دقيقة",
-  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}},
+  "@srRespondsIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "voSpeak": "تكلم الآن",
   "voListening": "أستمع…",
   "voHeardNothing": "لم أسمع شيئاً — جرّب مرة أخرى",
@@ -807,11 +873,22 @@
   "voDictateItems": "أملِ البنود صوتاً",
   "voReviewTitle": "راجع ما سُمع",
   "voHeard": "سُمع: {text}",
-  "@voHeard": {"placeholders": {"text": {"type": "String"}}},
+  "@voHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "voNeedsPrice": "يحتاج سعراً",
   "voApply": "أضف البنود المسعّرة",
   "voApplied": "أُضيفت البنود — تحتاج إعادة اعتماد العميل",
   "voDiscard": "تجاهل",
   "voUploadFailed": "لم يُرفع التسجيل — نصك محفوظ، أعد المحاولة",
-  "voRetryUpload": "أعد الرفع"
+  "voRetryUpload": "أعد الرفع",
+  "assistantTooltip": "المساعد الصوتي",
+  "assistantTitle": "تكلّم — أنا أسمع",
+  "assistantAck": "حاضر —",
+  "assistantTryCustomer": "لم أفهم — جرّب: «اطلب سطحة» أو «أصلح سيارتي»",
+  "assistantTryPartner": "لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»"
 }
