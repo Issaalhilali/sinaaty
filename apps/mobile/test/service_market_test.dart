@@ -12,6 +12,7 @@ import 'package:sinaaty/core/result/result.dart';
 import 'package:sinaaty/core/theme/app_theme.dart';
 import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'package:sinaaty/features/home/presentation/request_hub_screen.dart';
+import 'package:sinaaty/features/notifications/presentation/inbox_screen.dart' show InboxScreen;
 import 'package:sinaaty/features/parts/presentation/providers.dart';
 import 'package:sinaaty/features/service_market/domain/service_request.dart';
 import 'package:sinaaty/features/service_market/domain/service_market_repository.dart';
@@ -59,7 +60,7 @@ class FakeServiceMarket implements ServiceMarketRepository {
     store['sr1'] = _seed(offers: const [
       ServiceOffer(id: 'of1', workshopNameAr: 'ورشة النور للسمكرة والميكانيكا', rating: '4.8', distanceText: 'الصناعية الثانية — 7 كم',
         offerType: 'estimate', diagnosisAr: 'الأرجح جلد مقصات أمامي — يظهر صوته عند المطبات تحديداً.', priceMin: '350.00', priceMax: '520.00',
-        availability: 'today', badges: ['cheapest', 'previously_used']),
+        availability: 'today', badges: ['cheapest', 'previously_used', 'specialist'], respondsInMinutes: 12),
       ServiceOffer(id: 'of2', workshopNameAr: 'مركز الإتقان للميكانيكا', rating: '4.9', distanceText: 'حي الصناعية — 4.2 كم',
         offerType: 'free_inspection', diagnosisAr: 'قد يكون كرسي مكينة — نفضّل الفحص قبل أي رقم.',
         availability: 'now', badges: ['nearest', 'top_rated']),
@@ -111,6 +112,9 @@ void main() {
     expect(find.text('الأقرب'), findsOneWidget);
     expect(find.text('معاينة مجانية'), findsOneWidget);                     // an explicit offer type, not a zero price
     expect(find.textContaining('لا مفاجآت'), findsOneWidget);               // the legal-path sentence
+    expect(find.text('متخصصون في سيارتك'), findsOneWidget);                 // the specialist argument, from badges as sent
+    expect(find.textContaining('يرد خلال ~12 دقيقة'), findsOneWidget);      // response speed — only where history exists
+    expect(find.textContaining('يرد خلال'), findsOneWidget);                // the new workshop gets no invented number
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/service_offers_light.png'));
 
     await tester.tap(find.text('اقبل هذا العرض').first); await tester.pumpAndSettle();
@@ -146,6 +150,10 @@ void main() {
     await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle();
     expect(market.store['sr1']!.offers.single.diagnosisAr, contains('جلد مقصات'));
     expect(find.text('أُرسل عرضك'), findsOneWidget);
+  });
+
+  test('the quiet-push deep link resolves to the request screen route', () {
+    expect(InboxScreen.routeFor('sinaaty://service-requests/sr1'), '/service-requests/sr1');
   });
 
   testWidgets('flag off: «أصلح سيارتي» does not exist', (tester) async {

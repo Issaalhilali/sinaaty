@@ -795,5 +795,8 @@
   "srPriceMax": "إلى",
   "srAvailability": "متى تستقبل السيارة؟",
   "srOfferSent": "أُرسل عرضك",
-  "srCancelRequest": "ألغِ الطلب"
+  "srCancelRequest": "ألغِ الطلب",
+  "srSpecialistBadge": "متخصصون في سيارتك",
+  "srRespondsIn": "يرد خلال ~{n} دقيقة",
+  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}}
 }

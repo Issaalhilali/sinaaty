@@ -795,5 +795,8 @@
   "srPriceMax": "to",
   "srAvailability": "When can you take the car?",
   "srOfferSent": "Offer sent",
-  "srCancelRequest": "Cancel request"
+  "srCancelRequest": "Cancel request",
+  "srSpecialistBadge": "Specialists in your car",
+  "srRespondsIn": "Replies in ~{n} min",
+  "@srRespondsIn": {"placeholders": {"n": {"type": "int"}}}
 }

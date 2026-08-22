@@ -3426,6 +3426,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'ألغِ الطلب'**
   String get srCancelRequest;
+
+  /// No description provided for @srSpecialistBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'متخصصون في سيارتك'**
+  String get srSpecialistBadge;
+
+  /// No description provided for @srRespondsIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرد خلال ~{n} دقيقة'**
+  String srRespondsIn(int n);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

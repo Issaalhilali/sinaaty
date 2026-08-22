@@ -1806,4 +1806,12 @@ class L10nEn extends L10n {
 
   @override
   String get srCancelRequest => 'Cancel request';
+
+  @override
+  String get srSpecialistBadge => 'Specialists in your car';
+
+  @override
+  String srRespondsIn(int n) {
+    return 'Replies in ~$n min';
+  }
 }

@@ -20,6 +20,8 @@ ServiceOffer offerFromJson(Map<String, dynamic> j) => ServiceOffer(
   availableAt: Fmt.parseDate(j['available_at']),
   etaNoteAr: j['eta_note_ar'] as String?,
   badges: ((j['badges'] as List?) ?? []).map((b) => b.toString()).toList(),
+  specialist: j['specialist'] as bool? ?? false,
+  respondsInMinutes: (j['respondsInMinutes'] ?? j['responds_in_minutes']) is num ? ((j['respondsInMinutes'] ?? j['responds_in_minutes']) as num).toInt() : null,
 );
 
 ServiceRequest requestFromJson(Map<String, dynamic> j) => ServiceRequest(

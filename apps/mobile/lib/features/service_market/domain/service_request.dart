@@ -14,8 +14,10 @@ class ServiceOffer {
   final String? availability;    // now | today | this_week
   final DateTime? availableAt;
   final String? etaNoteAr;
-  final List<String> badges;     // cheapest | fastest | nearest | top_rated | previously_used
-  const ServiceOffer({required this.id, this.workshopOrgId, this.workshopNameAr, this.rating, this.distanceText, required this.offerType, this.diagnosisAr, this.priceMin, this.priceMax, this.availability, this.availableAt, this.etaNoteAr, this.badges = const []});
+  final List<String> badges;     // cheapest | fastest | nearest | top_rated | previously_used | specialist
+  final bool specialist;
+  final int? respondsInMinutes;  // null for a workshop with no history — never an invented number
+  const ServiceOffer({required this.id, this.workshopOrgId, this.workshopNameAr, this.rating, this.distanceText, required this.offerType, this.diagnosisAr, this.priceMin, this.priceMax, this.availability, this.availableAt, this.etaNoteAr, this.badges = const [], this.specialist = false, this.respondsInMinutes});
   bool get freeInspection => offerType == 'free_inspection';
 }
 

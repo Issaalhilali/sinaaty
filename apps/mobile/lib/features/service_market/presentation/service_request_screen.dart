@@ -23,7 +23,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
   bool _busy = false;
   void _refresh() { ref.invalidate(serviceRequestProvider(widget.id)); ref.invalidate(myServiceRequestsProvider); ref.invalidate(nearbyServiceRequestsProvider); }
 
-  String _badge(L10n l, String b) => switch (b) { 'cheapest' => l.ptCheapest, 'fastest' => l.ptFastest, 'nearest' => l.srNearestBadge, 'top_rated' => l.srTopRatedBadge, 'previously_used' => l.srPrevUsedBadge, _ => b };
+  String _badge(L10n l, String b) => switch (b) { 'cheapest' => l.ptCheapest, 'fastest' => l.ptFastest, 'nearest' => l.srNearestBadge, 'top_rated' => l.srTopRatedBadge, 'previously_used' => l.srPrevUsedBadge, 'specialist' => l.srSpecialistBadge, _ => b };
   String _when(L10n l, String? w) => switch (w) { 'now' => l.srNow, 'this_week' => l.srThisWeek, _ => l.srToday };
 
   Future<void> _accept(ServiceOffer o) async {
@@ -166,7 +166,7 @@ class _OfferCard extends StatelessWidget {
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(o.workshopNameAr ?? '—', style: t.titleSmall),
-          Text(Fmt.meta([if (o.rating != null) '★ ${o.rating}', if (o.distanceText != null) o.distanceText]), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+          Text(Fmt.meta([if (o.rating != null) '★ ${o.rating}', if (o.distanceText != null) o.distanceText, if (o.respondsInMinutes != null) l.srRespondsIn(o.respondsInMinutes!)]), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
         ])),
         if (o.freeInspection) StatusBadge(l.srFreeInspection, tone: BadgeTone.seal, icon: Icons.search_outlined)
         else if (o.priceMin != null && o.priceMax != null && o.priceMax != o.priceMin) Text(l.srPriceRange(Fmt.money(o.priceMin!, locale: locale), Fmt.money(o.priceMax!, locale: locale)), style: t.titleSmall, textAlign: TextAlign.start)

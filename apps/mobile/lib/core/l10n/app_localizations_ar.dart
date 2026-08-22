@@ -1788,4 +1788,12 @@ class L10nAr extends L10n {
 
   @override
   String get srCancelRequest => 'ألغِ الطلب';
+
+  @override
+  String get srSpecialistBadge => 'متخصصون في سيارتك';
+
+  @override
+  String srRespondsIn(int n) {
+    return 'يرد خلال ~$n دقيقة';
+  }
 }
