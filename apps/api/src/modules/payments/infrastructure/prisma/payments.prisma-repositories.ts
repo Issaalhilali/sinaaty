@@ -5,7 +5,7 @@ import { asTx, PrismaService } from '../../../../prisma';
 import type { TxHandle } from '../../../../common/ports/unit-of-work.port';
 import { redactPii } from '../../../../common/crypto/redaction';
 import type { EscrowHold, Payment, Payout } from '../../domain/payment';
-import type { EscrowRepository, LedgerRepository, PaymentRepository, PayoutRepository, WebhookInbox } from '../../domain/repositories';
+import type { AdminApproval, ApprovalRepository, EscrowRepository, LedgerRepository, PaymentRepository, PayoutRepository, WebhookInbox } from '../../domain/repositories';
 
 const d = (v: Prisma.Decimal | null | undefined) => (v == null ? '0.00' : v.toFixed(2));
 const D = (v: string) => new Prisma.Decimal(v);
@@ -86,4 +86,20 @@ export class WebhookInboxPrisma implements WebhookInbox {
     catch (err) { if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') return { inserted: false }; throw err; }
   }
   async markProcessed(provider: string, providerEventId: string, error?: string, tx?: TxHandle) { await this.db(tx).webhookEvent.update({ where: { provider_providerEventId: { provider: provider as never, providerEventId } }, data: { processedAt: new Date(), processingError: error } }); }
+}
+
+type ApprovalRow = Prisma.AdminApprovalGetPayload<Record<string, never>>;
+const toApproval = (r: ApprovalRow): AdminApproval => ({ id: r.id, action: r.action, entityType: r.entityType, entityId: r.entityId, payload: (r.payload ?? {}) as Record<string, unknown>, status: r.status as AdminApproval['status'], requestedBy: r.requestedBy, requestedAt: r.requestedAt, decidedBy: r.decidedBy, decidedAt: r.decidedAt, decisionReasonAr: r.decisionReasonAr, expiresAt: r.expiresAt });
+
+@Injectable()
+export class ApprovalPrismaRepository implements ApprovalRepository {
+  constructor(private readonly prisma: PrismaService) {}
+  private db(tx?: TxHandle) { return tx ? asTx(tx) : this.prisma; }
+  async create(a: Parameters<ApprovalRepository['create']>[0], tx?: TxHandle) { const r = await this.db(tx).adminApproval.create({ data: { action: a.action, entityType: a.entityType, entityId: a.entityId, payload: a.payload as Prisma.InputJsonValue, requestedBy: a.requestedBy, expiresAt: a.expiresAt } }); return toApproval(r); }
+  async findById(id: string, tx?: TxHandle) { const r = await this.db(tx).adminApproval.findUnique({ where: { id } }); return r ? toApproval(r) : null; }
+  async list(q: { status?: AdminApproval['status']; action?: string; limit: number }) { const rows = await this.prisma.adminApproval.findMany({ where: { status: q.status, action: q.action }, orderBy: { requestedAt: 'desc' }, take: q.limit }); return rows.map(toApproval); }
+  async decide(id: string, d2: Parameters<ApprovalRepository['decide']>[1], tx?: TxHandle) { await this.db(tx).adminApproval.update({ where: { id }, data: { status: d2.status, decidedBy: d2.decidedBy, decidedAt: new Date(), decisionReasonAr: d2.decisionReasonAr } }); }
+  async hasOpenForEntity(action: string, entityId: string) { return (await this.prisma.adminApproval.count({ where: { action, entityId, status: 'requested' } })) > 0; }
+  async expireDue(now: Date) { const r = await this.prisma.adminApproval.updateMany({ where: { status: 'requested', expiresAt: { lt: now } }, data: { status: 'expired', decidedAt: now } }); return r.count; }
+  async expiryHours() { const s = await this.prisma.platformSetting.findUnique({ where: { key: 'approvals.expiry_hours' } }); const v = Number((s?.value as { hours?: number } | null)?.hours ?? s?.value); return Number.isFinite(v) && v > 0 ? v : 72; }
 }

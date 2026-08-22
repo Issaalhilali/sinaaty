@@ -113,15 +113,52 @@ describe('Payments + Escrow + Ledger (e2e)', () => {
     const rel = await http().post(`/v1/admin/escrow/${hb}/release`).set(auth(adminTok)).send({ reason_ar: 'قرار النزاع لصالح الورشة' }).expect(200); expect(rel.body.status).toBe('released');
     expect(await ledgerImbalance()).toBe('0.00');
   });
-  it('refund before release: partial refund keeps hold held; full refund → refunded; payment marked', async () => {
+  it('refund is maker/checker now: request records (202) and moves nothing; a DIFFERENT person approves; payload revalidated', async () => {
     const c = await deliveredInvoice([{ type: 'labor', description_ar: 'برمجة', quantity: 1, unit_price: '300' }]); const pc = await payOnline(c.invId);
     const hc = (await http().get(`/v1/payments/${pc}`).set(auth(custTok))).body.escrow.id;
-    await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '100.00', reason_ar: 'خصم متفق عليه' }).expect(200);
+    // A second pair of eyes: a fresh user granted the finance role by the super admin.
+    const checkerPhone = `+96651${suffix}`; let checkerTok = await login(checkerPhone);
+    const checkerId = (await http().get('/v1/me').set(auth(checkerTok))).body.id;
+    await http().put(`/v1/admin/users/${checkerId}/platform-role`).set(auth(adminTok)).send({ platform_role: 'finance', reason_ar: 'مدقق استردادات للاختبار' }).expect(200);
+    checkerTok = await login(checkerPhone);   // re-mint: the role lives in the token claims
+    // 1) The request moves NO money.
+    const req = await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '100.00', reason_ar: 'خصم متفق عليه' }).expect(202);
+    expect(req.body.approval_id).toBeTruthy();
+    expect((await http().get(`/v1/escrow/${hc}`).set(auth(adminTok))).body).toMatchObject({ status: 'held', refundedAmount: '0.00' });
+    // 2) The maker cannot approve their own request; a second open request on the same hold is refused.
+    await http().post(`/v1/admin/approvals/${req.body.approval_id}/approve`).set(auth(adminTok)).send({ reason_ar: 'أعتمد طلبي' }).expect(403);
+    await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '50.00', reason_ar: 'طلب ثانٍ' }).expect(409);
+    // 3) The checker approves → ledger + PSP + hold state, in one breath.
+    const ok1 = await http().post(`/v1/admin/approvals/${req.body.approval_id}/approve`).set(auth(checkerTok)).send({ reason_ar: 'مبرر ومطابق للاتفاق' }).expect(200);
+    expect(ok1.body.status).toBe('succeeded');
     expect((await http().get(`/v1/escrow/${hc}`).set(auth(adminTok))).body).toMatchObject({ status: 'held', refundedAmount: '100.00' });
+    // 4) An over-remaining request is refused at request time; the maker may withdraw their own request.
     await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '999.00', reason_ar: 'أكثر من المتبقي' }).expect(400);
-    await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '245.00', reason_ar: 'إلغاء الخدمة' }).expect(200);
+    const w = await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '10.00', reason_ar: 'خطأ مطبعي' }).expect(202);
+    await http().post(`/v1/admin/approvals/${w.body.approval_id}/reject`).set(auth(adminTok)).send({ reason_ar: 'أسحب طلبي — الرقم خاطئ' }).expect(200);
+    // 5) Full refund via the two steps → hold refunded, payment marked, books balanced.
+    const full = await http().post(`/v1/admin/escrow/${hc}/refund`).set(auth(adminTok)).send({ amount: '245.00', reason_ar: 'إلغاء الخدمة' }).expect(202);
+    await http().post(`/v1/admin/approvals/${full.body.approval_id}/approve`).set(auth(checkerTok)).send({ reason_ar: 'موافق — إلغاء موثق' }).expect(200);
     expect((await http().get(`/v1/escrow/${hc}`).set(auth(adminTok))).body.status).toBe('refunded');
     expect((await http().get(`/v1/payments/${pc}`).set(auth(custTok))).body.status).toBe('refunded');
+    // 6) Payload staleness: a request left open on a hold that then got fully refunded cannot execute.
+    const inbox = await http().get('/v1/admin/approvals?status=requested').set(auth(adminTok)).expect(200);
+    expect(Array.isArray(inbox.body)).toBe(true);
+    expect(await ledgerImbalance()).toBe('0.00');
+  });
+  it('auto-release skips a hold with an open refund request — the machine must not outrun the decision', async () => {
+    const d = await deliveredInvoice([{ type: 'labor', description_ar: 'توضيب', quantity: 1, unit_price: '200' }]); const pd = await payOnline(d.invId);
+    const hd = (await http().get(`/v1/payments/${pd}`).set(auth(custTok))).body.escrow.id;
+    await prisma.escrowHold.update({ where: { id: hd }, data: { autoReleaseAt: new Date(Date.now() - 3_600_000) } });
+    const r = await http().post(`/v1/admin/escrow/${hd}/refund`).set(auth(adminTok)).send({ amount: '230.00', reason_ar: 'إلغاء كامل قيد الدراسة' }).expect(202);
+    const job = await http().post('/v1/admin/escrow/release-due').set(auth(adminTok)).expect(200);
+    expect(job.body.held_for_decision).toBeGreaterThanOrEqual(1);
+    expect((await http().get(`/v1/escrow/${hd}`).set(auth(adminTok))).body.status).toBe('held');
+    // Withdraw the request → the next pass releases normally.
+    await http().post(`/v1/admin/approvals/${r.body.approval_id}/reject`).set(auth(adminTok)).send({ reason_ar: 'انتفى السبب' }).expect(200);
+    const job2 = await http().post('/v1/admin/escrow/release-due').set(auth(adminTok)).expect(200);
+    expect(job2.body.released).toBeGreaterThanOrEqual(1);
+    expect((await http().get(`/v1/escrow/${hd}`).set(auth(adminTok))).body.status).toBe('released');
     expect(await ledgerImbalance()).toBe('0.00');
   });
   it('cash payment: workshop initiates, customer OTP confirms → invoice paid, no escrow', async () => {

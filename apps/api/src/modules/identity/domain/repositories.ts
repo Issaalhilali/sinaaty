@@ -7,6 +7,8 @@ export interface UserRepository {
   findById(id: string): Promise<User | null>;
   findByPhone(phone: string): Promise<User | null>;
   findByNationalIdHash(hash: string): Promise<User | null>;
+  /** Active platform staff holding one of the given roles — e.g. the finance desk for approval notifications. */
+  listIdsByPlatformRole(roles: string[]): Promise<string[]>;
   /** Create or activate a user by phone (OTP login). */
   upsertByPhone(phone: string): Promise<User>;
   /** Create or update a Nafath-verified user. */

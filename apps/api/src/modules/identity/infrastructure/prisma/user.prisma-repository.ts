@@ -18,6 +18,10 @@ export class UserPrismaRepository implements UserRepository {
   async findById(id: string) { const r = await this.prisma.user.findFirst({ where: { id, deletedAt: null }, select }); return r ? toUser(r) : null; }
   async findByPhone(phone: string) { const r = await this.prisma.user.findFirst({ where: { phoneE164: phone, deletedAt: null }, select }); return r ? toUser(r) : null; }
   async findByNationalIdHash(hash: string) { const r = await this.prisma.user.findFirst({ where: { nationalIdHash: hash, deletedAt: null }, select }); return r ? toUser(r) : null; }
+  async listIdsByPlatformRole(roles: string[]) {
+    const rows = await this.prisma.user.findMany({ where: { platformRole: { in: roles as never }, status: 'active', deletedAt: null }, select: { id: true } });
+    return rows.map((r) => r.id);
+  }
   async upsertByPhone(phone: string) {
     const r = await this.prisma.user.upsert({ where: { phoneE164: phone }, update: {}, create: { phoneE164: phone, status: 'active', userIdentities: { create: { provider: 'otp_phone', providerUid: phone } } }, select });
     return toUser(r);

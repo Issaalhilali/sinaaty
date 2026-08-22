@@ -41,7 +41,27 @@ export interface WebhookInbox {
   record(e: { provider: string; providerEventId: string; eventType: string; signatureValid: boolean; headers?: unknown; payload: unknown }, tx?: TxHandle): Promise<{ inserted: boolean }>;
   markProcessed(provider: string, providerEventId: string, error?: string, tx?: TxHandle): Promise<void>;
 }
+/** Maker/checker request on a sensitive admin action (docs/design/maker-checker-refunds.md). */
+export interface AdminApproval {
+  id: string; action: string; entityType: string; entityId: string; payload: Record<string, unknown>;
+  status: 'requested' | 'approved' | 'rejected' | 'expired';
+  requestedBy: string; requestedAt: Date; decidedBy: string | null; decidedAt: Date | null;
+  decisionReasonAr: string | null; expiresAt: Date;
+}
+export interface ApprovalRepository {
+  /** Throws the driver's unique violation when an open request already exists for (action, entityId). */
+  create(a: { action: string; entityType: string; entityId: string; payload: Record<string, unknown>; requestedBy: string; expiresAt: Date }, tx?: TxHandle): Promise<AdminApproval>;
+  findById(id: string, tx?: TxHandle): Promise<AdminApproval | null>;
+  list(q: { status?: AdminApproval['status']; action?: string; limit: number }): Promise<AdminApproval[]>;
+  decide(id: string, d: { status: 'approved' | 'rejected' | 'expired'; decidedBy: string | null; decisionReasonAr: string | null }, tx?: TxHandle): Promise<void>;
+  hasOpenForEntity(action: string, entityId: string): Promise<boolean>;
+  expireDue(now: Date): Promise<number>;
+  /** approvals.expiry_hours from platform_settings — never a code constant (§5.7). */
+  expiryHours(): Promise<number>;
+}
+
 export const PAYMENT_REPOSITORY = Symbol('PAYMENT_REPOSITORY');
+export const APPROVAL_REPOSITORY = Symbol('APPROVAL_REPOSITORY');
 export const ESCROW_REPOSITORY = Symbol('ESCROW_REPOSITORY');
 export const LEDGER_REPOSITORY = Symbol('LEDGER_REPOSITORY');
 export const PAYOUT_REPOSITORY = Symbol('PAYOUT_REPOSITORY');

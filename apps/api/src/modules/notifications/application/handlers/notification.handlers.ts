@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { OutboxHandlerRegistry, type OutboxEnvelope } from '../../../integrations/outbox/outbox-handler.registry';
+import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/repositories';
 import { ORGANIZATION_REPOSITORY, type OrganizationRepository } from '../../../organizations/domain/repositories';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../../work-orders/domain/repositories';
 import { ACCIDENT_REPORT_REPOSITORY, type AccidentReportRepository } from '../../../accidents/domain/repositories';
@@ -15,7 +16,7 @@ const money = (v: unknown) => Number(v ?? 0).toLocaleString('en-US', { minimumFr
 @Injectable()
 export class NotificationOutboxHandlers implements OnModuleInit {
   private readonly log = new Logger(NotificationOutboxHandlers.name);
-  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(ACCIDENT_REPORT_REPOSITORY) private readonly accidents: AccidentReportRepository) {}
+  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(ACCIDENT_REPORT_REPOSITORY) private readonly accidents: AccidentReportRepository, @Inject(USER_REPOSITORY) private readonly users: UserRepository) {}
   private async orgStaff(orgId: string, roles = ['owner', 'manager']) { return (await this.orgs.listMembers(orgId)).filter((m) => m.isActive && roles.includes(m.role)).map((m) => m.userId); }
   private async orgName(orgId: string) { const o = await this.orgs.findById(orgId); return o?.tradeNameAr ?? o?.legalNameAr ?? 'الورشة'; }
   private async customers(p: { customerUserId?: string | null; customerOrgId?: string | null }) { const ids: string[] = []; if (p.customerUserId) ids.push(p.customerUserId); if (p.customerOrgId) ids.push(...(await this.orgStaff(p.customerOrgId, ['owner', 'fleet_admin', 'fleet_approver']))); return ids; }
@@ -29,6 +30,19 @@ export class NotificationOutboxHandlers implements OnModuleInit {
     on('DisputeOpened', 'dispute-opened', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await disputeParties(p), { template: 'dispute.opened', data: { id: ev.aggregateId, number: str(p['number']), ref: disputeRef(p) }, dedupeKey: `dispute.opened:${ev.aggregateId}` }); });
     on('DisputeMessagePosted', 'dispute-message', async (ev) => { const p = ev.payload; const author = p['authorUserId']; const ids = (await disputeParties(p)).filter((x) => x !== p['authorUserId']);
       void author; await this.notify.notifyMany(ids, { template: 'dispute.message', data: { id: ev.aggregateId, number: str(p['number']) } }); });
+    on('ApprovalRequested', 'approval-requested-staff', async (ev) => {
+      const p = ev.payload as { amount?: string; requestedBy?: string };
+      const staff = (await this.users.listIdsByPlatformRole(['finance', 'super_admin'])).filter((id) => id !== p.requestedBy);
+      await this.notify.notifyMany(staff, { template: 'approval.requested', data: { amount: money(p.amount) }, dedupeKey: `approval.requested:${ev.aggregateId}` });
+    });
+    // Arbitration on the maker/checker design: dispute decisions stay single-step, but any decision
+    // that MOVES money is broadcast to the finance desk the moment it lands — collective visibility.
+    on('DisputeResolved', 'dispute-money-finance', async (ev) => {
+      const p = ev.payload as { number?: string; toCustomer?: string; toProvider?: string };
+      if (Number(p.toCustomer ?? 0) <= 0 && Number(p.toProvider ?? 0) <= 0) return;
+      const staff = await this.users.listIdsByPlatformRole(['finance', 'super_admin']);
+      await this.notify.notifyMany(staff, { template: 'dispute.money.decided', data: { id: ev.aggregateId, number: p.number, to_customer: money(p.toCustomer), to_provider: money(p.toProvider) }, dedupeKey: `dispute.money.decided:${ev.aggregateId}` });
+    });
     on('DisputeResolved', 'dispute-resolved', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await disputeParties(p), { template: 'dispute.resolved', data: { id: ev.aggregateId, number: str(p['number']), decision: DECISION[str(p['resolution'])] ?? str(p['resolution']), to_customer: money(p['toCustomer']), to_provider: money(p['toProvider']) }, dedupeKey: `dispute.resolved:${ev.aggregateId}` }); });
     const TRANSPORT_STATUS: Record<string, string> = { en_route_pickup: 'السائق في طريقه إليك', picked_up: 'حُمِّلت سيارتك على السطحة', en_route_dropoff: 'في الطريق إلى الوجهة', cancelled: 'أُلغيت المهمة', failed: 'تعذّر إتمام النقل' };
     const transportParties = async (p: Record<string, unknown>) => { const ids: string[] = []; if (typeof p['requesterUserId'] === 'string') ids.push(p['requesterUserId']); if (typeof p['requesterOrgId'] === 'string') ids.push(...(await this.orgStaff(p['requesterOrgId']))); return [...new Set(ids)]; };

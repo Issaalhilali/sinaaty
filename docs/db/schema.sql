@@ -1543,6 +1543,25 @@ CREATE INDEX idx_analytics_event_time ON analytics_events(event, occurred_at DES
 CREATE INDEX idx_analytics_org_time ON analytics_events(org_id, occurred_at DESC);
 CREATE INDEX idx_analytics_zone_time ON analytics_events(industrial_zone, occurred_at DESC);
 
+CREATE TABLE admin_approvals (                                 -- maker/checker on sensitive admin actions (escrow refunds first)
+  id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  action             varchar(60)  NOT NULL,                    -- 'escrow.refund' today; generic by design
+  entity_type        varchar(40)  NOT NULL,
+  entity_id          uuid         NOT NULL,
+  payload            jsonb        NOT NULL,                    -- executed verbatim at approval, revalidated then
+  status             varchar(16)  NOT NULL DEFAULT 'requested',-- requested | approved | rejected | expired
+  requested_by       uuid         NOT NULL REFERENCES users(id),
+  requested_at       timestamptz  NOT NULL DEFAULT now(),
+  decided_by         uuid REFERENCES users(id),
+  decided_at         timestamptz,
+  decision_reason_ar text,
+  expires_at         timestamptz  NOT NULL,                    -- window from platform_settings approvals.expiry_hours
+  -- the requester may withdraw their own request; nobody approves what they requested
+  CONSTRAINT approvals_two_people CHECK (status <> 'approved' OR decided_by IS NULL OR decided_by <> requested_by)
+);
+CREATE INDEX idx_admin_approvals_pending ON admin_approvals (action, status) WHERE status = 'requested';
+CREATE UNIQUE INDEX uq_admin_approvals_open_entity ON admin_approvals (action, entity_id) WHERE status = 'requested';
+
 CREATE TABLE sequences_counters (                              -- platform-wide human numbers (WO-, PN-, PR-, ...)
   prefix      varchar(8) NOT NULL,
   year        smallint NOT NULL,

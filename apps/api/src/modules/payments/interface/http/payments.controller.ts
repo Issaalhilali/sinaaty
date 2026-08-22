@@ -3,7 +3,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AppConfig } from '../../../../config';
 import { AppError } from '../../../../common/errors';
-import { CashConfirmDto, CashInitDto, CreatePaymentDto, RefundDto, ReasonDto } from '../../application/dto/payments.dto';
+import { CashConfirmDto, CashInitDto, CreatePaymentDto, DecisionDto, RefundDto, ReasonDto } from '../../application/dto/payments.dto';
+import { ApprovalsUseCases } from '../../application/use-cases/approvals.use-cases';
 import { PaymentsUseCases } from '../../application/use-cases/payments.use-cases';
 import { EscrowUseCases } from '../../application/use-cases/escrow.use-cases';
 import { WalletUseCases } from '../../application/use-cases/wallet.use-cases';
@@ -47,10 +48,15 @@ export class PaymentsController {
 
 @ApiTags('admin/payments') @ApiBearerAuth() @Controller('admin') @Roles({ platform: ['finance', 'ops', 'super_admin'] })
 export class AdminPaymentsController {
-  constructor(private readonly escrow: EscrowUseCases, private readonly wallet: WalletUseCases) {}
+  constructor(private readonly escrow: EscrowUseCases, private readonly wallet: WalletUseCases, private readonly approvals: ApprovalsUseCases) {}
   @Post('escrow/:id/release') @HttpCode(200) release(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(ReasonDto)) dto: ReasonDto) { return this.escrow.adminRelease(u, id, dto); }
   @Post('escrow/:id/freeze') @HttpCode(200) freeze(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(ReasonDto)) dto: ReasonDto) { return this.escrow.adminFreeze(u, id, dto); }
-  @Post('escrow/:id/refund') @HttpCode(200) refund(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(RefundDto)) dto: RefundDto) { return this.escrow.adminRefund(u, id, dto); }
+  // Maker/checker (docs/design/maker-checker-refunds.md): the refund endpoint RECORDS a request (202);
+  // money moves only when a DIFFERENT staff member approves it.
+  @Post('escrow/:id/refund') @HttpCode(202) refund(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(RefundDto)) dto: RefundDto) { return this.approvals.requestRefund(u, id, dto); }
+  @Get('approvals') listApprovals(@CurrentUser() u: AuthUser, @Query('status') status?: string, @Query('limit') limit?: string) { return this.approvals.list(u, { status: status as never, limit: limit ? Number(limit) : undefined }); }
+  @Post('approvals/:id/approve') @HttpCode(200) approveApproval(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(DecisionDto)) dto: DecisionDto) { return this.approvals.approve(u, id, dto); }
+  @Post('approvals/:id/reject') @HttpCode(200) rejectApproval(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(DecisionDto)) dto: DecisionDto) { return this.approvals.reject(u, id, dto); }
   @Post('escrow/release-due') @HttpCode(200) @ApiOperation({ summary: 'Run the auto-release job now' }) releaseDue() { return this.escrow.releaseDue(); }
   @Post('payouts/run') @HttpCode(200) @ApiOperation({ summary: 'Bundle released funds into payouts (per org)' }) runPayouts(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string) { return this.wallet.adminRunPayouts(u, orgId); }
   @Post('payouts/:id/execute') @HttpCode(200) execute(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.wallet.adminExecute(u, id); }

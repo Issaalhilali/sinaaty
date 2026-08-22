@@ -9,3 +9,5 @@ export const RefundDto = z.object({ amount: z.union([z.string(), z.number()]).tr
 export type RefundDto = z.infer<typeof RefundDto>;
 export const ReasonDto = z.object({ reason_ar: z.string().min(3).max(1000) });
 export type ReasonDto = z.infer<typeof ReasonDto>;
+export const DecisionDto = z.object({ reason_ar: z.string().min(3).max(1000) });
+export type DecisionDto = z.infer<typeof DecisionDto>;
