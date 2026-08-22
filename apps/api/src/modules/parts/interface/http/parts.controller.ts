@@ -3,6 +3,7 @@ import { Throttle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { PartOrderStatus } from '@sinaaty/shared-types';
 import { CurrentUser, Public, zod } from '../../../identity/interface/http';
+import { DeliveryRequestDto } from '../../application/dto/parts.dto';
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { CatalogUseCases } from '../../application/catalog.use-cases';
 import { MarketplaceUseCases } from '../../application/marketplace.use-cases';
@@ -36,6 +37,8 @@ export class PartsController {
   @Get('orders') listOrders(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('as') as?: 'buyer' | 'supplier', @Query('status') status?: string) { return this.orders.list(u, { org_id: orgId, as, status: status?.split(',') as PartOrderStatus[] | undefined }); }
   @Get('orders/:id') getOrder(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.orders.get(u, id); }
   @Post('orders/:id/transition') @HttpCode(200) transition(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(OrderTransitionDto)) dto: OrderTransitionDto) { return this.orders.transition(u, id, dto); }
+  @Post('orders/:id/delivery') @HttpCode(201) @ApiOperation({ summary: '«أرسلها بتوصيل المنصة» — المورد يسلّم الطلب للوجستيات المنصة، والطلب يتبع رحلة السائق' })
+  requestDelivery(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(DeliveryRequestDto)) dto: DeliveryRequestDto) { return this.orders.requestDelivery(u, id, dto); }
   @Post('orders/:id/confirm') @HttpCode(200) @ApiOperation({ summary: 'Buyer confirms receipt → escrow released + warranties issued' }) confirm(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.orders.confirm(u, id); }
   // ---- trade accounts
   @Post('trade-accounts') @HttpCode(201) requestTa(@CurrentUser() u: AuthUser, @Body(zod(TradeAccountRequestDto)) dto: TradeAccountRequestDto) { return this.trade.request(u, dto); }

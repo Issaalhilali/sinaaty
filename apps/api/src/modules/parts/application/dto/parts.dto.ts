@@ -25,3 +25,5 @@ export const ClaimDto = z.object({ description_ar: z.string().min(3).max(2000) }
 export const ClaimResolveDto = z.object({ status: z.enum(['under_review', 'approved_replace', 'approved_refund', 'rejected', 'closed']), resolution_ar: z.string().max(2000).optional() }); export type ClaimResolveDto = z.infer<typeof ClaimResolveDto>;
 export const GroupBuyDto = z.object({ org_id: z.string().uuid(), catalog_id: z.string().uuid(), industrial_zone: z.string().max(120).optional(), unit_price: money, min_quantity: z.number().int().min(2), closes_in_hours: z.number().int().min(1).max(24 * 30).default(72) }); export type GroupBuyDto = z.infer<typeof GroupBuyDto>;
 export const GroupBuyJoinDto = z.object({ org_id: z.string().uuid(), quantity: z.number().int().min(1) }); export type GroupBuyJoinDto = z.infer<typeof GroupBuyJoinDto>;
+export const DeliveryRequestDto = z.object({ lat: z.number().min(-90).max(90).optional(), lng: z.number().min(-180).max(180).optional(), dropoff_address: z.string().max(300).optional() });
+export type DeliveryRequestDto = z.infer<typeof DeliveryRequestDto>;

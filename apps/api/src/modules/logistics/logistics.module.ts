@@ -22,6 +22,6 @@ import { AdminTransportController, TransportController } from './interface/http/
     { provide: MAPS_PORT, inject: [AppConfig, MapsMockAdapter], useFactory: (c: AppConfig, mock: MapsMockAdapter) => { if (c.get('INTEGRATION_MAPS') !== 'mock') throw new Error('Maps live adapter not implemented — set INTEGRATION_MAPS=mock'); return mock; } },
     TransportUseCases, TransportBillingHandlers,
   ],
-  exports: [TRANSPORT_REPOSITORY],
+  exports: [TRANSPORT_REPOSITORY, TransportUseCases],
 })
 export class LogisticsModule {}

@@ -21,6 +21,20 @@ const camel = (r: RawJob): JobRow => ({ id: r['id'], number: r['number'], type: 
 export class TransportPrismaRepository implements TransportRepository {
   constructor(private readonly prisma: PrismaService) {}
   private db(tx?: TxHandle) { return tx ? asTx(tx) : this.prisma; }
+  async receiverPhoneOf(jobId: string) {
+    const rows = await this.prisma.$queryRaw<Array<{ phone: string | null }>>`
+      SELECT COALESCE(bu.phone_e164, ou.phone_e164, ru.phone_e164) AS phone
+      FROM transport_jobs j
+      LEFT JOIN part_orders po ON po.id = j.part_order_id
+      LEFT JOIN users bu ON bu.id = po.buyer_user_id
+      LEFT JOIN LATERAL (
+        SELECT u.phone_e164 FROM organization_members m JOIN users u ON u.id = m.user_id
+        WHERE m.org_id = po.buyer_org_id AND m.is_active AND m.role = 'owner' LIMIT 1
+      ) ou ON true
+      LEFT JOIN users ru ON ru.id = j.requester_user_id
+      WHERE j.id = ${jobId}::uuid`;
+    return rows[0]?.phone ?? null;
+  }
   async nextNumber(tx?: TxHandle) { const r = await this.db(tx).$queryRaw<Array<{ n: string }>>`SELECT next_number('TJ') AS n`; return r[0]!.n; }
   async create(j: Parameters<TransportRepository['create']>[0], tx?: TxHandle) {
     const db = this.db(tx);

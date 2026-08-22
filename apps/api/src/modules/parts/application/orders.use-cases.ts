@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, forwardRef, Optional } from '@nestjs/common';
 import { createHash, randomBytes } from 'node:crypto';
 import type { PartCondition, PartOrderStatus } from '@sinaaty/shared-types';
 import { AppError } from '../../../common/errors';
@@ -12,6 +12,8 @@ import type { AuthUser } from '../../identity/domain/auth-user';
 import { isPlatformStaff, membership } from '../../identity/domain/auth-user';
 import { InvoicesUseCases } from '../../invoicing/application/use-cases/invoices.use-cases';
 import { EscrowService } from '../../payments/application/escrow.service';
+import { TransportUseCases } from '../../logistics/application/transport.use-cases';
+import { ORGANIZATION_REPOSITORY, type OrganizationRepository } from '../../organizations/domain/repositories';
 import { ESCROW_REPOSITORY, type EscrowRepository } from '../../payments/domain/repositories';
 import { NotesService } from '../../promissory-notes/application/notes.service';
 import { VehicleEventsWriter } from '../../vehicles/application/vehicle-events.writer';
@@ -23,7 +25,7 @@ import type { BuyNowDto, OrderTransitionDto } from './dto/parts.dto';
 /** Part orders: from an accepted bid or Buy Now (catalog). Prepaid → invoice → PSP → escrow; deferred → trade account credit check → note. Confirm releases escrow + issues warranties. */
 @Injectable()
 export class OrdersUseCases {
-  constructor(@Inject(PARTS_REPOSITORY) private readonly repo: PartsRepository, @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork, private readonly audit: AuditLogWriter, private readonly outbox: OutboxWriter, private readonly config: AppConfig, @Inject(forwardRef(() => InvoicesUseCases)) private readonly invoices: InvoicesUseCases, private readonly escrow: EscrowService, @Inject(ESCROW_REPOSITORY) private readonly holds: EscrowRepository, @Inject(forwardRef(() => NotesService)) private readonly notes: NotesService, private readonly passport: VehicleEventsWriter) {}
+  constructor(@Inject(PARTS_REPOSITORY) private readonly repo: PartsRepository, @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork, private readonly audit: AuditLogWriter, private readonly outbox: OutboxWriter, private readonly config: AppConfig, @Inject(forwardRef(() => InvoicesUseCases)) private readonly invoices: InvoicesUseCases, private readonly escrow: EscrowService, @Inject(ESCROW_REPOSITORY) private readonly holds: EscrowRepository, @Inject(forwardRef(() => NotesService)) private readonly notes: NotesService, private readonly passport: VehicleEventsWriter, @Inject(ORGANIZATION_REPOSITORY) private readonly orgsRepo: OrganizationRepository, @Optional() @Inject(forwardRef(() => TransportUseCases)) private readonly transport?: TransportUseCases) {}
   private isBuyer(o: PartOrder, u: AuthUser) { return isPlatformStaff(u) || o.buyerUserId === u.id || (!!o.buyerOrgId && !!membership(u, o.buyerOrgId)); }
   private isSupplier(o: PartOrder, u: AuthUser) { return isPlatformStaff(u) || !!membership(u, o.supplierOrgId); }
   private totals(items: Array<{ quantity: number; unitPrice: string; vatRate: string }>, deliveryFee: string) { const lines = items.map((i) => computeLine({ quantity: i.quantity, unitPrice: Money.of(i.unitPrice), vatRatePct: Number(i.vatRate) })); const fee = Money.of(deliveryFee); const feeVat = fee.isZero() ? Money.ZERO : fee.percent(15); const subtotal = Money.sum(lines.map((l) => l.net)); const vat = Money.sum(lines.map((l) => l.vat)).plus(feeVat); return { lines, subtotal, vat, total: subtotal.plus(fee).plus(vat) }; }
@@ -80,22 +82,55 @@ export class OrdersUseCases {
   /** Note closed on payment → trade account outstanding decreases. */
   async onNoteClosed(partOrderId: string, amount: string) { const o = await this.repo.findOrder(partOrderId); if (!o?.tradeAccountId) return; await this.uow.run((tx) => this.repo.updateTradeAccount(o.tradeAccountId!, { outstandingDelta: `-${amount}` }, tx)); }
 
-  async get(u: AuthUser, id: string) { const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (!this.isBuyer(o, u) && !this.isSupplier(o, u)) throw new AppError('FORBIDDEN'); return { ...o, warranties: await this.repo.listWarranties({ limit: 20, ...(o.buyerUserId ? { beneficiaryUserId: o.buyerUserId } : { beneficiaryOrgId: o.buyerOrgId! }) }).then((w) => w.filter((x) => x.partOrderId === o.id)) }; }
+  async get(u: AuthUser, id: string) { const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (!this.isBuyer(o, u) && !this.isSupplier(o, u)) throw new AppError('FORBIDDEN'); const dj = o.transportJobId && this.transport ? await this.transport.jobSummary(o.transportJobId) : null; return { ...o, delivery: dj, warranties: await this.repo.listWarranties({ limit: 20, ...(o.buyerUserId ? { beneficiaryUserId: o.buyerUserId } : { beneficiaryOrgId: o.buyerOrgId! }) }).then((w) => w.filter((x) => x.partOrderId === o.id)) }; }
   async list(u: AuthUser, q: { org_id?: string; as?: 'buyer' | 'supplier'; status?: PartOrderStatus[]; limit?: number }) { if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN'); if (q.as === 'supplier') { if (!q.org_id) throw new AppError('VALIDATION'); return this.repo.listOrders({ supplierOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); } return this.repo.listOrders({ buyerUserId: q.org_id ? undefined : u.id, buyerOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); }
   /** Supplier: preparing → shipped → delivered (delivered starts the auto-confirm clock). Cancel only before shipping. */
   async transition(u: AuthUser, id: string, dto: OrderTransitionDto) {
     const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (!this.isSupplier(o, u) && !(dto.to === 'cancelled' && this.isBuyer(o, u))) throw new AppError('FORBIDDEN');
+    return this.applyTransition(o, dto, u.id);
+  }
+  private async applyTransition(o: NonNullable<Awaited<ReturnType<PartsRepository['findOrder']>>>, dto: OrderTransitionDto, actorUserId: string | null) {
+    const id = o.id;
     if (!canOrder(o.status, dto.to)) throw new AppError('CONFLICT', { messageAr: `لا يمكن نقل الطلب من ${o.status} إلى ${dto.to}.`, messageEn: `Illegal transition ${o.status} → ${dto.to}.` });
     const now = new Date(); const auto = new Date(now.getTime() + this.config.get('PART_ORDER_AUTO_CONFIRM_HOURS') * 3_600_000);
     await this.uow.run(async (tx) => {
       await this.repo.updateOrder(id, { status: dto.to, ...(dto.to === 'shipped' ? { shippedAt: now } : {}), ...(dto.to === 'delivered' ? { deliveredAt: now, autoConfirmAt: auto } : {}), ...(dto.to === 'cancelled' ? { cancelledAt: now } : {}) }, tx);
       if (dto.to === 'shipped') for (const i of o.items) if (i.inventoryId) await this.repo.adjustInventory(i.inventoryId, { quantity: -i.quantity, reserved: -i.quantity }, tx);
       if (dto.to === 'cancelled') { for (const i of o.items) if (i.inventoryId) await this.repo.adjustInventory(i.inventoryId, { reserved: -i.quantity }, tx); if (o.tradeAccountId) await this.repo.updateTradeAccount(o.tradeAccountId, { outstandingDelta: `-${o.total}` }, tx); }
-      await this.audit.write(tx, { action: `part_order.${dto.to}`, entityType: 'part_order', entityId: id, orgId: o.supplierOrgId, actorUserId: u.id, after: { from: o.status, to: dto.to, note: dto.note_ar ?? null } });
+      await this.audit.write(tx, { action: `part_order.${dto.to}`, entityType: 'part_order', entityId: id, orgId: o.supplierOrgId, actorUserId, actorType: actorUserId ? 'user' : 'system', after: { from: o.status, to: dto.to, note: dto.note_ar ?? null } });
       await this.outbox.publish(tx, { eventType: 'PartOrderStatusChanged', aggregateType: 'part_order', aggregateId: id, payload: { number: o.number, from: o.status, to: dto.to, supplierOrgId: o.supplierOrgId, buyerUserId: o.buyerUserId, buyerOrgId: o.buyerOrgId, autoConfirmAt: dto.to === 'delivered' ? auto.toISOString() : null } });
     });
     return this.repo.findOrder(id);
   }
+  /** «أرسلها بتوصيل المنصة» — the supplier hands the order to platform logistics: a parts_delivery job
+   *  from their own doorstep to the order's delivery point, live-tracked; the ORDER then follows the
+   *  DRIVER (pickup → shipped, proof-of-delivery → delivered) instead of the supplier's word. */
+  async requestDelivery(u: AuthUser, id: string, dto: { lat?: number; lng?: number; dropoff_address?: string }) {
+    const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND');
+    if (!this.isSupplier(o, u)) throw new AppError('FORBIDDEN');
+    if (!this.transport) throw new AppError('CONFLICT', { messageAr: 'خدمة التوصيل غير مفعّلة.', messageEn: 'Delivery service unavailable.' });
+    if (!['paid', 'preparing'].includes(o.status)) throw new AppError('CONFLICT', { messageAr: 'التوصيل يُطلب بعد الدفع وقبل الشحن.', messageEn: `Delivery is requested after payment and before shipping (now ${o.status}).` });
+    if (o.transportJobId) throw new AppError('CONFLICT', { messageAr: 'لهذا الطلب توصيلة قائمة.', messageEn: 'A delivery already exists for this order.' });
+    const pickupLoc = (await this.orgsRepo.listLocations(o.supplierOrgId)).find((l) => l.isPrimary) ?? (await this.orgsRepo.listLocations(o.supplierOrgId))[0];
+    if (!pickupLoc?.lat || !pickupLoc?.lng) throw new AppError('VALIDATION', { messageAr: 'أضف موقع منشأتك أولاً.', messageEn: 'Supplier org has no location.' });
+    const drop = dto.lat != null && dto.lng != null ? { lat: dto.lat, lng: dto.lng, address: dto.dropoff_address ?? null } : await this.repo.deliveryPointOf(id);
+    if (!drop) throw new AppError('VALIDATION', { messageAr: 'حدد نقطة التسليم — لا عنوان معروفاً لهذا الطلب.', messageEn: 'No known delivery point; pass lat/lng.' });
+    const job = await this.transport.create(u, { type: 'parts_delivery', org_id: o.supplierOrgId, part_order_id: o.id, pickup: { lat: pickupLoc.lat, lng: pickupLoc.lng }, pickup_address: pickupLoc.city ?? undefined, dropoff: { lat: drop.lat, lng: drop.lng }, dropoff_address: dto.dropoff_address ?? drop.address ?? undefined });
+    await this.uow.run(async (tx) => {
+      await this.repo.updateOrder(id, { transportJobId: job.id }, tx);
+      await this.audit.write(tx, { action: 'part_order.delivery_requested', entityType: 'part_order', entityId: id, orgId: o.supplierOrgId, actorUserId: u.id, after: { transport_job: job.number, price: job.quotedPrice } });
+    });
+    return { order_id: id, transport_job: { id: job.id, number: job.number, status: job.status, quoted_price: job.quotedPrice, drivers_nearby: (job as { drivers_nearby?: number }).drivers_nearby ?? 0 } };
+  }
+  /** The driver's journey drives the order: picked_up → shipped, delivered(proof) → delivered. Idempotent. */
+  async onDeliveryStatus(partOrderId: string, to: 'picked_up' | 'delivered') {
+    const o = await this.repo.findOrder(partOrderId); if (!o) return null;
+    const target = to === 'picked_up' ? 'shipped' : 'delivered';
+    if (!canOrder(o.status, target)) return null;   // already there or ahead — the journey replays safely
+    await this.applyTransition(o, { to: target, note_ar: 'حركة توصيل المنصة' }, null);
+    return target;
+  }
+
   /** Buyer confirms (or auto-confirm job): escrow released to the supplier, warranties issued for items with warranty_days > 0. */
   async confirm(u: AuthUser | null, id: string, reason: 'customer_confirmed' | 'auto_timeout' = 'customer_confirmed') {
     const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (u && !this.isBuyer(o, u)) throw new AppError('FORBIDDEN');

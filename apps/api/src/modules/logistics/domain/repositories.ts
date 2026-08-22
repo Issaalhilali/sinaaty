@@ -3,6 +3,9 @@ import type { TxHandle } from '../../../common/ports/unit-of-work.port';
 import type { DriverProfile, GeoPoint, TrackingPoint, TransportJob } from './transport';
 export interface TransportRepository {
   nextNumber(tx?: TxHandle): Promise<string>;
+  /** Who physically RECEIVES this job: a parts delivery hands to the part order's buyer (user phone,
+   *  else the buyer org's owner) — everything else hands to the requesting user. */
+  receiverPhoneOf(jobId: string): Promise<string | null>;
   create(j: { number: string; type: TransportType; requesterUserId: string | null; requesterOrgId: string | null; vehicleId: string | null; workOrderId: string | null; partOrderId: string | null; pickup: GeoPoint; pickupAddress: string | null; dropoff: GeoPoint; dropoffAddress: string | null; distanceKm: string; quotedPrice: string; platformMargin: string; scheduledAt: Date | null; notesAr: string | null }, tx?: TxHandle): Promise<TransportJob>;
   findById(id: string, tx?: TxHandle): Promise<TransportJob | null>;
   list(q: { requesterUserId?: string; requesterOrgId?: string; providerOrgId?: string; driverUserId?: string; status?: TransportStatus[]; limit: number }): Promise<TransportJob[]>;

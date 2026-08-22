@@ -28,6 +28,8 @@ export interface PartsRepository {
   updateRequest(id: string, p: { status?: PartRequestStatus; awardedBidId?: string | null }, tx?: TxHandle): Promise<void>;
   /** Supplier orgs (active, supplier types) with a location within the radius of the request point; distance in km. */
   /** «وين المحل» — primary-location city/district for orgs, with km from a point when given (owner directive). */
+  /** Where a part order should be delivered: the auction request's point, else the buyer org's primary location. */
+  deliveryPointOf(orderId: string): Promise<{ lat: number; lng: number; address: string | null } | null>;
   whereOfOrgs(orgIds: string[], from?: { lat: number; lng: number } | { requestId: string }): Promise<Map<string, { city: string | null; district: string | null; distanceKm: number | null }>>;
   matchSuppliers(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;
   addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle): Promise<number>;
@@ -38,7 +40,7 @@ export interface PartsRepository {
   setBidStatus(id: string, status: BidStatus, tx?: TxHandle): Promise<void>;
   setBidsStatus(requestId: string, from: BidStatus[], to: BidStatus, exceptId?: string, tx?: TxHandle): Promise<number>;
   // orders
-  createOrder(o: Omit<PartOrder, 'id' | 'shippedAt' | 'deliveredAt' | 'installedAt' | 'confirmedAt' | 'createdAt' | 'items'> & { items: Array<Omit<PartOrderItem, 'id'>> }, tx?: TxHandle): Promise<PartOrder>;
+  createOrder(o: Omit<PartOrder, 'id' | 'shippedAt' | 'deliveredAt' | 'installedAt' | 'confirmedAt' | 'createdAt' | 'items' | 'transportJobId'> & { items: Array<Omit<PartOrderItem, 'id'>> }, tx?: TxHandle): Promise<PartOrder>;
   findOrder(id: string, tx?: TxHandle): Promise<PartOrder | null>;
   findOrderByInvoice(invoiceId: string): Promise<PartOrder | null>;
   listOrders(q: { buyerUserId?: string; buyerOrgId?: string; supplierOrgId?: string; tradeAccountId?: string; status?: PartOrderStatus[]; autoConfirmBefore?: Date; limit: number }): Promise<PartOrder[]>;

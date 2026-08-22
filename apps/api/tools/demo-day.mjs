@@ -8,6 +8,7 @@
  *
  * آمن الإعادة: المستخدمون بأرقام ثابتة يُعاد استخدامهم، والمنشآت تُلتقط من عضوياتهم إن وُجدت.
  */
+import { setTimeout as delay } from 'node:timers/promises';
 const BASE = (process.argv[2] ?? 'http://localhost:3000') + '/v1';
 // نقطة مسرح العرض: بعيدة عن ركام إحداثيات حزم الاختبار على قاعدة التطوير
 const RIYADH_IND2 = { lat: 25.1020, lng: 46.2200 };
@@ -22,7 +23,7 @@ const PHONES = {
   admin: '+966500000099',
 };
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms) => delay(ms);
 async function call(method, path, { token, body } = {}) {
   for (let attempt = 1; ; attempt++) {
     const res = await fetch(BASE + path, { method, headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: body ? JSON.stringify(body) : undefined });
@@ -42,7 +43,7 @@ const step = (msg) => console.log(`  ✓ ${msg}`);
 async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}) {
   let tok = await login(phone);
   const me = await call('GET', '/me', { token: tok });
-  let orgId = me.orgs.find((o) => true)?.org_id;
+  let orgId = me.orgs[0]?.org_id;
   if (!orgId) {
     const cr = `9${String(Date.now()).slice(-8)}${Math.floor(Math.random() * 9)}`;
     const org = await call('POST', '/organizations', { token: tok, body: { type, legal_name_ar: nameAr, trade_name_ar: nameAr, cr_number: cr } });

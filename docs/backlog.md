@@ -25,7 +25,7 @@
 | Group buy fulfilment (reached → orders per participant at group price) | Step 18b | open/join/reached implemented; ordering needs payment UX | Step 22 |
 | Trade-account agreement signed by workshop owner via Nafath (`guarantor_signature_id`) | Step 18b | needs live Nafath contract; approval by supplier suffices for mock | Step 20+ |
 | InventorySync REST adapter (pull from distributor ERP) | Step 18b | CSV push covers pilot; REST needs a real ERP contract | Step 22 |
-| Part-order transport job (supplier → workshop delivery via logistics) | Step 18 | transport_job_id column reserved | Step 19 |
+| ~~Part-order transport job (supplier → buyer delivery via logistics)~~ ✅ 2026-08-22 — «أرسلها بتوصيل المنصة»: POST /parts/orders/:id/delivery creates a parts_delivery job from the supplier's doorstep to the order point; the ORDER follows the DRIVER (pickup→shipped, proof→delivered), the proof OTP goes to the BUYER who actually receives, and the order view carries the live job | Step 18 | — | done |
 | Bid with photos (supplier attaches media to a bid) | Step 22 | bid DTO has no media yet; add `part_bid_media` link | Step 23 |
 | Customer parts request + bids compare + warranty wallet screens | Step 22 | workshop flows first | Step 23 |
 | Driver job list/tracking screens | Step 22 | logistics module not built | Step 19 |

@@ -76,6 +76,8 @@ export class TransportUseCases {
     const inv = j.status === 'delivered' ? await this.invoices.findByTransportJob(id) : null;
     return { ...j, driver: driver ? { name_ar: driver.fullNameAr, phone: driver.phone, truck_plate: driver.truckPlate, rating: driver.ratingAvg, last_geo: driver.lastGeo } : null, invoice: inv ? { id: inv.id, number: inv.number, total: inv.total, status: inv.status, paid_total: inv.paidTotal } : null, tracking: await this.repo.listTracking(id, 50) };
   }
+  /** Tiny cross-module summary (no auth — the CALLER owns the access decision for its own entity). */
+  async jobSummary(id: string) { const j = await this.repo.findById(id); return j ? { id: j.id, number: j.number, status: j.status, quoted_price: j.quotedPrice, driver_user_id: j.driverUserId } : null; }
   async list(u: AuthUser, q: { org_id?: string; as?: 'requester' | 'driver' | 'provider'; status?: TransportStatus[]; limit?: number }) {
     if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     if (q.as === 'driver') return this.repo.list({ driverUserId: u.id, status: q.status, limit: q.limit ?? 50 });
@@ -111,7 +113,7 @@ export class TransportUseCases {
     await this.uow.run(async (tx) => {
       await this.repo.update(id, { status: dto.to, ...(dto.to === 'picked_up' ? { pickedUpAt: now } : {}), ...(dto.note_ar ? { notesAr: dto.note_ar } : {}) }, tx);
       await this.audit.write(tx, { action: `transport.${dto.to}`, entityType: 'transport_job', entityId: id, orgId: j.providerOrgId, actorUserId: u.id, before: { status: j.status }, after: { status: dto.to, note: dto.note_ar ?? null } });
-      await this.outbox.publish(tx, { eventType: 'TransportStatusChanged', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, from: j.status, to: dto.to, requesterUserId: j.requesterUserId, requesterOrgId: j.requesterOrgId, driverUserId: j.driverUserId } });
+      await this.outbox.publish(tx, { eventType: 'TransportStatusChanged', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, from: j.status, to: dto.to, requesterUserId: j.requesterUserId, requesterOrgId: j.requesterOrgId, driverUserId: j.driverUserId, partOrderId: j.partOrderId } });
     });
     this.rt?.publish(`transport:${id}`, 'status', { job_id: id, status: dto.to });
     return this.repo.findById(id);
@@ -135,8 +137,10 @@ export class TransportUseCases {
     const j = await this.repo.findById(id); if (!j) throw new AppError('NOT_FOUND');
     if (!this.isDriver(j, u) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     if (!['picked_up', 'en_route_dropoff'].includes(j.status)) throw new AppError('CONFLICT', { messageAr: 'اطلب الرمز عند الوصول لنقطة التسليم.', messageEn: 'Request the code at the drop-off.' });
-    const receiver = j.requesterUserId ? await this.users.findById(j.requesterUserId) : null;
-    const phone = receiver?.phone; if (!phone) throw new AppError('VALIDATION', { messageAr: 'لا يوجد رقم مستلم لإرسال الرمز.', messageEn: 'No receiver phone to send the code to.' });
+    // The RECEIVER gets the code: for a parts delivery that is the buyer at the drop-off, not the
+    // supplier who requested the truck (product truth caught by the delivery e2e).
+    const phone = await this.repo.receiverPhoneOf(id);
+    if (!phone) throw new AppError('VALIDATION', { messageAr: 'لا يوجد رقم مستلم لإرسال الرمز.', messageEn: 'No receiver phone to send the code to.' });
     const recent = await this.otps.countRecent(phone, new Date(Date.now() - 10 * 60_000));
     if (recent >= this.config.get('OTP_MAX_REQUESTS_PER_10MIN')) throw new AppError('OTP_TOO_MANY');
     const code = this.hasher.randomDigits(6);
@@ -149,8 +153,7 @@ export class TransportUseCases {
     const j = await this.repo.findById(id); if (!j) throw new AppError('NOT_FOUND');
     if (!this.isDriver(j, u) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     if (!canTransitionTransport(j.status, 'delivered')) throw new AppError('CONFLICT', { messageAr: `لا يمكن إنهاء المهمة من ${j.status}.`, messageEn: `Cannot deliver from ${j.status}.` });
-    const receiver = j.requesterUserId ? await this.users.findById(j.requesterUserId) : null;
-    const phone = receiver?.phone; if (!phone) throw new AppError('VALIDATION');
+    const phone = await this.repo.receiverPhoneOf(id); if (!phone) throw new AppError('VALIDATION');
     const ch = await this.otps.findLatestActive(phone, 'accept_delivery', new Date()); if (!ch) throw new AppError('OTP_EXPIRED');
     if (ch.codeHash !== this.hasher.sha256(`${phone}:${dto.code}`)) { await this.otps.incrementAttempts(ch.id); throw new AppError('OTP_INVALID'); }
     const now = new Date();
@@ -161,7 +164,7 @@ export class TransportUseCases {
       if (!canComplete(fresh)) throw new AppError('INTERNAL', { messageAr: 'إثبات التسليم غير مكتمل.', messageEn: 'Proof of delivery incomplete.' });
       if (j.vehicleId) await this.passport.record({ vehicleId: j.vehicleId, type: 'work_order', orgId: j.providerOrgId, refTable: 'transport_jobs', refId: id, summaryAr: `نقل بالسطحة ${j.number} — ${Money.of(j.distanceKm ?? '0').toString()} كم`, summaryEn: `Towed (${j.number})`, isPublic: true }, tx);
       await this.audit.write(tx, { action: 'transport.delivered', entityType: 'transport_job', entityId: id, orgId: j.providerOrgId, actorUserId: u.id, after: { proof_media: dto.media_id, otp_verified: true, final_price: j.quotedPrice, margin: j.platformMargin } });
-      await this.outbox.publish(tx, { eventType: 'TransportDelivered', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, requesterUserId: j.requesterUserId, requesterOrgId: j.requesterOrgId, driverUserId: j.driverUserId, providerOrgId: j.providerOrgId, price: j.quotedPrice, margin: j.platformMargin } });
+      await this.outbox.publish(tx, { eventType: 'TransportDelivered', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, requesterUserId: j.requesterUserId, requesterOrgId: j.requesterOrgId, driverUserId: j.driverUserId, providerOrgId: j.providerOrgId, price: j.quotedPrice, margin: j.platformMargin, partOrderId: j.partOrderId } });
     });
     this.rt?.publish(`transport:${id}`, 'delivered', { job_id: id });
     return this.repo.findById(id);
