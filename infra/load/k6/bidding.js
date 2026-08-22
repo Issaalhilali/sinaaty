@@ -34,20 +34,22 @@ export function setup() {
   return { buyer, buyerOrg: orgOf(buyer), supplier, supplierOrg: orgOf(supplier) };
 }
 
+// Tokens are minted in setup() ONLY (see work-orders.js and lib.js: shared phones + in-run re-login
+// = OTP invalidation storm). Long runs: start the API with JWT_ACCESS_TTL_SECONDS >= run length.
 export default function ({ buyer, buyerOrg, supplier, supplierOrg }) {
   const started = Date.now();
   const open = http.post(`${BASE}/parts/requests`, JSON.stringify({
     org_id: buyerOrg, vin: randomVin(), part_name_ar: 'مساعد أمامي يمين',
     accepted_conditions: ['oem_new', 'aftermarket_new', 'used_scrapyard'], quantity: 1, bidding_minutes: 60,
   }), { ...auth(buyer), tags: { step: 'open' } });
-  if (!ok(open, 'open part request')) return;
+  if (!ok(open, 'open part request')) { think(1); return; }
   const id = open.json('id');
 
   const price = (300 + Math.floor(Math.random() * 400)).toFixed(2);
   const bid = http.post(`${BASE}/parts/requests/${id}/bids`, JSON.stringify({
     org_id: supplierOrg, condition: 'aftermarket_new', unit_price: price, quantity: 1, eta_hours: 24, warranty_days: 90,
   }), { ...auth(supplier), tags: { step: 'bid' } });
-  if (!ok(bid, 'submit bid')) return;
+  if (!ok(bid, 'submit bid')) { think(1); return; }
 
   const read = http.get(`${BASE}/parts/requests/${id}`, { ...auth(buyer), tags: { step: 'read' } });
   ok(read, 'read request with bids');

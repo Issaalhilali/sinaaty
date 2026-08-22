@@ -33,6 +33,11 @@ export function setup() {
   return { token, orgId: orgOf(token) };
 }
 
+// Tokens are minted in setup() ONLY — lib.js documents why: every VU shares one workshop phone, and
+// in-run re-logins make ten VUs invalidate each other's OTP codes in a self-sustaining storm (soak
+// run 3 proved it at minute ten). For any run longer than the 15-minute access TTL, start the API
+// with JWT_ACCESS_TTL_SECONDS >= the run length — a load-environment knob, exactly like the raised
+// throttle; production keeps 900s.
 export default function ({ token, orgId }) {
   const started = Date.now();
   const create = http.post(`${BASE}/work-orders`, JSON.stringify({
@@ -42,16 +47,16 @@ export default function ({ token, orgId }) {
       { type: 'part', description_ar: 'فلتر زيت أصلي', quantity: 1, unit_price: '85', warranty_days: 180 },
     ],
   }), { ...auth(token), tags: { step: 'create' } });
-  if (!ok(create, 'create work order')) return;
+  if (!ok(create, 'create work order')) { think(1); return; }   // a failed step pauses too — never a hot loop
   const id = create.json('id');
 
   for (const to of ['received', 'inspecting']) {
     const t = http.post(`${BASE}/work-orders/${id}/transition`, JSON.stringify({ to }), { ...auth(token), tags: { step: 'transition' } });
-    if (!ok(t, `transition → ${to}`)) return;
+    if (!ok(t, `transition → ${to}`)) { think(1); return; }
   }
 
   const approval = http.post(`${BASE}/work-orders/${id}/request-approval`, JSON.stringify({}), { ...auth(token), tags: { step: 'transition' } });
-  if (!ok(approval, 'request approval')) return;
+  if (!ok(approval, 'request approval')) { think(1); return; }
 
   const timeline = http.get(`${BASE}/work-orders/${id}/timeline`, { ...auth(token), tags: { step: 'timeline' } });
   ok(timeline, 'timeline');
