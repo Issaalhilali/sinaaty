@@ -43,8 +43,8 @@ class FakeCustomerParts implements PartsRepository {
     biddingEndsAt: DateTime.now().add(const Duration(minutes: 45)), status: 'open', bidsCount: 3, lowestBid: '380.00',
     createdAt: DateTime(2026, 8, 20, 10),
     bids: [
-      PartBid(id: 'b_expensive', supplierOrgId: 's1', condition: 'oem_new', unitPrice: '650.00', quantity: 1, deliveryFee: '0.00', etaHours: 48, warrantyDays: 365, status: 'submitted', createdAt: DateTime(2026, 8, 20, 10, 5)),
-      PartBid(id: 'b_cheap', supplierOrgId: 's2', condition: 'used_scrapyard', unitPrice: '380.00', quantity: 1, deliveryFee: '0.00', etaHours: 24, warrantyDays: 30, status: 'submitted', createdAt: DateTime(2026, 8, 20, 10, 9)),
+      PartBid(id: 'b_expensive', supplierOrgId: 's1', condition: 'oem_new', unitPrice: '650.00', quantity: 1, deliveryFee: '0.00', etaHours: 48, warrantyDays: 365, status: 'submitted', createdAt: DateTime(2026, 8, 20, 10, 5), whereText: 'الصناعية الثانية — 9.5 كم', distanceKm: '9.5'),
+      PartBid(id: 'b_cheap', supplierOrgId: 's2', condition: 'used_scrapyard', unitPrice: '380.00', quantity: 1, deliveryFee: '0.00', etaHours: 24, warrantyDays: 30, status: 'submitted', createdAt: DateTime(2026, 8, 20, 10, 9), whereText: 'حي الصناعية — 3.1 كم', distanceKm: '3.1'),
       PartBid(id: 'b_middle', supplierOrgId: 's3', condition: 'aftermarket_new', unitPrice: '520.00', quantity: 1, deliveryFee: '0.00', etaHours: 6, warrantyDays: 90, status: 'submitted', createdAt: DateTime(2026, 8, 20, 10, 12)),
     ],
   );
@@ -201,6 +201,10 @@ void main() {
     expect(find.text('الأرخص'), findsOneWidget);
     expect(find.text('الأسرع'), findsOneWidget);
     expect(find.text('أطول ضمان'), findsOneWidget);
+    expect(find.text('الأقرب'), findsOneWidget);                            // «الأقرب» joins the arguments (scope §2)
+    expect(find.textContaining('حي الصناعية — 3.1 كم'), findsOneWidget);    // the place line, exactly as the API sent it
+    expect(find.textContaining('9.5 كم'), findsOneWidget);
+    // b_middle has no coordinates: its row simply has no place line — and nothing breaks.
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_bids_light.png'));
     // Accepting the first (cheapest) offer takes the customer to the order.
     await tester.tap(find.text('اقبل هذا العرض').first); await tester.pumpAndSettle();
