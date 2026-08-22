@@ -41,7 +41,21 @@ export class MarketplaceUseCases {
     await this.uow.run(async (tx) => { await this.repo.addRecipients(req.id, matched, tx); await this.outbox.publish(tx, { eventType: 'PartRequestCreated', aggregateType: 'part_request', aggregateId: req.id, payload: { number: req.number, partNameAr: req.partNameAr, recipientOrgIds: matched.map((m) => m.orgId), requesterUserId: req.requesterUserId, requesterOrgId: req.requesterOrgId, endsAt: endsAt.toISOString() } }); });
     return { ...req, recipients: matched.length };
   }
-  async get(u: AuthUser, id: string) { const r = await this.repo.findRequest(id); if (!r) throw new AppError('NOT_FOUND'); if (!(await this.canRead(r, u))) throw new AppError('FORBIDDEN'); const bids = await this.repo.listBids(id); const mine = this.isRequester(r, u); return { ...r, bids: mine ? bids : bids.filter((b) => membership(u, b.supplierOrgId)), bids_count: bids.length, lowest_bid: bids.find((b) => b.status === 'submitted')?.unitPrice ?? null, recipients: mine ? await this.repo.listRecipients(id) : undefined }; }
+  async get(u: AuthUser, id: string) {
+    const r = await this.repo.findRequest(id); if (!r) throw new AppError('NOT_FOUND');
+    if (!(await this.canRead(r, u))) throw new AppError('FORBIDDEN');
+    const bids = await this.repo.listBids(id); const mine = this.isRequester(r, u);
+    const visible = mine ? bids : bids.filter((b) => membership(u, b.supplierOrgId));
+    // «القطعة موجودة، سعرها النهائي، ووينها» — the supplier's name and place ride every bid the
+    // requester compares (owner directive 2026-08-22); distance is measured from the delivery point.
+    const where = await this.repo.whereOfOrgs([...new Set(visible.map((b) => b.supplierOrgId))], { requestId: id });
+    const enriched = await Promise.all(visible.map(async (b) => {
+      const w = where.get(b.supplierOrgId); const org = await this.orgs.findById(b.supplierOrgId);
+      const place = w?.district ?? w?.city ?? null; const dist = w?.distanceKm == null ? null : `${w.distanceKm.toFixed(1)} كم`;
+      return { ...b, supplier_name_ar: org?.tradeNameAr ?? org?.legalNameAr ?? null, supplier_city: w?.city ?? null, supplier_district: w?.district ?? null, distance_km: w?.distanceKm ?? null, where_text: [place, dist].filter(Boolean).join(' — ') || null };
+    }));
+    return { ...r, bids: enriched, bids_count: bids.length, lowest_bid: bids.find((b) => b.status === 'submitted')?.unitPrice ?? null, recipients: mine ? await this.repo.listRecipients(id) : undefined };
+  }
   async list(u: AuthUser, q: { org_id?: string; as?: 'requester' | 'supplier'; status?: string[]; limit?: number }) {
     if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     if (q.as === 'supplier') { if (!q.org_id) throw new AppError('VALIDATION', { messageEn: 'org_id required for supplier view' }); return this.repo.listRequests({ recipientOrgId: q.org_id, status: q.status as never, limit: q.limit ?? 50 }); }

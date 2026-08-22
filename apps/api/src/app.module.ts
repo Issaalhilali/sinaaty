@@ -26,6 +26,7 @@ import { FleetModule } from './modules/fleet/fleet.module';
 import { VisionModule } from './modules/vision/vision.module';
 import { VoiceModule } from './modules/voice/voice.module';
 import { PilotModule } from './modules/pilot/pilot.module';
+import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
 import { SearchModule } from './modules/search/search.module';
 import { LogisticsModule } from './modules/logistics/logistics.module';
 import { JwtAuthGuard } from './modules/identity/interface/http/guards/jwt-auth.guard';
@@ -60,7 +61,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     LogisticsModule,
     AccidentsModule,
     PilotModule,
-    SearchModule,
+    SearchModule, ServiceRequestsModule,
     FleetModule,
     VoiceModule,
     VisionModule,

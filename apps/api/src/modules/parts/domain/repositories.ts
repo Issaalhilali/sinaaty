@@ -27,6 +27,8 @@ export interface PartsRepository {
   listRequests(q: { requesterUserId?: string; requesterOrgId?: string; recipientOrgId?: string; status?: PartRequestStatus[]; endedBefore?: Date; limit: number }): Promise<PartRequest[]>;
   updateRequest(id: string, p: { status?: PartRequestStatus; awardedBidId?: string | null }, tx?: TxHandle): Promise<void>;
   /** Supplier orgs (active, supplier types) with a location within the radius of the request point; distance in km. */
+  /** «وين المحل» — primary-location city/district for orgs, with km from a point when given (owner directive). */
+  whereOfOrgs(orgIds: string[], from?: { lat: number; lng: number } | { requestId: string }): Promise<Map<string, { city: string | null; district: string | null; distanceKm: number | null }>>;
   matchSuppliers(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;
   addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle): Promise<number>;
   listRecipients(requestId: string): Promise<Array<{ orgId: string; distanceKm: number | null; notifiedAt: Date; viewedAt: Date | null }>>;

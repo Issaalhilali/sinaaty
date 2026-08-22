@@ -61,6 +61,20 @@ export class PartsPrismaRepository implements PartsRepository {
   async findRequest(id: string, tx?: TxHandle) { const r = await this.db(tx).partRequest.findUnique({ where: { id } }); return r ? toReq(r) : null; }
   async listRequests(q: Parameters<PartsRepository['listRequests']>[0]) { const rows = await this.prisma.partRequest.findMany({ where: { requesterUserId: q.requesterUserId, requesterOrgId: q.requesterOrgId, status: q.status ? { in: q.status } : undefined, biddingEndsAt: q.endedBefore ? { lte: q.endedBefore } : undefined, ...(q.recipientOrgId ? { partRequestRecipients: { some: { orgId: q.recipientOrgId } } } : {}) }, orderBy: { createdAt: 'desc' }, take: q.limit }); return rows.map(toReq); }
   async updateRequest(id: string, p: Parameters<PartsRepository['updateRequest']>[1], tx?: TxHandle) { await this.db(tx).partRequest.update({ where: { id }, data: { status: p.status, awardedBidId: p.awardedBidId === undefined ? undefined : p.awardedBidId } }); }
+  async whereOfOrgs(orgIds: string[], from?: { lat: number; lng: number } | { requestId: string }) {
+    const out = new Map<string, { city: string | null; district: string | null; distanceKm: number | null }>();
+    if (!orgIds.length) return out;
+    const point = from && 'requestId' in from
+      ? Prisma.sql`(SELECT deliver_to_geo FROM part_requests WHERE id = ${from.requestId}::uuid)`
+      : from ? Prisma.sql`ST_SetSRID(ST_MakePoint(${from.lng}, ${from.lat}), 4326)::geography` : null;
+    const rows = await this.prisma.$queryRaw<Array<{ org_id: string; city: string | null; district: string | null; distance_km: number | null }>>`
+      SELECT l.org_id, l.city, l.district,
+             ${point ? Prisma.sql`(ST_Distance(l.geo, ${point}) / 1000.0)::float` : Prisma.sql`NULL::float`} AS distance_km
+      FROM organization_locations l
+      WHERE l.is_primary = true AND l.org_id = ANY(${orgIds}::uuid[])`;
+    for (const r of rows) out.set(r.org_id, { city: r.city, district: r.district, distanceKm: r.distance_km == null ? null : Math.round(r.distance_km * 10) / 10 });
+    return out;
+  }
   async matchSuppliers(requestId: string, radiusKm: number, limit: number) {
     const rows = await this.prisma.$queryRaw<Array<{ org_id: string; distance_km: number | null }>>`
       SELECT o.id AS org_id, MIN(CASE WHEN r.deliver_to_geo IS NULL OR l.geo IS NULL THEN NULL ELSE ST_Distance(l.geo, r.deliver_to_geo) / 1000.0 END)::float AS distance_km

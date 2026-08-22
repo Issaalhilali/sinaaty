@@ -5,6 +5,8 @@ import { isPlatformStaff } from '../../identity/domain/auth-user';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../work-orders/domain/repositories';
 import { isCustomer, isWorkshopMember } from '../../work-orders/domain/work-order';
 import { DISPUTE_REPOSITORY, type DisputeRepository } from '../../disputes/domain/repositories';
+import { SERVICE_REQUEST_REPOSITORY, type ServiceRequestRepository } from '../../service-requests/domain/repositories';
+import { isRequester } from '../../service-requests/domain/service-request';
 import { isDisputeParty } from '../../disputes/domain/dispute';
 import { MEDIA_REPOSITORY, type MediaRepository } from '../domain/media';
 import { OBJECT_STORAGE_PORT, type ObjectStoragePort } from './storage.port';
@@ -27,6 +29,7 @@ export class DownloadMediaUseCase {
     @Inject(MEDIA_REPOSITORY) private readonly media: MediaRepository,
     @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository,
     @Inject(DISPUTE_REPOSITORY) private readonly disputes: DisputeRepository,
+    @Inject(SERVICE_REQUEST_REPOSITORY) private readonly serviceRequests: ServiceRequestRepository,
     @Inject(OBJECT_STORAGE_PORT) private readonly storage: ObjectStoragePort,
   ) {}
 
@@ -42,6 +45,13 @@ export class DownloadMediaUseCase {
     if (isPlatformStaff(u) || (uploadedBy != null && uploadedBy === u.id)) return true;
     const viewer = { id: u.id, orgs: u.orgs, platformRole: u.platformRole };
     for (const link of await this.media.linksOf(mediaId)) {
+      if (link.entityType === 'service_request') {
+        // Problem photos belong to the requester and to every workshop the request reached — a
+        // workshop cannot quote a dent it is not allowed to see.
+        const sr = await this.serviceRequests.findById(link.entityId);
+        if (sr && (isRequester(sr, u.id) || (await this.serviceRequests.isRecipient(sr.id, viewer.orgs.map((o) => o.orgId))))) return true;
+        continue;
+      }
       if (link.entityType === 'dispute') {
         const d = await this.disputes.findById(link.entityId);
         if (d && isDisputeParty(d, viewer)) return true;

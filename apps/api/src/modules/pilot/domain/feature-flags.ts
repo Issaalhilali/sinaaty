@@ -49,6 +49,7 @@ export function isFlagOn(rule: FlagRule | undefined, subject: FlagSubject = {}):
  */
 export const KNOWN_FLAGS = [
   'parts_marketplace',   // reverse auction + Buy Now
+  'service_marketplace', // العميل يعرض مشكلته والورش القريبة ترد (owner directive 2026-08-22)
   'trade_accounts',      // Nafez-secured deferred trade accounts
   'group_buys',          // zone group buying
   'tow',                 // logistics / سطحة

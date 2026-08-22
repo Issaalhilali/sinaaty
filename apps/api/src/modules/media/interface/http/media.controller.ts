@@ -18,7 +18,10 @@ export class MediaController {
   @Get(':id/download') @ApiBearerAuth() @ApiOperation({ summary: 'Short-lived download URL — only for callers who may read what the file is attached to' })
   downloadUrl(@CurrentUser() user: AuthUser, @Param('id') id: string) { return this.download.execute(user, id); }
 
-  @Public() @Get('mock-download/:bucket/:key') @Header('cache-control', 'private, max-age=300')
+  // CORP relaxed like real object storage (S3 sends none): helmet's same-origin default blocked the
+  // admin on :3001 from embedding these images (ERR_BLOCKED_BY_RESPONSE) — access is governed by the
+  // signed link that mints this URL, never by the response origin.
+  @Public() @Get('mock-download/:bucket/:key') @Header('cache-control', 'private, max-age=300') @Header('cross-origin-resource-policy', 'cross-origin')
   @ApiOperation({ summary: '[mock storage] serves a deterministic placeholder image (no bytes are kept in dev)' })
   mockDownload(@Param('bucket') _b: string, @Param('key') key: string, @Res() res: Response) {
     if (this.config.get('INTEGRATION_STORAGE') !== 'mock') throw new AppError('NOT_FOUND');

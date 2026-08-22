@@ -735,6 +735,8 @@ model Organization {
   workOrdersAsCustomerOrg      WorkOrder[]               @relation("work_orders_customer_org_idToorganizations")
   workOrdersAsOrg              WorkOrder[]               @relation("work_orders_org_idToorganizations")
   zatcaDevices                 ZatcaDevice[]
+  serviceRequestRecipients     ServiceRequestRecipient[]
+  serviceOffers                ServiceOffer[]
 
   @@index([tradeNameAr(ops: raw("gin_trgm_ops"))], map: "idx_orgs_trade_name_trgm", type: Gin)
   @@index([type, status], map: "idx_orgs_type_status")
@@ -976,6 +978,73 @@ model PartRequest {
   @@index([deliverToGeo], map: "idx_part_requests_geo", type: Gist)
   @@index([status, biddingEndsAt], map: "idx_part_requests_status_ends")
   @@map("part_requests")
+}
+
+model ServiceRequest {
+  id              String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  number          String                    @unique @db.VarChar(24)
+  customerUserId  String                    @map("customer_user_id") @db.Uuid
+  vehicleId       String?                   @map("vehicle_id") @db.Uuid
+  titleAr         String                    @map("title_ar") @db.VarChar(200)
+  descriptionAr   String?                   @map("description_ar")
+  geo             Unsupported("geography")
+  addressHint     String?                   @map("address_hint") @db.VarChar(300)
+  radiusKm        Int                       @default(15) @map("radius_km")
+  preferredTime   String                    @default("today") @map("preferred_time") @db.VarChar(16)
+  status          String                    @default("open") @db.VarChar(16)
+  acceptedOfferId String?                   @map("accepted_offer_id") @db.Uuid
+  workOrderId     String?                   @map("work_order_id") @db.Uuid
+  expiresAt       DateTime                  @map("expires_at") @db.Timestamptz(6)
+  createdAt       DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime                  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  customerUser    User                      @relation(fields: [customerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vehicle         Vehicle?                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  workOrder       WorkOrder?                @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  acceptedOffer   ServiceOffer?             @relation("service_requests_accepted_offer", fields: [acceptedOfferId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sr_accepted_offer")
+  recipients      ServiceRequestRecipient[]
+  offers          ServiceOffer[]            @relation("service_offers_request")
+
+  @@index([geo], map: "idx_service_requests_geo", type: Gist)
+  @@index([status, expiresAt], map: "idx_service_requests_status")
+  @@index([customerUserId, createdAt(sort: Desc)], map: "idx_service_requests_customer")
+  @@map("service_requests")
+}
+
+model ServiceRequestRecipient {
+  requestId  String         @map("request_id") @db.Uuid
+  orgId      String         @map("org_id") @db.Uuid
+  distanceKm Decimal?       @map("distance_km") @db.Decimal(6, 2)
+  notifiedAt DateTime       @default(now()) @map("notified_at") @db.Timestamptz(6)
+  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org        Organization   @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([requestId, orgId])
+  @@map("service_request_recipients")
+}
+
+model ServiceOffer {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requestId     String           @map("request_id") @db.Uuid
+  orgId         String           @map("org_id") @db.Uuid
+  offerType     String           @default("estimate") @map("offer_type") @db.VarChar(16)
+  diagnosisAr   String?          @map("diagnosis_ar")
+  priceMin      Decimal?         @map("price_min") @db.Decimal(14, 2)
+  priceMax      Decimal?         @map("price_max") @db.Decimal(14, 2)
+  availability  String           @default("today") @db.VarChar(16)
+  availableAt   DateTime?        @map("available_at") @db.Timestamptz(6)
+  etaNoteAr     String?          @map("eta_note_ar") @db.VarChar(200)
+  status        String           @default("submitted") @db.VarChar(16)
+  createdBy     String?          @map("created_by") @db.Uuid
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime         @default(now()) @map("updated_at") @db.Timestamptz(6)
+  request       ServiceRequest   @relation("service_offers_request", fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  org           Organization     @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdByUser User?            @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  acceptedFor   ServiceRequest[] @relation("service_requests_accepted_offer")
+
+  @@unique([requestId, orgId])
+  @@index([requestId, status], map: "idx_service_offers_request")
+  @@map("service_offers")
 }
 
 model PartSerial {
@@ -1506,6 +1575,8 @@ model User {
   deletedAt                      DateTime?                @map("deleted_at") @db.Timestamptz(6)
   accidentReports                AccidentReport[]
   adminApprovalsRequested        AdminApproval[]          @relation("admin_approvals_requested")
+  serviceRequests                ServiceRequest[]
+  serviceOffersCreated           ServiceOffer[]
   adminApprovalsDecided          AdminApproval[]          @relation("admin_approvals_decided")
   analyticsEvents                AnalyticsEvent[]
   devices                        Device[]
@@ -1643,6 +1714,7 @@ model Vehicle {
   ownerUser           User?              @relation(fields: [ownerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   warranties          Warranty[]
   workOrders          WorkOrder[]
+  serviceRequests     ServiceRequest[]
 
   @@index([ownerOrgId], map: "idx_vehicles_owner_org")
   @@index([ownerUserId], map: "idx_vehicles_owner_user")
@@ -1899,6 +1971,7 @@ model WorkOrder {
   location               OrganizationLocation?    @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   org                    Organization             @relation("work_orders_org_idToorganizations", fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   vehicle                Vehicle                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  serviceRequests        ServiceRequest[]
 
   @@index([customerUserId, createdAt(sort: Desc)], map: "idx_wo_customer")
   @@index([customerOrgId, createdAt(sort: Desc)], map: "idx_wo_customer_org")

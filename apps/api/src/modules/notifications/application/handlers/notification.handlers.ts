@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { OutboxHandlerRegistry, type OutboxEnvelope } from '../../../integrations/outbox/outbox-handler.registry';
 import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/repositories';
+import { SERVICE_REQUEST_REPOSITORY, type ServiceRequestRepository } from '../../../service-requests/domain/repositories';
 import { ORGANIZATION_REPOSITORY, type OrganizationRepository } from '../../../organizations/domain/repositories';
 import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../../work-orders/domain/repositories';
 import { ACCIDENT_REPORT_REPOSITORY, type AccidentReportRepository } from '../../../accidents/domain/repositories';
@@ -16,7 +17,7 @@ const money = (v: unknown) => Number(v ?? 0).toLocaleString('en-US', { minimumFr
 @Injectable()
 export class NotificationOutboxHandlers implements OnModuleInit {
   private readonly log = new Logger(NotificationOutboxHandlers.name);
-  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(ACCIDENT_REPORT_REPOSITORY) private readonly accidents: AccidentReportRepository, @Inject(USER_REPOSITORY) private readonly users: UserRepository) {}
+  constructor(private readonly registry: OutboxHandlerRegistry, private readonly notify: NotificationService, @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository, @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository, @Inject(ACCIDENT_REPORT_REPOSITORY) private readonly accidents: AccidentReportRepository, @Inject(USER_REPOSITORY) private readonly users: UserRepository, @Inject(SERVICE_REQUEST_REPOSITORY) private readonly serviceRequests: ServiceRequestRepository) {}
   private async orgStaff(orgId: string, roles = ['owner', 'manager']) { return (await this.orgs.listMembers(orgId)).filter((m) => m.isActive && roles.includes(m.role)).map((m) => m.userId); }
   private async orgName(orgId: string) { const o = await this.orgs.findById(orgId); return o?.tradeNameAr ?? o?.legalNameAr ?? 'الورشة'; }
   private async customers(p: { customerUserId?: string | null; customerOrgId?: string | null }) { const ids: string[] = []; if (p.customerUserId) ids.push(p.customerUserId); if (p.customerOrgId) ids.push(...(await this.orgStaff(p.customerOrgId, ['owner', 'fleet_admin', 'fleet_approver']))); return ids; }
@@ -30,6 +31,26 @@ export class NotificationOutboxHandlers implements OnModuleInit {
     on('DisputeOpened', 'dispute-opened', async (ev) => { const p = ev.payload; await this.notify.notifyMany(await disputeParties(p), { template: 'dispute.opened', data: { id: ev.aggregateId, number: str(p['number']), ref: disputeRef(p) }, dedupeKey: `dispute.opened:${ev.aggregateId}` }); });
     on('DisputeMessagePosted', 'dispute-message', async (ev) => { const p = ev.payload; const author = p['authorUserId']; const ids = (await disputeParties(p)).filter((x) => x !== p['authorUserId']);
       void author; await this.notify.notifyMany(ids, { template: 'dispute.message', data: { id: ev.aggregateId, number: str(p['number']) } }); });
+    // سوق طلبات الإصلاح: الطلب يطرق أبواب الورش القريبة، وكل عرض يطرق باب العميل.
+    on('ServiceRequestOpened', 'service-request-nearby', async (ev) => {
+      const p = ev.payload as { titleAr?: string; orgIds?: string[]; number?: string };
+      for (const orgId of p.orgIds ?? []) {
+        const rec = await this.serviceRequests.findRecipient(ev.aggregateId, orgId);
+        const distance = rec?.distanceKm == null ? 'مسافة قريبة' : `${Number(rec.distanceKm).toFixed(1)} كم`;
+        await this.notify.notifyMany(await this.orgStaff(orgId, ['owner', 'manager', 'service_advisor']), { template: 'service.request.nearby', data: { id: ev.aggregateId, title: str(p.titleAr), distance }, dedupeKey: `service.request.nearby:${ev.aggregateId}:${orgId}` });
+      }
+    });
+    on('ServiceOfferSubmitted', 'service-offer-customer', async (ev) => {
+      const p = ev.payload as { customerUserId?: string; orgId?: string; titleAr?: string; priceMin?: string | null; offerId?: string };
+      if (typeof p.customerUserId !== 'string' || typeof p.orgId !== 'string') return;
+      const priceNote = p.priceMin ? ` بسعر يبدأ من ${money(p.priceMin)} ر.س` : '';
+      await this.notify.notifyMany([p.customerUserId], { template: 'service.offer.received', data: { id: ev.aggregateId, org: await this.orgName(p.orgId), title: str(p.titleAr) || 'طلبك', price_note: priceNote }, dedupeKey: `service.offer:${p.offerId}` });
+    });
+    on('ServiceRequestAccepted', 'service-offer-won', async (ev) => {
+      const p = ev.payload as { orgId?: string; number?: string; workOrderId?: string; workOrderNumber?: string };
+      if (typeof p.orgId !== 'string') return;
+      await this.notify.notifyMany(await this.orgStaff(p.orgId, ['owner', 'manager', 'service_advisor']), { template: 'service.offer.accepted', data: { number: str(p.number), wo: str(p.workOrderNumber), wo_id: str(p.workOrderId) }, dedupeKey: `service.accepted:${ev.aggregateId}` });
+    });
     on('ApprovalRequested', 'approval-requested-staff', async (ev) => {
       const p = ev.payload as { amount?: string; requestedBy?: string };
       const staff = (await this.users.listIdsByPlatformRole(['finance', 'super_admin'])).filter((id) => id !== p.requestedBy);

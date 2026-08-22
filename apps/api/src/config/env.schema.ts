@@ -61,6 +61,7 @@ export const envSchema = z.object({
   TRANSPORT_TRACK_MIN_SECONDS: z.coerce.number().int().min(1).max(300).default(10),
   /** Abandoned-vehicle flow (Step 29): notices run to this many days after the car is ready, and storage
    *  is free until then unless the workshop set its own rate. */
+  SERVICE_REQUEST_MINUTES: z.coerce.number().int().min(30).default(240),
   ABANDONED_NOTICE_DAYS: z.coerce.number().int().positive().default(15),
   ABANDONED_STORAGE_FREE_DAYS: z.coerce.number().int().min(0).default(5),
   BIDDING_DEFAULT_MINUTES: z.coerce.number().int().positive().default(60),

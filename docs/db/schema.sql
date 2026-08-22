@@ -1543,6 +1543,60 @@ CREATE INDEX idx_analytics_event_time ON analytics_events(event, occurred_at DES
 CREATE INDEX idx_analytics_org_time ON analytics_events(org_id, occurred_at DESC);
 CREATE INDEX idx_analytics_zone_time ON analytics_events(industrial_zone, occurred_at DESC);
 
+CREATE TABLE service_requests (                                -- العميل يعرض مشكلته والسوق يرد (سوق طلبات الإصلاح)
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  number            varchar(24) NOT NULL UNIQUE,               -- SR-2026-000123
+  customer_user_id  uuid NOT NULL REFERENCES users(id),
+  vehicle_id        uuid REFERENCES vehicles(id),
+  title_ar          varchar(200) NOT NULL,                     -- «السيارة ترجّ عند التسارع»
+  description_ar    text,
+  geo               geography(Point,4326) NOT NULL,            -- موقع العميل (أو السيارة)
+  address_hint      varchar(300),
+  radius_km         integer NOT NULL DEFAULT 15 CHECK (radius_km BETWEEN 2 AND 150),  -- العميل يحدد نطاقه
+  preferred_time    varchar(16) NOT NULL DEFAULT 'today',      -- now | today | this_week
+  status            varchar(16) NOT NULL DEFAULT 'open',       -- open | accepted | cancelled | expired
+  accepted_offer_id uuid,                                      -- FK بعد إنشاء service_offers
+  work_order_id     uuid REFERENCES work_orders(id),           -- يولد عند قبول عرض
+  expires_at        timestamptz NOT NULL,
+  created_at        timestamptz NOT NULL DEFAULT now(),
+  updated_at        timestamptz NOT NULL DEFAULT now()
+);
+CREATE TRIGGER trg_service_requests_updated BEFORE UPDATE ON service_requests FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_service_requests_status ON service_requests(status, expires_at);
+CREATE INDEX idx_service_requests_geo ON service_requests USING gist(geo);
+CREATE INDEX idx_service_requests_customer ON service_requests(customer_user_id, created_at DESC);
+
+CREATE TABLE service_request_recipients (                      -- أي الورش وصلها الطلب (توزيع PostGIS بنطاق العميل)
+  request_id   uuid NOT NULL REFERENCES service_requests(id) ON DELETE CASCADE,
+  org_id       uuid NOT NULL REFERENCES organizations(id),
+  distance_km  numeric(6,2),
+  notified_at  timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (request_id, org_id)
+);
+
+CREATE TABLE service_offers (                                  -- ردّ الورشة: تحليل + سعر + جاهزية
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  request_id     uuid NOT NULL REFERENCES service_requests(id) ON DELETE CASCADE,
+  org_id         uuid NOT NULL REFERENCES organizations(id),
+  offer_type     varchar(16) NOT NULL DEFAULT 'estimate',      -- estimate | free_inspection («معاينة مجانية» نوع صريح لا سعر صفري)
+  diagnosis_ar   text,                                         -- «الأغلب مساعدات — نحتاج فحصاً على الرافعة»
+  price_min      numeric(14,2),                                -- تقدير مبدئي؛ قد يكون مدى، وقد يغيب («بعد الفحص»)
+  price_max      numeric(14,2),
+  availability   varchar(16) NOT NULL DEFAULT 'today',
+  available_at   timestamptz,                                  -- «اليوم ٤ عصراً» — الجاهزية نصف القرار         -- now | today | scheduled
+  eta_note_ar    varchar(200),                                 -- «نستقبلك خلال ساعة»
+  status         varchar(16) NOT NULL DEFAULT 'submitted',     -- submitted | withdrawn | accepted | lost
+  created_by     uuid REFERENCES users(id),
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now(),
+  CHECK (price_min IS NULL OR price_min >= 0),
+  CHECK (price_max IS NULL OR price_min IS NULL OR price_max >= price_min),
+  UNIQUE (request_id, org_id)                                  -- عرض حي واحد لكل ورشة (تحديثه upsert كمزاد القطع)
+);
+CREATE TRIGGER trg_service_offers_updated BEFORE UPDATE ON service_offers FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_service_offers_request ON service_offers(request_id, status);
+ALTER TABLE service_requests ADD CONSTRAINT fk_sr_accepted_offer FOREIGN KEY (accepted_offer_id) REFERENCES service_offers(id);
+
 CREATE TABLE admin_approvals (                                 -- maker/checker on sensitive admin actions (escrow refunds first)
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   action             varchar(60)  NOT NULL,                    -- 'escrow.refund' today; generic by design

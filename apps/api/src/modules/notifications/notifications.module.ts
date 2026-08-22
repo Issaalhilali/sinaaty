@@ -1,6 +1,7 @@
 import { Inject, Module, OnModuleInit } from '@nestjs/common';
 import { AppConfig } from '../../config';
 import { AccidentsModule } from '../accidents/accidents.module';
+import { ServiceRequestsModule } from '../service-requests/service-requests.module';
 import { IdentityModule } from '../identity/identity.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { WorkOrdersModule } from '../work-orders/work-orders.module';
@@ -15,7 +16,7 @@ import { AdminNotificationsController, NotificationsController } from './interfa
 
 const live = (name: string) => () => { throw new Error(`${name} live adapter not implemented — set INTEGRATION_SMS=mock`); };
 @Module({
-  imports: [IdentityModule, OrganizationsModule, WorkOrdersModule, AccidentsModule],
+  imports: [IdentityModule, OrganizationsModule, WorkOrdersModule, AccidentsModule, ServiceRequestsModule],
   controllers: [NotificationsController, AdminNotificationsController],
   providers: [NotificationService, NotificationOutboxHandlers, PushMockAdapter, SmsMockAdapter, WhatsAppMockAdapter, { provide: NOTIFICATION_REPOSITORY, useClass: NotificationPrismaRepository },
     { provide: PUSH_PORT, inject: [AppConfig, PushMockAdapter], useFactory: (c: AppConfig, m: PushMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('FCM')()) },
