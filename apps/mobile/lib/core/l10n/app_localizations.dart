@@ -3564,6 +3564,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'اكتب ما كنت ستقوله'**
   String get voDevTypedHint;
+
+  /// No description provided for @voDevBroken.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيئة تطوير — الإملاء لا يعمل على هذا المحاكي'**
+  String get voDevBroken;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

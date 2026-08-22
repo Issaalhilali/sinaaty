@@ -25,10 +25,15 @@ class SystemVoiceInput implements VoiceInput {
   @override Future<bool> init() async { try { return await _engine.initialize(); } catch (_) { return false; } }
   @override Stream<String> start({String localeId = 'ar-SA'}) {
     final out = _out = StreamController<String>();
-    _engine.listen(
-      listenOptions: stt.SpeechListenOptions(partialResults: true, listenMode: stt.ListenMode.dictation, localeId: localeId, pauseFor: const Duration(seconds: 4)),
-      onResult: (r) { if (!out.isClosed) out.add(r.recognizedWords); if (r.finalResult && !out.isClosed) out.close(); },
-    );
+    // A dying engine must END the stream, never hang it: some simulators accept init then
+    // kill the session instantly — the sheet turns that into its dev typed fallback.
+    _engine.errorListener = (_) { if (!out.isClosed) out.close(); };
+    try {
+      _engine.listen(
+        listenOptions: stt.SpeechListenOptions(partialResults: true, listenMode: stt.ListenMode.dictation, localeId: localeId, pauseFor: const Duration(seconds: 4)),
+        onResult: (r) { if (!out.isClosed) out.add(r.recognizedWords); if (r.finalResult && !out.isClosed) out.close(); },
+      ).catchError((_) { if (!out.isClosed) out.close(); });
+    } catch (_) { if (!out.isClosed) out.close(); }
     return out.stream;
   }
   @override Future<void> stop() async { await _engine.stop(); await _out?.close(); }

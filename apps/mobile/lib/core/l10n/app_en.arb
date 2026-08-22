@@ -892,5 +892,6 @@
   "assistantTryCustomer": "Did not catch that — try: “order a tow” or “fix my car”",
   "assistantTryPartner": "Did not catch that — try: “new order” or “nearby requests”",
   "voDevTyped": "Dev environment — dictation unavailable on the simulator",
-  "voDevTypedHint": "Type what you would have said"
+  "voDevTypedHint": "Type what you would have said",
+  "voDevBroken": "Dev environment — dictation does not work on this simulator"
 }

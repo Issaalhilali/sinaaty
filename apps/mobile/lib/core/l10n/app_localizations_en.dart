@@ -1883,4 +1883,8 @@ class L10nEn extends L10n {
 
   @override
   String get voDevTypedHint => 'Type what you would have said';
+
+  @override
+  String get voDevBroken =>
+      'Dev environment — dictation does not work on this simulator';
 }

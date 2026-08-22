@@ -1863,4 +1863,7 @@ class L10nAr extends L10n {
 
   @override
   String get voDevTypedHint => 'اكتب ما كنت ستقوله';
+
+  @override
+  String get voDevBroken => 'بيئة تطوير — الإملاء لا يعمل على هذا المحاكي';
 }

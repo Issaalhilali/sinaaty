@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../di/core_providers.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/tokens.dart';
 import '../ui/ui.dart';
@@ -11,15 +12,16 @@ import 'voice_input.dart';
 Future<String?> showVoiceSheet(BuildContext context, WidgetRef ref, {String? title}) async {
   final voice = ref.read(voiceInputProvider);
   final typedDev = ref.read(voiceModeProvider).value == VoiceMode.typedDev;
+  final dev = ref.read(appConfigProvider).appEnv == 'dev';
   return showModalBottomSheet<String>(context: context, showDragHandle: true, isScrollControlled: true, isDismissible: false,
-    builder: (ctx) => typedDev ? _TypedDevSheetBody(title: title) : _VoiceSheetBody(voice: voice, title: title));
+    builder: (ctx) => typedDev ? _TypedDevSheetBody(title: title) : _VoiceSheetBody(voice: voice, title: title, devFallback: dev));
 }
 
 /// The dev-only stand-in when the simulator cannot dictate: same contract, typed instead of spoken,
 /// and it says so — clearly labeled so nobody mistakes a demo for the real engine.
 class _TypedDevSheetBody extends StatelessWidget {
-  final String? title;
-  const _TypedDevSheetBody({this.title});
+  final String? title; final String? badge;
+  const _TypedDevSheetBody({this.title, this.badge});
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final c = TextEditingController();
     return Padding(
@@ -27,7 +29,7 @@ class _TypedDevSheetBody extends StatelessWidget {
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(title ?? l.voSpeak, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
         const SizedBox(height: SinaatySpace.sm),
-        Center(child: StatusBadge(l.voDevTyped, tone: BadgeTone.warn, icon: Icons.keyboard_alt_outlined)),
+        Center(child: StatusBadge(badge ?? l.voDevTyped, tone: BadgeTone.warn, icon: Icons.keyboard_alt_outlined)),
         const SizedBox(height: SinaatySpace.md),
         TextField(controller: c, autofocus: true, minLines: 1, maxLines: 3, decoration: InputDecoration(hintText: l.voDevTypedHint)),
         const SizedBox(height: SinaatySpace.lg),
@@ -38,26 +40,32 @@ class _TypedDevSheetBody extends StatelessWidget {
 }
 
 class _VoiceSheetBody extends StatefulWidget {
-  final VoiceInput voice; final String? title;
-  const _VoiceSheetBody({required this.voice, this.title});
+  final VoiceInput voice; final String? title; final bool devFallback;
+  const _VoiceSheetBody({required this.voice, this.title, this.devFallback = false});
   @override State<_VoiceSheetBody> createState() => _VoiceSheetBodyState();
 }
 
 class _VoiceSheetBodyState extends State<_VoiceSheetBody> with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
-  String _text = ''; bool _listening = false;
+  String _text = ''; bool _listening = false; bool _typed = false;
 
   @override void initState() { super.initState(); _listen(); }
   @override void dispose() { _pulse.dispose(); widget.voice.stop(); super.dispose(); }
 
   Future<void> _listen() async {
+    final startedAt = DateTime.now();
     setState(() { _listening = true; });
     _pulse.repeat(reverse: true);                     // the pulse runs only while listening — animations must settle
     await for (final t in widget.voice.start()) {
       if (!mounted) return;
       setState(() => _text = t);
     }
-    if (mounted) { _pulse.stop(); setState(() => _listening = false); }
+    if (!mounted) return;
+    _pulse.stop();
+    // The third simulator failure: the engine claims availability, then the session dies instantly.
+    // In dev an empty sub-1.5s session flips this very sheet into the typed stand-in — never a dead end.
+    final died = _text.trim().isEmpty && DateTime.now().difference(startedAt) < const Duration(milliseconds: 1500);
+    setState(() { _listening = false; if (widget.devFallback && died) _typed = true; });
   }
 
   Future<void> _again() async { await widget.voice.stop(); if (mounted) { setState(() => _text = ''); unawaited(_listen()); } }
@@ -65,6 +73,7 @@ class _VoiceSheetBodyState extends State<_VoiceSheetBody> with SingleTickerProvi
 
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
+    if (_typed) return _TypedDevSheetBody(title: widget.title, badge: l.voDevBroken);
     return Padding(
       padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [

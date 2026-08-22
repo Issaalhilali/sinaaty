@@ -127,6 +127,30 @@ void main() {
     expect(find.textContaining('سُمع:'), findsWidgets);                        // review reached (note + per-line hints)
   });
 
+  testWidgets('a session that dies instantly in dev flips the sheet to typing — never a dead end', (tester) async {
+    size(tester);
+    final market = FakeServiceMarket();
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: [
+      appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'dev', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts),
+      authRepositoryProvider.overrideWithValue(FakeAuth()),
+      flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
+      serviceMarketRepositoryProvider.overrideWithValue(market),
+      voiceInputProvider.overrideWithValue(FakeVoice(script: const [])),      // the engine accepts, the session dies empty
+      vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
+      myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
+      myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
+    ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+      localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      routerConfig: GoRouter(initialLocation: '/', routes: [GoRoute(path: '/', builder: (_, _) => const Scaffold(body: RequestHubScreen()))]))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.mic_none).first); await tester.pumpAndSettle();
+    expect(find.textContaining('الإملاء لا يعمل'), findsOneWidget);           // the sheet flipped, it did not die
+    await tester.enterText(find.byType(TextField).last, 'صوت طقطقة من الأمام');
+    await tester.tap(find.text('تم')); await tester.pumpAndSettle();
+    expect(find.widgetWithText(TextField, 'صوت طقطقة من الأمام'), findsOneWidget);
+  });
+
   testWidgets('flag off or no dictation on the device: the menu entry does not exist', (tester) async {
     size(tester);
     await tester.pumpWidget(partnerApp('/ws/orders/wo1', flags: const {'voice_to_invoice': false})); await tester.pumpAndSettle();
