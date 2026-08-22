@@ -62,7 +62,7 @@
 | Warranty claim from the wallet (open a claim on a warranty) | Step 23 | API supports claims; screen lists warranties only | Step 26 |
 | External penetration test before the pilot | Step 24 | internal review + 14 regression tests done | before pilot |
 | PITR restore rehearsal on a real Supabase project (steps written, never executed here) | Step 24 | logical dump/restore drill passes locally | before pilot |
-| Soak test (1h) on the work-order path to watch memory + outbox depth | Step 24 | 60s ramp/hold runs pass with 0% failures | Step 25 |
+| ~~Soak test (1h) on the work-order path~~ ✅ 2026-08-22 — run 7: 63 continuous minutes (gap detector: zero sleep gaps), 165,778 reqs at 0.00% failure, p95 1.09s, memory breathing not creeping, outbox avg 199 ending at ZERO, imbalance 0.00 every sample (report in the runbook) | Step 24 | — | done |
 | Re-run k6 against production-like infra (managed DB + 2 API replicas) | Step 24 | numbers so far are one dev machine | Step 25 |
 | ~~Admin-web page for zones/flags/funnel~~ ✅ 2026-08-21 — shipped as «المناطق والميزات» (`/pilot`: funnel KPIs, zones + backfill, flag toggles behind `ReasonDialog`, activation table) | Step 25 | — | done |
 | Mobile: consume `/v1/config` to hide disabled features (today the app shows everything it can do) | Step 25 | flags are enforced by the API regardless | Step 26 |
