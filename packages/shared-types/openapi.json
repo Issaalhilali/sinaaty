@@ -322,6 +322,67 @@
         ]
       }
     },
+    "/v1/media/{id}/download": {
+      "get": {
+        "operationId": "MediaController_downloadUrl_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Short-lived download URL — only for callers who may read what the file is attached to",
+        "tags": [
+          "media"
+        ]
+      }
+    },
+    "/v1/media/mock-download/{bucket}/{key}": {
+      "get": {
+        "operationId": "MediaController_mockDownload_v1",
+        "parameters": [
+          {
+            "name": "bucket",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "[mock storage] serves a deterministic placeholder image (no bytes are kept in dev)",
+        "tags": [
+          "media"
+        ]
+      }
+    },
     "/v1/media/mock-upload/{bucket}/{key}": {
       "put": {
         "operationId": "MediaController_mockUpload_v1",
@@ -351,6 +412,1295 @@
         "summary": "[mock storage] accepts the upload and discards it",
         "tags": [
           "media"
+        ]
+      }
+    },
+    "/v1/admin/abandoned": {
+      "get": {
+        "operationId": "AdminAbandonedController_queue_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cars waiting collection or already declared, with notices, storage and the claim",
+        "tags": [
+          "admin/abandoned"
+        ]
+      }
+    },
+    "/v1/work-orders": {
+      "post": {
+        "operationId": "WorkOrdersController_create_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Workshop creates a work order (customer by phone, vehicle by id/VIN/plate, optional items)",
+        "tags": [
+          "work-orders"
+        ]
+      },
+      "get": {
+        "operationId": "WorkOrdersController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List: ?org_id= for the workshop, otherwise my (customer/fleet) orders; ?status=a,b",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}": {
+      "get": {
+        "operationId": "WorkOrdersController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      },
+      "patch": {
+        "operationId": "WorkOrdersController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/abandoned": {
+      "get": {
+        "operationId": "WorkOrdersController_abandonedStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Days waiting, notices sent, storage accrued, and whether a declaration is allowed yet",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/abandoned/notice": {
+      "post": {
+        "operationId": "WorkOrdersController_abandonedNotice_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send the next due notice (idempotent per step; the last one is formal)",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/abandoned/declare": {
+      "post": {
+        "operationId": "WorkOrdersController_abandonedDeclare_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Declare the car abandoned — refused until the period passed and every notice was sent",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/timeline": {
+      "get": {
+        "operationId": "WorkOrdersController_timeline_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "History + versions + inspections + media (the live-tracking feed)",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/items": {
+      "post": {
+        "operationId": "WorkOrdersController_addItem_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/items/{itemId}": {
+      "patch": {
+        "operationId": "WorkOrdersController_updateItem_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      },
+      "delete": {
+        "operationId": "WorkOrdersController_removeItem_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/request-approval": {
+      "post": {
+        "operationId": "WorkOrdersController_requestApproval_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Freeze a version (snapshot + sha256) and ask the customer to approve",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/change-orders": {
+      "post": {
+        "operationId": "WorkOrdersController_changeOrder_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "After approval: change scope → new version → re-approval",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/approve": {
+      "post": {
+        "operationId": "WorkOrdersController_approveInit_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Customer starts approval (nafath → transaction_id + random | otp → code sent)",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/approve/complete": {
+      "post": {
+        "operationId": "WorkOrdersController_approveComplete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Customer completes approval → signature stored, execution starts",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/transition": {
+      "post": {
+        "operationId": "WorkOrdersController_transition_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Workshop moves status (received/inspecting/awaiting_parts/in_progress/quality_check/ready/delivered/closed); customer may close after delivery",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/cancel": {
+      "post": {
+        "operationId": "WorkOrdersController_cancel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/inspections": {
+      "post": {
+        "operationId": "WorkOrdersController_inspection_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check-in / progress / quality / check-out inspection with photos and damages",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/media": {
+      "post": {
+        "operationId": "WorkOrdersController_media_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/versions/{version}": {
+      "get": {
+        "operationId": "WorkOrdersController_version_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/versions/{version}/document": {
+      "get": {
+        "operationId": "WorkOrdersController_document_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Printable Arabic RTL document of a version (PDF in live; HTML in mock)",
+        "tags": [
+          "work-orders"
+        ]
+      }
+    },
+    "/v1/approve/{token}": {
+      "get": {
+        "operationId": "ApprovalPageController_page_v1",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Arabic RTL web page to review + approve a work order version (from the SMS link)",
+        "tags": [
+          "approve (web)"
+        ]
+      }
+    },
+    "/v1/approve/{token}/data": {
+      "get": {
+        "operationId": "ApprovalPageController_data_v1",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "approve (web)"
+        ]
+      }
+    },
+    "/v1/approve/{token}/otp": {
+      "post": {
+        "operationId": "ApprovalPageController_otp_v1",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "approve (web)"
+        ]
+      }
+    },
+    "/v1/approve/{token}/complete": {
+      "post": {
+        "operationId": "ApprovalPageController_complete_v1",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "approve (web)"
+        ]
+      }
+    },
+    "/v1/approve/{token}/decline": {
+      "post": {
+        "operationId": "ApprovalPageController_decline_v1",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "approve (web)"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/overview": {
+      "get": {
+        "operationId": "FleetController_overview_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fleet home: vehicles, open repairs, what needs a decision, budget used",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/policies": {
+      "get": {
+        "operationId": "FleetController_policies_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      },
+      "post": {
+        "operationId": "FleetController_createPolicy_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Spending rules: auto-approve below, two approvers above, approved workshops, monthly budget",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/policies/{id}": {
+      "put": {
+        "operationId": "FleetController_updatePolicy_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/approvals": {
+      "get": {
+        "operationId": "FleetController_pending_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Repairs waiting on the fleet, each with what the policy requires",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/approvals/{workOrderId}": {
+      "post": {
+        "operationId": "FleetController_decide_v1",
+        "parameters": [
+          {
+            "name": "workOrderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or reject spending on one repair (per version)",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/vehicles/import": {
+      "post": {
+        "operationId": "FleetController_importVehicles_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk import: every row reports its own outcome, one bad row does not lose the rest",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/statements": {
+      "post": {
+        "operationId": "FleetController_generate_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate (or refresh) the monthly statement for the fleet",
+        "tags": [
+          "fleet"
+        ]
+      },
+      "get": {
+        "operationId": "FleetController_statements_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/statements/{id}": {
+      "get": {
+        "operationId": "FleetController_statement_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/statements/{id}/export.csv": {
+      "get": {
+        "operationId": "FleetController_statementCsv_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The statement as CSV for the accountant",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/reports/vehicles/export.csv": {
+      "get": {
+        "operationId": "FleetController_vehiclesCsv_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Spend per vehicle for a month",
+        "tags": [
+          "fleet"
+        ]
+      }
+    },
+    "/v1/fleet/{orgId}/reports/vehicles": {
+      "get": {
+        "operationId": "FleetController_vehicles_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "fleet"
         ]
       }
     },
@@ -1714,10 +3064,119 @@
         ]
       }
     },
-    "/v1/work-orders": {
+    "/v1/disputes": {
       "post": {
-        "operationId": "WorkOrdersController_create_v1",
+        "operationId": "DisputesController_open_v1",
         "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Open a dispute on a work order / part order → freezes the escrow hold",
+        "tags": [
+          "disputes"
+        ]
+      },
+      "get": {
+        "operationId": "DisputesController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mine",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "disputes"
+        ]
+      }
+    },
+    "/v1/disputes/{id}": {
+      "get": {
+        "operationId": "DisputesController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "disputes"
+        ]
+      }
+    },
+    "/v1/disputes/{id}/messages": {
+      "post": {
+        "operationId": "DisputesController_message_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "",
@@ -1735,22 +3194,628 @@
             "bearer": []
           }
         ],
-        "summary": "Workshop creates a work order (customer by phone, vehicle by id/VIN/plate, optional items)",
         "tags": [
-          "work-orders"
+          "disputes"
         ]
-      },
+      }
+    },
+    "/v1/reviews": {
+      "post": {
+        "operationId": "DisputesController_review_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Rate the provider after delivery (one per order); refreshes the org rating",
+        "tags": [
+          "disputes"
+        ]
+      }
+    },
+    "/v1/organizations/{orgId}/reviews": {
       "get": {
-        "operationId": "WorkOrdersController_list_v1",
+        "operationId": "DisputesController_reviews_v1",
         "parameters": [
           {
-            "name": "org_id",
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Public reviews of an organization (discovery)",
+        "tags": [
+          "disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes": {
+      "get": {
+        "operationId": "AdminDisputesController_list_v1",
+        "parameters": [
+          {
+            "name": "status",
             "required": false,
             "in": "query",
             "schema": {
               "type": "string"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes/{id}": {
+      "get": {
+        "operationId": "AdminDisputesController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes/{id}/assign": {
+      "put": {
+        "operationId": "AdminDisputesController_assign_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes/{id}/status": {
+      "put": {
+        "operationId": "AdminDisputesController_setStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes/{id}/resolve": {
+      "post": {
+        "operationId": "AdminDisputesController_resolve_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ops decision → ledger moves (release / refund / split) in one transaction",
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/admin/disputes/{id}/messages": {
+      "post": {
+        "operationId": "AdminDisputesController_message_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/disputes"
+        ]
+      }
+    },
+    "/v1/payments": {
+      "post": {
+        "operationId": "PaymentsController_create_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Customer: start an online payment for an invoice (returns PSP intent / redirect)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/payments/{id}": {
+      "get": {
+        "operationId": "PaymentsController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/invoices/{invoiceId}/payments": {
+      "get": {
+        "operationId": "PaymentsController_listForInvoice_v1",
+        "parameters": [
+          {
+            "name": "invoiceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/webhooks/psp": {
+      "post": {
+        "operationId": "PaymentsController_webhook_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "PSP webhook (signature verified; idempotent by provider event id)",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/payments/{id}/mock-pay": {
+      "post": {
+        "operationId": "PaymentsController_mockPay_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           },
+          {
+            "name": "outcome",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[mock PSP] simulate the customer paying: builds a signed webhook and processes it",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/payments/cash/init": {
+      "post": {
+        "operationId": "PaymentsController_cashInit_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Workshop: record a cash payment — sends OTP to the customer to confirm",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/payments/cash/confirm": {
+      "post": {
+        "operationId": "PaymentsController_cashConfirm_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/work-orders/{id}/confirm-receipt": {
+      "post": {
+        "operationId": "PaymentsController_confirmReceipt_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Customer confirms receipt → held funds released to the workshop now",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/escrow/{id}": {
+      "get": {
+        "operationId": "PaymentsController_escrowGet_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/organizations/{orgId}/wallet": {
+      "get": {
+        "operationId": "PaymentsController_walletGet_v1",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Org wallet: held / available / payouts / recent ledger entries",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/v1/admin/escrow/{id}/release": {
+      "post": {
+        "operationId": "AdminPaymentsController_release_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/payments"
+        ]
+      }
+    },
+    "/v1/admin/escrow/{id}/freeze": {
+      "post": {
+        "operationId": "AdminPaymentsController_freeze_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/payments"
+        ]
+      }
+    },
+    "/v1/admin/escrow/{id}/refund": {
+      "post": {
+        "operationId": "AdminPaymentsController_refund_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/payments"
+        ]
+      }
+    },
+    "/v1/admin/approvals": {
+      "get": {
+        "operationId": "AdminPaymentsController_listApprovals_v1",
+        "parameters": [
           {
             "name": "status",
             "required": false,
@@ -1788,112 +3853,14 @@
             "bearer": []
           }
         ],
-        "summary": "List: ?org_id= for the workshop, otherwise my (customer/fleet) orders; ?status=a,b",
         "tags": [
-          "work-orders"
+          "admin/payments"
         ]
       }
     },
-    "/v1/work-orders/{id}": {
-      "get": {
-        "operationId": "WorkOrdersController_get_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      },
-      "patch": {
-        "operationId": "WorkOrdersController_update_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/abandoned": {
-      "get": {
-        "operationId": "WorkOrdersController_abandonedStatus_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Days waiting, notices sent, storage accrued, and whether a declaration is allowed yet",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/abandoned/notice": {
+    "/v1/admin/approvals/{id}/approve": {
       "post": {
-        "operationId": "WorkOrdersController_abandonedNotice_v1",
+        "operationId": "AdminPaymentsController_approveApproval_v1",
         "parameters": [
           {
             "name": "id",
@@ -1914,15 +3881,14 @@
             "bearer": []
           }
         ],
-        "summary": "Send the next due notice (idempotent per step; the last one is formal)",
         "tags": [
-          "work-orders"
+          "admin/payments"
         ]
       }
     },
-    "/v1/work-orders/{id}/abandoned/declare": {
+    "/v1/admin/approvals/{id}/reject": {
       "post": {
-        "operationId": "WorkOrdersController_abandonedDeclare_v1",
+        "operationId": "AdminPaymentsController_rejectApproval_v1",
         "parameters": [
           {
             "name": "id",
@@ -1943,64 +3909,18 @@
             "bearer": []
           }
         ],
-        "summary": "Declare the car abandoned — refused until the period passed and every notice was sent",
         "tags": [
-          "work-orders"
+          "admin/payments"
         ]
       }
     },
-    "/v1/work-orders/{id}/timeline": {
-      "get": {
-        "operationId": "WorkOrdersController_timeline_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "History + versions + inspections + media (the live-tracking feed)",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/items": {
+    "/v1/admin/escrow/release-due": {
       "post": {
-        "operationId": "WorkOrdersController_addItem_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "AdminPaymentsController_releaseDue_v1",
+        "parameters": [],
         "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+          "200": {
+            "description": ""
           }
         },
         "security": [
@@ -2008,960 +3928,19 @@
             "bearer": []
           }
         ],
+        "summary": "Run the auto-release job now",
         "tags": [
-          "work-orders"
+          "admin/payments"
         ]
       }
     },
-    "/v1/work-orders/{id}/items/{itemId}": {
-      "patch": {
-        "operationId": "WorkOrdersController_updateItem_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "itemId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      },
-      "delete": {
-        "operationId": "WorkOrdersController_removeItem_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "itemId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/request-approval": {
+    "/v1/admin/payouts/run": {
       "post": {
-        "operationId": "WorkOrdersController_requestApproval_v1",
+        "operationId": "AdminPaymentsController_runPayouts_v1",
         "parameters": [
           {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Freeze a version (snapshot + sha256) and ask the customer to approve",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/change-orders": {
-      "post": {
-        "operationId": "WorkOrdersController_changeOrder_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "After approval: change scope → new version → re-approval",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/approve": {
-      "post": {
-        "operationId": "WorkOrdersController_approveInit_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Customer starts approval (nafath → transaction_id + random | otp → code sent)",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/approve/complete": {
-      "post": {
-        "operationId": "WorkOrdersController_approveComplete_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Customer completes approval → signature stored, execution starts",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/transition": {
-      "post": {
-        "operationId": "WorkOrdersController_transition_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Workshop moves status (received/inspecting/awaiting_parts/in_progress/quality_check/ready/delivered/closed); customer may close after delivery",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/cancel": {
-      "post": {
-        "operationId": "WorkOrdersController_cancel_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/inspections": {
-      "post": {
-        "operationId": "WorkOrdersController_inspection_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Check-in / progress / quality / check-out inspection with photos and damages",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/media": {
-      "post": {
-        "operationId": "WorkOrdersController_media_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/versions/{version}": {
-      "get": {
-        "operationId": "WorkOrdersController_version_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "version",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/versions/{version}/document": {
-      "get": {
-        "operationId": "WorkOrdersController_document_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "version",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Printable Arabic RTL document of a version (PDF in live; HTML in mock)",
-        "tags": [
-          "work-orders"
-        ]
-      }
-    },
-    "/v1/approve/{token}": {
-      "get": {
-        "operationId": "ApprovalPageController_page_v1",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Arabic RTL web page to review + approve a work order version (from the SMS link)",
-        "tags": [
-          "approve (web)"
-        ]
-      }
-    },
-    "/v1/approve/{token}/data": {
-      "get": {
-        "operationId": "ApprovalPageController_data_v1",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "approve (web)"
-        ]
-      }
-    },
-    "/v1/approve/{token}/otp": {
-      "post": {
-        "operationId": "ApprovalPageController_otp_v1",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "approve (web)"
-        ]
-      }
-    },
-    "/v1/approve/{token}/complete": {
-      "post": {
-        "operationId": "ApprovalPageController_complete_v1",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "approve (web)"
-        ]
-      }
-    },
-    "/v1/approve/{token}/decline": {
-      "post": {
-        "operationId": "ApprovalPageController_decline_v1",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "approve (web)"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/overview": {
-      "get": {
-        "operationId": "FleetController_overview_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Fleet home: vehicles, open repairs, what needs a decision, budget used",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/policies": {
-      "get": {
-        "operationId": "FleetController_policies_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "fleet"
-        ]
-      },
-      "post": {
-        "operationId": "FleetController_createPolicy_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Spending rules: auto-approve below, two approvers above, approved workshops, monthly budget",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/policies/{id}": {
-      "put": {
-        "operationId": "FleetController_updatePolicy_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/approvals": {
-      "get": {
-        "operationId": "FleetController_pending_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Repairs waiting on the fleet, each with what the policy requires",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/approvals/{workOrderId}": {
-      "post": {
-        "operationId": "FleetController_decide_v1",
-        "parameters": [
-          {
-            "name": "workOrderId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Approve or reject spending on one repair (per version)",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/vehicles/import": {
-      "post": {
-        "operationId": "FleetController_importVehicles_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Bulk import: every row reports its own outcome, one bad row does not lose the rest",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/statements": {
-      "post": {
-        "operationId": "FleetController_generate_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Generate (or refresh) the monthly statement for the fleet",
-        "tags": [
-          "fleet"
-        ]
-      },
-      "get": {
-        "operationId": "FleetController_statements_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/statements/{id}": {
-      "get": {
-        "operationId": "FleetController_statement_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/statements/{id}/export.csv": {
-      "get": {
-        "operationId": "FleetController_statementCsv_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "The statement as CSV for the accountant",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/reports/vehicles/export.csv": {
-      "get": {
-        "operationId": "FleetController_vehiclesCsv_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "month",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Spend per vehicle for a month",
-        "tags": [
-          "fleet"
-        ]
-      }
-    },
-    "/v1/fleet/{orgId}/reports/vehicles": {
-      "get": {
-        "operationId": "FleetController_vehicles_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "month",
-            "required": true,
+            "name": "org_id",
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -2978,8 +3957,63 @@
             "bearer": []
           }
         ],
+        "summary": "Bundle released funds into payouts (per org)",
         "tags": [
-          "fleet"
+          "admin/payments"
+        ]
+      }
+    },
+    "/v1/admin/payouts/{id}/execute": {
+      "post": {
+        "operationId": "AdminPaymentsController_execute_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/payments"
+        ]
+      }
+    },
+    "/v1/admin/ledger/health": {
+      "get": {
+        "operationId": "AdminPaymentsController_ledgerHealth_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/payments"
         ]
       }
     },
@@ -3362,9 +4396,29 @@
         ]
       }
     },
-    "/v1/payments": {
+    "/v1/transport/quote": {
       "post": {
-        "operationId": "PaymentsController_create_v1",
+        "operationId": "TransportController_quote_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Price a tow/delivery by route distance (maps port; mock in dev)",
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs": {
+      "post": {
+        "operationId": "TransportController_create_v1",
         "parameters": [],
         "responses": {
           "201": {
@@ -3376,48 +4430,33 @@
             "bearer": []
           }
         ],
-        "summary": "Customer: start an online payment for an invoice (returns PSP intent / redirect)",
         "tags": [
-          "payments"
+          "transport"
         ]
-      }
-    },
-    "/v1/payments/{id}": {
+      },
       "get": {
-        "operationId": "PaymentsController_get_v1",
+        "operationId": "TransportController_list_v1",
         "parameters": [
           {
-            "name": "id",
-            "required": true,
-            "in": "path",
+            "name": "org_id",
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
+          },
           {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/invoices/{invoiceId}/payments": {
-      "get": {
-        "operationId": "PaymentsController_listForInvoice_v1",
-        "parameters": [
+            "name": "as",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
-            "name": "invoiceId",
-            "required": true,
-            "in": "path",
+            "name": "status",
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -3444,133 +4483,41 @@
           }
         ],
         "tags": [
-          "payments"
+          "transport"
         ]
       }
     },
-    "/v1/webhooks/psp": {
-      "post": {
-        "operationId": "PaymentsController_webhook_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "PSP webhook (signature verified; idempotent by provider event id)",
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/payments/{id}/mock-pay": {
-      "post": {
-        "operationId": "PaymentsController_mockPay_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "outcome",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "[mock PSP] simulate the customer paying: builds a signed webhook and processes it",
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/payments/cash/init": {
-      "post": {
-        "operationId": "PaymentsController_cashInit_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Workshop: record a cash payment — sends OTP to the customer to confirm",
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/payments/cash/confirm": {
-      "post": {
-        "operationId": "PaymentsController_cashConfirm_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/work-orders/{id}/confirm-receipt": {
-      "post": {
-        "operationId": "PaymentsController_confirmReceipt_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Customer confirms receipt → held funds released to the workshop now",
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/escrow/{id}": {
+    "/v1/transport/jobs/{id}": {
       "get": {
-        "operationId": "PaymentsController_escrowGet_v1",
+        "operationId": "TransportController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/jobs/{id}/cancel": {
+      "post": {
+        "operationId": "TransportController_cancel_v1",
         "parameters": [
           {
             "name": "id",
@@ -3599,130 +4546,24 @@
           }
         ],
         "tags": [
-          "payments"
+          "transport"
         ]
       }
     },
-    "/v1/organizations/{orgId}/wallet": {
-      "get": {
-        "operationId": "PaymentsController_walletGet_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Org wallet: held / available / payouts / recent ledger entries",
-        "tags": [
-          "payments"
-        ]
-      }
-    },
-    "/v1/admin/escrow/{id}/release": {
-      "post": {
-        "operationId": "AdminPaymentsController_release_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/payments"
-        ]
-      }
-    },
-    "/v1/admin/escrow/{id}/freeze": {
-      "post": {
-        "operationId": "AdminPaymentsController_freeze_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/payments"
-        ]
-      }
-    },
-    "/v1/admin/escrow/{id}/refund": {
-      "post": {
-        "operationId": "AdminPaymentsController_refund_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/payments"
-        ]
-      }
-    },
-    "/v1/admin/escrow/release-due": {
-      "post": {
-        "operationId": "AdminPaymentsController_releaseDue_v1",
+    "/v1/transport/driver/profile": {
+      "put": {
+        "operationId": "TransportController_upsertDriver_v1",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3730,18 +4571,78 @@
             "bearer": []
           }
         ],
-        "summary": "Run the auto-release job now",
+        "summary": "Create/update my driver profile (truck plate + type)",
         "tags": [
-          "admin/payments"
+          "transport"
         ]
       }
     },
-    "/v1/admin/payouts/run": {
-      "post": {
-        "operationId": "AdminPaymentsController_runPayouts_v1",
+    "/v1/transport/driver/me": {
+      "get": {
+        "operationId": "TransportController_me_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/online": {
+      "put": {
+        "operationId": "TransportController_online_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "transport"
+        ]
+      }
+    },
+    "/v1/transport/driver/offers": {
+      "get": {
+        "operationId": "TransportController_offers_v1",
         "parameters": [
           {
-            "name": "org_id",
+            "name": "radius_km",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
             "required": false,
             "in": "query",
             "schema": {
@@ -3751,7 +4652,17 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3759,15 +4670,15 @@
             "bearer": []
           }
         ],
-        "summary": "Bundle released funds into payouts (per org)",
+        "summary": "Open jobs near me (PostGIS)",
         "tags": [
-          "admin/payments"
+          "transport"
         ]
       }
     },
-    "/v1/admin/payouts/{id}/execute": {
+    "/v1/transport/jobs/{id}/accept": {
       "post": {
-        "operationId": "AdminPaymentsController_execute_v1",
+        "operationId": "TransportController_accept_v1",
         "parameters": [
           {
             "name": "id",
@@ -3796,61 +4707,18 @@
           }
         ],
         "tags": [
-          "admin/payments"
+          "transport"
         ]
       }
     },
-    "/v1/admin/ledger/health": {
-      "get": {
-        "operationId": "AdminPaymentsController_ledgerHealth_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/payments"
-        ]
-      }
-    },
-    "/v1/promissory-notes": {
-      "get": {
-        "operationId": "NotesController_list_v1",
+    "/v1/transport/jobs/{id}/transition": {
+      "post": {
+        "operationId": "TransportController_transition_v1",
         "parameters": [
           {
-            "name": "org_id",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "overdue",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
+            "name": "id",
+            "required": true,
+            "in": "path",
             "schema": {
               "type": "string"
             }
@@ -3862,10 +4730,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
+                  "type": "object"
                 }
               }
             }
@@ -3876,100 +4741,14 @@
             "bearer": []
           }
         ],
-        "summary": "List: ?org_id= as creditor (workshop), else my notes as debtor; ?status=a,b&overdue=true",
         "tags": [
-          "promissory-notes"
+          "transport"
         ]
       }
     },
-    "/v1/promissory-notes/{id}": {
-      "get": {
-        "operationId": "NotesController_get_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "promissory-notes"
-        ]
-      }
-    },
-    "/v1/promissory-notes/{id}/document": {
-      "get": {
-        "operationId": "NotesController_doc_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "promissory-notes"
-        ]
-      }
-    },
-    "/v1/promissory-notes/{id}/enforce": {
+    "/v1/transport/jobs/{id}/track": {
       "post": {
-        "operationId": "NotesController_enforce_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Creditor: request enforcement (Najiz) — allowed after due date + formal notice; builds the evidence bundle",
-        "tags": [
-          "promissory-notes"
-        ]
-      }
-    },
-    "/v1/promissory-notes/{id}/enforcement-bundle.zip": {
-      "get": {
-        "operationId": "NotesController_bundle_v1",
+        "operationId": "TransportController_track_v1",
         "parameters": [
           {
             "name": "id",
@@ -3990,14 +4769,15 @@
             "bearer": []
           }
         ],
+        "summary": "Driver location ping (rate-limited server-side)",
         "tags": [
-          "promissory-notes"
+          "transport"
         ]
       }
     },
-    "/v1/promissory-notes/{id}/enforcement-bundle": {
-      "get": {
-        "operationId": "NotesController_manifest_v1",
+    "/v1/transport/jobs/{id}/proof/otp": {
+      "post": {
+        "operationId": "TransportController_proofOtp_v1",
         "parameters": [
           {
             "name": "id",
@@ -4018,14 +4798,15 @@
             "bearer": []
           }
         ],
+        "summary": "Send the receiver a one-time code at the drop-off",
         "tags": [
-          "promissory-notes"
+          "transport"
         ]
       }
     },
-    "/v1/settlements/{id}/document": {
-      "get": {
-        "operationId": "NotesController_settlement_v1",
+    "/v1/transport/jobs/{id}/complete": {
+      "post": {
+        "operationId": "TransportController_complete_v1",
         "parameters": [
           {
             "name": "id",
@@ -4038,7 +4819,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -4046,17 +4834,34 @@
             "bearer": []
           }
         ],
+        "summary": "Proof of delivery: photo + receiver code → delivered",
         "tags": [
-          "promissory-notes"
+          "transport"
         ]
       }
     },
-    "/v1/admin/promissory-notes": {
+    "/v1/admin/transport/drivers/near": {
       "get": {
-        "operationId": "AdminNotesController_list_v1",
+        "operationId": "AdminTransportController_near_v1",
         "parameters": [
           {
-            "name": "status",
+            "name": "lat",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lng",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "radius_km",
             "required": false,
             "in": "query",
             "schema": {
@@ -4064,7 +4869,7 @@
             }
           },
           {
-            "name": "overdue",
+            "name": "type",
             "required": false,
             "in": "query",
             "schema": {
@@ -4093,84 +4898,7 @@
           }
         ],
         "tags": [
-          "admin/promissory-notes"
-        ]
-      }
-    },
-    "/v1/admin/promissory-notes/run-dunning": {
-      "post": {
-        "operationId": "AdminNotesController_dunning_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Run the dunning job now (reminders / formal notices for overdue notes)",
-        "tags": [
-          "admin/promissory-notes"
-        ]
-      }
-    },
-    "/v1/admin/outbox/drain": {
-      "post": {
-        "operationId": "AdminNotesController_drain_v1",
-        "parameters": [
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Process pending outbox events now (dev/ops)",
-        "tags": [
-          "admin/promissory-notes"
-        ]
-      }
-    },
-    "/v1/admin/outbox/retry": {
-      "post": {
-        "operationId": "AdminNotesController_retry_v1",
-        "parameters": [
-          {
-            "name": "key",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/promissory-notes"
+          "admin/transport"
         ]
       }
     },
@@ -5439,6 +6167,577 @@
         ]
       }
     },
+    "/v1/promissory-notes": {
+      "get": {
+        "operationId": "NotesController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "overdue",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List: ?org_id= as creditor (workshop), else my notes as debtor; ?status=a,b&overdue=true",
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/promissory-notes/{id}": {
+      "get": {
+        "operationId": "NotesController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/promissory-notes/{id}/document": {
+      "get": {
+        "operationId": "NotesController_doc_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/promissory-notes/{id}/enforce": {
+      "post": {
+        "operationId": "NotesController_enforce_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Creditor: request enforcement (Najiz) — allowed after due date + formal notice; builds the evidence bundle",
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/promissory-notes/{id}/enforcement-bundle.zip": {
+      "get": {
+        "operationId": "NotesController_bundle_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/promissory-notes/{id}/enforcement-bundle": {
+      "get": {
+        "operationId": "NotesController_manifest_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/settlements/{id}/document": {
+      "get": {
+        "operationId": "NotesController_settlement_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "promissory-notes"
+        ]
+      }
+    },
+    "/v1/admin/promissory-notes": {
+      "get": {
+        "operationId": "AdminNotesController_list_v1",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "overdue",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/promissory-notes"
+        ]
+      }
+    },
+    "/v1/admin/promissory-notes/run-dunning": {
+      "post": {
+        "operationId": "AdminNotesController_dunning_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Run the dunning job now (reminders / formal notices for overdue notes)",
+        "tags": [
+          "admin/promissory-notes"
+        ]
+      }
+    },
+    "/v1/admin/outbox/drain": {
+      "post": {
+        "operationId": "AdminNotesController_drain_v1",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process pending outbox events now (dev/ops)",
+        "tags": [
+          "admin/promissory-notes"
+        ]
+      }
+    },
+    "/v1/admin/outbox/retry": {
+      "post": {
+        "operationId": "AdminNotesController_retry_v1",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin/promissory-notes"
+        ]
+      }
+    },
+    "/v1/service-requests": {
+      "post": {
+        "operationId": "ServiceRequestsController_create_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "العميل يعرض مشكلته: وصف + موقع + نطاق يحدده هو — الورش القريبة تتلقاه",
+        "tags": [
+          "service-requests"
+        ]
+      },
+      "get": {
+        "operationId": "ServiceRequestsController_list_v1",
+        "parameters": [
+          {
+            "name": "org_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "mine=true طلباتي (عميل) · org_id=… الطلبات القريبة الواصلة للورشة",
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
+    "/v1/service-requests/{id}": {
+      "get": {
+        "operationId": "ServiceRequestsController_get_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "الطلب وعروضه — للعميل كاملة مرتبة بشاراتها، وللورشة عرضها هي فقط",
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
+    "/v1/service-requests/{id}/offer": {
+      "put": {
+        "operationId": "ServiceRequestsController_offer_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "ردّ الورشة: تحليل + سعر (أو معاينة مجانية) + جاهزية — عرض حي واحد يُحدَّث",
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
+    "/v1/service-requests/{id}/accept": {
+      "post": {
+        "operationId": "ServiceRequestsController_accept_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "قبول عرض → أمر عمل مسودة لدى الورشة الفائزة (السعر النهائي على المسار القانوني)",
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
+    "/v1/service-requests/{id}/widen": {
+      "post": {
+        "operationId": "ServiceRequestsController_widen_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "وسّع النطاق بنقرة — يُشعر الورش الداخلة حديثاً فقط",
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
+    "/v1/service-requests/{id}/cancel": {
+      "post": {
+        "operationId": "ServiceRequestsController_cancel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "service-requests"
+        ]
+      }
+    },
     "/v1/admin/overview": {
       "get": {
         "operationId": "AdminController_overview_v1",
@@ -5867,906 +7166,6 @@
         ],
         "tags": [
           "admin"
-        ]
-      }
-    },
-    "/v1/disputes": {
-      "post": {
-        "operationId": "DisputesController_open_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Open a dispute on a work order / part order → freezes the escrow hold",
-        "tags": [
-          "disputes"
-        ]
-      },
-      "get": {
-        "operationId": "DisputesController_list_v1",
-        "parameters": [
-          {
-            "name": "org_id",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "mine",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "disputes"
-        ]
-      }
-    },
-    "/v1/disputes/{id}": {
-      "get": {
-        "operationId": "DisputesController_get_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "disputes"
-        ]
-      }
-    },
-    "/v1/disputes/{id}/messages": {
-      "post": {
-        "operationId": "DisputesController_message_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "disputes"
-        ]
-      }
-    },
-    "/v1/reviews": {
-      "post": {
-        "operationId": "DisputesController_review_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Rate the provider after delivery (one per order); refreshes the org rating",
-        "tags": [
-          "disputes"
-        ]
-      }
-    },
-    "/v1/organizations/{orgId}/reviews": {
-      "get": {
-        "operationId": "DisputesController_reviews_v1",
-        "parameters": [
-          {
-            "name": "orgId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Public reviews of an organization (discovery)",
-        "tags": [
-          "disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes": {
-      "get": {
-        "operationId": "AdminDisputesController_list_v1",
-        "parameters": [
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes/{id}": {
-      "get": {
-        "operationId": "AdminDisputesController_get_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes/{id}/assign": {
-      "put": {
-        "operationId": "AdminDisputesController_assign_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes/{id}/status": {
-      "put": {
-        "operationId": "AdminDisputesController_setStatus_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes/{id}/resolve": {
-      "post": {
-        "operationId": "AdminDisputesController_resolve_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Ops decision → ledger moves (release / refund / split) in one transaction",
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/admin/disputes/{id}/messages": {
-      "post": {
-        "operationId": "AdminDisputesController_message_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/disputes"
-        ]
-      }
-    },
-    "/v1/transport/quote": {
-      "post": {
-        "operationId": "TransportController_quote_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Price a tow/delivery by route distance (maps port; mock in dev)",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs": {
-      "post": {
-        "operationId": "TransportController_create_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      },
-      "get": {
-        "operationId": "TransportController_list_v1",
-        "parameters": [
-          {
-            "name": "org_id",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "as",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}": {
-      "get": {
-        "operationId": "TransportController_get_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/cancel": {
-      "post": {
-        "operationId": "TransportController_cancel_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/driver/profile": {
-      "put": {
-        "operationId": "TransportController_upsertDriver_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create/update my driver profile (truck plate + type)",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/driver/me": {
-      "get": {
-        "operationId": "TransportController_me_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/driver/online": {
-      "put": {
-        "operationId": "TransportController_online_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/driver/offers": {
-      "get": {
-        "operationId": "TransportController_offers_v1",
-        "parameters": [
-          {
-            "name": "radius_km",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Open jobs near me (PostGIS)",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/accept": {
-      "post": {
-        "operationId": "TransportController_accept_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/transition": {
-      "post": {
-        "operationId": "TransportController_transition_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/track": {
-      "post": {
-        "operationId": "TransportController_track_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Driver location ping (rate-limited server-side)",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/proof/otp": {
-      "post": {
-        "operationId": "TransportController_proofOtp_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Send the receiver a one-time code at the drop-off",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/transport/jobs/{id}/complete": {
-      "post": {
-        "operationId": "TransportController_complete_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Proof of delivery: photo + receiver code → delivered",
-        "tags": [
-          "transport"
-        ]
-      }
-    },
-    "/v1/admin/transport/drivers/near": {
-      "get": {
-        "operationId": "AdminTransportController_near_v1",
-        "parameters": [
-          {
-            "name": "lat",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "lng",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "radius_km",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "tags": [
-          "admin/transport"
         ]
       }
     },

@@ -4,6 +4,8 @@
 
 | الفكرة | المصدر | لماذا مؤجلة | المرحلة المقترحة |
 |---|---|---|---|
+| Service marketplace deferrals (scope doc 2026-08-22): live map view of offers; automatic specialty-based match ranking (badge ships, ranking later); voice problem description (awaits the speech vendor) | service marketplace | distance-as-text covers the pilot; measure before ranking; vendor undecided | after pilot |
+| Match cap: a request notifies the CLOSEST 40 workshops (MATCH_LIMIT) — fine for the pilot, needs paging/waves in a dense city | service marketplace | closest-first is the honest order; widen covers quiet cases | Step 30+ |
 | الشراء الجماعي للورش | PRD FR-PD-09 | يحتاج كثافة ورش | P5 |
 | Core Return | PRD FR-PD-10 | ثانوي | P5 |
 | قائمة أسعار السوق المرجعية | عصف ذهني | تحتاج بيانات متراكمة | P5 |

@@ -73,6 +73,7 @@ pnpm --filter api prisma:migrate      # prisma migrate dev
 pnpm --filter api db:verify           # schema sync-check + migrate deploy + seed + drift-check (CI)
 pnpm --filter api prisma:generate
 pnpm --filter api seed                # dev seed (makes, categories, plans, demo orgs)
+node apps/api/tools/demo-day.mjs      # plant the touchable demo day (docs/pilot/demo-day.md)
 pnpm --filter api openapi:export      # writes packages/shared-types/openapi.json
 
 # ---- Infra ----
