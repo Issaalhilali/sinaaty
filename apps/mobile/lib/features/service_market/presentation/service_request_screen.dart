@@ -98,6 +98,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
 
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
+    ref.watch(serviceRequestLiveProvider(widget.id));   // a new offer appears the moment it lands
     final v = ref.watch(serviceRequestProvider(widget.id));
     final r = v.value?.valueOrNull;
     return AppScaffold(
@@ -121,7 +122,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
           const SizedBox(height: SinaatySpace.sm),
           Wrap(spacing: 8, runSpacing: 6, children: [
             SealPill(l.srKm(r.radiusKm), icon: Icons.radar_outlined),
-            if (!widget.workshop) SealPill('${r.offers.length}', icon: Icons.local_offer_outlined),
+            if (!widget.workshop) SealPill('${r.offersCount}', icon: Icons.local_offer_outlined),
           ]),
         ])),
         if (r.mediaIds.isNotEmpty) ...[

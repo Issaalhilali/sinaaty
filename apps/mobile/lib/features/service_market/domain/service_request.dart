@@ -36,6 +36,9 @@ class ServiceRequest {
   final DateTime createdAt;
   final List<String> mediaIds;
   final List<ServiceOffer> offers;
-  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.mediaIds = const [], this.offers = const []});
+  /// The list view carries a count without the offers themselves — the badge never lies as zero.
+  final int? offersCountRaw;
+  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
   bool get open => status == 'open';
+  int get offersCount => offersCountRaw ?? offers.length;
 }

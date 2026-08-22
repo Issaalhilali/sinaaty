@@ -15,3 +15,9 @@ abstract interface class ServiceMarketRepository {
   /// Presign + upload one problem photo → media id (existing pipeline).
   Future<Result<String>> uploadPhoto(List<int> bytes, {required String mimeType});
 }
+
+/// Live channel `service-request:{id}` (offer / accepted / widened): the comparison screen sees a
+/// new offer the moment it lands — no pull-to-refresh ritual while workshops are answering.
+abstract interface class ServiceRequestRealtime {
+  Stream<void> changes(String requestId);
+}

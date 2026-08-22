@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,11 @@ import 'fleet_flow_test.dart' show loadArabicFont;
 /// The repair marketplace (owner's directive, scope 2026-08-22): the customer throws the problem
 /// to nearby workshops, compares offers whose arguments and distance lines arrive READY from the
 /// API, and accepting rides the existing legal path as a plain work order.
+class FakeSrRealtime implements ServiceRequestRealtime {
+  final controller = StreamController<void>.broadcast();
+  @override Stream<void> changes(String requestId) => controller.stream;
+}
+
 class FakeServiceMarket implements ServiceMarketRepository {
   final store = <String, ServiceRequest>{};
   ({String title, int radius, String? when, double lat})? lastCreate;
@@ -70,14 +76,15 @@ class FakeServiceMarket implements ServiceMarketRepository {
 
 void main() {
   setUpAll(loadArabicFont);
-  late FakeServiceMarket market; late MemoryTokenStore ts;
-  setUp(() async { market = FakeServiceMarket(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
+  late FakeServiceMarket market; late FakeSrRealtime live; late MemoryTokenStore ts;
+  setUp(() async { market = FakeServiceMarket(); live = FakeSrRealtime(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
 
   Widget app(String initial, {Map<String, bool> flags = const {'service_marketplace': true}}) => ProviderScope(key: UniqueKey(), overrides: [
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     flagsRepositoryProvider.overrideWithValue(FakeFlags(Result.ok(FeatureFlags(flags)))),
     serviceMarketRepositoryProvider.overrideWithValue(market),
+    serviceRequestRealtimeProvider.overrideWithValue(live),
     vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
     myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
     myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
@@ -131,6 +138,7 @@ void main() {
       authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
       serviceMarketRepositoryProvider.overrideWithValue(market),
+      serviceRequestRealtimeProvider.overrideWithValue(live),
     ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: ThemeMode.dark, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
       localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: GoRouter(initialLocation: '/service-requests/sr1', routes: [GoRoute(path: '/service-requests/:id', builder: (_, s) => ServiceRequestScreen(id: s.pathParameters['id']!))]))));
@@ -150,6 +158,27 @@ void main() {
     await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle();
     expect(market.store['sr1']!.offers.single.diagnosisAr, contains('جلد مقصات'));
     expect(find.text('أُرسل عرضك'), findsOneWidget);
+  });
+
+  testWidgets('a new offer appears the moment the live channel ticks — no pull to refresh', (tester) async {
+    size(tester);
+    market.store['sr1'] = market._seed(offers: const [
+      ServiceOffer(id: 'of1', workshopNameAr: 'ورشة النور للسمكرة والميكانيكا', offerType: 'estimate', diagnosisAr: 'جلد مقصات.', priceMin: '350.00'),
+    ]);
+    await tester.pumpWidget(app('/service-requests/sr1')); await tester.pumpAndSettle();
+    expect(find.text('ورشة النور للسمكرة والميكانيكا'), findsOneWidget);
+    expect(find.text('مركز الإتقان للميكانيكا'), findsNothing);
+    market.seedWithOffers();                          // the second workshop answers on the server…
+    live.controller.add(null);                        // …and the channel ticks
+    await tester.pumpAndSettle();
+    expect(find.text('مركز الإتقان للميكانيكا'), findsOneWidget);   // it appeared with no user action
+  });
+
+  testWidgets('the hub badge trusts offers_count even when the list view carries no offers', (tester) async {
+    size(tester);
+    market.store['sr1'] = ServiceRequest(id: 'sr1', number: 'SR-2026-000007', status: 'open', titleAr: 'صوت طقطقة', radiusKm: 25, createdAt: DateTime(2026, 8, 22, 9), offersCountRaw: 3);
+    await tester.pumpWidget(app('/')); await tester.pumpAndSettle();
+    expect(find.text('3'), findsOneWidget);
   });
 
   test('the quiet-push deep link resolves to the request screen route', () {

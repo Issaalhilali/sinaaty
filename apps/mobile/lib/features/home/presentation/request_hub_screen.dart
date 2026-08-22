@@ -122,7 +122,7 @@ class RequestHubScreen extends ConsumerWidget {
             for (final r in fixes.take(5)) AppListRow(
               icon: Icons.build_outlined, title: r.titleAr,
               subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
-              trailing: StatusBadge('${r.offers.length}', tone: r.offers.isNotEmpty ? BadgeTone.brass : BadgeTone.plain, icon: Icons.local_offer_outlined),
+              trailing: StatusBadge('${r.offersCount}', tone: r.offersCount > 0 ? BadgeTone.brass : BadgeTone.plain, icon: Icons.local_offer_outlined),
               onTap: () => context.push('/service-requests/${r.id}'),
             ),
           ])),

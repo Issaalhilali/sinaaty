@@ -34,6 +34,7 @@ ServiceRequest requestFromJson(Map<String, dynamic> j) => ServiceRequest(
   createdAt: Fmt.parseDate(j['created_at']) ?? DateTime.now(),
   mediaIds: ((j['media_ids'] as List?) ?? []).map((m) => m.toString()).toList(),
   offers: ((j['offers'] as List?) ?? []).cast<Map<String, dynamic>>().map(offerFromJson).toList(),
+  offersCountRaw: (j['offers_count'] as num?)?.toInt(),
 );
 
 class ServiceMarketRepositoryImpl implements ServiceMarketRepository {
