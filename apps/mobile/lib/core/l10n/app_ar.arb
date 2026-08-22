@@ -890,5 +890,7 @@
   "assistantTitle": "تكلّم — أنا أسمع",
   "assistantAck": "حاضر —",
   "assistantTryCustomer": "لم أفهم — جرّب: «اطلب سطحة» أو «أصلح سيارتي»",
-  "assistantTryPartner": "لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»"
+  "assistantTryPartner": "لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»",
+  "voDevTyped": "بيئة تطوير — الإملاء غير متاح على المحاكي",
+  "voDevTypedHint": "اكتب ما كنت ستقوله"
 }

@@ -3552,6 +3552,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»'**
   String get assistantTryPartner;
+
+  /// No description provided for @voDevTyped.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيئة تطوير — الإملاء غير متاح على المحاكي'**
+  String get voDevTyped;
+
+  /// No description provided for @voDevTypedHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب ما كنت ستقوله'**
+  String get voDevTypedHint;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

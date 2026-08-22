@@ -1876,4 +1876,11 @@ class L10nEn extends L10n {
   @override
   String get assistantTryPartner =>
       'Did not catch that — try: “new order” or “nearby requests”';
+
+  @override
+  String get voDevTyped =>
+      'Dev environment — dictation unavailable on the simulator';
+
+  @override
+  String get voDevTypedHint => 'Type what you would have said';
 }

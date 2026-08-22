@@ -1857,4 +1857,10 @@ class L10nAr extends L10n {
   @override
   String get assistantTryPartner =>
       'لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»';
+
+  @override
+  String get voDevTyped => 'بيئة تطوير — الإملاء غير متاح على المحاكي';
+
+  @override
+  String get voDevTypedHint => 'اكتب ما كنت ستقوله';
 }

@@ -10,8 +10,31 @@ import 'voice_input.dart';
 /// spoken, and two honest buttons — أعد or تم. Returns the final transcript, or null.
 Future<String?> showVoiceSheet(BuildContext context, WidgetRef ref, {String? title}) async {
   final voice = ref.read(voiceInputProvider);
+  final typedDev = ref.read(voiceModeProvider).value == VoiceMode.typedDev;
   return showModalBottomSheet<String>(context: context, showDragHandle: true, isScrollControlled: true, isDismissible: false,
-    builder: (ctx) => _VoiceSheetBody(voice: voice, title: title));
+    builder: (ctx) => typedDev ? _TypedDevSheetBody(title: title) : _VoiceSheetBody(voice: voice, title: title));
+}
+
+/// The dev-only stand-in when the simulator cannot dictate: same contract, typed instead of spoken,
+/// and it says so — clearly labeled so nobody mistakes a demo for the real engine.
+class _TypedDevSheetBody extends StatelessWidget {
+  final String? title;
+  const _TypedDevSheetBody({this.title});
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final c = TextEditingController();
+    return Padding(
+      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(title ?? l.voSpeak, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+        const SizedBox(height: SinaatySpace.sm),
+        Center(child: StatusBadge(l.voDevTyped, tone: BadgeTone.warn, icon: Icons.keyboard_alt_outlined)),
+        const SizedBox(height: SinaatySpace.md),
+        TextField(controller: c, autofocus: true, minLines: 1, maxLines: 3, decoration: InputDecoration(hintText: l.voDevTypedHint)),
+        const SizedBox(height: SinaatySpace.lg),
+        PrimaryButton(label: l.voDone, icon: Icons.check, onPressed: () => Navigator.pop(context, c.text.trim().isEmpty ? null : c.text.trim())),
+      ]),
+    );
+  }
 }
 
 class _VoiceSheetBody extends StatefulWidget {

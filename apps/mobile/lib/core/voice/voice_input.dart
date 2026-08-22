@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../di/core_providers.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -58,5 +59,14 @@ class SystemVoiceRecorder implements VoiceRecorder {
 
 final voiceInputProvider = Provider<VoiceInput>((_) => SystemVoiceInput());
 final voiceRecorderProvider = Provider<VoiceRecorder>((_) => SystemVoiceRecorder());
-/// Resolved once per session: does this device dictate? Drives every mic's existence.
-final voiceAvailableProvider = FutureProvider<bool>((ref) => ref.watch(voiceInputProvider).init());
+
+/// How voice input works on THIS device: the system engine, a dev-only typed stand-in (simulators
+/// often lack SFSpeechRecognizer — dev demos must not lose the mic), or nothing at all.
+/// typedDev never leaves dev: production hides the mic exactly as before.
+enum VoiceMode { system, typedDev, none }
+final voiceModeProvider = FutureProvider<VoiceMode>((ref) async {
+  if (await ref.watch(voiceInputProvider).init()) return VoiceMode.system;
+  return ref.watch(appConfigProvider).appEnv == 'dev' ? VoiceMode.typedDev : VoiceMode.none;
+});
+/// Resolved once per session: does this device take voice input? Drives every mic's existence.
+final voiceAvailableProvider = FutureProvider<bool>((ref) async => (await ref.watch(voiceModeProvider.future)) != VoiceMode.none);
