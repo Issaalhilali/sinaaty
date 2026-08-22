@@ -23,6 +23,7 @@ abstract final class Flags {
   static const warrantyWallet = 'warranty_wallet';
   static const aiInspection = 'ai_inspection';
   static const disputes = 'disputes';
+  static const serviceMarketplace = 'service_marketplace';
 }
 
 abstract interface class FlagsRepository {

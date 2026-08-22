@@ -6,6 +6,9 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../../core/flags/feature_flags.dart';
+import '../../service_market/domain/service_request.dart';
+import '../../service_market/presentation/providers.dart' as sm;
 import '../../work_orders/domain/work_order.dart';
 import '../domain/workshop.dart';
 import 'providers.dart';
@@ -21,6 +24,25 @@ class TodayScreen extends ConsumerWidget {
       if (all.isEmpty) return EmptyState(icon: Icons.build_outlined, title: l.wsNoOrders, body: l.wsNoOrdersBody, actionLabel: l.wsNewOrder, onAction: () => context.push('/ws/new'));
       return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); }, child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
         if (pending > 0) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: StatusBadge(l.wsPendingSync(pending), tone: BadgeTone.warn, icon: Icons.cloud_upload_outlined)),
+        // Nearby repair requests (scope §1.ج) — the hot-request card pattern, behind its flag.
+        if ((ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.serviceMarketplace))
+          ...(() {
+            final nearby = ref.watch(sm.nearbyServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[];
+            if (nearby.isEmpty) return const <Widget>[];
+            return <Widget>[
+              SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Expanded(child: Text(l.srNearbyCount(nearby.length), style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white))),
+                  SealPill(l.srNow, icon: Icons.bolt_outlined),
+                ]),
+                const SizedBox(height: 4),
+                Text(nearby.first.titleAr, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: SinaatySpace.md),
+                SealButton(label: l.srNearby, icon: Icons.local_offer_outlined, onPressed: () => context.push('/ws/service-requests')),
+              ])),
+              const SizedBox(height: SinaatySpace.md),
+            ];
+          })(),
         Row(children: [_Kpi(value: '${active.length}', label: l.wsInShop), const SizedBox(width: 10), _Kpi(value: '$awaiting', label: l.wsAwaitingCustomer), const SizedBox(width: 10), _Kpi(value: Fmt.money(available, locale: locale).split(' ').first.replaceAll(RegExp(r'\.00$'), ''), label: l.wsReadyToPayout)]),
         if (hero != null) ...[const SizedBox(height: SinaatySpace.md), _HeroAction(order: hero)],
         SectionTitle(l.wsTodayCars, trailing: TextButton(onPressed: () => context.push('/ws/orders'), child: Text(l.wsAll))),

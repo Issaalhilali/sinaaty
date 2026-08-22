@@ -9,6 +9,9 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../parts/domain/parts.dart';
 import '../../parts/presentation/providers.dart';
+import '../../service_market/domain/service_request.dart';
+import '../../service_market/presentation/fix_car_sheet.dart';
+import '../../service_market/presentation/providers.dart' as sm;
 import '../../transport/domain/transport.dart';
 import '../../transport/presentation/providers.dart';
 import '../../vehicles/domain/vehicle.dart';
@@ -77,6 +80,8 @@ class RequestHubScreen extends ConsumerWidget {
     // Flags hide entry points only (charter §5.0 #3); the server enforces regardless.
     final flags = ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible;
     final towOn = flags.enabled(Flags.tow); final partsOn = flags.enabled(Flags.partsMarketplace);
+    final fixOn = flags.enabled(Flags.serviceMarketplace);
+    final fixes = fixOn ? (ref.watch(sm.myServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]) : const <ServiceRequest>[];
     final liveTow = towOn ? tows.where((j) => j.isLive).firstOrNull : null;
 
     return RefreshIndicator(
@@ -103,9 +108,24 @@ class RequestHubScreen extends ConsumerWidget {
           Text(l.reqHubBody, style: t.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: SinaatySpace.lg),
         ],
+        if (fixOn) ...[
+          _Choice(icon: Icons.build_outlined, title: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
+          if (partsOn || towOn) const SizedBox(height: SinaatySpace.md),
+        ],
         if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => _requestPart(context, ref, vehicles)),
         if (partsOn && towOn) const SizedBox(height: SinaatySpace.md),
         if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        if (fixes.isNotEmpty) ...[
+          const SizedBox(height: SinaatySpace.xl), SectionTitle(l.srMine),
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+            for (final r in fixes.take(5)) AppListRow(
+              icon: Icons.build_outlined, title: r.titleAr,
+              subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
+              trailing: StatusBadge('${r.offers.length}', tone: r.offers.isNotEmpty ? BadgeTone.brass : BadgeTone.plain, icon: Icons.local_offer_outlined),
+              onTap: () => context.push('/service-requests/${r.id}'),
+            ),
+          ])),
+        ],
         if (partsOn && requests.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.reqMyRequests),
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [

@@ -3204,6 +3204,228 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'نُسخ الكشف — ألصقه في جداولك'**
   String get flCsvCopied;
+
+  /// No description provided for @srFix.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصلح سيارتي'**
+  String get srFix;
+
+  /// No description provided for @srFixBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف المشكلة وستصلك عروض الورش القريبة بتحليل وسعر أو معاينة مجانية.'**
+  String get srFixBody;
+
+  /// No description provided for @srDescribe.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف المشكلة'**
+  String get srDescribe;
+
+  /// No description provided for @srDescribeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما الذي تسمعه أو تراه؟ الصورة تغني عن ألف كلمة.'**
+  String get srDescribeHint;
+
+  /// No description provided for @srWhere.
+  ///
+  /// In ar, this message translates to:
+  /// **'موقعك'**
+  String get srWhere;
+
+  /// No description provided for @srWhereHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصق رابط خرائط أو إحداثيات مثل 24.71, 46.67'**
+  String get srWhereHint;
+
+  /// No description provided for @srRadius.
+  ///
+  /// In ar, this message translates to:
+  /// **'نطاق البحث'**
+  String get srRadius;
+
+  /// No description provided for @srKm.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} كم'**
+  String srKm(int n);
+
+  /// No description provided for @srWhen.
+  ///
+  /// In ar, this message translates to:
+  /// **'متى تريد الإصلاح؟'**
+  String get srWhen;
+
+  /// No description provided for @srNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'الآن'**
+  String get srNow;
+
+  /// No description provided for @srToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get srToday;
+
+  /// No description provided for @srThisWeek.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الأسبوع'**
+  String get srThisWeek;
+
+  /// No description provided for @srSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الطلب'**
+  String get srSend;
+
+  /// No description provided for @srSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل طلبك — العروض ستظهر هنا'**
+  String get srSent;
+
+  /// No description provided for @srMine.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات الإصلاح'**
+  String get srMine;
+
+  /// No description provided for @srOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'العروض'**
+  String get srOffers;
+
+  /// No description provided for @srNoOffers.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا عروض بعد — الورش القريبة تدرس طلبك.'**
+  String get srNoOffers;
+
+  /// No description provided for @srWiden.
+  ///
+  /// In ar, this message translates to:
+  /// **'وسّع النطاق إلى {n} كم'**
+  String srWiden(int n);
+
+  /// No description provided for @srWidened.
+  ///
+  /// In ar, this message translates to:
+  /// **'وُسّع نطاق البحث'**
+  String get srWidened;
+
+  /// No description provided for @srFreeInspection.
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة مجانية'**
+  String get srFreeInspection;
+
+  /// No description provided for @srEstimate.
+  ///
+  /// In ar, this message translates to:
+  /// **'سعر تقديري'**
+  String get srEstimate;
+
+  /// No description provided for @srPriceRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'من {min} إلى {max}'**
+  String srPriceRange(String min, String max);
+
+  /// No description provided for @srFinalPriceNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر النهائي يُعتمد بعد الفحص وبتوقيعك — لا مفاجآت.'**
+  String get srFinalPriceNote;
+
+  /// No description provided for @srAccepted.
+  ///
+  /// In ar, this message translates to:
+  /// **'قُبل العرض — أُنشئ أمر العمل'**
+  String get srAccepted;
+
+  /// No description provided for @srNearestBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأقرب'**
+  String get srNearestBadge;
+
+  /// No description provided for @srTopRatedBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأعلى تقييماً'**
+  String get srTopRatedBadge;
+
+  /// No description provided for @srPrevUsedBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'سبق تعاملك معها'**
+  String get srPrevUsedBadge;
+
+  /// No description provided for @srNearby.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات إصلاح قريبة'**
+  String get srNearby;
+
+  /// No description provided for @srNearbyCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} طلبات إصلاح قريبة'**
+  String srNearbyCount(int n);
+
+  /// No description provided for @srRespond.
+  ///
+  /// In ar, this message translates to:
+  /// **'قدّم عرضك'**
+  String get srRespond;
+
+  /// No description provided for @srDiagnosis.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحليلك للمشكلة'**
+  String get srDiagnosis;
+
+  /// No description provided for @srDiagnosisHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطر يشرح ما تظنه السبب — هو ما يميّز عرضك.'**
+  String get srDiagnosisHint;
+
+  /// No description provided for @srPriceMin.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر من'**
+  String get srPriceMin;
+
+  /// No description provided for @srPriceMax.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلى'**
+  String get srPriceMax;
+
+  /// No description provided for @srAvailability.
+  ///
+  /// In ar, this message translates to:
+  /// **'متى تستقبل السيارة؟'**
+  String get srAvailability;
+
+  /// No description provided for @srOfferSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل عرضك'**
+  String get srOfferSent;
+
+  /// No description provided for @srCancelRequest.
+  ///
+  /// In ar, this message translates to:
+  /// **'ألغِ الطلب'**
+  String get srCancelRequest;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

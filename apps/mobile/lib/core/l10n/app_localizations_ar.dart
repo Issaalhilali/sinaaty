@@ -1666,4 +1666,126 @@ class L10nAr extends L10n {
 
   @override
   String get flCsvCopied => 'نُسخ الكشف — ألصقه في جداولك';
+
+  @override
+  String get srFix => 'أصلح سيارتي';
+
+  @override
+  String get srFixBody =>
+      'صف المشكلة وستصلك عروض الورش القريبة بتحليل وسعر أو معاينة مجانية.';
+
+  @override
+  String get srDescribe => 'صف المشكلة';
+
+  @override
+  String get srDescribeHint =>
+      'ما الذي تسمعه أو تراه؟ الصورة تغني عن ألف كلمة.';
+
+  @override
+  String get srWhere => 'موقعك';
+
+  @override
+  String get srWhereHint => 'الصق رابط خرائط أو إحداثيات مثل 24.71, 46.67';
+
+  @override
+  String get srRadius => 'نطاق البحث';
+
+  @override
+  String srKm(int n) {
+    return '$n كم';
+  }
+
+  @override
+  String get srWhen => 'متى تريد الإصلاح؟';
+
+  @override
+  String get srNow => 'الآن';
+
+  @override
+  String get srToday => 'اليوم';
+
+  @override
+  String get srThisWeek => 'هذا الأسبوع';
+
+  @override
+  String get srSend => 'أرسل الطلب';
+
+  @override
+  String get srSent => 'أُرسل طلبك — العروض ستظهر هنا';
+
+  @override
+  String get srMine => 'طلبات الإصلاح';
+
+  @override
+  String get srOffers => 'العروض';
+
+  @override
+  String get srNoOffers => 'لا عروض بعد — الورش القريبة تدرس طلبك.';
+
+  @override
+  String srWiden(int n) {
+    return 'وسّع النطاق إلى $n كم';
+  }
+
+  @override
+  String get srWidened => 'وُسّع نطاق البحث';
+
+  @override
+  String get srFreeInspection => 'معاينة مجانية';
+
+  @override
+  String get srEstimate => 'سعر تقديري';
+
+  @override
+  String srPriceRange(String min, String max) {
+    return 'من $min إلى $max';
+  }
+
+  @override
+  String get srFinalPriceNote =>
+      'السعر النهائي يُعتمد بعد الفحص وبتوقيعك — لا مفاجآت.';
+
+  @override
+  String get srAccepted => 'قُبل العرض — أُنشئ أمر العمل';
+
+  @override
+  String get srNearestBadge => 'الأقرب';
+
+  @override
+  String get srTopRatedBadge => 'الأعلى تقييماً';
+
+  @override
+  String get srPrevUsedBadge => 'سبق تعاملك معها';
+
+  @override
+  String get srNearby => 'طلبات إصلاح قريبة';
+
+  @override
+  String srNearbyCount(int n) {
+    return '$n طلبات إصلاح قريبة';
+  }
+
+  @override
+  String get srRespond => 'قدّم عرضك';
+
+  @override
+  String get srDiagnosis => 'تحليلك للمشكلة';
+
+  @override
+  String get srDiagnosisHint => 'سطر يشرح ما تظنه السبب — هو ما يميّز عرضك.';
+
+  @override
+  String get srPriceMin => 'السعر من';
+
+  @override
+  String get srPriceMax => 'إلى';
+
+  @override
+  String get srAvailability => 'متى تستقبل السيارة؟';
+
+  @override
+  String get srOfferSent => 'أُرسل عرضك';
+
+  @override
+  String get srCancelRequest => 'ألغِ الطلب';
 }

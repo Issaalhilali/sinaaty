@@ -1,0 +1,17 @@
+import '../../../core/result/result.dart';
+import 'service_request.dart';
+
+abstract interface class ServiceMarketRepository {
+  Future<Result<ServiceRequest>> create({String? vehicleId, required String titleAr, String? descriptionAr, required double lat, required double lng, String? addressHint, required int radiusKm, String? preferredTime, List<String> mediaIds});
+  Future<Result<List<ServiceRequest>>> mine();
+  Future<Result<List<ServiceRequest>>> nearby();
+  Future<Result<ServiceRequest>> byId(String id);
+  /// Upsert — a workshop refines its offer, never stacks a second one.
+  Future<Result<void>> offer(String id, {required String offerType, required String diagnosisAr, String? priceMin, String? priceMax, String? availability});
+  /// Accepting creates the draft work order in the same transaction (the API owns that); returns its id.
+  Future<Result<String>> accept(String id, {required String offerId});
+  Future<Result<void>> widen(String id, {required int radiusKm});
+  Future<Result<void>> cancel(String id);
+  /// Presign + upload one problem photo → media id (existing pipeline).
+  Future<Result<String>> uploadPhoto(List<int> bytes, {required String mimeType});
+}

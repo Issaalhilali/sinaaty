@@ -1681,4 +1681,129 @@ class L10nEn extends L10n {
 
   @override
   String get flCsvCopied => 'Statement copied — paste it into your sheets';
+
+  @override
+  String get srFix => 'Fix my car';
+
+  @override
+  String get srFixBody =>
+      'Describe the problem and nearby workshops reply with a diagnosis and a price or a free inspection.';
+
+  @override
+  String get srDescribe => 'Describe the problem';
+
+  @override
+  String get srDescribeHint =>
+      'What do you hear or see? A photo says a thousand words.';
+
+  @override
+  String get srWhere => 'Your location';
+
+  @override
+  String get srWhereHint =>
+      'Paste a maps link or coordinates like 24.71, 46.67';
+
+  @override
+  String get srRadius => 'Search radius';
+
+  @override
+  String srKm(int n) {
+    return '$n km';
+  }
+
+  @override
+  String get srWhen => 'When do you want the repair?';
+
+  @override
+  String get srNow => 'Now';
+
+  @override
+  String get srToday => 'Today';
+
+  @override
+  String get srThisWeek => 'This week';
+
+  @override
+  String get srSend => 'Send request';
+
+  @override
+  String get srSent => 'Request sent — offers will appear here';
+
+  @override
+  String get srMine => 'Repair requests';
+
+  @override
+  String get srOffers => 'Offers';
+
+  @override
+  String get srNoOffers =>
+      'No offers yet — nearby workshops are reviewing your request.';
+
+  @override
+  String srWiden(int n) {
+    return 'Widen to $n km';
+  }
+
+  @override
+  String get srWidened => 'Search radius widened';
+
+  @override
+  String get srFreeInspection => 'Free inspection';
+
+  @override
+  String get srEstimate => 'Estimate';
+
+  @override
+  String srPriceRange(String min, String max) {
+    return '$min to $max';
+  }
+
+  @override
+  String get srFinalPriceNote =>
+      'The final price is approved after inspection, with your signature — no surprises.';
+
+  @override
+  String get srAccepted => 'Offer accepted — work order created';
+
+  @override
+  String get srNearestBadge => 'Nearest';
+
+  @override
+  String get srTopRatedBadge => 'Top rated';
+
+  @override
+  String get srPrevUsedBadge => 'You have used them before';
+
+  @override
+  String get srNearby => 'Nearby repair requests';
+
+  @override
+  String srNearbyCount(int n) {
+    return '$n nearby repair requests';
+  }
+
+  @override
+  String get srRespond => 'Make your offer';
+
+  @override
+  String get srDiagnosis => 'Your diagnosis';
+
+  @override
+  String get srDiagnosisHint =>
+      'One line on what you think it is — it is what sets your offer apart.';
+
+  @override
+  String get srPriceMin => 'Price from';
+
+  @override
+  String get srPriceMax => 'to';
+
+  @override
+  String get srAvailability => 'When can you take the car?';
+
+  @override
+  String get srOfferSent => 'Offer sent';
+
+  @override
+  String get srCancelRequest => 'Cancel request';
 }
