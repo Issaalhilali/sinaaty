@@ -46,6 +46,11 @@ export class NotificationOutboxHandlers implements OnModuleInit {
       const priceNote = p.priceMin ? ` بسعر يبدأ من ${money(p.priceMin)} ر.س` : '';
       await this.notify.notifyMany([p.customerUserId], { template: 'service.offer.received', data: { id: ev.aggregateId, org: await this.orgName(p.orgId), title: str(p.titleAr) || 'طلبك', price_note: priceNote }, dedupeKey: `service.offer:${p.offerId}` });
     });
+    on('ServiceRequestQuiet', 'service-request-quiet', async (ev) => {
+      const p = ev.payload as { customerUserId?: string; titleAr?: string; offers?: number };
+      if (typeof p.customerUserId !== 'string') return;
+      await this.notify.notifyMany([p.customerUserId], { template: 'service.request.quiet', data: { id: ev.aggregateId, title: str(p.titleAr), offers: String(p.offers ?? 0) }, dedupeKey: `service.quiet:${ev.aggregateId}` });
+    });
     on('ServiceRequestAccepted', 'service-offer-won', async (ev) => {
       const p = ev.payload as { orgId?: string; number?: string; workOrderId?: string; workOrderNumber?: string };
       if (typeof p.orgId !== 'string') return;

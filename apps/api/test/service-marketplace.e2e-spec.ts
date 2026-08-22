@@ -4,6 +4,7 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma';
 import { OutboxProcessor } from '../src/modules/integrations/outbox/outbox.processor';
+import { ServiceRequestsUseCases } from '../src/modules/service-requests/application/service-requests.use-cases';
 
 /**
  * سوق طلبات الإصلاح (owner directive 2026-08-22): the customer posts the problem with THEIR radius,
@@ -81,6 +82,39 @@ describe('Service marketplace (e2e)', () => {
     expect(free.badges).toEqual(expect.arrayContaining(['معاينة مجانية'])); expect(free.priceMin).toBeNull();
     const asWorkshop = await http().get(`/v1/service-requests/${reqId}`).set(auth(nearTok)).expect(200);
     expect(asWorkshop.body.offers).toHaveLength(1); expect(asWorkshop.body.offers[0].orgId).toBe(nearOrg);
+  });
+
+  it('smart signals: the make-specialist wears its badge, and response speed shows in minutes', async () => {
+    // the near workshop declares a specialty in the customer's car make (Step 5 data finally earning)
+    const v = await prisma.vehicle.findUnique({ where: { id: vehicleId }, select: { makeId: true } });
+    expect(v!.makeId).toBeTruthy();
+    await http().put(`/v1/organizations/${nearOrg}/specialties`).set(auth(nearTok)).send({ items: [{ make_id: v!.makeId }] }).expect(200);
+    const mine = await http().get(`/v1/service-requests/${reqId}`).set(auth(custTok)).expect(200);
+    const near = mine.body.offers.find((o: { orgId: string }) => o.orgId === nearOrg);
+    expect(near.specialist).toBe(true);
+    expect(near.badges).toEqual(expect.arrayContaining(['متخصصون في سيارتك']));
+    expect(near.respondsInMinutes).toBeGreaterThanOrEqual(1);   // median history, floored to a minute
+    const other = mine.body.offers.find((o: { orgId: string }) => o.orgId === otherOrg);
+    expect(other.specialist).toBe(false);
+  });
+
+  it('a quiet request past half its window nudges its customer to widen — exactly once', async () => {
+    const q = await http().post('/v1/service-requests').set(auth(custTok)).send({ vehicle_id: vehicleId, title_ar: 'صوت صفير عند الفرملة', lat: 21.49, lng: 39.19, radius_km: 5, preferred_time: 'today', expires_minutes: 60 }).expect(201);
+    // push the request past its half-window (created 40 minutes ago, expires in 20)
+    await prisma.serviceRequest.update({ where: { id: q.body.id }, data: { createdAt: new Date(Date.now() - 40 * 60_000), expiresAt: new Date(Date.now() + 20 * 60_000) } });
+    const uc = app.get(ServiceRequestsUseCases);
+    const first = await uc.nudgeQuiet(60);
+    expect(first.nudged).toBeGreaterThanOrEqual(1);
+    await outbox.drain(500);
+    const inbox = await http().get('/v1/me/notifications?limit=20').set(auth(custTok)).expect(200);
+    const nudges = inbox.body.filter((n: { templateCode: string; data: { id?: string } }) => n.templateCode === 'service.request.quiet' && n.data.id === q.body.id);
+    expect(nudges).toHaveLength(1);
+    expect(nudges[0].bodyAr).toContain('وسّع');
+    // the same crossing never nudges twice: re-run + drain → still exactly one
+    await uc.nudgeQuiet(60); await outbox.drain(500);
+    const again = await http().get('/v1/me/notifications?limit=20').set(auth(custTok)).expect(200);
+    expect(again.body.filter((n: { templateCode: string; data: { id?: string } }) => n.templateCode === 'service.request.quiet' && n.data.id === q.body.id)).toHaveLength(1);
+    await http().post(`/v1/service-requests/${q.body.id}/cancel`).set(auth(custTok)).send({}).expect(200);
   });
 
   it('acceptance becomes a DRAFT work order at the winner; the other offer is lost; notifications flowed', async () => {

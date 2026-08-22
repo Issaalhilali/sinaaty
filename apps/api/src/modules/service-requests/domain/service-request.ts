@@ -28,6 +28,10 @@ export interface OfferView extends ServiceOffer {
   city: string | null; district: string | null; distanceKm: number | null;
   /** «سبق تعاملك معها» — from THIS customer's own work-order history. */
   previouslyUsed: boolean;
+  /** «متخصصون في سيارتك» — the org declares a specialty in this vehicle's make (Step 5 data, finally earning). */
+  specialist: boolean;
+  /** Median historical minutes between receiving a request and answering it — honesty in numbers. */
+  respondsInMinutes: number | null;
 }
 
 const price = (o: OfferView) => (o.priceMin == null ? Number.POSITIVE_INFINITY : Number(o.priceMin));
@@ -50,7 +54,7 @@ export function offerBadges(offers: OfferView[]): Map<string, string[]> {
   if (cheapest) add(cheapest.id, 'الأرخص');
   if (fastest && fastest.availability !== 'scheduled') add(fastest.id, 'الأسرع');
   if (nearest) add(nearest.id, 'الأقرب');
-  for (const o of live) { if (o.offerType === 'free_inspection') add(o.id, 'معاينة مجانية'); if (o.previouslyUsed) add(o.id, 'سبق تعاملك معها'); }
+  for (const o of live) { if (o.offerType === 'free_inspection') add(o.id, 'معاينة مجانية'); if (o.previouslyUsed) add(o.id, 'سبق تعاملك معها'); if (o.specialist) add(o.id, 'متخصصون في سيارتك'); }
   return out;
 }
 

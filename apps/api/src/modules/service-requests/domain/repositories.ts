@@ -10,6 +10,9 @@ export interface ServiceRequestRepository {
   listNearbyForOrg(orgId: string, limit: number): Promise<Array<ServiceRequest & { distanceKm: number | null; myOfferId: string | null }>>;
   update(id: string, patch: Partial<{ status: ServiceRequestStatus; acceptedOfferId: string; workOrderId: string; radiusKm: number; expiresAt: Date }>, tx?: TxHandle): Promise<void>;
   expireDue(now: Date): Promise<number>;
+  /** Open requests whose half-window passed within (now - withinMinutes, now] and still hold <2 live
+   *  offers — each crosses that line once, so the nudge fires once (notification dedupe backstops). */
+  listQuietSinceHalfWindow(now: Date, withinMinutes: number): Promise<Array<{ id: string; number: string; customerUserId: string; titleAr: string; radiusKm: number; offers: number }>>;
 
   /** Active workshops within radiusKm of the request point (workshop/service_center/body_shop). */
   matchWorkshops(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;

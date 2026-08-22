@@ -33,6 +33,7 @@ export class ServiceRequestsJobs implements OnModuleInit {
     });
   }
   @Interval(10 * 60_000) async expire() { if (!this.config.get('JOBS_ENABLED')) return; const r = await this.lock.runExclusive('service-requests.expire', () => this.uc.expireDue()); if (r?.expired) this.log.log(`expired ${r.expired} quiet service requests`); }
+  @Interval(10 * 60_000) async nudge() { if (!this.config.get('JOBS_ENABLED')) return; const r = await this.lock.runExclusive('service-requests.nudge', () => this.uc.nudgeQuiet()); if (r?.nudged) this.log.log(`nudged ${r.nudged} quiet requests to widen`); }
 }
 
 @Module({

@@ -156,4 +156,14 @@ export class ServiceRequestsUseCases {
 
   /** Scheduler: expire quiet requests so workshop inboxes never rot. */
   async expireDue() { const n = await this.repo.expireDue(new Date()); return { expired: n }; }
+
+  /** «السوق هادئ؟» — a request past half its window with fewer than two offers nudges its customer to
+   *  widen the radius in one tap. Fired once per request (half-window crossing + notification dedupe). */
+  async nudgeQuiet(withinMinutes = 11) {
+    const quiet = await this.repo.listQuietSinceHalfWindow(new Date(), withinMinutes);
+    for (const q of quiet) {
+      await this.uow.run((tx) => this.outbox.publish(tx, { eventType: 'ServiceRequestQuiet', aggregateType: 'service_request', aggregateId: q.id, payload: { number: q.number, titleAr: q.titleAr, customerUserId: q.customerUserId, radiusKm: q.radiusKm, offers: q.offers } }));
+    }
+    return { nudged: quiet.length };
+  }
 }
