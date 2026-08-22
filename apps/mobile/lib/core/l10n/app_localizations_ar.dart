@@ -1866,4 +1866,7 @@ class L10nAr extends L10n {
 
   @override
   String get voDevBroken => 'بيئة تطوير — الإملاء لا يعمل على هذا المحاكي';
+
+  @override
+  String get voTypeInstead => 'اكتب بدلاً';
 }

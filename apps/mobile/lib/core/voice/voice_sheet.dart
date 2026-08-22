@@ -96,6 +96,12 @@ class _VoiceSheetBodyState extends State<_VoiceSheetBody> with SingleTickerProvi
           const SizedBox(width: SinaatySpace.sm),
           Expanded(flex: 2, child: PrimaryButton(label: l.voDone, icon: Icons.check, onPressed: _done)),
         ]),
+        // Simulators may keep a live-but-deaf session (input device missing): in dev, a heard-nothing
+        // session offers the typed stand-in too — the demo path is never a dead end.
+        if (widget.devFallback && !_listening && _text.trim().isEmpty) ...[
+          const SizedBox(height: SinaatySpace.sm),
+          TextButton.icon(onPressed: () => setState(() => _typed = true), icon: const Icon(Icons.keyboard_alt_outlined, size: 18), label: Text(l.voTypeInstead)),
+        ],
       ]),
     );
   }

@@ -3570,6 +3570,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'بيئة تطوير — الإملاء لا يعمل على هذا المحاكي'**
   String get voDevBroken;
+
+  /// No description provided for @voTypeInstead.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب بدلاً'**
+  String get voTypeInstead;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
