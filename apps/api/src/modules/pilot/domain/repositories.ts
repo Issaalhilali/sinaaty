@@ -18,6 +18,10 @@ export interface PilotRepository {
   /** Idempotent per (event, entity): an outbox replay must not double-count a funnel step. */
   record(e: AnalyticsEventInput, tx?: TxHandle): Promise<void>;
   /** Median minutes from a request opening to its FIRST offer — the market's pulse, not its size. */
+  /** Funnel stages as a COHORT: the requests opened in the window, then how many of THOSE advanced.
+   *  Counting stages independently lets a later stage exceed an earlier one whenever tracking changes
+   *  mid-flight — and a ratio above 100% in an ops dashboard discredits every number beside it. */
+  serviceCohort(q: { from: Date; to: Date; zone?: string }): Promise<{ opened: number; offered: number; accepted: number; quiet: number }>;
   firstOfferMinutes(q: { from: Date; to: Date; zone?: string }): Promise<number | null>;
   funnel(q: { from: Date; to: Date; zone?: string; orgId?: string }): Promise<FunnelRow[]>;
   byZone(q: { from: Date; to: Date }): Promise<ZoneRow[]>;

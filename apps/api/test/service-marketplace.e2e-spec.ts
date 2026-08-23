@@ -176,6 +176,11 @@ describe('Service marketplace (e2e)', () => {
     expect(f.body.service.offered).toBeGreaterThanOrEqual(2);
     expect(f.body.service.accepted).toBeGreaterThanOrEqual(1);
     expect(Number(f.body.service.accept_rate)).toBeGreaterThan(0);   // نسبة تحويل حقيقية لا صفراً
+    // فوج واحد: كل مرحلة جزء من سابقتها بالبناء — لا نسبة تتجاوز المئة مهما تغيّر التتبع في منتصف الطريق
+    expect(f.body.service.offered).toBeLessThanOrEqual(f.body.service.requested);
+    expect(f.body.service.accepted).toBeLessThanOrEqual(f.body.service.offered);
+    expect(Number(f.body.service.offer_rate)).toBeLessThanOrEqual(100);
+    expect(Number(f.body.service.accept_rate)).toBeLessThanOrEqual(100);
     expect(f.body.service.avg_first_offer_minutes).toBeGreaterThanOrEqual(1);
     // ونفس الأحداث محفوظة بلا تكرار عند إعادة التشغيل (unique per event×entity)
     const before = await prisma.analyticsEvent.count({ where: { event: 'service_request.accepted' } });

@@ -21,6 +21,22 @@ export class PilotPrismaRepository implements PilotRepository {
     });
   }
 
+  async serviceCohort(q: { from: Date; to: Date; zone?: string }) {
+    // الفوج يُعرَّف من الأحداث (ليبقى مرشَّح المنطقة عاملاً)، ومراحله تُحلّ من الجداول المصدر —
+    // فلا تعتمد مرحلة على تاريخ التتبع، وتبقى كل مرحلة جزءاً من سابقتها بالبناء لا بالحظ.
+    const rows = await this.prisma.$queryRaw<Array<{ opened: number; offered: number; accepted: number; quiet: number }>>`
+      WITH cohort AS (
+        SELECT DISTINCT entity_id AS id FROM analytics_events
+        WHERE event = 'service_request.opened' AND occurred_at >= ${q.from} AND occurred_at < ${q.to}
+          AND (${q.zone ?? null}::text IS NULL OR industrial_zone = ${q.zone ?? null})
+      )
+      SELECT (SELECT count(*)::int FROM cohort) AS opened,
+             (SELECT count(*)::int FROM cohort c WHERE EXISTS (SELECT 1 FROM service_offers o WHERE o.request_id = c.id)) AS offered,
+             (SELECT count(*)::int FROM cohort c JOIN service_requests r ON r.id = c.id WHERE r.accepted_offer_id IS NOT NULL) AS accepted,
+             (SELECT count(*)::int FROM cohort c JOIN analytics_events e ON e.entity_id = c.id AND e.event = 'service_request.quiet') AS quiet`;
+    const r = rows[0]!;
+    return { opened: Number(r.opened), offered: Number(r.offered), accepted: Number(r.accepted), quiet: Number(r.quiet) };
+  }
   async firstOfferMinutes(q: { from: Date; to: Date; zone?: string }) {
     const rows = await this.prisma.$queryRaw<Array<{ m: number | null }>>`
       SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (o.first_offer - r.created_at)) / 60.0)::float AS m
