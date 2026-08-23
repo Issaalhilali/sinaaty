@@ -64,7 +64,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
         IconButton(tooltip: l.dsAttach, onPressed: _busy ? null : () => _send(withPhoto: true), icon: const Icon(Icons.add_a_photo_outlined)),
         IconButton.filled(onPressed: _busy ? null : _send, icon: _busy ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send)),
       ]) : null,
-      body: AsyncResultView<Dispute>(value: v, onRetry: _refresh, builder: (d) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 110), children: [
+      body: AsyncResultView<Dispute>(value: v, onRetry: _refresh, builder: (d) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

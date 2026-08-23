@@ -12,9 +12,11 @@ import '../../../core/voice/voice_sheet.dart';
 import 'package:go_router/go_router.dart';
 import '../../account/presentation/account_screen.dart';
 import '../../auth/presentation/providers.dart';
+import '../../billing/presentation/providers.dart' show invoicesProvider;
 import '../../billing/presentation/wallet_screen.dart';
 import '../../notifications/presentation/providers.dart';
 import '../../vehicles/presentation/vehicles_screen.dart';
+import '../../work_orders/presentation/providers.dart' show workOrdersProvider;
 import '../../workshop/presentation/orders_screen.dart';
 import '../../workshop/presentation/org_wallet_screen.dart';
 import '../../workshop/presentation/providers.dart';
@@ -25,7 +27,21 @@ import '../../fleet/presentation/fleet_today_screen.dart';
 import '../../parts/presentation/workshop_parts_screen.dart';
 /// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
 class HomeShell extends ConsumerStatefulWidget { const HomeShell({super.key}); @override ConsumerState<HomeShell> createState() => _HomeShellState(); }
-class _HomeShellState extends ConsumerState<HomeShell> {
+class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserver {
+  @override void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); }
+  @override void dispose() { WidgetsBinding.instance.removeObserver(this); super.dispose(); }
+
+  /// A workshop keeps the app open all day; without this it reads yesterday's numbers as today's
+  /// (owner review 2026-08-23 §1 — the most dangerous defect because it is silent).
+  @override void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !mounted) return;
+    ref.invalidate(orgOrdersProvider);
+    ref.invalidate(orgWalletProvider);
+    ref.invalidate(workOrdersProvider);
+    ref.invalidate(invoicesProvider);
+    ref.invalidate(unreadCountProvider);
+  }
+
   int _index = 0;
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final flavor = ref.watch(appConfigProvider).flavor; final me = ref.watch(authControllerProvider).me;

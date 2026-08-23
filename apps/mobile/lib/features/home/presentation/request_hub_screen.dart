@@ -87,7 +87,7 @@ class RequestHubScreen extends ConsumerWidget {
 
     return RefreshIndicator(
       onRefresh: () async { ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider); },
-      child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
+      child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         if (liveTow != null) ...[
           SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [

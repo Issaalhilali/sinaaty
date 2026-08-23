@@ -70,7 +70,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
 
     return RefreshIndicator(
       onRefresh: () async => _refresh(),
-      child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
+      child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Expanded(child: Text(l.flToday, style: t.titleLarge?.copyWith(color: Colors.white))),

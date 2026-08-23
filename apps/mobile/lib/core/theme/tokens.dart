@@ -10,4 +10,9 @@ abstract final class SinaatyColors {
   static const dGround = Color(0xFF0C1310); static const dPaper = Color(0xFF141D19); static const dPaper2 = Color(0xFF1A2620); static const dInk = Color(0xFFE8EEEA); static const dInk2 = Color(0xFFC2CDC7); static const dMuted = Color(0xFF8C9C95); static const dLine = Color(0xFF26332D);
   static const dSeal = Color(0xFF3FBF95); static const dSealSoft = Color(0xFF123A2F); static const dBrass = Color(0xFFD9A84B); static const dBrassSoft = Color(0xFF3A2E14);
 }
-abstract final class SinaatySpace { static const xs = 4.0; static const sm = 8.0; static const md = 12.0; static const lg = 16.0; static const xl = 24.0; static const xxl = 32.0; static const radius = 14.0; static const radiusLg = 20.0; static const tapTarget = 56.0; }
+abstract final class SinaatySpace { static const xs = 4.0; static const sm = 8.0; static const md = 12.0; static const lg = 16.0; static const xl = 24.0; static const xxl = 32.0; static const radius = 14.0; static const radiusLg = 20.0; static const tapTarget = 56.0;
+  /// The floating nav is 68 tall with a 14 margin — plus the device's own safe area. A list that
+  /// guesses this number hides its last row behind the bar (owner review 2026-08-23 §3).
+  static const navBar = 68.0 + 14.0;
+  static double bottomClearance(BuildContext context) => navBar + MediaQuery.paddingOf(context).bottom + sm;
+}

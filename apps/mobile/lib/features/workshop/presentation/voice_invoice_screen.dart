@@ -93,7 +93,7 @@ class _VoiceInvoiceScreenState extends ConsumerState<VoiceInvoiceScreen> with Si
       },
       body: switch (_phase) {
         _Phase.sending => const InlineLoading(),
-        _Phase.dictating || _Phase.uploadFailed => ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.xl, SinaatySpace.lg, 110), children: [
+        _Phase.dictating || _Phase.uploadFailed => ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.xl, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
           Center(child: AnimatedBuilder(animation: _pulse, builder: (_, _) => Container(
             width: 96 + (_listening ? _pulse.value * 14 : 0), height: 96 + (_listening ? _pulse.value * 14 : 0),
             decoration: BoxDecoration(shape: BoxShape.circle, color: SinaatyColors.seal,
@@ -109,7 +109,7 @@ class _VoiceInvoiceScreenState extends ConsumerState<VoiceInvoiceScreen> with Si
             style: _text.isEmpty ? t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant) : t.titleMedium?.copyWith(height: 1.7)),
           if (!_listening && _phase == _Phase.dictating) Center(child: TextButton.icon(onPressed: _capture, icon: const Icon(Icons.refresh, size: 18), label: Text(l.voAgain))),
         ]),
-        _Phase.review => ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 110), children: [
+        _Phase.review => ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
           SectionTitle(l.voReviewTitle),
           if (_note!.transcriptAr != null) Text(l.voHeard(_note!.transcriptAr!), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant, height: 1.5)),
           const SizedBox(height: SinaatySpace.sm),

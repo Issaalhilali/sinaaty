@@ -22,7 +22,7 @@ class TodayScreen extends ConsumerWidget {
       final needs = active.where((w) => workshopNext.containsKey(w.status) || w.status == 'draft').toList()..sort((a, b) => _prio(a.status).compareTo(_prio(b.status)));
       final hero = needs.firstOrNull; final available = wallet.value?.valueOrNull?.available ?? '0';
       if (all.isEmpty) return EmptyState(icon: Icons.build_outlined, title: l.wsNoOrders, body: l.wsNoOrdersBody, actionLabel: l.wsNewOrder, onAction: () => context.push('/ws/new'));
-      return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); }, child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 110), children: [
+      return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); await ref.read(orgOrdersProvider.future); }, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         if (pending > 0) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: StatusBadge(l.wsPendingSync(pending), tone: BadgeTone.warn, icon: Icons.cloud_upload_outlined)),
         // Nearby repair requests (scope §1.ج) — the hot-request card pattern, behind its flag.
         if ((ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.serviceMarketplace))
