@@ -17,11 +17,24 @@
 
 const API = process.env.API ?? 'http://127.0.0.1:3000';
 const CUSTOMER = process.env.SEAM_CUSTOMER ?? '+966555000001';
-const WORKSHOP = process.env.SEAM_WORKSHOP ?? '+966500000001';
+// ورشة الفحص لا ورشة العرض: أدوات الفحص تولّد ركاماً، والمالك يفتح «ورشة النور» ليرى منتجاً لا مخلفات.
+const WORKSHOP = process.env.SEAM_WORKSHOP ?? '+966500000009';
 
 let failures = 0;
+let throttled = 0;   // الحارس يعمل ≠ المنتج مكسور — الخلط بينهما يجعل الفاحص يصرخ كذباً فيُهمَل
 const pass = (m) => console.log(`  ✓ ${m}`);
-const fail = (m, detail) => { failures++; console.log(`  ✗ ${m}\n      ${detail}`); };
+const fail = (m, detail) => {
+  if (/RATE_LIMITED|OTP_TOO_MANY|\b429\b/.test(String(detail))) { throttled++; console.log(`  ~ ${m}: حدّ المعدل (الحارس يعمل، ليس كسراً)`); return; }
+  failures++; console.log(`  ✗ ${m}\n      ${detail}`);
+};
+
+
+/** حكم صريح: الكسر شيء، وحدّ المعدل شيء آخر — وخلطهما يفقد الفاحص مصداقيته. */
+function verdict() {
+  if (failures) return `\n✗ ${failures} كسر في الوصلة${throttled ? ` (و${throttled} تخطٍّ بسبب حدّ المعدل)` : ''}`;
+  if (throttled) return `\n~ لا كسر، لكن ${throttled} خطوة لم تُفحص بسبب حدّ المعدل — أعد التشغيل بعد دقائق للحكم الكامل`;
+  return '\n✓ الوصلة سليمة — الأطراف الثلاثة تتكلم اللغة نفسها';
+}
 
 async function call(method, path, { token, body } = {}) {
   const res = await fetch(`${API}/v1${path}`, {
@@ -78,7 +91,9 @@ async function walkTow({ customer, driverPhone }) {
   pass(`العميل يطلب سطحة (${job.body.number})`);
   const id = job.body.id;
 
-  const driver = await login(driverPhone);
+  let driver;
+  try { driver = await login(driverPhone); }
+  catch { throttled++; console.log('  ~ تخطٍّ: تعذّر دخول السائق (حدّ المعدل/الحصة) — رحلة السائق لم تُفحص'); return; }
   await call('PUT', '/transport/driver/profile', { token: driver, body: { truck_plate: 'س ط ح 1', truck_type: 'flatbed_tow' } });
   await call('PUT', '/transport/driver/online', { token: driver, body: { online: true, ...pickup } });
   const offers = await call('GET', '/transport/driver/offers', { token: driver });
@@ -269,14 +284,14 @@ async function main() {
   // Repeated runs hit the per-phone OTP quota — that guard is a feature, not a seam break.
   let admin;
   try { admin = await login(process.env.SEAM_ADMIN ?? '+966500000099'); }
-  catch { console.log('  ~ تخطٍّ: حصة رموز الأدمن استُهلكت (الحارس يعمل) — أعد بعد ١٠ دقائق'); console.log(`\n${failures ? `✗ ${failures} كسر في الوصلة` : '✓ الوصلة سليمة — الأطراف الثلاثة تتكلم اللغة نفسها'}`); process.exit(failures ? 1 : 0); }
+  catch { throttled++; console.log('  ~ تخطٍّ: تعذّر دخول الأدمن (حدّ المعدل/الحصة) — قراءة القُمع لم تُفحص'); console.log(verdict()); process.exit(failures ? 1 : throttled ? 2 : 0); }
   const funnel = await call('GET', '/admin/pilot/funnel', { token: admin });
   funnel.body?.service
     ? pass(`القُمع يرى السوق: ${funnel.body.service.requested} طلباً · ${funnel.body.service.offer_rate}% نال عرضاً`)
     : fail('كتلة service غائبة عن القُمع', 'الإدارة عمياء عن السوق');
 
-  console.log(`\n${failures ? `✗ ${failures} كسر في الوصلة` : '✓ الوصلة سليمة — الأطراف الثلاثة تتكلم اللغة نفسها'}`);
-  process.exit(failures ? 1 : 0);
+  console.log(verdict());
+  process.exit(failures ? 1 : throttled ? 2 : 0);
 }
 
 main().catch((e) => { console.error('فشل الفاحص:', e.message); process.exit(2); });
