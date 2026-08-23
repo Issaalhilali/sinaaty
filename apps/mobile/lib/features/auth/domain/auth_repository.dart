@@ -5,5 +5,7 @@ abstract interface class AuthRepository {
   Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone);
   Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform});
   Future<Result<Me>> me();
+  /// The name the user writes about himself (refused by the server when Nafath already verified one).
+  Future<Result<Me>> setName(String fullNameAr);
   Future<Result<void>> logout();
 }

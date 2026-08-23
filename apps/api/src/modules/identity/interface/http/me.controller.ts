@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RegisterDeviceDto } from '../../application/dto/auth.dto';
+import { RegisterDeviceDto, UpdateMeDto } from '../../application/dto/auth.dto';
 import { DevicesUseCase } from '../../application/use-cases/devices.use-case';
 import { GetMeUseCase } from '../../application/use-cases/get-me.use-case';
 import type { AuthUser } from '../../domain/auth-user';
@@ -14,6 +14,9 @@ export class MeController {
 
   @Get() @ApiOperation({ summary: 'Current user profile, roles and org memberships' })
   me(@CurrentUser() user: AuthUser) { return this.getMe.execute(user.id); }
+
+  @Patch() @ApiOperation({ summary: 'الاسم كما يكتبه صاحبه — يُرفض إن كان موثّقاً بنفاذ' })
+  updateMe(@CurrentUser() user: AuthUser, @Body(zod(UpdateMeDto)) dto: UpdateMeDto) { return this.getMe.setName(user.id, dto.full_name_ar); }
 
   @Get('devices') listDevices(@CurrentUser() user: AuthUser) { return this.devices.list(user.id); }
 

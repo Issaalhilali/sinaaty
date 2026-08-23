@@ -57,8 +57,8 @@ class FakeParts implements PartsRepository, QrScanner {
   @override Future<String?> scan() async => scanned;
 }
 class FakeWorkshop implements WorkshopRepository {
-  final String type; FakeWorkshop(this.type);
-  @override Future<Result<({String type, String nameAr})>> orgInfo(String orgId) async => Result.ok((type: type, nameAr: 'x'));
+  final String type; final String Function() org; FakeWorkshop(this.type, this.org);
+  @override Future<Result<List<OrgBrief>>> myOrgs() async => Result.ok([OrgBrief(id: org(), nameAr: 'x', type: type, status: 'active')]);
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) async => Result.ok([WorkOrder(id: 'wo1', number: 'WO-2026-000042', status: 'in_progress', paymentTerms: 'on_delivery', currentVersion: 1, titleAr: 'تغيير دسكات', vehicleId: 'v1', orgId: 'ws1', subtotal: '720', vatAmount: '108', total: '828', depositRequired: '0', createdAt: DateTime(2026, 8, 19), items: const [WoItem(id: 'it1', type: 'part', descriptionAr: 'دسكات أمامية أصلي', quantity: '1', unitPrice: '600', lineTotal: '600', warrantyDays: 365)])]);
   @override Future<Result<WorkOrder>> create(NewWorkOrder wo) async => const Result.err(UnknownFailure());
   @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) async => const Result.err(UnknownFailure());
@@ -86,6 +86,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.err(UnknownFailure());
   @override Future<Result<Me>> me() async => Result.ok(Me(id: 'u', phone: '+966500000001', fullNameAr: 'محمد', platformRole: 'none', nafathVerified: false, orgs: [OrgMembership(org(), 'owner')]));
+  @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) { loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }
@@ -93,7 +94,7 @@ Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); f
 void main() {
   setUpAll(loadArabicFont);
   late FakeParts parts; late FakeTransportLive live; late MemoryTokenStore ts;
-  Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts), transportRealtimeProvider.overrideWithValue(live)],
+  Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType, () => parts.currentOrg)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts), transportRealtimeProvider.overrideWithValue(live)],
     child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
   GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
   setUp(() async { parts = FakeParts(); live = FakeTransportLive(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });

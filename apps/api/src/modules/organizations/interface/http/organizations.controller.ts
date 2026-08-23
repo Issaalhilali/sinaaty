@@ -22,6 +22,10 @@ export class OrganizationsController {
   @Public() @Get('plans') @ApiOperation({ summary: 'Subscription plans (optionally filtered by org type)' })
   plans(@Query('type') type?: string) { return this.uc.listPlans(type as OrgType | undefined); }
 
+  // قبل ':id' عمداً — وإلا التُقطت «mine» كمعرّف.
+  @Get('mine') @ApiBearerAuth() @ApiOperation({ summary: 'منشآت العضو باسمها ونوعها وحالتها — النشِطة أولاً (يختار التطبيق منها بدل «أول عضوية»)' })
+  mine(@CurrentUser() u: AuthUser) { return this.uc.listMine(u); }
+
   @Post() @HttpCode(201) @ApiBearerAuth() @ApiOperation({ summary: 'Create an organization (caller becomes owner; status=draft)' })
   create(@CurrentUser() u: AuthUser, @Req() req: Request, @Body(zod(CreateOrgDto)) dto: CreateOrgDto) { return this.uc.create({ userId: u.id, requestId: reqId(req) }, dto); }
 

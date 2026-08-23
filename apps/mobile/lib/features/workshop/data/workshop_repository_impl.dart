@@ -10,7 +10,10 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
   final ApiClient api; WorkshopRepositoryImpl(this.api);
   Future<Result<T>> _run<T>(Future<T> Function() f) async { try { return Result.ok(await f()); } catch (e) { return Result.err(mapDioError(e)); } }
   Map<String, dynamic> _item(NewItem i) => {'type': i.type, 'description_ar': i.descriptionAr, 'quantity': i.quantity, 'unit_price': i.unitPrice, 'warranty_days': i.warrantyDays, 'part_condition': ?i.partCondition};
-  @override Future<Result<({String type, String nameAr})>> orgInfo(String orgId) => _run(() async { final d = (await api.dio.get<Map<String, dynamic>>('/organizations/$orgId')).data!; return (type: d['type'] as String, nameAr: (d['tradeNameAr'] ?? d['legalNameAr'] ?? '') as String); });
+  @override Future<Result<List<OrgBrief>>> myOrgs() => _run(() async => (await api.dio.get<List<dynamic>>('/organizations/mine')).data!
+      .cast<Map<String, dynamic>>()
+      .map((d) => OrgBrief(id: d['id'] as String, nameAr: (d['name_ar'] ?? '') as String, type: d['type'] as String, status: d['status'] as String, role: d['role'] as String?))
+      .toList());
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) => _run(() async => (await api.dio.get<List<dynamic>>('/work-orders', queryParameters: {'org_id': orgId, 'limit': 100, if (status != null) 'status': status.join(',')})).data!.map((e) => workOrderFromJson(e as Map<String, dynamic>)).toList());
   @override Future<Result<WorkOrder>> create(NewWorkOrder w) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders', data: {'org_id': w.orgId, 'vin': ?w.vin, 'plate': ?w.plate, 'customer_phone': w.customerPhone, 'title_ar': w.titleAr, 'payment_terms': w.paymentTerms, 'complaint_ar': ?w.complaintAr, 'items': w.items.map(_item).toList()})).data!));
   @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/items', data: _item(item))).data!));

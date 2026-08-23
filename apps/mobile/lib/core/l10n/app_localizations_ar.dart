@@ -75,6 +75,18 @@ class L10nAr extends L10n {
   String get logout => 'تسجيل الخروج';
 
   @override
+  String get addYourName => 'أضف اسمك';
+
+  @override
+  String get editName => 'تعديل الاسم';
+
+  @override
+  String get yourName => 'الاسم الكامل';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
   String get errorGeneric => 'حدث خطأ غير متوقع، حاول مرة أخرى.';
 
   @override

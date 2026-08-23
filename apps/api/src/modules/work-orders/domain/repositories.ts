@@ -17,7 +17,7 @@ export interface WorkOrderRepository {
   // versions & signatures
   addVersion(v: { woId: string; version: number; reasonAr?: string; snapshot: Snapshot; sha256: string; createdBy: string }, tx?: TxHandle): Promise<{ id: string }>;
   getVersion(woId: string, version: number): Promise<{ id: string; version: number; snapshot: Snapshot; sha256: string; pdfMediaId: string | null; createdAt: Date } | null>;
-  listVersions(woId: string): Promise<Array<{ id: string; version: number; sha256: string; reasonAr: string | null; createdAt: Date; signed: boolean }>>;
+  listVersions(woId: string): Promise<Array<{ id: string; version: number; sha256: string; reasonAr: string | null; createdAt: Date; signed: boolean; signedMethod: string | null }>>;
   addSignature(s: { woId: string; versionId: string; signerUserId: string; signerRole: string; purpose: string; method: SignatureMethod; providerTxRef?: string; providerPayload?: unknown; signedHash: string; ipAddress?: string | null; deviceId?: string | null }, tx?: TxHandle): Promise<{ id: string }>;
   hasSignature(versionId: string, purpose: string): Promise<boolean>;
   // history / inspections / media

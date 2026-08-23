@@ -36,4 +36,5 @@ export class UserPrismaRepository implements UserRepository {
     return toUser(r);
   }
   async touchLogin(userId: string) { await this.prisma.user.update({ where: { id: userId }, data: { lastLoginAt: new Date() } }); }
+  async setSelfDeclaredName(userId: string, fullNameAr: string) { const r = await this.prisma.user.update({ where: { id: userId }, data: { fullNameAr }, select }); return toUser(r); }
 }

@@ -4,6 +4,9 @@ class NewWorkOrder { final String orgId; final String? vin; final String? plate;
 class Damage { final String zone; final String severity; final String? noteAr; const Damage({required this.zone, required this.severity, this.noteAr}); }
 class NewInspection { final String type; final int? odometerKm; final int? fuelLevelPct; final List<Damage> damages; final List<String> mediaIds; final Map<String, String> anglesToMedia; const NewInspection({required this.type, this.odometerKm, this.fuelLevelPct, this.damages = const [], this.mediaIds = const [], this.anglesToMedia = const <String, String>{},}); }
 class Presigned { final String mediaId; final String uploadUrl; const Presigned({required this.mediaId, required this.uploadUrl}); }
+/// One organisation the signed-in member belongs to. The server sorts active ones first, so «the first»
+/// is finally the right one — a member with a leftover draft org used to open a dead app.
+class OrgBrief { final String id; final String nameAr; final String type; final String status; final String? role; const OrgBrief({required this.id, required this.nameAr, required this.type, required this.status, this.role}); bool get isActive => status == 'active'; }
 class OrgWallet { final String held; final String available; final String inTransit; final List<({String id, String amount, String status, DateTime scheduledFor})> payouts; const OrgWallet({required this.held, required this.available, required this.inTransit, required this.payouts}); }
 /// One of the three legally-scheduled notices (the last is formal); sent when [sentAt] is set.
 class AbandonedNoticeStep { final int step; final int afterDays; final bool formal; final DateTime? sentAt; const AbandonedNoticeStep({required this.step, required this.afterDays, required this.formal, this.sentAt}); bool get sent => sentAt != null; }

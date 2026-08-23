@@ -51,6 +51,8 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
   }
   async listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }) { const rows = await this.prisma.organization.findMany({ where: { status: q.status, type: q.type, deletedAt: null }, orderBy: { createdAt: 'asc' }, take: q.limit, select: orgSelect }); return rows.map(toOrg); }
 
+  async listByIds(ids: string[]) { if (!ids.length) return []; const rows = await this.prisma.organization.findMany({ where: { id: { in: ids }, deletedAt: null }, orderBy: { createdAt: 'asc' }, select: orgSelect }); return rows.map(toOrg); }
+
   async listMembers(orgId: string): Promise<OrgMember[]> {
     const rows = await this.prisma.organizationMember.findMany({ where: { orgId }, select: { userId: true, role: true, isActive: true, joinedAt: true, user: { select: { phoneE164: true, fullNameAr: true } } }, orderBy: { joinedAt: 'asc' } });
     return rows.map((m) => ({ userId: m.userId, role: m.role, isActive: m.isActive, joinedAt: m.joinedAt, phone: m.user.phoneE164, fullNameAr: m.user.fullNameAr }));

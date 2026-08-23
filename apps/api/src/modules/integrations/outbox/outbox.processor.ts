@@ -16,7 +16,14 @@ const LEASE_SECONDS = 120; const MAX_ATTEMPTS = 6; const backoffMs = (attempt: n
 export class OutboxProcessor {
   private readonly log = new Logger(OutboxProcessor.name); private running = false;
   constructor(private readonly prisma: PrismaService, private readonly registry: OutboxHandlerRegistry, private readonly config: AppConfig, private readonly metrics: MetricsService) {}
-  @Interval(10_000) async tick() { if (!this.config.get('JOBS_ENABLED')) return; await this.drain(50); }   // safe on every replica: rows are claimed with SKIP LOCKED
+  // Safe on every replica: rows are claimed with SKIP LOCKED. And the tick drains until the backlog is
+  // EMPTY, not one batch: a single 50-rows-per-10s pass caps consumption at 300 events/min, and the
+  // 1-hour soak proved intake outruns that ~4× (pending ratcheted +1270/min, linearly, from minute one).
+  // The loop exits when a pass claims nothing; `running` already prevents overlap.
+  @Interval(10_000) async tick() {
+    if (!this.config.get('JOBS_ENABLED')) return;
+    let r; do { r = await this.drain(200); } while (r.processed > 0);
+  }
 
   async drain(limit = 50): Promise<{ processed: number; succeeded: number; failed: number; deadLettered: number }> {
     if (this.running) return { processed: 0, succeeded: 0, failed: 0, deadLettered: 0 }; this.running = true;

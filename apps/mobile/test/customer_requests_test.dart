@@ -71,6 +71,7 @@ class FakeCustomerParts implements PartsRepository {
   @override Future<Result<List<PartOrder>>> orders({String? orgId, bool asSupplier = false}) async => const Result.ok([]);
   @override Future<Result<PartOrder>> order(String id) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> confirm(String orderId) async => const Result.ok(null);
+  @override Future<Result<void>> requestDelivery(String orderId) async => const Result.ok(null);
   @override Future<Result<List<TradeAccount>>> tradeAccounts({required String orgId, required bool asSeller}) async => const Result.ok([]);
   @override Future<Result<TradeAccount>> requestTradeAccount({required String sellerOrgId, required String buyerOrgId}) async => const Result.err(UnknownFailure());
   @override Future<Result<TradeAccount>> approveTradeAccount(String id, {required String creditLimit, int termsDays = 30, int discountBps = 0}) async => const Result.err(UnknownFailure());
@@ -112,6 +113,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.err(UnknownFailure());
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966512345678', platformRole: 'none', nafathVerified: false, orgs: []));
+  @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 

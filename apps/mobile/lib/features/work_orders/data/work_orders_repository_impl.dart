@@ -5,7 +5,7 @@ import '../domain/work_order.dart';
 import '../domain/work_orders_repository.dart';
 String _s(Object? v) => v?.toString() ?? '0';
 WorkOrder workOrderFromJson(Map<String, dynamic> j) => WorkOrder(
-  id: j['id'] as String, number: j['number'] as String, status: j['status'] as String, paymentTerms: j['paymentTerms'] as String, currentVersion: (j['currentVersion'] as num).toInt(), titleAr: j['titleAr'] as String?, vehicleId: j['vehicleId'] as String, orgId: j['orgId'] as String, vehicleLabelAr: j['vehicleLabelAr'] as String?, vehiclePlateAr: j['vehiclePlateAr'] as String?,
+  id: j['id'] as String, number: j['number'] as String, status: j['status'] as String, paymentTerms: j['paymentTerms'] as String, currentVersion: (j['currentVersion'] as num).toInt(), titleAr: j['titleAr'] as String?, vehicleId: j['vehicleId'] as String, orgId: j['orgId'] as String, vehicleLabelAr: j['vehicleLabelAr'] as String?, vehiclePlateAr: j['vehiclePlateAr'] as String?, orgNameAr: j['orgNameAr'] as String?,
   subtotal: _s(j['subtotal']), vatAmount: _s(j['vatAmount']), total: _s(j['total']), depositRequired: _s(j['depositRequired']), createdAt: DateTime.parse(j['createdAt'] as String), promisedReadyAt: j['promisedReadyAt'] == null ? null : DateTime.tryParse(j['promisedReadyAt'] as String),
   items: ((j['items'] as List?) ?? []).map((e) => e as Map<String, dynamic>).where((i) => i['versionRemoved'] == null).map((i) => WoItem(id: i['id'] as String, type: i['type'] as String, descriptionAr: i['descriptionAr'] as String, quantity: _s(i['quantity']), unitPrice: _s(i['unitPrice']), lineTotal: _s(i['lineTotal']), warrantyDays: (i['warrantyDays'] as num?)?.toInt() ?? 0)).toList(),
 );
@@ -19,7 +19,7 @@ class WorkOrdersRepositoryImpl implements WorkOrdersRepository {
     List<Map<String, dynamic>> l(String k) => ((d[k] as List?) ?? []).cast<Map<String, dynamic>>();
     return WoTimeline(status: d['status'] as String,
       history: l('history').map((h) => WoHistory(from: h['from'] as String?, to: h['to'] as String, at: DateTime.parse(h['createdAt'] as String), noteAr: h['noteAr'] as String?)).toList(),
-      versions: l('versions').map((v) => WoVersionSummary(version: (v['version'] as num).toInt(), sha256: v['sha256'] as String, signed: v['signed'] as bool? ?? false, reasonAr: v['reasonAr'] as String?, createdAt: DateTime.parse(v['createdAt'] as String))).toList(),
+      versions: l('versions').map((v) => WoVersionSummary(version: (v['version'] as num).toInt(), sha256: v['sha256'] as String, signed: v['signed'] as bool? ?? false, reasonAr: v['reasonAr'] as String?, createdAt: DateTime.parse(v['createdAt'] as String), signedMethod: v['signedMethod'] as String?)).toList(),
       inspections: l('inspections').map((i) => WoInspection(id: i['id'] as String, type: i['type'] as String, odometerKm: (i['odometerKm'] as num?)?.toInt(), damagesCount: (i['damages'] as List?)?.length ?? 0, mediaIds: ((i['mediaIds'] as List?) ?? []).cast<String>(), performedAt: DateTime.parse(i['performedAt'] as String))).toList(),
       media: l('media').map((m) => WoMedia(mediaId: m['mediaId'] as String, label: m['label'] as String?, mimeType: m['mimeType'] as String)).toList());
   });

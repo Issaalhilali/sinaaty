@@ -61,6 +61,17 @@ export class OrganizationsUseCases {
     return org;
   }
   async get(id: string) { const o = await this.orgs.findById(id); if (!o) throw new AppError('NOT_FOUND'); return { ...o, locations: await this.orgs.listLocations(id), members: await this.orgs.listMembers(id), kyb_documents: await this.orgs.listKybDocs(id), subscription: await this.subs.current(id) }; }
+
+  /** منشآت العضو باسمها ونوعها وحالتها. التطبيق كان يأخذ «أول عضوية» بلا معرفة — ومن يملك منشأة
+   *  مسودة قديمة كان يفتح تطبيقاً ميتاً. النشِطة أولاً حتى يكون «الأول» هو الصحيح دائماً. */
+  async listMine(u: { orgs: Array<{ orgId: string; role: string }> }) {
+    const orgs = await this.orgs.listByIds(u.orgs.map((o) => o.orgId));
+    const roleOf = new Map(u.orgs.map((o) => [o.orgId, o.role]));
+    const rank = (s: string) => (s === 'active' ? 0 : s === 'suspended' ? 1 : 2);
+    return orgs
+      .map((o) => ({ id: o.id, role: roleOf.get(o.id) ?? null, name_ar: o.tradeNameAr ?? o.legalNameAr, type: o.type, status: o.status }))
+      .sort((a, b) => rank(a.status) - rank(b.status));
+  }
   update(id: string, dto: UpdateOrgDto) { return this.orgs.update(id, { legalNameAr: dto.legal_name_ar, legalNameEn: dto.legal_name_en, tradeNameAr: dto.trade_name_ar, phone: dto.phone, email: dto.email, descriptionAr: dto.description_ar, vatNumber: dto.vat_number, vatRegistered: dto.vat_number ? true : undefined }); }
   /** The industrial zone is derived from the point when the workshop does not name one — pilot cohorts
    *  must not depend on someone typing «الصناعية الثانية» the same way twice (Step 25). */

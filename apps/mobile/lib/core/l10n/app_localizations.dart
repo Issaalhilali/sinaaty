@@ -223,6 +223,30 @@ abstract class L10n {
   /// **'تسجيل الخروج'**
   String get logout;
 
+  /// No description provided for @addYourName.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف اسمك'**
+  String get addYourName;
+
+  /// No description provided for @editName.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الاسم'**
+  String get editName;
+
+  /// No description provided for @yourName.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم الكامل'**
+  String get yourName;
+
+  /// No description provided for @save.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get save;
+
   /// No description provided for @errorGeneric.
   ///
   /// In ar, this message translates to:

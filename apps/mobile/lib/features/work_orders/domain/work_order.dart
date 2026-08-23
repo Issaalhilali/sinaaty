@@ -3,16 +3,26 @@ class WorkOrder {
   final String id; final String number; final String status; final String paymentTerms; final int currentVersion; final String? titleAr; final String vehicleId; final String orgId;
   /// Who the order is FOR — a workshop scans cars, not order numbers (owner review 2026-08-23).
   final String? vehicleLabelAr; final String? vehiclePlateAr;
+  /// Who the customer is dealing with. The approval screen always showed it; the detail screen did not —
+  /// and that is the screen he watches for days (owner walk 2026-08-23).
+  final String? orgNameAr;
   final String subtotal; final String vatAmount; final String total; final String depositRequired; final DateTime createdAt; final DateTime? promisedReadyAt; final List<WoItem> items;
   /// «تويوتا 2002 · د م و 777» — the row's identity; falls back to the technical title, then the number.
   String get carLine { final parts = [vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).cast<String>().toList(); return parts.isEmpty ? (titleAr ?? number) : parts.join(' · '); }
   bool get knowsCar => (vehicleLabelAr ?? vehiclePlateAr) != null;
-  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
+  /// «ورشة النور · تويوتا 2002 · د م و 777» — who and which car, in one calm line.
+  String get partyLine => [orgNameAr, vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).join(' · ');
+  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, this.orgNameAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
   bool get awaitingApproval => status == 'awaiting_approval';
   bool get isActive => !const {'closed', 'cancelled', 'abandoned'}.contains(status);
 }
 class WoHistory { final String? from; final String to; final DateTime at; final String? noteAr; const WoHistory({this.from, required this.to, required this.at, this.noteAr}); }
-class WoVersionSummary { final int version; final String sha256; final bool signed; final String? reasonAr; final DateTime createdAt; const WoVersionSummary({required this.version, required this.sha256, required this.signed, this.reasonAr, required this.createdAt}); }
+class WoVersionSummary {
+  final int version; final String sha256; final bool signed; final String? reasonAr; final DateTime createdAt;
+  /// 'nafath' | 'otp' — the badge must name the method actually used, never assume Nafath.
+  final String? signedMethod;
+  const WoVersionSummary({required this.version, required this.sha256, required this.signed, this.reasonAr, required this.createdAt, this.signedMethod});
+}
 class WoInspection { final String id; final String type; final int? odometerKm; final int damagesCount; final List<String> mediaIds; final DateTime performedAt; const WoInspection({required this.id, required this.type, this.odometerKm, required this.damagesCount, required this.mediaIds, required this.performedAt}); }
 class WoMedia { final String mediaId; final String? label; final String mimeType; const WoMedia({required this.mediaId, this.label, required this.mimeType}); }
 class WoTimeline { final String status; final List<WoHistory> history; final List<WoVersionSummary> versions; final List<WoInspection> inspections; final List<WoMedia> media; const WoTimeline({required this.status, required this.history, required this.versions, required this.inspections, required this.media}); }

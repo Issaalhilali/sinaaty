@@ -49,9 +49,9 @@ class WorkOrderScreen extends ConsumerWidget {
           const SizedBox(height: SinaatySpace.lg),
         ],
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(o.number, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(Fmt.meta([o.partyLine.isEmpty ? null : o.partyLine, o.number]), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
           const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
-          const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(Labels.terms(l, o.paymentTerms), icon: Icons.payments_outlined), if (o.paymentTerms == 'deferred') SealPill(l.securedByNote, icon: Icons.verified_outlined), if (tl.value?.valueOrNull?.versions.any((v) => v.signed) ?? false) SealPill(l.signedByNafath, icon: Icons.verified_user_outlined)]),
+          const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(Labels.terms(l, o.paymentTerms), icon: Icons.payments_outlined), if (o.paymentTerms == 'deferred') SealPill(l.securedByNote, icon: Icons.verified_outlined), ?signedPill(l, tl.value?.valueOrNull?.versions)]),
         ])),
         const SizedBox(height: SinaatySpace.xl), SectionTitle(l.timeline),
         SectionCard(child: _Timeline(order: o, timeline: tl.value?.valueOrNull, locale: locale)),
@@ -93,3 +93,12 @@ class _Timeline extends StatelessWidget {
   }
 }
 /// Media objects live in object storage (mock in dev) — MVP shows a calm placeholder strip; thumbnails via presigned GET in backlog.
+
+/// The signature badge must name the method actually used. Showing «موقّع بنفاذ» over an SMS-code
+/// signature is a false statement about a legal instrument — the one lie this product cannot afford.
+SealPill? signedPill(L10n l, List<WoVersionSummary>? versions) {
+  final signed = (versions ?? const <WoVersionSummary>[]).where((v) => v.signed).toList();
+  if (signed.isEmpty) return null;
+  final nafath = signed.any((v) => v.signedMethod == 'nafath');
+  return SealPill(nafath ? l.signedByNafath : l.signedByOtp, icon: Icons.verified_user_outlined);
+}

@@ -60,6 +60,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.err(UnknownFailure());
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966508887771', fullNameAr: 'مدير الأسطول', platformRole: 'none', nafathVerified: true, orgs: [OrgMembership('fleet1', 'owner')]));
+  @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 

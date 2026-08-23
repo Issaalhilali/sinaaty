@@ -41,6 +41,13 @@ describe('Identity (e2e)', () => {
       const dev = await http().get('/v1/me/devices').set('authorization', `Bearer ${tokens.accessToken}`).expect(200);
       expect(dev.body).toHaveLength(1);
     });
+    it('the OTP user writes his own name — a phone is not a person', async () => {
+      const me = await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ full_name_ar: '  مشعل العتيبي  ' }).expect(200);
+      expect(me.body.full_name_ar).toBe('مشعل العتيبي');   // trimmed
+      const again = await http().get('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).expect(200);
+      expect(again.body.full_name_ar).toBe('مشعل العتيبي');
+      await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ full_name_ar: 'م' }).expect(400);
+    });
     it('refresh rotates; reusing the old token revokes the family', async () => {
       const r1 = await http().post('/v1/auth/refresh').send({ refresh_token: tokens.refreshToken }).expect(200);
       expect(r1.body.refreshToken).not.toBe(tokens.refreshToken);
@@ -69,6 +76,9 @@ describe('Identity (e2e)', () => {
       expect(st.body.status).toBe('approved'); expect(st.body.is_new).toBe(true);
       const me = await http().get('/v1/me').set('authorization', `Bearer ${st.body.accessToken}`).expect(200);
       expect(me.body.nafath_verified).toBe(true);
+      // الاسم الموثّق قانوني: لا يُستبدل بما يُكتب باليد في التطبيق.
+      const refused = await http().patch('/v1/me').set('authorization', `Bearer ${st.body.accessToken}`).send({ full_name_ar: 'اسم آخر' }).expect(400);
+      expect(refused.body.code).toBe('VALIDATION');
     });
     it('callback with secret can force rejection', async () => {
       const init = await http().post('/v1/auth/nafath/initiate').send({ national_id: nationalId }).expect(200);

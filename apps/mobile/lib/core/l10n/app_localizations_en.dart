@@ -75,6 +75,18 @@ class L10nEn extends L10n {
   String get logout => 'Sign out';
 
   @override
+  String get addYourName => 'Add your name';
+
+  @override
+  String get editName => 'Edit name';
+
+  @override
+  String get yourName => 'Full name';
+
+  @override
+  String get save => 'Save';
+
+  @override
   String get errorGeneric => 'Something went wrong, please try again.';
 
   @override

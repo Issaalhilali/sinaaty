@@ -19,6 +19,9 @@ export type OtpVerifyDto = z.infer<typeof OtpVerifyDto>;
 export const RefreshDto = z.object({ refresh_token: z.string().min(20) });
 export type RefreshDto = z.infer<typeof RefreshDto>;
 
+export const UpdateMeDto = z.object({ full_name_ar: z.string().trim().min(2).max(120) });
+export type UpdateMeDto = z.infer<typeof UpdateMeDto>;
+
 export const RegisterDeviceDto = z.object({
   platform: z.enum(['ios', 'android', 'web']),
   device_name: z.string().max(120).optional(),

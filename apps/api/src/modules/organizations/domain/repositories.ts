@@ -16,6 +16,7 @@ export interface OrganizationRepository {
   setCommission(id: string, bps: number): Promise<void>;
   search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; limit: number }): Promise<OrgSearchHit[]>;
   listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }): Promise<Organization[]>;
+  listByIds(ids: string[]): Promise<Organization[]>;
   // members
   listMembers(orgId: string): Promise<OrgMember[]>;
   upsertMember(orgId: string, userId: string, role: OrgMemberRole, invitedBy: string): Promise<void>;

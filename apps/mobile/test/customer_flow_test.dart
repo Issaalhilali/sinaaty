@@ -31,11 +31,11 @@ import 'package:sinaaty/features/work_orders/presentation/work_order_screen.dart
 
 /// Step 13 verify: approve (OTP) → invoice → pay, against in-memory repositories (same shapes as the API).
 class FakeWorkOrders implements WorkOrdersRepository, WorkOrderRealtime {
-  String status = 'awaiting_approval'; String? lastMethod; String? lastCode;
+  String status = 'awaiting_approval'; String? lastMethod; String? lastCode; String? signedMethod;
   WorkOrder get wo => WorkOrder(id: 'wo1', number: 'WO-2026-000042', status: status, paymentTerms: 'on_delivery', currentVersion: 1, titleAr: 'سمكرة رفرف', vehicleId: 'v1', orgId: 'o1', subtotal: '1190.00', vatAmount: '178.50', total: '1368.50', depositRequired: '0', createdAt: DateTime(2026, 8, 18), items: const [WoItem(id: 'i1', type: 'labor', descriptionAr: 'سمكرة ودهان رفرف أمامي أيمن', quantity: '1', unitPrice: '650.00', lineTotal: '650.00', warrantyDays: 0), WoItem(id: 'i2', type: 'part', descriptionAr: 'دسكات أمامية — أصلي', quantity: '1', unitPrice: '420.00', lineTotal: '420.00', warrantyDays: 365), WoItem(id: 'i3', type: 'labor', descriptionAr: 'أجور فك وتركيب', quantity: '1', unitPrice: '120.00', lineTotal: '120.00', warrantyDays: 0)]);
   @override Future<Result<List<WorkOrder>>> list() async => Result.ok([wo]);
   @override Future<Result<WorkOrder>> get(String id) async => Result.ok(wo);
-  @override Future<Result<WoTimeline>> timeline(String id) async => Result.ok(WoTimeline(status: status, history: [WoHistory(to: 'received', at: DateTime(2026, 8, 18, 9)), WoHistory(from: 'received', to: 'inspecting', at: DateTime(2026, 8, 18, 9, 20)), WoHistory(from: 'inspecting', to: 'awaiting_approval', at: DateTime(2026, 8, 18, 10)), if (status != 'awaiting_approval') WoHistory(from: 'awaiting_approval', to: status, at: DateTime(2026, 8, 18, 11))], versions: [WoVersionSummary(version: 1, sha256: 'a' * 64, signed: status != 'awaiting_approval', createdAt: DateTime(2026, 8, 18, 10))], inspections: [WoInspection(id: 'ins1', type: 'check_in', odometerKm: 84250, damagesCount: 1, mediaIds: const ['m1', 'm2', 'm3'], performedAt: DateTime(2026, 8, 18, 9, 10))], media: const [WoMedia(mediaId: 'm1', mimeType: 'image/jpeg'), WoMedia(mediaId: 'm2', mimeType: 'image/jpeg'), WoMedia(mediaId: 'm3', mimeType: 'image/jpeg')]));
+  @override Future<Result<WoTimeline>> timeline(String id) async => Result.ok(WoTimeline(status: status, history: [WoHistory(to: 'received', at: DateTime(2026, 8, 18, 9)), WoHistory(from: 'received', to: 'inspecting', at: DateTime(2026, 8, 18, 9, 20)), WoHistory(from: 'inspecting', to: 'awaiting_approval', at: DateTime(2026, 8, 18, 10)), if (status != 'awaiting_approval') WoHistory(from: 'awaiting_approval', to: status, at: DateTime(2026, 8, 18, 11))], versions: [WoVersionSummary(version: 1, sha256: 'a' * 64, signed: status != 'awaiting_approval', createdAt: DateTime(2026, 8, 18, 10), signedMethod: signedMethod)], inspections: [WoInspection(id: 'ins1', type: 'check_in', odometerKm: 84250, damagesCount: 1, mediaIds: const ['m1', 'm2', 'm3'], performedAt: DateTime(2026, 8, 18, 9, 10))], media: const [WoMedia(mediaId: 'm1', mimeType: 'image/jpeg'), WoMedia(mediaId: 'm2', mimeType: 'image/jpeg'), WoMedia(mediaId: 'm3', mimeType: 'image/jpeg')]));
   @override Future<Result<WoVersion>> version(String id, int version) async => Result.ok(WoVersion(version: 1, sha256: 'a' * 64, signed: false, orgNameAr: 'ورشة النور للسمكرة والميكانيكا', vehicleLine: 'تويوتا كامري 2019 · أ ب ج 4821', paymentTerms: 'on_delivery', depositRequired: '0', items: [for (final i in wo.items) (descriptionAr: i.descriptionAr, quantity: i.quantity, unitPrice: i.unitPrice, lineTotal: i.lineTotal, warrantyDays: i.warrantyDays)], subtotal: '1190.00', vat: '178.50', total: '1368.50'));
   @override Future<Result<ApproveInit>> approveInit(String id, {required String method, int? version}) async { lastMethod = method; return ApproveInit(method: method, version: 1, debugCode: method == 'otp' ? '123456' : null, transactionId: method == 'nafath' ? 'tx1' : null, random: '42').let(Result.ok); }
   @override Future<Result<WorkOrder>> approveComplete(String id, {required String method, int? version, String? transactionId, String? code}) async { lastCode = code; if (method == 'otp' && code != '123456') return const Result.err(ApiFailure(400, 'OTP_INVALID', 'رمز غير صحيح', 'Invalid code')); status = 'in_progress'; return Result.ok(wo); }
@@ -72,6 +72,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.err(UnknownFailure());
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966512345678', platformRole: 'none', nafathVerified: false, orgs: []));
+  @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) { loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }
@@ -79,7 +80,7 @@ Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); f
 void main() {
   setUpAll(loadArabicFont);
   late FakeWorkOrders wos; late FakeBilling billing;
-  Widget app(GoRouter router, {bool dark = false}) => ProviderScope(overrides: [
+  Widget app(GoRouter router, {bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [
       appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
       authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(MemoryTokenStore()), workOrdersRepositoryProvider.overrideWithValue(wos), workOrderRealtimeProvider.overrideWithValue(wos), billingRepositoryProvider.overrideWithValue(billing), vehiclesRepositoryProvider.overrideWithValue(FakeVehicles()),
     ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
@@ -152,6 +153,16 @@ void main() {
     expect(find.text('تم إصلاحه'), findsOneWidget);
     expect(find.text('شديد'), findsOneWidget);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_diff_damage_light.png'));
+  });
+
+  testWidgets('the signature badge names the method actually used, never assumes Nafath', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    wos.status = 'in_progress'; wos.signedMethod = 'otp';
+    await tester.pumpWidget(app(router('/work-orders/wo1'))); await tester.pumpAndSettle();
+    expect(find.text('موقّع برمز التحقق'), findsOneWidget); expect(find.text('موقّع بنفاذ'), findsNothing);
+    wos.signedMethod = 'nafath';
+    await tester.pumpWidget(app(router('/work-orders/wo1'))); await tester.pumpAndSettle();
+    expect(find.text('موقّع بنفاذ'), findsOneWidget); expect(find.text('موقّع برمز التحقق'), findsNothing);
   });
 
   testWidgets('dark theme: work order screen', (tester) async {

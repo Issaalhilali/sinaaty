@@ -2,7 +2,7 @@ import '../../../core/result/result.dart';
 import '../../work_orders/domain/work_order.dart';
 import 'workshop.dart';
 abstract interface class WorkshopRepository {
-  Future<Result<({String type, String nameAr})>> orgInfo(String orgId);
+  Future<Result<List<OrgBrief>>> myOrgs();
   Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status});
   Future<Result<WorkOrder>> create(NewWorkOrder wo);
   Future<Result<WorkOrder>> addItem(String woId, NewItem item);
