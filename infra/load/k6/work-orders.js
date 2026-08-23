@@ -28,8 +28,9 @@ export const options = {
 
 const cycle = new Trend('wo_full_cycle', true);
 
+// الحمل يضرب ورشة الفحص لا ورشة العرض — آلاف الأوامر لا يجوز أن تظهر في شاشة المالك.
 export function setup() {
-  const token = login(__ENV.WORKSHOP_PHONE || '+966500000001');
+  const token = login(__ENV.WORKSHOP_PHONE || '+966500000009');
   return { token, orgId: orgOf(token) };
 }
 

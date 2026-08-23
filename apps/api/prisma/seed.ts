@@ -220,6 +220,12 @@ async function seedDemo() {
   const admin = await upsertUser('+966500000099', 'مشرف المنصة', { platformRole: 'super_admin' });
 
   const workshop = await upsertOrg({ cr: '1010000001', type: 'workshop', nameAr: 'ورشة النور للسمكرة والميكانيكا', nameEn: 'Al Noor Auto Workshop', slug: 'alnoor-workshop', ownerId: owner1.id, vat: '300000000000003', lat: 24.6300, lng: 46.7900, city: 'الرياض', zone });
+
+  // ورشة مخصّصة لأدوات الفحص (فاحص الوصلة، اختبارات الحِمل) — كي لا يلوث ركامها شاشة ورشة النور
+  // التي يفتحها المالك: بيانات الاختبار حقيقية في القاعدة، لكنها لا تظهر في العرض.
+  const qaOwner = await upsertUser('+966500000009', 'حساب الفحص الآلي');
+  const qaWorkshop = await upsertOrg({ cr: '1010000009', type: 'workshop', nameAr: 'ورشة الفحص الآلي (بيئة اختبار)', nameEn: 'QA Workshop', slug: 'qa-workshop', ownerId: qaOwner.id, vat: '300000000000009', lat: 24.6100, lng: 46.7700, city: 'الرياض', zone });
+  void qaWorkshop;
   const scrapyard = await upsertOrg({ cr: '1010000002', type: 'scrapyard', nameAr: 'تشليح الشرق لقطع الغيار', nameEn: 'Al Sharq Scrapyard', slug: 'alsharq-scrapyard', ownerId: owner2.id, vat: '300000000000053', lat: 24.6100, lng: 46.8300, city: 'الرياض', zone });
   const owner4 = await upsertUser('+966500000004', 'سعد — محل قطع الجزيرة');
   const dealer = await upsertOrg({ cr: '1010000004', type: 'parts_dealer', nameAr: 'محل قطع الجزيرة', nameEn: 'Al Jazeera Parts Shop', slug: 'aljazeera-parts', ownerId: owner4.id, vat: '300000000000063', lat: 24.6400, lng: 46.7800, city: 'الرياض', zone });

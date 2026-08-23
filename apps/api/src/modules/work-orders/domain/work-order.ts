@@ -2,6 +2,8 @@ import type { PartCondition, PaymentTerms, WoItemType, WorkOrderSource, WorkOrde
 export interface WorkOrderItem { id: string; versionAdded: number; versionRemoved: number | null; type: WoItemType; descriptionAr: string; descriptionEn: string | null; partCondition: PartCondition | null; partNumber: string | null; quantity: string; unitPrice: string; discount: string; vatRate: string; lineTotal: string; warrantyDays: number; isCompleted: boolean; sortOrder: number }
 export interface WorkOrder {
   id: string; number: string; orgId: string; locationId: string | null; vehicleId: string; customerUserId: string | null; customerOrgId: string | null;
+  /** «تويوتا كامري 2019» و«أ ب ج 1234» — the workshop reads its yard by car, not by order number. */
+  vehicleLabelAr: string | null; vehiclePlateAr: string | null;
   source: WorkOrderSource; status: WorkOrderStatus; paymentTerms: PaymentTerms; currentVersion: number; titleAr: string | null; complaintAr: string | null; diagnosisAr: string | null;
   subtotal: string; discount: string; vatAmount: string; total: string; depositRequired: string; dueDate: Date | null; promisedReadyAt: Date | null;
   receivedAt: Date | null; approvedAt: Date | null; readyAt: Date | null; deliveredAt: Date | null; closedAt: Date | null; cancelledAt: Date | null; cancelReason: string | null;

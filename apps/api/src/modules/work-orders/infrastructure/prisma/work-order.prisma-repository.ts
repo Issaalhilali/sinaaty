@@ -9,10 +9,18 @@ import type { WorkOrderRepository } from '../../domain/repositories';
 
 const d = (v: Prisma.Decimal | null | undefined) => (v == null ? '0.00' : v.toFixed(2));
 const q = (v: Prisma.Decimal) => v.toString();
-const woInclude = { workOrderItems: { orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] } } satisfies Prisma.WorkOrderInclude;
+// The CAR travels with the order: a workshop with a yard full of cars reads plates, not order numbers.
+const woInclude = {
+  workOrderItems: { orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] },
+  vehicle: { select: { plateNumber: true, modelYear: true, make: { select: { nameAr: true } }, model: { select: { nameAr: true } } } },
+} satisfies Prisma.WorkOrderInclude;
 type Row = Prisma.WorkOrderGetPayload<{ include: typeof woInclude }>;
+const vehicleLabel = (r: Row): string | null => {
+  const parts = [r.vehicle?.make?.nameAr, r.vehicle?.model?.nameAr, r.vehicle?.modelYear ? String(r.vehicle.modelYear) : null].filter(Boolean);
+  return parts.length ? parts.join(' ') : null;
+};
 const toItem = (i: Row['workOrderItems'][number]): WorkOrderItem => ({ id: i.id, versionAdded: i.versionAdded, versionRemoved: i.versionRemoved, type: i.type, descriptionAr: i.descriptionAr, descriptionEn: i.descriptionEn, partCondition: i.partCondition, partNumber: i.partNumber, quantity: q(i.quantity), unitPrice: d(i.unitPrice), discount: d(i.discount), vatRate: i.vatRate.toFixed(2), lineTotal: d(i.lineTotal), warrantyDays: i.warrantyDays, isCompleted: i.isCompleted, sortOrder: i.sortOrder });
-const toWo = (r: Row): WorkOrder => ({ id: r.id, number: r.number, orgId: r.orgId, locationId: r.locationId, vehicleId: r.vehicleId, customerUserId: r.customerUserId, customerOrgId: r.customerOrgId, source: r.source, status: r.status, paymentTerms: r.paymentTerms, currentVersion: r.currentVersion, titleAr: r.titleAr, complaintAr: r.complaintAr, diagnosisAr: r.diagnosisAr, subtotal: d(r.subtotal), discount: d(r.discount), vatAmount: d(r.vatAmount), total: d(r.total), depositRequired: d(r.depositRequired), dueDate: r.dueDate, promisedReadyAt: r.promisedReadyAt, receivedAt: r.receivedAt, approvedAt: r.approvedAt, readyAt: r.readyAt, deliveredAt: r.deliveredAt, closedAt: r.closedAt, cancelledAt: r.cancelledAt, cancelReason: r.cancelReason, storageFeePerDay: d(r.storageFeePerDay), abandonedNoticeAt: r.abandonedNoticeAt, assignedTechnicianId: r.assignedTechnicianId, contractTermsVersion: r.contractTermsVersion, createdBy: r.createdBy, createdAt: r.createdAt, updatedAt: r.updatedAt, items: r.workOrderItems.map(toItem) });
+const toWo = (r: Row): WorkOrder => ({ vehicleLabelAr: vehicleLabel(r), vehiclePlateAr: r.vehicle?.plateNumber ?? null, id: r.id, number: r.number, orgId: r.orgId, locationId: r.locationId, vehicleId: r.vehicleId, customerUserId: r.customerUserId, customerOrgId: r.customerOrgId, source: r.source, status: r.status, paymentTerms: r.paymentTerms, currentVersion: r.currentVersion, titleAr: r.titleAr, complaintAr: r.complaintAr, diagnosisAr: r.diagnosisAr, subtotal: d(r.subtotal), discount: d(r.discount), vatAmount: d(r.vatAmount), total: d(r.total), depositRequired: d(r.depositRequired), dueDate: r.dueDate, promisedReadyAt: r.promisedReadyAt, receivedAt: r.receivedAt, approvedAt: r.approvedAt, readyAt: r.readyAt, deliveredAt: r.deliveredAt, closedAt: r.closedAt, cancelledAt: r.cancelledAt, cancelReason: r.cancelReason, storageFeePerDay: d(r.storageFeePerDay), abandonedNoticeAt: r.abandonedNoticeAt, assignedTechnicianId: r.assignedTechnicianId, contractTermsVersion: r.contractTermsVersion, createdBy: r.createdBy, createdAt: r.createdAt, updatedAt: r.updatedAt, items: r.workOrderItems.map(toItem) });
 
 @Injectable()
 export class WorkOrderPrismaRepository implements WorkOrderRepository {

@@ -15,7 +15,7 @@ const RIYADH_IND2 = { lat: 25.1020, lng: 46.2200 };
 
 const PHONES = {
   customer: '+966533000001',   // مشعل — العميل
-  elite: '+966533000002',      // ورشة النخبة لصيانة تويوتا
+  elite: '+966500000001',      // ورشة النور — الورشة المزروعة التي يفتحها المالك
   inspect: '+966533000003',    // مركز الفحص الأول
   economy: '+966533000004',    // ورشة الاقتصاد
   dealer: '+966533000005',     // قطع الأمانة
@@ -62,7 +62,7 @@ async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}
     step(`«${nameAr}» موجودة — أُعيد استخدامها`);
   }
   // الشفاء الذاتي: تشغيلة سابقة قد تكون انهارت في أي منتصف — نكمل الناقص أياً كان (تفعيل، موقع، تخصص)
-  {
+  if (!/alnoor-workshop|النور/.test(nameAr)) {
     const { execSync } = await import('node:child_process');
     execSync(`node -e "
       const fs=require('fs');for(const l of fs.readFileSync('${process.cwd()}/.env','utf8').split('\\n')){const m=l.match(/^([A-Z0-9_]+)=(.*)$/);if(m&&!process.env[m[1]])process.env[m[1]]=m[2];}
@@ -93,7 +93,7 @@ async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}
   step(`سيارة مشعل: ${car.makeNameAr ?? 'تويوتا'} — لوحة ${car.plateAr ?? ''}`);
 
   // ---- الورش الثلاث بشخصياتها + التاجر --------------------------------------
-  const elite = await ensureOrg(PHONES.elite, 'workshop', 'ورشة النخبة لصيانة تويوتا', { lat: RIYADH_IND2.lat + 0.008, lng: RIYADH_IND2.lng + 0.004 }, { specialtyMakeId: car.makeId, vat: '399990000000003' });
+  const elite = await ensureOrg(PHONES.elite, 'workshop', 'ورشة النور للسمكرة والميكانيكا', { lat: RIYADH_IND2.lat + 0.008, lng: RIYADH_IND2.lng + 0.004 }, { specialtyMakeId: car.makeId, vat: '399990000000003' });
   const inspect = await ensureOrg(PHONES.inspect, 'service_center', 'مركز الفحص الأول', { lat: RIYADH_IND2.lat - 0.01, lng: RIYADH_IND2.lng + 0.012 });
   const economy = await ensureOrg(PHONES.economy, 'workshop', 'ورشة الاقتصاد', { lat: RIYADH_IND2.lat + 0.02, lng: RIYADH_IND2.lng - 0.015 });
   const dealer = await ensureOrg(PHONES.dealer, 'parts_dealer', 'قطع الأمانة', { lat: RIYADH_IND2.lat + 0.005, lng: RIYADH_IND2.lng - 0.006 });
@@ -156,7 +156,7 @@ async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}
 
   console.log(`\n🎉 اليوم التجريبي مزروع. افتح التطبيق وسجّل الدخول:
    العميل (تطبيق العملاء):      ${PHONES.customer}
-   ورشة النخبة (تطبيق الشركاء): ${PHONES.elite}
+   ورشة النور (تطبيق الشركاء):  ${PHONES.elite}
    قطع الأمانة (تطبيق الشركاء): ${PHONES.dealer}
    لوحة التحكم (:3001):         ${PHONES.admin}
    رمز الدخول يظهر تلقائياً في شاشة الرمز (بيئة تطوير).\n`);
