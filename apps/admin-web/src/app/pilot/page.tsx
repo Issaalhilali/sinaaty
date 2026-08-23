@@ -10,6 +10,7 @@ type Zone = { code: string; nameAr: string; city: string; radiusKm: number };
 type Funnel = {
   work_orders: { created: number; approved: number; invoiced: number; paid: number; approval_rate: string; invoice_rate: string; payment_rate: string };
   parts: { requested: number; bid: number; ordered: number };
+  service?: { requested: number; offered: number; accepted: number; quiet: number; offer_rate: string; accept_rate: string; avg_first_offer_minutes: number | null };
 };
 type ZoneRow = { zone: string | null; name_ar: string; orgs: number; workOrders: number; paidInvoices: number; gmv: string };
 type Activation = { organizations: number; active: number; activation_rate: string; rows: Array<{ orgId: string; nameAr: string; zone: string | null; workOrders: number; lastActiveAt: string | null }> };
@@ -116,7 +117,7 @@ export default function PilotPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['pilot'] }),
   });
 
-  const f = funnel.data?.work_orders;
+  const f = funnel.data?.work_orders; const sv = funnel.data?.service;
 
   return (
     <Shell title="المناطق والميزات" sub="أين نعمل · أي خدمة مفتوحة لمن · ما الذي يتحوّل إلى دفع — آخر ٣٠ يوماً">
@@ -133,6 +134,18 @@ export default function PilotPage() {
             <Kpi value={funnel.data?.parts.requested ?? 0} label="طلبات قطع" />
             <Kpi value={funnel.data?.parts.bid ?? 0} label="عروض موردين" />
             <Kpi value={funnel.data?.parts.ordered ?? 0} label="طلبات شراء" />
+          </div>
+
+          {/* The other market: a request that never draws an offer is the pilot's loudest signal —
+              it means no active workshop inside that customer's radius (marketplace runbook §2). */}
+          <Eyebrow>سوق الإصلاح: من مشكلة العميل إلى أمر عمل</Eyebrow>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            <Kpi value={sv?.requested ?? 0} label="طلبات إصلاح" />
+            <Kpi value={sv?.offered ?? 0} label="وصلها عرض" sub={`${sv?.offer_rate ?? '0.0'}% من الطلبات`} tone={Number(sv?.offer_rate ?? 100) < 70 ? 'warn' : undefined} />
+            <Kpi value={sv?.accepted ?? 0} label="تحوّلت إلى أمر عمل" sub={`${sv?.accept_rate ?? '0.0'}% من الطلبات`} />
+            <Kpi value={sv?.avg_first_offer_minutes != null ? `~${sv.avg_first_offer_minutes} د` : '—'} label="متوسط أول ردّ"
+              sub={sv?.avg_first_offer_minutes == null ? 'لا عروض بعد' : undefined} />
+            <Kpi value={sv?.quiet ?? 0} label="طلبات هادئة" sub={(sv?.quiet ?? 0) > 0 ? 'نُبّه أصحابها للتوسيع' : undefined} tone={(sv?.quiet ?? 0) > 0 ? 'warn' : undefined} />
           </div>
         </>
       )}
