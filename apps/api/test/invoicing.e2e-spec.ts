@@ -3,10 +3,11 @@ import { type INestApplication, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { decodeQr } from '@sinaaty/zatca-ubl';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma';
 
 /** Step 8 verify: invoice from WO (totals = snapshot), sequential numbering, QR decodes, void, credit note. */
 describe('Invoicing (e2e)', () => {
-  let app: INestApplication; const http = () => request(app.getHttpServer());
+  let app: INestApplication; let prisma: PrismaService; const http = () => request(app.getHttpServer());
   const suffix = String(Date.now()).slice(-7);
   const wsPhone = '+966500000001'; const custPhone = `+96659${suffix}`;
   let wsTok: string; let custTok: string; let orgId: string; let woId: string; let invId: string; let snapshotTotal: string; let snapshotVat: string;
@@ -22,9 +23,27 @@ describe('Invoicing (e2e)', () => {
     await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'ready' }).expect(200);
     return { id: wo.body.id as string, total: ra.body.work_order.total as string, vat: ra.body.work_order.vatAmount as string };
   };
-  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); wsTok = await login(wsPhone); custTok = await login(custPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
+  beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); wsTok = await login(wsPhone); custTok = await login(custPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
   afterAll(async () => { await app.close(); });
 
+  it('an invalid seller VAT number is refused in Arabic — never a silent 500 while the workshop waits for its money', async () => {
+    // ورشة برقم ضريبي مكسور: كان مولّد رمز الاستجابة السريعة يرمي RangeError فيصير 500 بلا سبب مفهوم
+    const badPhone = `+96657${suffix}`; let badTok = await login(badPhone);
+    const org = await http().post('/v1/organizations').set(auth(badTok)).send({ type: 'workshop', legal_name_ar: `ورشة الرقم المكسور ${suffix}`, cr_number: `72${suffix}5` }).expect(201);
+    await prisma.organization.update({ where: { id: org.body.id }, data: { status: 'active', verifiedAt: new Date(), vatNumber: '123456789012345' } });   // تجاوز التحقق كما تفعل أدوات التهيئة
+    badTok = await login(badPhone);
+    const wo = await http().post('/v1/work-orders').set(auth(badTok)).send({ org_id: org.body.id, customer_phone: custPhone, plate: 'ر ق م 9090', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '100' }] }).expect(201);
+    await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(badTok)).send({}).expect(200);
+    const init = await http().post(`/v1/work-orders/${wo.body.id}/approve`).set(auth(custTok)).send({ method: 'otp' }).expect(200);
+    await http().post(`/v1/work-orders/${wo.body.id}/approve/complete`).set(auth(custTok)).send({ method: 'otp', code: init.body.debug_code }).expect(200);
+    const st = (await http().get(`/v1/work-orders/${wo.body.id}`).set(auth(badTok))).body.status;
+    if (st === 'awaiting_parts') await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(badTok)).send({ to: 'in_progress' }).expect(200);
+    await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(badTok)).send({ to: 'ready' }).expect(200);
+    const r = await http().post('/v1/invoices').set(auth(badTok)).send({ work_order_id: wo.body.id }).expect(400);
+    expect(r.body.code).toBe('VALIDATION');
+    expect(r.body.message_ar).toContain('الرقم الضريبي');
+    expect(r.body.message_ar).toContain('صحّحه');            // تقول لها ماذا تفعل، لا «خطأ غير متوقع»
+  });
   it('cannot invoice a work order that is not approved/ready', async () => {
     const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: 'ب ح د 1122', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '100' }] }).expect(201);
     const r = await http().post('/v1/invoices').set(auth(wsTok)).send({ work_order_id: wo.body.id }).expect(409);

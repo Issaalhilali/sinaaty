@@ -224,8 +224,12 @@ async function seedDemo() {
   // ورشة مخصّصة لأدوات الفحص (فاحص الوصلة، اختبارات الحِمل) — كي لا يلوث ركامها شاشة ورشة النور
   // التي يفتحها المالك: بيانات الاختبار حقيقية في القاعدة، لكنها لا تظهر في العرض.
   const qaOwner = await upsertUser('+966500000009', 'حساب الفحص الآلي');
-  const qaWorkshop = await upsertOrg({ cr: '1010000009', type: 'workshop', nameAr: 'ورشة الفحص الآلي (بيئة اختبار)', nameEn: 'QA Workshop', slug: 'qa-workshop', ownerId: qaOwner.id, vat: '300000000000009', lat: 24.6100, lng: 46.7700, city: 'الرياض', zone });
-  void qaWorkshop;
+  const qaWorkshop = await upsertOrg({ cr: '1010000009', type: 'workshop', nameAr: 'ورشة الفحص الآلي (بيئة اختبار)', nameEn: 'QA Workshop', slug: 'qa-workshop', ownerId: qaOwner.id, vat: '300000000000093', lat: 24.6100, lng: 46.7700, city: 'الرياض', zone });
+  // موقع لورشة الفحص وإلا لم يصلها طلب سوق (تُطابق نطاق الصناعية الثانية كبقية الورش المزروعة)
+  await prisma.$executeRaw`
+    INSERT INTO organization_locations (org_id, name_ar, is_primary, city, district, industrial_zone, geo, service_radius_km)
+    SELECT ${qaWorkshop.id}::uuid, 'الفرع الرئيسي', true, 'الرياض', 'الصناعية الثانية', ${zone}, ST_SetSRID(ST_MakePoint(46.7700, 24.6100), 4326)::geography, 25
+    WHERE NOT EXISTS (SELECT 1 FROM organization_locations WHERE org_id = ${qaWorkshop.id}::uuid)`;
   const scrapyard = await upsertOrg({ cr: '1010000002', type: 'scrapyard', nameAr: 'تشليح الشرق لقطع الغيار', nameEn: 'Al Sharq Scrapyard', slug: 'alsharq-scrapyard', ownerId: owner2.id, vat: '300000000000053', lat: 24.6100, lng: 46.8300, city: 'الرياض', zone });
   const owner4 = await upsertUser('+966500000004', 'سعد — محل قطع الجزيرة');
   const dealer = await upsertOrg({ cr: '1010000004', type: 'parts_dealer', nameAr: 'محل قطع الجزيرة', nameEn: 'Al Jazeera Parts Shop', slug: 'aljazeera-parts', ownerId: owner4.id, vat: '300000000000063', lat: 24.6400, lng: 46.7800, city: 'الرياض', zone });

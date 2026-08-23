@@ -18,6 +18,13 @@ import { INVOICE_REPOSITORY, type InvoiceRepository, type NewInvoiceLine } from 
 import { INVOICE_RENDERER_PORT, type InvoiceRendererPort } from '../ports/invoice-renderer.port';
 import type { CreditNoteDto, IssueFromWorkOrderDto, VoidDto } from '../dto/invoices.dto';
 
+/** الرقم الضريبي السعودي: 15 رقماً يبدأ وينتهي بـ3. غيابه أو بطلانه يجب أن يُقال للورشة بوضوح —
+ *  لا أن يسقط رمز الاستجابة السريعة بـ500 وهي تنتظر مالها (اكتشاف الفاحص 2026-08-23). */
+const assertSellerVat = (vat: string | null | undefined, whoAr: string): string => {
+  if (!vat) throw new AppError('VALIDATION', { messageAr: `أضف الرقم الضريبي ${whoAr} قبل إصدار الفواتير.`, messageEn: 'Organization VAT number is required to issue invoices.' });
+  if (!/^3\d{13}3$/.test(vat)) throw new AppError('VALIDATION', { messageAr: `الرقم الضريبي ${whoAr} غير صالح (15 رقماً يبدأ وينتهي بـ3). صحّحه من ملف المنشأة ثم أعد الإصدار.`, messageEn: `Invalid VAT number «${vat}» — must be 15 digits starting and ending with 3.`, details: { vat_number: vat } });
+  return vat;
+};
 const FINANCE_ROLES = ['owner', 'manager', 'accountant'];
 const INVOICEABLE = ['ready', 'delivered', 'closed'];
 const isoNoMs = (d: Date) => d.toISOString().replace(/\.\d{3}Z$/, 'Z');
@@ -52,7 +59,7 @@ export class InvoicesUseCases {
     const version = await this.workOrders.getVersion(wo.id, wo.currentVersion);
     if (!version || !(await this.workOrders.hasSignature(version.id, 'approve_scope'))) throw new AppError('INV_WO_NOT_INVOICEABLE', { messageAr: 'آخر نسخة من أمر العمل غير معتمدة من العميل.', messageEn: 'Latest work order version is not customer-approved.' });
     const org = await this.orgs.findById(wo.orgId); if (!org) throw new AppError('NOT_FOUND');
-    if (!org.vatNumber) throw new AppError('VALIDATION', { messageAr: 'أضف الرقم الضريبي للمنشأة قبل إصدار الفواتير.', messageEn: 'Organization VAT number is required to issue invoices.' });
+    const sellerVat = assertSellerVat(org.vatNumber, 'للمنشأة');
     const customer = wo.customerUserId ? await this.users.findById(wo.customerUserId) : null;
     const customerOrg = wo.customerOrgId ? await this.orgs.findById(wo.customerOrgId) : null;
     const seller: PartySnapshot = { name_ar: org.tradeNameAr ?? org.legalNameAr, name_en: org.legalNameEn, vat_number: org.vatNumber, cr_number: org.crNumber, org_id: org.id };
@@ -72,7 +79,7 @@ export class InvoicesUseCases {
       throw new AppError('INTERNAL', { messageAr: 'إجمالي الفاتورة لا يطابق النسخة المعتمدة.', messageEn: 'Invoice totals do not match the approved snapshot.', details: { invoice: total.toString(), snapshot: version.snapshot.totals.total } });
     }
     const type = invoiceTypeFor(buyer); const now = new Date(); const timestamp = isoNoMs(now); const zatcaUuid = newId();
-    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: org.vatNumber, timestamp, total: total.toString(), vat: vatTotal.toString() });
+    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: sellerVat, timestamp, total: total.toString(), vat: vatTotal.toString() });
     const dueDate = dto.due_date ? new Date(dto.due_date) : wo.dueDate;
     return this.uow.run(async (tx) => {
       const number = await this.invoices.nextNumber(org.id, 'INV', now.getFullYear(), tx);
@@ -95,7 +102,7 @@ export class InvoicesUseCases {
     const existing = await this.invoices.findByTransportJob(p.transportJobId);
     if (existing) return existing;
     const org = await this.orgs.findById(p.providerOrgId); if (!org) throw new AppError('NOT_FOUND');
-    if (!org.vatNumber) throw new AppError('VALIDATION', { messageAr: 'أضف الرقم الضريبي لمنشأة النقل قبل إصدار فواتير السطحة.', messageEn: 'Transport provider VAT number is required to issue tow invoices.' });
+    const sellerVat = assertSellerVat(org.vatNumber, 'لمنشأة النقل');
     const buyerUser = p.requesterUserId ? await this.users.findById(p.requesterUserId) : null; const buyerOrg = p.requesterOrgId ? await this.orgs.findById(p.requesterOrgId) : null;
     const seller: PartySnapshot = { name_ar: org.tradeNameAr ?? org.legalNameAr, name_en: org.legalNameEn, vat_number: org.vatNumber, cr_number: org.crNumber, org_id: org.id };
     const buyer: PartySnapshot = buyerOrg ? { name_ar: buyerOrg.legalNameAr, name_en: buyerOrg.legalNameEn, vat_number: buyerOrg.vatNumber, cr_number: buyerOrg.crNumber, org_id: buyerOrg.id } : { name_ar: buyerUser?.fullNameAr ?? 'عميل', phone: buyerUser?.phone ?? null, user_id: buyerUser?.id ?? null };
@@ -103,7 +110,7 @@ export class InvoicesUseCases {
     const lines: NewInvoiceLine[] = [{ descriptionAr: p.descriptionAr, quantity: '1', unitPrice: Money.of(p.amount).toString(), discount: '0.00', vatRate: '15.00', vatAmount: l.vat.toString(), lineTotal: l.net.toString(), sortOrder: 0 }];
     const subtotal = l.net; const vatTotal = l.vat; const total = subtotal.plus(vatTotal);
     const type = invoiceTypeFor(buyer); const now = new Date(); const timestamp = isoNoMs(now); const zatcaUuid = newId();
-    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: org.vatNumber, timestamp, total: total.toString(), vat: vatTotal.toString() });
+    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: sellerVat, timestamp, total: total.toString(), vat: vatTotal.toString() });
     return this.uow.run(async (t) => {
       const number = await this.invoices.nextNumber(org.id, 'INV', now.getFullYear(), t);
       const created = await this.invoices.create({ orgId: org.id, number, type, status: 'issued', transportJobId: p.transportJobId, customerUserId: p.requesterUserId ?? undefined, customerOrgId: p.requesterOrgId ?? undefined, buyerSnapshot: buyer, sellerSnapshot: seller, subtotal: subtotal.toString(), discountTotal: '0.00', vatTotal: vatTotal.toString(), total: total.toString(), paymentTerms: 'on_delivery', issueDate: now, supplyDate: now, zatcaUuid, zatcaHash: invoiceHash({ number, uuid: zatcaUuid, seller, buyer, lines, totals: { subtotal: subtotal.toString(), vat: vatTotal.toString(), total: total.toString() }, issued_at: timestamp, transport_job: p.jobNumber }), zatcaQr: qr, zatcaStatus: 'not_required', createdBy: null, lines }, t);
@@ -115,7 +122,7 @@ export class InvoicesUseCases {
 
   async issueForPartOrder(p: { partOrderId: string; orderNumber: string; supplierOrgId: string; buyerUserId: string | null; buyerOrgId: string | null; items: Array<{ id?: string | null; descriptionAr: string; quantity: number; unitPrice: string; vatRate: string }>; deliveryFee: string; paymentTerms: PaymentTerms; dueDate: Date | null; actorUserId?: string | null }, tx?: TxHandle) {
     const org = await this.orgs.findById(p.supplierOrgId); if (!org) throw new AppError('NOT_FOUND');
-    if (!org.vatNumber) throw new AppError('VALIDATION', { messageAr: 'أضف الرقم الضريبي للمنشأة قبل إصدار الفواتير.', messageEn: 'Organization VAT number is required to issue invoices.' });
+    const sellerVat = assertSellerVat(org.vatNumber, 'للمنشأة');
     const buyerUser = p.buyerUserId ? await this.users.findById(p.buyerUserId) : null; const buyerOrg = p.buyerOrgId ? await this.orgs.findById(p.buyerOrgId) : null;
     const seller: PartySnapshot = { name_ar: org.tradeNameAr ?? org.legalNameAr, name_en: org.legalNameEn, vat_number: org.vatNumber, cr_number: org.crNumber, org_id: org.id };
     const buyer: PartySnapshot = buyerOrg ? { name_ar: buyerOrg.legalNameAr, name_en: buyerOrg.legalNameEn, vat_number: buyerOrg.vatNumber, cr_number: buyerOrg.crNumber, org_id: buyerOrg.id } : { name_ar: buyerUser?.fullNameAr ?? 'عميل', phone: buyerUser?.phone ?? null, user_id: buyerUser?.id ?? null };
@@ -123,7 +130,7 @@ export class InvoicesUseCases {
     const lines: NewInvoiceLine[] = src.map((it, idx) => { const l = computeLine({ quantity: it.quantity, unitPrice: Money.of(it.unitPrice), vatRatePct: Number(it.vatRate) }); return { descriptionAr: it.descriptionAr, quantity: it.quantity, unitPrice: Money.of(it.unitPrice).toString(), discount: '0.00', vatRate: it.vatRate, vatAmount: l.vat.toString(), lineTotal: l.net.toString(), sortOrder: idx }; });
     const subtotal = Money.sum(lines.map((l) => Money.of(l.lineTotal))); const vatTotal = Money.sum(lines.map((l) => Money.of(l.vatAmount))); const total = subtotal.plus(vatTotal);
     const type = invoiceTypeFor(buyer); const now = new Date(); const timestamp = isoNoMs(now); const zatcaUuid = newId();
-    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: org.vatNumber, timestamp, total: total.toString(), vat: vatTotal.toString() });
+    const qr = encodeQr({ sellerName: seller.name_ar, vatNumber: sellerVat, timestamp, total: total.toString(), vat: vatTotal.toString() });
     const run = async (t: TxHandle) => {
       const number = await this.invoices.nextNumber(org.id, 'INV', now.getFullYear(), t);
       const created = await this.invoices.create({ orgId: org.id, number, type, status: 'issued', partOrderId: p.partOrderId, customerUserId: p.buyerUserId ?? undefined, customerOrgId: p.buyerOrgId ?? undefined, buyerSnapshot: buyer, sellerSnapshot: seller, subtotal: subtotal.toString(), discountTotal: '0.00', vatTotal: vatTotal.toString(), total: total.toString(), paymentTerms: p.paymentTerms, issueDate: now, dueDate: p.dueDate, supplyDate: now, zatcaUuid, zatcaHash: invoiceHash({ number, uuid: zatcaUuid, seller, buyer, lines, totals: { subtotal: subtotal.toString(), vat: vatTotal.toString(), total: total.toString() }, issued_at: timestamp, part_order: p.orderNumber }), zatcaQr: qr, zatcaStatus: 'not_required', createdBy: p.actorUserId ?? null, lines }, t);
