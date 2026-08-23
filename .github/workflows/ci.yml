@@ -68,6 +68,16 @@ jobs:
       - run: pnpm --filter api typecheck
       - run: pnpm --filter api test
       - run: pnpm --filter api test:e2e
+      # The SEAM: drive the real endpoints with the shapes the apps actually send. Three outages on
+      # 2026-08-23 (vehicle_id, nearby=true, org_id) all lived between two green test suites — each
+      # side tested its own assumption and nobody tested the wire between them.
+      - name: seam check (apps ↔ API contract)
+        run: |
+          pnpm --filter api build
+          JOBS_ENABLED=false node apps/api/dist/main & echo $! > /tmp/api.pid
+          for i in $(seq 1 40); do sleep 2; curl -sf localhost:3000/v1/health > /dev/null && break; done
+          node tools/seam-check.mjs
+          kill $(cat /tmp/api.pid)
       # Contract artefacts: OpenAPI + generated enums must match the code that produced them.
       - run: pnpm --filter api openapi:export
       - run: pnpm --filter shared-types gen:check

@@ -7,7 +7,7 @@ export interface ServiceRequestRepository {
   findById(id: string, tx?: TxHandle): Promise<ServiceRequest | null>;
   listMine(customerUserId: string, limit: number): Promise<ServiceRequest[]>;
   /** Open, unexpired requests whose OWN radius covers one of the org's locations — the workshop inbox. */
-  listNearbyForOrg(orgId: string, limit: number): Promise<Array<ServiceRequest & { distanceKm: number | null; myOfferId: string | null }>>;
+  listNearbyForOrgs(orgIds: string[], limit: number): Promise<Array<ServiceRequest & { distanceKm: number | null; myOfferId: string | null }>>;
   update(id: string, patch: Partial<{ status: ServiceRequestStatus; acceptedOfferId: string; workOrderId: string; radiusKm: number; expiresAt: Date }>, tx?: TxHandle): Promise<void>;
   expireDue(now: Date): Promise<number>;
   /** Open requests whose half-window passed within (now - withinMinutes, now] and still hold <2 live
@@ -18,6 +18,8 @@ export interface ServiceRequestRepository {
   matchWorkshops(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;
   addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle): Promise<number>;
   isRecipient(requestId: string, orgIds: string[]): Promise<boolean>;
+  /** Which of these orgs actually received the request — resolves «باسم أي منشأة أقدّم العرض؟». */
+  recipientsAmong(requestId: string, orgIds: string[]): Promise<string[]>;
   findRecipient(requestId: string, orgId: string): Promise<{ orgId: string; distanceKm: string | null } | null>;
   /** What a workshop must see BEFORE pricing: the car, its mileage, and how it has been served — never
    *  the owner's identity (a quote is not a reason to hand over a customer's phone). */

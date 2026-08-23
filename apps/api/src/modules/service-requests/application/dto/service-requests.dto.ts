@@ -17,7 +17,8 @@ export const CreateServiceRequestDto = z.object({
 export type CreateServiceRequestDto = z.infer<typeof CreateServiceRequestDto>;
 
 export const SubmitOfferDto = z.object({
-  org_id: z.string().uuid(),
+  // اختياري: يُشتق من عضوية المنادي حين تكون وحيدة (إصلاح الوصلة 2026-08-23)
+  org_id: z.string().uuid().optional(),
   offer_type: z.enum(['estimate', 'free_inspection']).default('estimate'),
   diagnosis_ar: z.string().max(2000).optional(),
   price_min: z.union([z.string(), z.number()]).transform(String).optional(),

@@ -59,6 +59,17 @@ describe('Service marketplace (e2e)', () => {
     await http().get(`/v1/media/${media.body.media_id}/download`).set(auth(farTok)).expect(403);
   });
 
+  it('THE WIRE, as the app actually calls it: nearby=true and an offer WITHOUT org_id both work', async () => {
+    // The three bugs of 2026-08-23 lived here: each side tested its own assumption, nobody tested the wire.
+    const inbox = await http().get('/v1/service-requests?nearby=true').set(auth(nearTok)).expect(200);
+    expect(inbox.body.map((x: { id: string }) => x.id)).toContain(reqId);
+    const offer = await http().put(`/v1/service-requests/${reqId}/offer`).set(auth(nearTok))
+      .send({ offer_type: 'estimate', diagnosis_ar: 'فحص أولي يرجّح المساعدات', price_min: '500', availability: 'today' }).expect(200);
+    expect(offer.body.orgId).toBe(nearOrg);   // the org was DERIVED from the caller's single membership
+    // and a customer (no workshop membership) asking for the workshop inbox is told what is missing
+    await http().get('/v1/service-requests?nearby=true').set(auth(custTok)).expect(403);   // لا منشأة لحسابه
+  });
+
   it('workshops answer — an estimate and a free inspection; one live offer per org (upsert); outsiders 403', async () => {
     const a = await http().put(`/v1/service-requests/${reqId}/offer`).set(auth(nearTok)).send({ org_id: nearOrg, offer_type: 'estimate', diagnosis_ar: 'الأغلب مساعدات أمامية — نؤكد بعد فحص الرافعة', price_min: '450', price_max: '700', availability: 'now', eta_note_ar: 'نستقبلك خلال ساعة' }).expect(200);
     nearOfferId = a.body.id;

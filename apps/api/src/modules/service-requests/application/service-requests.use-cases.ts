@@ -68,7 +68,17 @@ export class ServiceRequestsUseCases {
   }
 
   listMine(u: AuthUser, limit = 30) { return this.repo.listMine(u.id, limit); }
-  async listNearby(u: AuthUser, orgId: string, limit = 30) { this.orgRole(u, orgId); return this.repo.listNearbyForOrg(orgId, limit); }
+  /** The workshop inbox. `org_id` is optional: with a single membership we derive it — a workshop
+   *  should not have to know its own id to see its own requests (live-walk fix 2026-08-23). */
+  async listNearby(u: AuthUser, orgId: string | undefined, limit = 30) {
+    if (orgId) { this.orgRole(u, orgId); return this.repo.listNearbyForOrgs([orgId], limit); }
+    // No org given: show the inbox of EVERY workshop this user works for — a manager of two branches
+    // wants both, and nobody should need to know an id to see their own requests.
+    const ids = this.writableOrgs(u);
+    if (!ids.length) throw new AppError('FORBIDDEN', { messageAr: 'هذه القائمة للورش — لا منشأة مرتبطة بحسابك.', messageEn: 'This inbox is for workshops; your account has no organization.' });
+    return this.repo.listNearbyForOrgs(ids, limit);
+  }
+  private writableOrgs(u: AuthUser): string[] { return u.orgs.filter((o) => WRITE_ROLES.includes(o.role)).map((o) => o.orgId); }
 
   async get(u: AuthUser, id: string) {
     const r = await this.load(id);
@@ -93,14 +103,23 @@ export class ServiceRequestsUseCases {
 
   /** Workshop answers — one live offer per org, updated in place (upsert), exactly like part bids. */
   async submitOffer(u: AuthUser, requestId: string, dto: SubmitOfferDto) {
-    this.orgRole(u, dto.org_id);
+    // The org is resolved from the REQUEST itself: of this user's workshops, the one(s) this request
+    // actually reached. One → unambiguous. Several → the caller must say which (rare, honest).
+    let orgId = dto.org_id;
+    if (!orgId) {
+      const reached = await this.repo.recipientsAmong(requestId, this.writableOrgs(u));
+      if (reached.length === 1) orgId = reached[0]!;
+      else if (!reached.length) throw new AppError('FORBIDDEN', { messageAr: 'الطلب خارج نطاق منشأتك.', messageEn: 'This request is outside your range.' });
+      else throw new AppError('VALIDATION', { messageAr: 'حدد المنشأة التي تقدّم العرض باسمها.', messageEn: 'Pass org_id — more than one of your organizations received this request.' });
+    }
+    this.orgRole(u, orgId);
     const r = await this.load(requestId);
     if (!isRequestOpen(r)) throw new AppError('CONFLICT', { messageAr: 'الطلب لم يعد مفتوحاً.', messageEn: 'The request is no longer open.' });
-    if (!(await this.repo.isRecipient(requestId, [dto.org_id]))) throw new AppError('FORBIDDEN', { messageAr: 'الطلب خارج نطاق منشأتك.', messageEn: 'This request is outside your range.' });
+    if (!(await this.repo.isRecipient(requestId, [orgId]))) throw new AppError('FORBIDDEN', { messageAr: 'الطلب خارج نطاق منشأتك.', messageEn: 'This request is outside your range.' });
     const offer = await this.uow.run(async (tx) => {
-      const o = await this.repo.upsertOffer({ requestId, orgId: dto.org_id, offerType: dto.offer_type, diagnosisAr: dto.diagnosis_ar ?? null, priceMin: dto.price_min ?? null, priceMax: dto.price_max ?? null, availability: dto.availability, availableAt: dto.available_at ? new Date(dto.available_at) : null, etaNoteAr: dto.eta_note_ar ?? null, createdBy: u.id }, tx);
-      await this.audit.write(tx, { action: 'service_offer.submit', entityType: 'service_offer', entityId: o.id, orgId: dto.org_id, actorUserId: u.id, after: { request: r.number, type: dto.offer_type, price_min: dto.price_min ?? null, availability: dto.availability } });
-      await this.outbox.publish(tx, { eventType: 'ServiceOfferSubmitted', aggregateType: 'service_request', aggregateId: requestId, payload: { number: r.number, titleAr: r.titleAr, customerUserId: r.customerUserId, orgId: dto.org_id, offerId: o.id, offerType: dto.offer_type, priceMin: dto.price_min ?? null } });
+      const o = await this.repo.upsertOffer({ requestId, orgId, offerType: dto.offer_type, diagnosisAr: dto.diagnosis_ar ?? null, priceMin: dto.price_min ?? null, priceMax: dto.price_max ?? null, availability: dto.availability, availableAt: dto.available_at ? new Date(dto.available_at) : null, etaNoteAr: dto.eta_note_ar ?? null, createdBy: u.id }, tx);
+      await this.audit.write(tx, { action: 'service_offer.submit', entityType: 'service_offer', entityId: o.id, orgId, actorUserId: u.id, after: { request: r.number, type: dto.offer_type, price_min: dto.price_min ?? null, availability: dto.availability } });
+      await this.outbox.publish(tx, { eventType: 'ServiceOfferSubmitted', aggregateType: 'service_request', aggregateId: requestId, payload: { number: r.number, titleAr: r.titleAr, customerUserId: r.customerUserId, orgId, offerId: o.id, offerType: dto.offer_type, priceMin: dto.price_min ?? null } });
       return o;
     });
     this.rt?.publish(`service-request:${requestId}`, 'offer', { request_id: requestId, offer_id: offer.id });

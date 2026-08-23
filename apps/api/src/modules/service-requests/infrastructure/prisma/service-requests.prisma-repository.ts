@@ -34,15 +34,15 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
   async findById(id: string, tx?: TxHandle) { const rows = await this.db(tx).$queryRaw<ReqRow[]>`SELECT ${REQ_COLS} FROM service_requests WHERE id = ${id}::uuid`; return rows[0] ? toReq(rows[0]) : null; }
   async listMine(customerUserId: string, limit: number) { const rows = await this.prisma.$queryRaw<ReqRow[]>`SELECT ${REQ_COLS} FROM service_requests WHERE customer_user_id = ${customerUserId}::uuid ORDER BY created_at DESC LIMIT ${limit}`; return rows.map(toReq); }
 
-  async listNearbyForOrg(orgId: string, limit: number) {
+  async listNearbyForOrgs(orgIds: string[], limit: number) {
     const rows = await this.prisma.$queryRaw<Array<ReqRow & { distance_km: number | null; my_offer_id: string | null }>>`
       SELECT r.id, r.number, r.customer_user_id, r.vehicle_id, r.title_ar, r.description_ar,
              ST_Y(r.geo::geometry) AS lat, ST_X(r.geo::geometry) AS lng, r.address_hint, r.radius_km,
              r.preferred_time, r.status, r.accepted_offer_id, r.work_order_id, r.expires_at, r.created_at,
              rec.distance_km::float AS distance_km, o.id AS my_offer_id
       FROM service_requests r
-      JOIN service_request_recipients rec ON rec.request_id = r.id AND rec.org_id = ${orgId}::uuid
-      LEFT JOIN service_offers o ON o.request_id = r.id AND o.org_id = ${orgId}::uuid
+      JOIN service_request_recipients rec ON rec.request_id = r.id AND rec.org_id = ANY(${orgIds}::uuid[])
+      LEFT JOIN service_offers o ON o.request_id = r.id AND o.org_id = ANY(${orgIds}::uuid[])
       WHERE r.status = 'open' AND r.expires_at > now()
       ORDER BY r.created_at DESC LIMIT ${limit}`;
     return rows.map((r) => ({ ...toReq(r), distanceKm: r.distance_km == null ? null : Math.round(r.distance_km * 10) / 10, myOfferId: r.my_offer_id }));
@@ -92,6 +92,11 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
       WHERE r.id = ${requestId}::uuid`;
     const r = rows[0]; if (!r) return null;
     return { makeAr: r.make_ar, modelAr: r.model_ar, year: r.year, odometerKm: r.odometer_km == null ? null : Number(r.odometer_km), repairsCount: r.repairs, lastServiceAt: r.last_service, openRecall: false };
+  }
+  async recipientsAmong(requestId: string, orgIds: string[]) {
+    if (!orgIds.length) return [];
+    const rows = await this.prisma.serviceRequestRecipient.findMany({ where: { requestId, orgId: { in: orgIds } }, select: { orgId: true } });
+    return rows.map((r) => r.orgId);
   }
   async findRecipient(requestId: string, orgId: string) { const r = await this.prisma.serviceRequestRecipient.findUnique({ where: { requestId_orgId: { requestId, orgId } } }); return r ? { orgId: r.orgId, distanceKm: r.distanceKm == null ? null : r.distanceKm.toFixed(1) } : null; }
   async isRecipient(requestId: string, orgIds: string[]) { if (!orgIds.length) return false; return (await this.prisma.serviceRequestRecipient.count({ where: { requestId, orgId: { in: orgIds } } })) > 0; }

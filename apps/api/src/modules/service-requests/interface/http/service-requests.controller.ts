@@ -12,10 +12,12 @@ export class ServiceRequestsController {
   @Post() @ApiOperation({ summary: 'العميل يعرض مشكلته: وصف + موقع + نطاق يحدده هو — الورش القريبة تتلقاه' })
   create(@CurrentUser() u: AuthUser, @Body(zod(CreateServiceRequestDto)) dto: CreateServiceRequestDto) { return this.uc.create(u, dto); }
 
-  @Get() @ApiOperation({ summary: 'mine=true طلباتي (عميل) · org_id=… الطلبات القريبة الواصلة للورشة' })
-  list(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('limit') limit?: string) {
+  @Get() @ApiOperation({ summary: 'mine=true طلباتي (عميل) · nearby=true (أو org_id=…) الطلبات القريبة الواصلة للورشة' })
+  list(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('nearby') nearby?: string, @Query('limit') limit?: string) {
     const n = limit ? Number(limit) : undefined;
-    return orgId ? this.uc.listNearby(u, orgId, n) : this.uc.listMine(u, n);
+    // nearby=true is what the app calls and what Swagger documents; the org is DERIVED from membership
+    // (a one-org workshop should never have to know its own id to see its inbox).
+    return orgId || nearby === 'true' ? this.uc.listNearby(u, orgId, n) : this.uc.listMine(u, n);
   }
 
   @Get(':id') @ApiOperation({ summary: 'الطلب وعروضه — للعميل كاملة مرتبة بشاراتها، وللورشة عرضها هي فقط' })
