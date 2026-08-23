@@ -26,11 +26,14 @@ describe('Invoicing (e2e)', () => {
   beforeAll(async () => { const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1'); prisma = app.get(PrismaService); wsTok = await login(wsPhone); custTok = await login(custPhone); orgId = (await http().get('/v1/me').set(auth(wsTok))).body.orgs[0].org_id; });
   afterAll(async () => { await app.close(); });
 
-  it('an invalid seller VAT number is refused in Arabic — never a silent 500 while the workshop waits for its money', async () => {
+  it('a missing or malformed seller VAT is stopped twice: by the database, then in Arabic — never a silent 500', async () => {
     // ورشة برقم ضريبي مكسور: كان مولّد رمز الاستجابة السريعة يرمي RangeError فيصير 500 بلا سبب مفهوم
     const badPhone = `+96657${suffix}`; let badTok = await login(badPhone);
     const org = await http().post('/v1/organizations').set(auth(badTok)).send({ type: 'workshop', legal_name_ar: `ورشة الرقم المكسور ${suffix}`, cr_number: `72${suffix}5` }).expect(201);
-    await prisma.organization.update({ where: { id: org.body.id }, data: { status: 'active', verifiedAt: new Date(), vatNumber: '123456789012345' } });   // تجاوز التحقق كما تفعل أدوات التهيئة
+    // الحائط الأخير: القاعدة نفسها ترفض الشكل الباطل مهما كتب من كتب (قيد org_vat_format)
+    await expect(prisma.organization.update({ where: { id: org.body.id }, data: { vatNumber: '123456789012345' } })).rejects.toThrow(/org_vat_format|check constraint/);
+    // ومنشأة بلا رقم ضريبي إطلاقاً هي الحالة الواقعية الباقية: يجب أن تُخبَر بالعربية لا أن تُصدم بـ500
+    await prisma.organization.update({ where: { id: org.body.id }, data: { status: 'active', verifiedAt: new Date() } });
     badTok = await login(badPhone);
     const wo = await http().post('/v1/work-orders').set(auth(badTok)).send({ org_id: org.body.id, customer_phone: custPhone, plate: 'ر ق م 9090', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '100' }] }).expect(201);
     await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(badTok)).send({}).expect(200);
@@ -42,7 +45,7 @@ describe('Invoicing (e2e)', () => {
     const r = await http().post('/v1/invoices').set(auth(badTok)).send({ work_order_id: wo.body.id }).expect(400);
     expect(r.body.code).toBe('VALIDATION');
     expect(r.body.message_ar).toContain('الرقم الضريبي');
-    expect(r.body.message_ar).toContain('صحّحه');            // تقول لها ماذا تفعل، لا «خطأ غير متوقع»
+    expect(r.body.message_ar).toContain('أضف');              // تقول لها ماذا تفعل، لا «خطأ غير متوقع»
   });
   it('cannot invoice a work order that is not approved/ready', async () => {
     const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: 'ب ح د 1122', items: [{ type: 'labor', description_ar: 'فحص', quantity: 1, unit_price: '100' }] }).expect(201);

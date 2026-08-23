@@ -157,7 +157,8 @@ CREATE TABLE organizations (
   trade_name_en         varchar(200),
   slug                  varchar(80) UNIQUE,
   cr_number             varchar(20) UNIQUE,                    -- السجل التجاري
-  vat_number            varchar(15) UNIQUE,                    -- الرقم الضريبي (15 digits)
+  vat_number            varchar(15) UNIQUE
+    CHECK (vat_number IS NULL OR vat_number ~ '^3[0-9]{13}3$'),  -- 15 رقماً يبدأ وينتهي بـ3؛ القاعدة تعيد التحقق (البذور والأدوات تتجاوز الـDTO)
   vat_registered        boolean NOT NULL DEFAULT false,
   national_address      jsonb,                                 -- {building,street,district,city,postal_code,additional}
   phone_e164            varchar(20),
