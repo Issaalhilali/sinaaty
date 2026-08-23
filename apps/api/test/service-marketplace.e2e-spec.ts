@@ -82,6 +82,11 @@ describe('Service marketplace (e2e)', () => {
     expect(free.badges).toEqual(expect.arrayContaining(['معاينة مجانية'])); expect(free.priceMin).toBeNull();
     const asWorkshop = await http().get(`/v1/service-requests/${reqId}`).set(auth(nearTok)).expect(200);
     expect(asWorkshop.body.offers).toHaveLength(1); expect(asWorkshop.body.offers[0].orgId).toBe(nearOrg);
+    // the workshop prices a CAR: make/model/year + history — and never the owner's identity
+    expect(asWorkshop.body.vehicle).toBeTruthy();
+    expect(asWorkshop.body.vehicle.label_ar).toContain('تويوتا');
+    expect(asWorkshop.body.vehicle.history_text).toMatch(/زيارة|إصلاح/);
+    expect(JSON.stringify(asWorkshop.body.vehicle)).not.toContain('+966');
   });
 
   it('smart signals: the make-specialist wears its badge, and response speed shows in minutes', async () => {
@@ -94,6 +99,10 @@ describe('Service marketplace (e2e)', () => {
     expect(near.specialist).toBe(true);
     expect(near.badges).toEqual(expect.arrayContaining(['متخصصون في سيارتك']));
     expect(near.respondsInMinutes).toBeGreaterThanOrEqual(1);   // median history, floored to a minute
+    // reputation is EARNED: a brand-new workshop says so plainly instead of hiding behind silence
+    expect(near.completedJobs).toBeGreaterThanOrEqual(0);
+    const fresh = mine.body.offers.find((o: { orgId: string }) => o.orgId === otherOrg);
+    if (fresh.completedJobs === 0 && fresh.ratingCount === 0) expect(fresh.badges).toEqual(expect.arrayContaining(['ورشة جديدة على المنصة']));
     const other = mine.body.offers.find((o: { orgId: string }) => o.orgId === otherOrg);
     expect(other.specialist).toBe(false);
   });

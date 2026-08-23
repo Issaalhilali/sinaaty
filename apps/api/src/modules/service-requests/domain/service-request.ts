@@ -32,6 +32,8 @@ export interface OfferView extends ServiceOffer {
   specialist: boolean;
   /** Median historical minutes between receiving a request and answering it — honesty in numbers. */
   respondsInMinutes: number | null;
+  /** Jobs this workshop actually FINISHED on the platform — reputation earned, never claimed. */
+  completedJobs: number;
 }
 
 const price = (o: OfferView) => (o.priceMin == null ? Number.POSITIVE_INFINITY : Number(o.priceMin));
@@ -54,7 +56,13 @@ export function offerBadges(offers: OfferView[]): Map<string, string[]> {
   if (cheapest) add(cheapest.id, 'الأرخص');
   if (fastest && fastest.availability !== 'scheduled') add(fastest.id, 'الأسرع');
   if (nearest) add(nearest.id, 'الأقرب');
-  for (const o of live) { if (o.offerType === 'free_inspection') add(o.id, 'معاينة مجانية'); if (o.previouslyUsed) add(o.id, 'سبق تعاملك معها'); if (o.specialist) add(o.id, 'متخصصون في سيارتك'); }
+  for (const o of live) {
+    if (o.offerType === 'free_inspection') add(o.id, 'معاينة مجانية');
+    if (o.previouslyUsed) add(o.id, 'سبق تعاملك معها');
+    if (o.specialist) add(o.id, 'متخصصون في سيارتك');
+    if (o.completedJobs >= 10) add(o.id, `أنجزت ${o.completedJobs} عملاً عبر المنصة`);
+    else if (o.completedJobs === 0 && o.ratingCount === 0) add(o.id, 'ورشة جديدة على المنصة');   // الصدق يشمل قلة الخبرة
+  }
   return out;
 }
 

@@ -80,8 +80,12 @@ export class ServiceRequestsUseCases {
     const visible = mine || isPlatformStaff(u) ? views : views.filter((o) => memberOrgIds.includes(o.orgId));
     const sorted = sortOffers(visible.filter((o) => o.status !== 'withdrawn'));
     const badges = offerBadges(sorted);
+    // The workshop prices a CAR, not a paragraph: make/model/year, mileage, and how often it has been
+    // served — with no owner identity attached. Symmetry with the badges the customer sees about them.
+    const vehicle = await this.repo.vehicleBriefOf(id);
     return {
       ...r, media_ids: await this.repo.listMediaIds(id),
+      vehicle: vehicle ? { ...vehicle, label_ar: [vehicle.makeAr, vehicle.modelAr, vehicle.year].filter(Boolean).join(' ') || null, odometer_text: vehicle.odometerKm == null ? null : `${vehicle.odometerKm.toLocaleString('en-US')} كم`, history_text: vehicle.repairsCount === 0 ? 'أول زيارة عبر المنصة' : `${vehicle.repairsCount} إصلاحاً سابقاً` } : null,
       offers: sorted.map((o) => ({ ...o, where_text: whereText(o), badges: badges.get(o.id) ?? [] })),
       offers_count: mine ? sorted.filter((o) => o.status === 'submitted').length : undefined,
     };

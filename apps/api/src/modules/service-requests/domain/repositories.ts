@@ -19,6 +19,9 @@ export interface ServiceRequestRepository {
   addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle): Promise<number>;
   isRecipient(requestId: string, orgIds: string[]): Promise<boolean>;
   findRecipient(requestId: string, orgId: string): Promise<{ orgId: string; distanceKm: string | null } | null>;
+  /** What a workshop must see BEFORE pricing: the car, its mileage, and how it has been served — never
+   *  the owner's identity (a quote is not a reason to hand over a customer's phone). */
+  vehicleBriefOf(requestId: string): Promise<{ makeAr: string | null; modelAr: string | null; year: number | null; odometerKm: number | null; repairsCount: number; lastServiceAt: Date | null; openRecall: boolean } | null>;
 
   upsertOffer(o: { requestId: string; orgId: string; offerType: string; diagnosisAr: string | null; priceMin: string | null; priceMax: string | null; availability: string; availableAt: Date | null; etaNoteAr: string | null; createdBy: string }, tx?: TxHandle): Promise<ServiceOffer>;
   findOffer(id: string, tx?: TxHandle): Promise<ServiceOffer | null>;
