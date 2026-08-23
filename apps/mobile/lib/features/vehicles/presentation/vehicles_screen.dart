@@ -6,6 +6,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../billing/presentation/due_row.dart';
 import '../../work_orders/domain/work_order.dart';
 import '../../work_orders/presentation/providers.dart';
 import '../domain/vehicle.dart';
@@ -20,6 +21,8 @@ class VehiclesScreen extends ConsumerWidget {
       if (list.isEmpty) return EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () => context.push('/vehicles/add'));
       final active = orders.value?.valueOrNull?.where((w) => w.isActive).toList() ?? const <WorkOrder>[];
       return RefreshIndicator(onRefresh: refresh, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
+        // ما هو مستحقّ عليه يسبق ما يجري على سيارته: التأخّر هنا له إنذار ومسار تنفيذ، والانتظار هناك لا.
+        const DueRow(),
         if (active.isNotEmpty) ...[
           SectionTitle(l.activeOrders),
           for (final w in active) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: WorkOrderCard(order: w, vehicle: list.where((v) => v.id == w.vehicleId).firstOrNull, onTap: () => context.push('/work-orders/${w.id}'))),

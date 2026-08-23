@@ -1990,4 +1990,22 @@ class L10nAr extends L10n {
 
   @override
   String get wsNeedItem => 'أضف بنداً واحداً على الأقل.';
+
+  @override
+  String get dueOnYou => 'مستحقّ عليك';
+
+  @override
+  String get dueOverdueHint => 'تأخّر السداد — يبدأ الإنذار الرسمي ثم التنفيذ.';
+
+  @override
+  String dueCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n بانتظار السداد',
+      two: 'فاتورتان بانتظار السداد',
+      one: 'فاتورة واحدة بانتظار السداد',
+    );
+    return '$_temp0';
+  }
 }

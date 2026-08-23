@@ -2014,4 +2014,22 @@ class L10nEn extends L10n {
 
   @override
   String get wsNeedItem => 'Add at least one item.';
+
+  @override
+  String get dueOnYou => 'You owe';
+
+  @override
+  String get dueOverdueHint =>
+      'Payment is late — a formal notice, then enforcement.';
+
+  @override
+  String dueCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n awaiting payment',
+      one: '1 awaiting payment',
+    );
+    return '$_temp0';
+  }
 }

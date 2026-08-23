@@ -3810,6 +3810,24 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أضف بنداً واحداً على الأقل.'**
   String get wsNeedItem;
+
+  /// No description provided for @dueOnYou.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستحقّ عليك'**
+  String get dueOnYou;
+
+  /// No description provided for @dueOverdueHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأخّر السداد — يبدأ الإنذار الرسمي ثم التنفيذ.'**
+  String get dueOverdueHint;
+
+  /// No description provided for @dueCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n, plural, =1{فاتورة واحدة بانتظار السداد} =2{فاتورتان بانتظار السداد} other{{n} بانتظار السداد}}'**
+  String dueCount(int n);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -940,5 +940,15 @@
   "wsTitleOptional": "Short description (optional)",
   "wsTitleAuto": "Leave it empty and the order is named after its items.",
   "wsNeedCar": "Add the plate number or the VIN.",
-  "wsNeedItem": "Add at least one item."
+  "wsNeedItem": "Add at least one item.",
+  "dueOnYou": "You owe",
+  "dueOverdueHint": "Payment is late — a formal notice, then enforcement.",
+  "dueCount": "{n, plural, =1{1 awaiting payment} other{{n} awaiting payment}}",
+  "@dueCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }
