@@ -1,1 +1,5 @@
-{ "API_BASE_URL": "http://localhost:3000", "APP_ENV": "dev", "SENTRY_DSN": "" }
+{
+  "API_BASE_URL": "http://10.234.217.76:3000",
+  "APP_ENV": "dev",
+  "SENTRY_DSN": ""
+}

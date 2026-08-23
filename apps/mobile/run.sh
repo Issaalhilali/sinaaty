@@ -23,6 +23,9 @@ esac
 ENV_FILE="env/dev.json"
 [ -f "$ENV_FILE" ] || { echo "لا يوجد $ENV_FILE — انسخه من env/dev.example.json إن وُجد"; exit 2; }
 
+# عنوان الشبكة يصلح للمحاكي والجوال الحقيقي معاً، ويتغير بتغير الشبكة — فيُحدَّث في كل تشغيل.
+tool/api-host.sh >/dev/null 2>&1 || tool/api-host.sh || true
+
 DEVICES="$(flutter devices --machine 2>/dev/null || echo '[]')"
 
 # أندرويد يحتاج --flavor؛ iOS لا يقبلها حتى تُضاف مخططات Xcode (backlog).
