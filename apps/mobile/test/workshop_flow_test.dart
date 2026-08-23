@@ -34,7 +34,7 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   Future<Result<T>> _g<T>(T Function() f) async { if (offline) return const Result.err(NetworkFailure()); return Result.ok(f()); }
   WorkOrder _set(WorkOrder w) { orders[w.id] = w; return w; }
   WorkOrder _st(WorkOrder w, String s) { history.putIfAbsent(w.id, () => []).add(WoHistory(from: w.status, to: s, at: DateTime(2026, 8, 18, 9, history[w.id]!.length))); return _set(WorkOrder(id: w.id, number: w.number, status: s, paymentTerms: w.paymentTerms, currentVersion: w.currentVersion, titleAr: w.titleAr, vehicleId: w.vehicleId, orgId: w.orgId, subtotal: w.subtotal, vatAmount: w.vatAmount, total: w.total, depositRequired: w.depositRequired, createdAt: w.createdAt, items: w.items)); }
-  @override Future<Result<({String type, String nameAr})>> orgInfo(String orgId) => _g(() => (type: 'workshop', nameAr: 'ورشة النور'));
+  @override Future<Result<List<OrgBrief>>> myOrgs() => _g(() => const [OrgBrief(id: 'org1', nameAr: 'ورشة النور', type: 'workshop', status: 'active')]);
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) => _g(() => orders.values.toList());
   @override Future<Result<WorkOrder>> create(NewWorkOrder n) => _g(() { seq++; final sub = n.items.fold<double>(0, (a, i) => a + double.parse(i.unitPrice) * double.parse(i.quantity)); final w = WorkOrder(id: 'wo$seq', number: 'WO-2026-00004$seq', status: 'draft', paymentTerms: n.paymentTerms, currentVersion: 0, titleAr: n.titleAr, vehicleId: 'v1', orgId: n.orgId, subtotal: sub.toStringAsFixed(2), vatAmount: (sub * .15).toStringAsFixed(2), total: (sub * 1.15).toStringAsFixed(2), depositRequired: '0', createdAt: DateTime(2026, 8, 18, 8), items: [for (final (i, it) in n.items.indexed) WoItem(id: 'i$i', type: it.type, descriptionAr: it.descriptionAr, quantity: it.quantity, unitPrice: it.unitPrice, lineTotal: (double.parse(it.unitPrice) * double.parse(it.quantity)).toStringAsFixed(2), warrantyDays: it.warrantyDays)]); history[w.id] = [WoHistory(to: 'draft', at: w.createdAt)]; return _set(w); });
   final addedItems = <NewItem>[];
@@ -84,6 +84,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.err(UnknownFailure());
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966500000001', fullNameAr: 'محمد', platformRole: 'none', nafathVerified: false, orgs: [OrgMembership('org1', 'owner')]));
+  @override Future<Result<Me>> setName(String fullNameAr) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) { loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }
@@ -112,9 +113,11 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, 'جوال العميل'), '0512345678');
     await tester.enterText(find.widgetWithText(TextField, 'رقم اللوحة'), 'أ ب ج 4821');
     await tester.enterText(find.widgetWithText(TextField, 'وصف مختصر للعمل'), 'سمكرة رفرف');
-    await tester.tap(find.text('أضف بنداً').first); await tester.pumpAndSettle();
-    await tester.enterText(find.widgetWithText(TextField, 'الوصف'), 'سمكرة ودهان رفرف أمامي'); await tester.enterText(find.widgetWithText(TextField, 'السعر'), '650');
-    await tester.tap(find.widgetWithText(FilledButton, 'أضف بنداً')); await tester.pumpAndSettle();
+    // البند بسطر واحد كما يكتبه صاحب الورشة — لا ورقة ولا خمسة حقول.
+    await tester.enterText(find.widgetWithText(TextField, 'أضف بنداً بسطر'), 'سمكرة ودهان رفرف أمامي بسعر 650');
+    await tester.pumpAndSettle();
+    expect(find.text('سمكرة ودهان'), findsWidgets, reason: 'النوع يُستنتج ويُعرض قبل الإضافة');
+    await tester.tap(find.byIcon(Icons.add_circle)); await tester.pumpAndSettle();
     expect(find.textContaining('747.50'), findsWidgets); // 650 × 1.15
     await tester.tap(find.textContaining('إنشاء الأمر')); await tester.pumpAndSettle();
     expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsNothing, reason: 'form rejected');

@@ -905,5 +905,13 @@
   "srAddVehicle": "Add a car",
   "ptEndedNoBids": "Ended with no offers — repost wider, or buy from the search results",
   "ptToolsTitle": "My tools",
-  "ptTradeRowSub": "Your credit account with suppliers"
+  "ptTradeRowSub": "Your credit account with suppliers",
+  "wsQuickAdd": "Add a line",
+  "wsQuickAddHint": "oil and filter change for two hundred sixty",
+  "wsQuickAddNeedsPrice": "Add a price to complete the line",
+  "wsItemDetails": "More detail (warranty, part condition)",
+  "wsPaint": "Paint",
+  "wsDiagnostic": "Diagnostic",
+  "wsTowing": "Towing",
+  "sar": "SAR"
 }

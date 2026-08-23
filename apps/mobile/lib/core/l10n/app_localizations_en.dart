@@ -1925,4 +1925,28 @@ class L10nEn extends L10n {
 
   @override
   String get ptTradeRowSub => 'Your credit account with suppliers';
+
+  @override
+  String get wsQuickAdd => 'Add a line';
+
+  @override
+  String get wsQuickAddHint => 'oil and filter change for two hundred sixty';
+
+  @override
+  String get wsQuickAddNeedsPrice => 'Add a price to complete the line';
+
+  @override
+  String get wsItemDetails => 'More detail (warranty, part condition)';
+
+  @override
+  String get wsPaint => 'Paint';
+
+  @override
+  String get wsDiagnostic => 'Diagnostic';
+
+  @override
+  String get wsTowing => 'Towing';
+
+  @override
+  String get sar => 'SAR';
 }

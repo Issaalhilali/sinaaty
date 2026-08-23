@@ -3642,6 +3642,54 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'حسابك الآجل مع المورّدين'**
   String get ptTradeRowSub;
+
+  /// No description provided for @wsQuickAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف بنداً بسطر'**
+  String get wsQuickAdd;
+
+  /// No description provided for @wsQuickAddHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير زيت وفلتر بمئتين وستين'**
+  String get wsQuickAddHint;
+
+  /// No description provided for @wsQuickAddNeedsPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف السعر ليكتمل البند'**
+  String get wsQuickAddNeedsPrice;
+
+  /// No description provided for @wsItemDetails.
+  ///
+  /// In ar, this message translates to:
+  /// **'تفاصيل أكثر (ضمان، حالة القطعة)'**
+  String get wsItemDetails;
+
+  /// No description provided for @wsPaint.
+  ///
+  /// In ar, this message translates to:
+  /// **'سمكرة ودهان'**
+  String get wsPaint;
+
+  /// No description provided for @wsDiagnostic.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص'**
+  String get wsDiagnostic;
+
+  /// No description provided for @wsTowing.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة'**
+  String get wsTowing;
+
+  /// No description provided for @sar.
+  ///
+  /// In ar, this message translates to:
+  /// **'ر.س'**
+  String get sar;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -905,5 +905,13 @@
   "srAddVehicle": "أضف سيارة",
   "ptEndedNoBids": "انتهى بلا عروض — أعد النشر بنطاق أوسع أو اشترِ من نتائج البحث",
   "ptToolsTitle": "أدواتي",
-  "ptTradeRowSub": "حسابك الآجل مع المورّدين"
+  "ptTradeRowSub": "حسابك الآجل مع المورّدين",
+  "wsQuickAdd": "أضف بنداً بسطر",
+  "wsQuickAddHint": "تغيير زيت وفلتر بمئتين وستين",
+  "wsQuickAddNeedsPrice": "أضف السعر ليكتمل البند",
+  "wsItemDetails": "تفاصيل أكثر (ضمان، حالة القطعة)",
+  "wsPaint": "سمكرة ودهان",
+  "wsDiagnostic": "فحص",
+  "wsTowing": "سطحة",
+  "sar": "ر.س"
 }

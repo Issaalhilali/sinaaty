@@ -10,6 +10,7 @@ import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../auth/domain/normalize_phone.dart';
 import '../domain/workshop.dart';
+import 'quick_item_field.dart';
 import 'providers.dart';
 /// New repair order in one screen: who (phone), which car (VIN or plate), what (items with prices), how to pay → estimate updates live.
 class NewOrderScreen extends ConsumerStatefulWidget { const NewOrderScreen({super.key}); @override ConsumerState<NewOrderScreen> createState() => _NewOrderScreenState(); }
@@ -47,8 +48,14 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         Row(children: [Expanded(child: TextField(controller: _plate, decoration: InputDecoration(labelText: l.plateLabel, hintText: 'أ ب ج 1234'))), const SizedBox(width: SinaatySpace.md), Expanded(child: TextField(controller: _vin, textDirection: TextDirection.ltr, textCapitalization: TextCapitalization.characters, maxLength: 17, inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]'))], decoration: InputDecoration(labelText: l.vinLabel, counterText: '')))]),
         const SizedBox(height: SinaatySpace.md),
         TextField(controller: _title, decoration: InputDecoration(labelText: l.wsTitle, hintText: l.wsTitleHint)),
-        const SizedBox(height: SinaatySpace.lg), SectionTitle(l.wsItems, trailing: TextButton.icon(onPressed: _addItem, icon: const Icon(Icons.add, size: 18), label: Text(l.wsAddItem))),
-        SectionCard(child: _items.isEmpty ? Padding(padding: const EdgeInsets.symmetric(vertical: 10), child: Center(child: TextButton.icon(onPressed: _addItem, icon: const Icon(Icons.add), label: Text(l.wsAddItem)))) : Column(children: [
+        const SizedBox(height: SinaatySpace.lg), SectionTitle(l.wsItems),
+        // سطر واحد بدل ورقة من خمسة حقول — والورقة تبقى خلف «تفاصيل» لمن احتاجها (الضمان، حالة القطعة).
+        SectionCard(child: Column(children: [
+          QuickItemField(onAdd: (it) => setState(() => _items.add(it)), onDetails: _addItem),
+          if (_items.isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()),
+        ])),
+        if (_items.isNotEmpty) const SizedBox(height: SinaatySpace.md),
+        if (_items.isNotEmpty) SectionCard(child: Column(children: [
           for (final (i, it) in _items.indexed) Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(it.descriptionAr, style: t.titleSmall), Text('${it.type == 'labor' ? l.wsLabor : l.wsPart} · ${it.quantity} × ${Fmt.money(it.unitPrice, locale: locale)}${it.warrantyDays > 0 ? ' · ${l.warrantyDays(it.warrantyDays)}' : ''}', style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])), Text(Fmt.money(((double.tryParse(it.unitPrice) ?? 0) * (double.tryParse(it.quantity) ?? 1)).toStringAsFixed(2), locale: locale)), IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() => _items.removeAt(i)))])),
           const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()), KeyValueRow(l.subtotal, Fmt.money(_subtotal.toStringAsFixed(2), locale: locale)), KeyValueRow(l.vat, Fmt.money((_subtotal * .15).toStringAsFixed(2), locale: locale)), Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l.wsEstimate, style: t.titleMedium), MoneyText(Fmt.money((_subtotal * 1.15).toStringAsFixed(2), locale: locale))])),
         ])),

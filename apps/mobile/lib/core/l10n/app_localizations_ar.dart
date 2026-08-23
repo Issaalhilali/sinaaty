@@ -1904,4 +1904,28 @@ class L10nAr extends L10n {
 
   @override
   String get ptTradeRowSub => 'حسابك الآجل مع المورّدين';
+
+  @override
+  String get wsQuickAdd => 'أضف بنداً بسطر';
+
+  @override
+  String get wsQuickAddHint => 'تغيير زيت وفلتر بمئتين وستين';
+
+  @override
+  String get wsQuickAddNeedsPrice => 'أضف السعر ليكتمل البند';
+
+  @override
+  String get wsItemDetails => 'تفاصيل أكثر (ضمان، حالة القطعة)';
+
+  @override
+  String get wsPaint => 'سمكرة ودهان';
+
+  @override
+  String get wsDiagnostic => 'فحص';
+
+  @override
+  String get wsTowing => 'سطحة';
+
+  @override
+  String get sar => 'ر.س';
 }
