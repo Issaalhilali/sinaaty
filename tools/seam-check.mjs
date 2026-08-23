@@ -59,6 +59,47 @@ const asApp = {
   }),
 };
 
+/**
+ * السطحة — المسار المالي الثالث، وأكثرها حساسية زمنياً: عميل معطّل على الطريق يرى السعر **قبل**
+ * الطلب، وسائق يقبل أولاً بأول، وتسليم لا يُصدَّق إلا بصورة **ورمز يملكه المستلم نفسه** — ثم فاتورة
+ * تلقائية تركب خط الدفع القائم. الرمز يُرسل للمستلم لا للسائق: لا شيء يمنع سائقاً من ادعاء تسليم لم يقع.
+ */
+async function walkTow({ customer, driverPhone }) {
+  console.log('السطحة — من السعر المسبق إلى التسليم المُثبت:');
+  const pickup = { lat: 24.632, lng: 46.792 }, dropoff = { lat: 24.66, lng: 46.72 };
+  // transport_repository_impl.dart:37 — the price the customer sees BEFORE committing
+  const q = await call('POST', '/transport/quote', { token: customer, body: { type: 'flatbed_tow', pickup, dropoff } });
+  q.status === 200 && q.body?.total
+    ? pass(`السعر يظهر قبل الطلب: ${q.body.total} شامل الضريبة (${q.body.distance_km} كم)`)
+    : fail('عرض السعر المسبق', `${q.status} ${JSON.stringify(q.body).slice(0, 160)}`);
+
+  const job = await call('POST', '/transport/jobs', { token: customer, body: { type: 'flatbed_tow', pickup, dropoff, pickup_address: 'فاحص الوصلة', dropoff_address: 'الورشة' } });
+  if (job.status !== 201) return fail('طلب السطحة', `${job.status} ${JSON.stringify(job.body).slice(0, 200)}`);
+  pass(`العميل يطلب سطحة (${job.body.number})`);
+  const id = job.body.id;
+
+  const driver = await login(driverPhone);
+  await call('PUT', '/transport/driver/profile', { token: driver, body: { truck_plate: 'س ط ح 1', truck_type: 'flatbed_tow' } });
+  await call('PUT', '/transport/driver/online', { token: driver, body: { online: true, ...pickup } });
+  const offers = await call('GET', '/transport/driver/offers', { token: driver });
+  Array.isArray(offers.body) && offers.body.some((o) => o.id === id)
+    ? pass('السائق يرى الطلب في عروضه')
+    : fail('السائق لا يرى الطلب', `${offers.status} — قائمة العروض ${Array.isArray(offers.body) ? offers.body.length : '؟'}`);
+
+  const acc = await call('POST', `/transport/jobs/${id}/accept`, { token: driver, body: {} });
+  acc.status === 200 ? pass('أول من يقبل يفوز بالمهمة') : fail('قبول السائق', `${acc.status} ${JSON.stringify(acc.body).slice(0, 160)}`);
+  for (const to of ['en_route_pickup', 'picked_up', 'en_route_dropoff']) {
+    const t = await call('POST', `/transport/jobs/${id}/transition`, { token: driver, body: { to } });
+    if (t.status !== 200) { fail(`الانتقال إلى ${to}`, `${t.status} ${JSON.stringify(t.body).slice(0, 160)}`); return; }
+  }
+  pass('رحلة السائق: في الطريق ← حُمّلت ← تُسلَّم');
+
+  // Proof is a photo AND the receiver's own code — a photo alone would let a driver claim a
+  // delivery that never happened, and this is the moment the money becomes owed.
+  const bad = await call('POST', `/transport/jobs/${id}/complete`, { token: driver, body: { media_id: '00000000-0000-4000-8000-000000000000', code: '000000' } });
+  bad.status >= 400 ? pass('تسليم برمز خاطئ مرفوض (الرمز يملكه المستلم لا السائق)') : fail('رمز خاطئ قُبل!', `${bad.status} — يمكن ادعاء تسليم لم يقع`);
+}
+
 /** The legal spine: nothing here may work by a payload the app does not actually send. */
 async function coreJourney({ workshop, customer, orgId, customerPhone }) {
   console.log('قلب المنتج — أمر عمل من الورشة إلى المخالصة:');
@@ -102,6 +143,58 @@ async function coreJourney({ workshop, customer, orgId, customerPhone }) {
     }
   }
 }
+
+/**
+ * سلسلة الأجل — أعمق مسار قانوني في المنتج: ورشة تشتري قطعة بالآجل من تاجر، فيُنشأ **سند لأمر
+ * إلكتروني** عبر نافذ، ثم تدفع فيُغلق السند تلقائياً بمخالصة. لو انحرف عقد في أي حلقة هنا لانكسر
+ * المنتج عند التزام قانوني لا عند زر، وهو أسوأ من انكسار الشاشة.
+ */
+async function walkDeferredParts({ workshop, workshopOrgId, dealer, dealerOrgId }) {
+  console.log('سلسلة الأجل (سند لأمر):');
+  // ١) حساب آجل مضمون: الورشة تطلبه والتاجر يعتمده بحدّ ائتمان
+  const taReq = await call('POST', '/parts/trade-accounts', { token: workshop, body: { buyer_org_id: workshopOrgId, seller_org_id: dealerOrgId, credit_limit: '20000', payment_terms_days: 30 } });
+  let taId = taReq.body?.id;
+  if (taReq.status === 409 || !taId) {
+    const mine = await call('GET', `/parts/trade-accounts?org_id=${workshopOrgId}&as=buyer`, { token: workshop });
+    taId = (mine.body ?? []).find((a) => a.sellerOrgId === dealerOrgId)?.id;
+  }
+  if (!taId) return fail('لا يمكن فتح حساب آجل', `${taReq.status} ${JSON.stringify(taReq.body).slice(0, 160)}`);
+  const appr = await call('POST', `/parts/trade-accounts/${taId}/approve`, { token: dealer, body: { credit_limit: '20000', discount_bps: 0, reason_ar: 'فاحص الوصلة' } });
+  [200, 409].includes(appr.status) ? pass('حساب آجل مضمون مفعّل بحدّ ائتماني') : fail('اعتماد الحساب الآجل', `${appr.status} ${JSON.stringify(appr.body).slice(0, 160)}`);
+
+  // ٢) طلب قطعة → عرض التاجر → قبول بالآجل (هنا يُفحص الحدّ الائتماني قبل أي التزام)
+  const pr = await call('POST', '/parts/requests', { token: workshop, body: { org_id: workshopOrgId, part_name_ar: 'طقم فحمات أمامي', accepted_conditions: ['aftermarket_new'], quantity: 1, lat: 24.63, lng: 46.79, radius_km: 50, bidding_minutes: 60 } });
+  if (!pr.body?.id) return fail('طلب القطعة لم يُفتح', `${pr.status} ${JSON.stringify(pr.body).slice(0, 160)}`);
+  const bid = await call('POST', `/parts/requests/${pr.body.id}/bids`, { token: dealer, body: { org_id: dealerOrgId, condition: 'aftermarket_new', unit_price: '450', quantity: 1, eta_hours: 6, warranty_days: 90 } });
+  if (!bid.body?.id) return fail('التاجر لا يستطيع تقديم عرض', `${bid.status} ${JSON.stringify(bid.body).slice(0, 160)}`);
+  const accepted = await call('POST', `/parts/requests/${pr.body.id}/accept`, { token: workshop, body: { bid_id: bid.body.id, payment_terms: 'deferred' } });
+  const orderId = accepted.body?.order?.id;
+  orderId ? pass(`شراء بالآجل تحت الحدّ الائتماني (${accepted.body.order.number})`) : fail('القبول بالآجل', `${accepted.status} ${JSON.stringify(accepted.body).slice(0, 200)}`);
+  if (!orderId) return;
+
+  // ٣) السند: يُصدر عبر معالج خارج المعاملة — نصرّف الصندوق كما يفعل العامل الدوري
+  await call('POST', '/admin/outbox/drain', { token: await adminToken(), body: {} }).catch(() => {});
+  const notes = await call('GET', `/promissory-notes?org_id=${workshopOrgId}&as=debtor`, { token: workshop });   // ما على الورشة
+  const note = (notes.body ?? []).find((n) => n.partOrderId === orderId) ?? (notes.body ?? [])[0];
+  note ? pass(`سند لأمر إلكتروني (${note.number}) بحالة ${note.status}`) : fail('لم يُصدر سند للشراء الآجل', 'الالتزام القانوني غائب — أخطر من شاشة فارغة');
+
+  // ٤) الدفع يُغلق السند بمخالصة — بلا تدخل بشري
+  const inv = await call('GET', `/invoices?org_id=${workshopOrgId}&as=customer&limit=20`, { token: workshop });   // فواتير عليها
+  const partInv = (inv.body ?? []).find((i) => i.partOrderId === orderId);
+  if (!partInv) return fail('لا فاتورة لطلب القطع الآجل', 'لا يمكن إكمال السلسلة');
+  const intent = await call('POST', '/payments', { token: workshop, body: { invoice_id: partInv.id, method: 'mada' } });
+  if (!intent.body?.payment_id) return fail('نية الدفع', `${intent.status} ${JSON.stringify(intent.body).slice(0, 160)}`);
+  await call('POST', `/payments/${intent.body.payment_id}/mock-pay`, { token: workshop });
+  await call('POST', '/admin/outbox/drain', { token: await adminToken(), body: {} }).catch(() => {});
+  const after = await call('GET', `/promissory-notes?org_id=${workshopOrgId}&as=debtor`, { token: workshop });
+  const closed = (after.body ?? []).find((n) => n.id === note?.id);
+  closed?.status === 'closed' || closed?.settlementId
+    ? pass('السداد أغلق السند وأصدر مخالصة تلقائياً')
+    : fail('السند لم يُغلق بعد السداد', `الحالة ${closed?.status ?? 'غير معروفة'} — العميل يبقى مديناً بعد أن دفع`);
+}
+
+let _adminTok;
+async function adminToken() { _adminTok ??= await login(process.env.SEAM_ADMIN ?? '+966500000099').catch(() => null); return _adminTok; }
 
 async function main() {
   console.log(`فاحص الوصلة → ${API}\n`);
@@ -160,6 +253,17 @@ async function main() {
   }
 
   await coreJourney({ workshop, customer, orgId, customerPhone: CUSTOMER });
+
+  // سلسلة الأجل: تحتاج تاجر قطع مزروعاً (البذرة تضعه على +966500000004)
+  try {
+    const dealer = await login(process.env.SEAM_DEALER ?? '+966500000004');
+    const dealerOrgId = (await call('GET', '/me', { token: dealer })).body?.orgs?.[0]?.org_id;
+    if (dealerOrgId) await walkDeferredParts({ workshop, workshopOrgId: orgId, dealer, dealerOrgId });
+    else console.log('  ~ تخطٍّ: حساب التاجر بلا منشأة (شغّل البذرة)');
+  } catch (e) { console.log(`  ~ تخطٍّ سلسلة الأجل: ${e.message}`); }
+
+  if (process.env.SEAM_DRIVER) await walkTow({ customer, driverPhone: process.env.SEAM_DRIVER });
+  else console.log('السطحة: ~ تخطٍّ (مرّر SEAM_DRIVER=<جوال سائق> لمشيها)');
 
   console.log('الإدارة:');
   // Repeated runs hit the per-phone OTP quota — that guard is a feature, not a seam break.

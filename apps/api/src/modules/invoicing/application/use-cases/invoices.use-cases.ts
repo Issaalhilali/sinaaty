@@ -134,8 +134,14 @@ export class InvoicesUseCases {
     return tx ? run(tx) : this.uow.run(run);
   }
   async get(u: AuthUser, id: string) { const i = await this.load(id); if (!this.canRead(i, u)) throw new AppError('FORBIDDEN'); return i; }
-  async list(u: AuthUser, q: { org_id?: string; status?: InvoiceStatus[]; limit?: number }) {
-    if (q.org_id) { if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === q.org_id)) throw new AppError('FORBIDDEN'); return this.invoices.list({ orgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); }
+  /** `as=customer` lists what the org RECEIVED (parts bought on credit, tow invoices) — before this a
+   *  buying workshop could only open its purchase invoices by id (seam walk 2026-08-23). */
+  async list(u: AuthUser, q: { org_id?: string; as?: 'seller' | 'customer'; status?: InvoiceStatus[]; limit?: number }) {
+    if (q.org_id) {
+      if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === q.org_id)) throw new AppError('FORBIDDEN');
+      const side = q.as === 'customer' ? { customerOrgId: q.org_id } : { orgId: q.org_id };
+      return this.invoices.list({ ...side, status: q.status, limit: q.limit ?? 50 });
+    }
     return this.invoices.list({ customerUserId: u.id, status: q.status, limit: q.limit ?? 50 });
   }
 

@@ -32,8 +32,14 @@ export class NotesUseCases {
   private async load(id: string) { const n = await this.notes.findById(id); if (!n) throw new AppError('NOT_FOUND'); return n; }
   private async parties(n: PromissoryNote) { const org = await this.orgs.findById(n.creditorOrgId); const debtor = n.debtorUserId ? await this.users.findById(n.debtorUserId) : null; const dOrg = n.debtorOrgId ? await this.orgs.findById(n.debtorOrgId) : null; return { creditorNameAr: org?.tradeNameAr ?? org?.legalNameAr ?? '', debtorNameAr: dOrg?.legalNameAr ?? debtor?.fullNameAr ?? null }; }
 
-  async list(u: AuthUser, q: { org_id?: string; status?: PnStatus[]; overdue?: boolean; limit?: number }) {
-    if (q.org_id) { if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === q.org_id)) throw new AppError('FORBIDDEN'); return this.notes.list({ creditorOrgId: q.org_id, status: q.status, overdueOnly: q.overdue, limit: q.limit ?? 50 }); }
+  /** `org_id` + as=creditor (default): what this org is OWED. as=debtor: what it OWES — a workshop
+   *  buying parts on credit had no way to list its own obligations before (seam walk 2026-08-23). */
+  async list(u: AuthUser, q: { org_id?: string; as?: 'creditor' | 'debtor'; status?: PnStatus[]; overdue?: boolean; limit?: number }) {
+    if (q.org_id) {
+      if (!isPlatformStaff(u) && !u.orgs.some((o) => o.orgId === q.org_id)) throw new AppError('FORBIDDEN');
+      const side = q.as === 'debtor' ? { debtorOrgId: q.org_id } : { creditorOrgId: q.org_id };
+      return this.notes.list({ ...side, status: q.status, overdueOnly: q.overdue, limit: q.limit ?? 50 });
+    }
     return this.notes.list({ debtorUserId: u.id, status: q.status, limit: q.limit ?? 50 });
   }
   async adminList(u: AuthUser, q: { status?: PnStatus[]; overdue?: boolean; limit?: number }) { if (!isPlatformStaff(u)) throw new AppError('FORBIDDEN'); return this.notes.list({ status: q.status, overdueOnly: q.overdue, limit: q.limit ?? 100 }); }

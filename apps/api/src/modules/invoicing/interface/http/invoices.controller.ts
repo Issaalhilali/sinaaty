@@ -12,8 +12,8 @@ export class InvoicesController {
   constructor(private readonly uc: InvoicesUseCases) {}
   @Post() @HttpCode(201) @ApiOperation({ summary: 'Issue the tax invoice for an approved, ready/delivered work order (ZATCA Phase 1: QR TLV, sequential per org)' })
   issue(@CurrentUser() u: AuthUser, @Body(zod(IssueFromWorkOrderDto)) dto: IssueFromWorkOrderDto) { return this.uc.issueFromWorkOrder(u, dto); }
-  @Get() @ApiOperation({ summary: 'List: ?org_id= for the seller, otherwise my invoices' })
-  list(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('status') status?: string, @Query('limit') limit?: string) { return this.uc.list(u, { org_id: orgId, status: status ? (status.split(',') as InvoiceStatus[]) : undefined, limit: limit ? Number(limit) : undefined }); }
+  @Get() @ApiOperation({ summary: 'List: ?org_id=&as=seller (default, فواتيري الصادرة) أو as=customer (فواتير عليّ)، وبلا org_id فواتيري كفرد' })
+  list(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('as') as?: 'seller' | 'customer', @Query('status') status?: string, @Query('limit') limit?: string) { return this.uc.list(u, { org_id: orgId, as, status: status ? (status.split(',') as InvoiceStatus[]) : undefined, limit: limit ? Number(limit) : undefined }); }
   @Get(':id') get(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.get(u, id); }
   @Post(':id/void') @HttpCode(200) @ApiOperation({ summary: 'Void an unpaid invoice (paid → issue a credit note instead)' })
   void(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(VoidDto)) dto: VoidDto) { return this.uc.void(u, id, dto); }
