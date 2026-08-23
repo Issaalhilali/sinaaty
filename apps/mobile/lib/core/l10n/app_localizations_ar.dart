@@ -1940,4 +1940,10 @@ class L10nAr extends L10n {
 
   @override
   String get sar => 'ر.س';
+
+  @override
+  String get vinScan => 'امسح رقم الهيكل';
+
+  @override
+  String get vinScanNotFound => 'هذا الرمز ليس رقم هيكل — جرّب ملصق عمود الباب';
 }

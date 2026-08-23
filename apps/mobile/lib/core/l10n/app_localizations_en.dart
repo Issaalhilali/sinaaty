@@ -1961,4 +1961,11 @@ class L10nEn extends L10n {
 
   @override
   String get sar => 'SAR';
+
+  @override
+  String get vinScan => 'Scan the VIN';
+
+  @override
+  String get vinScanNotFound =>
+      'That code is not a VIN — try the door-pillar label';
 }

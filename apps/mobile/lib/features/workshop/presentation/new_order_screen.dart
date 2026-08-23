@@ -1,3 +1,4 @@
+import '../../../core/scan/vin_scan_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,7 +46,7 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         SectionTitle(l.wsCustomer),
         TextField(controller: _phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.wsCustomerPhone, hintText: '05xxxxxxxx', prefixIcon: const Icon(Icons.phone_outlined))),
         const SizedBox(height: SinaatySpace.md),
-        Row(children: [Expanded(child: TextField(controller: _plate, decoration: InputDecoration(labelText: l.plateLabel, hintText: 'أ ب ج 1234'))), const SizedBox(width: SinaatySpace.md), Expanded(child: TextField(controller: _vin, textDirection: TextDirection.ltr, textCapitalization: TextCapitalization.characters, maxLength: 17, inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]'))], decoration: InputDecoration(labelText: l.vinLabel, counterText: '')))]),
+        Row(children: [Expanded(child: TextField(controller: _plate, decoration: InputDecoration(labelText: l.plateLabel, hintText: 'أ ب ج 1234'))), const SizedBox(width: SinaatySpace.md), Expanded(child: TextField(controller: _vin, textDirection: TextDirection.ltr, textCapitalization: TextCapitalization.characters, maxLength: 17, inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]'))], decoration: InputDecoration(labelText: l.vinLabel, counterText: '', suffixIcon: VinScanButton(controller: _vin))))]),
         const SizedBox(height: SinaatySpace.md),
         TextField(controller: _title, decoration: InputDecoration(labelText: l.wsTitle, hintText: l.wsTitleHint)),
         const SizedBox(height: SinaatySpace.lg), SectionTitle(l.wsItems),

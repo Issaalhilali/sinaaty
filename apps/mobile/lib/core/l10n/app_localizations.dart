@@ -3714,6 +3714,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'ر.س'**
   String get sar;
+
+  /// No description provided for @vinScan.
+  ///
+  /// In ar, this message translates to:
+  /// **'امسح رقم الهيكل'**
+  String get vinScan;
+
+  /// No description provided for @vinScanNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الرمز ليس رقم هيكل — جرّب ملصق عمود الباب'**
+  String get vinScanNotFound;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
