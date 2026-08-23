@@ -5,7 +5,7 @@ import '../domain/work_order.dart';
 import '../domain/work_orders_repository.dart';
 String _s(Object? v) => v?.toString() ?? '0';
 WorkOrder workOrderFromJson(Map<String, dynamic> j) => WorkOrder(
-  id: j['id'] as String, number: j['number'] as String, status: j['status'] as String, paymentTerms: j['paymentTerms'] as String, currentVersion: (j['currentVersion'] as num).toInt(), titleAr: j['titleAr'] as String?, vehicleId: j['vehicleId'] as String, orgId: j['orgId'] as String,
+  id: j['id'] as String, number: j['number'] as String, status: j['status'] as String, paymentTerms: j['paymentTerms'] as String, currentVersion: (j['currentVersion'] as num).toInt(), titleAr: j['titleAr'] as String?, vehicleId: j['vehicleId'] as String, orgId: j['orgId'] as String, vehicleLabelAr: j['vehicleLabelAr'] as String?, vehiclePlateAr: j['vehiclePlateAr'] as String?,
   subtotal: _s(j['subtotal']), vatAmount: _s(j['vatAmount']), total: _s(j['total']), depositRequired: _s(j['depositRequired']), createdAt: DateTime.parse(j['createdAt'] as String), promisedReadyAt: j['promisedReadyAt'] == null ? null : DateTime.tryParse(j['promisedReadyAt'] as String),
   items: ((j['items'] as List?) ?? []).map((e) => e as Map<String, dynamic>).where((i) => i['versionRemoved'] == null).map((i) => WoItem(id: i['id'] as String, type: i['type'] as String, descriptionAr: i['descriptionAr'] as String, quantity: _s(i['quantity']), unitPrice: _s(i['unitPrice']), lineTotal: _s(i['lineTotal']), warrantyDays: (i['warrantyDays'] as num?)?.toInt() ?? 0)).toList(),
 );

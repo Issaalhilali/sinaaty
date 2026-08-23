@@ -1894,4 +1894,14 @@ class L10nAr extends L10n {
 
   @override
   String get srAddVehicle => 'أضف سيارة';
+
+  @override
+  String get ptEndedNoBids =>
+      'انتهى بلا عروض — أعد النشر بنطاق أوسع أو اشترِ من نتائج البحث';
+
+  @override
+  String get ptToolsTitle => 'أدواتي';
+
+  @override
+  String get ptTradeRowSub => 'حسابك الآجل مع المورّدين';
 }

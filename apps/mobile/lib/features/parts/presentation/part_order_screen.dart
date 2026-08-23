@@ -9,6 +9,7 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../disputes/presentation/open_dispute_sheet.dart';
 import '../../disputes/presentation/providers.dart' as disputes;
+import '../../transport/presentation/delivery_card.dart';
 import '../../workshop/presentation/providers.dart';
 import '../domain/parts.dart';
 import 'providers.dart';
@@ -21,9 +22,19 @@ class _PartOrderScreenState extends ConsumerState<PartOrderScreen> {
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final v = ref.watch(partOrderProvider(widget.id)); final org = ref.watch(currentOrgIdProvider); final o = v.value?.valueOrNull; final repo = ref.read(partsRepositoryProvider);
     final supplier = o != null && o.supplierOrgId == org; final buyer = o != null && !supplier;
+    // The order follows the driver: watching the transport channel refetches it as the journey moves.
+    if (o?.delivery != null) { ref.watch(deliveryLiveProvider(o!.delivery!.id)); ref.listen(deliveryLiveProvider(o.delivery!.id), (_, _) => _refresh()); }
     Widget? primary;
     if (o != null) {
-      if (supplier) { primary = switch (o.status) { 'paid' => PrimaryButton(label: l.spPreparing, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'preparing'))), 'preparing' => PrimaryButton(label: l.spShip, icon: Icons.local_shipping_outlined, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'shipped'))), 'shipped' => PrimaryButton(label: l.spDeliver, icon: Icons.check, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'delivered'))), _ => null }; }
+      // Once the order rides platform delivery its status follows the DRIVER — the manual
+      // shipped/delivered buttons must disappear, or the supplier could contradict the journey.
+      final onDelivery = o.delivery != null;
+      if (supplier) { primary = switch (o.status) {
+        'paid' || 'preparing' when !onDelivery => PrimaryButton(label: l.ptSendDelivery, icon: Icons.local_shipping_outlined, loading: _busy, onPressed: () => _do(() => repo.requestDelivery(o.id))),
+        'paid' => PrimaryButton(label: l.spPreparing, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'preparing'))),
+        'preparing' when !onDelivery => PrimaryButton(label: l.spShip, icon: Icons.local_shipping_outlined, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'shipped'))),
+        'shipped' when !onDelivery => PrimaryButton(label: l.spDeliver, icon: Icons.check, loading: _busy, onPressed: () => _do(() => repo.transition(o.id, 'delivered'))),
+        _ => null }; }
       else if (buyer) { primary = switch (o.status) { 'pending_payment' when o.invoiceId != null => PrimaryButton(label: l.payNow, icon: Icons.lock_outline, onPressed: () => context.push('/invoices/${o.invoiceId}')), 'delivered' || 'installed' => PrimaryButton(label: l.confirmReceipt, icon: Icons.check_circle_outline, loading: _busy, onPressed: () => _do(() => repo.confirm(o.id))), _ => null }; }
     }
     // Disputes ride behind their flag from day one (p1 scope §3).
@@ -39,6 +50,10 @@ class _PartOrderScreenState extends ConsumerState<PartOrderScreen> {
           const SizedBox(height: SinaatySpace.lg),
         ],
       SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.items.firstOrNull?.descriptionAr ?? o.number, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 2), Text(Fmt.meta([o.number, Fmt.dateTime(o.createdAt, locale: locale)]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), SealPill(Labels.partOrderStatus(l, o.status))]), const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)), const SizedBox(height: SinaatySpace.sm), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(o.paymentTerms == 'deferred' ? l.securedByNote : l.amountHeld, icon: o.paymentTerms == 'deferred' ? Icons.verified_outlined : Icons.lock_outline), SealPill(o.source == 'reverse_auction' ? l.ptOpenAuction : l.ptBuyNow)])])),
+      if (o.delivery != null) ...[
+        const SizedBox(height: SinaatySpace.lg),
+        DeliveryTrackingCard(jobId: o.delivery!.id, number: o.delivery!.number, status: o.delivery!.status, price: o.delivery!.price, title: l.ptDeliveryTitle),
+      ],
       const SizedBox(height: SinaatySpace.xl), SectionTitle(l.items),
       SectionCard(child: Column(children: [for (final i in o.items) Padding(padding: const EdgeInsets.symmetric(vertical: 6), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(i.descriptionAr, style: t.titleSmall), Text('${Labels.condition(l, i.condition)} · ${i.quantity} × ${Fmt.money(i.unitPrice, locale: locale)}${i.warrantyDays > 0 ? ' · ${l.warrantyDays(i.warrantyDays)}' : ''}', style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])), Text(Fmt.money(i.lineTotal, locale: locale))])), const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()), Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l.total, style: t.titleMedium), MoneyText(Fmt.money(o.total, locale: locale))]))])),
       const SizedBox(height: SinaatySpace.xl), SectionTitle(l.timeline),

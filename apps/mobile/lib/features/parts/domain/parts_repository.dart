@@ -11,6 +11,8 @@ abstract interface class PartsRepository {
   Future<Result<List<PartOrder>>> orders({String? orgId, bool asSupplier = false});
   Future<Result<PartOrder>> order(String id);
   Future<Result<void>> confirm(String orderId);
+  /// «أرسلها بتوصيل المنصة» (paid/preparing only; once — the order then follows the driver).
+  Future<Result<void>> requestDelivery(String orderId);
   Future<Result<List<TradeAccount>>> tradeAccounts({required String orgId, required bool asSeller});
   Future<Result<TradeAccount>> requestTradeAccount({required String sellerOrgId, required String buyerOrgId});
   Future<Result<TradeAccount>> approveTradeAccount(String id, {required String creditLimit, int termsDays = 30, int discountBps = 0});

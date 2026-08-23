@@ -17,3 +17,8 @@ abstract interface class TransportRepository {
   Future<Result<TransportJob>> job(String id);
   Future<Result<void>> cancel(String id, {String? reasonAr});
 }
+
+/// Live channel `transport:{id}` — the tow screen and the part order both follow the same driver feed.
+abstract interface class TransportRealtime {
+  Stream<void> changes(String jobId);
+}

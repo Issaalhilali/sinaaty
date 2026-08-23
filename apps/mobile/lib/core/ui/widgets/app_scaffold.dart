@@ -12,8 +12,18 @@ class AppScaffold extends StatelessWidget {
       appBar: AppBar(leading: leading, title: subtitle == null ? Text(title) : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title), Text(subtitle!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: s.onSurfaceVariant))]),
         actions: [?trailing, if (moreItems != null && moreItems!.isNotEmpty) Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: PopupMenuButton<String>(icon: const Icon(Icons.more_horiz), onSelected: onMore, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SinaatySpace.radius)), itemBuilder: (_) => moreItems!))]),
       extendBody: bottom != null,
-      body: SafeArea(bottom: bottom == null && bar == null, child: body),
+      body: SafeArea(bottom: bottom == null && bar == null, child: _Readable(child: body)),
       bottomNavigationBar: bottom != null ? Column(mainAxisSize: MainAxisSize.min, children: [?bar, bottom!]) : bar,
     );
   }
+}
+
+/// Tablets are not blown-up phones: cap the reading width and centre it, so a row's label and its
+/// value stop sitting at opposite edges of a 13-inch screen (owner review 2026-08-23 §3).
+class _Readable extends StatelessWidget {
+  final Widget child; const _Readable({required this.child});
+  @override Widget build(BuildContext context) => Align(
+    alignment: Alignment.topCenter,
+    child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 720), child: child),
+  );
 }

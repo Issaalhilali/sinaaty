@@ -3624,6 +3624,24 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أضف سيارة'**
   String get srAddVehicle;
+
+  /// No description provided for @ptEndedNoBids.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهى بلا عروض — أعد النشر بنطاق أوسع أو اشترِ من نتائج البحث'**
+  String get ptEndedNoBids;
+
+  /// No description provided for @ptToolsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدواتي'**
+  String get ptToolsTitle;
+
+  /// No description provided for @ptTradeRowSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك الآجل مع المورّدين'**
+  String get ptTradeRowSub;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

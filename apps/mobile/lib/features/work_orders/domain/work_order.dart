@@ -1,8 +1,13 @@
 class WoItem { final String id; final String type; final String descriptionAr; final String quantity; final String unitPrice; final String lineTotal; final int warrantyDays; const WoItem({required this.id, required this.type, required this.descriptionAr, required this.quantity, required this.unitPrice, required this.lineTotal, required this.warrantyDays}); }
 class WorkOrder {
   final String id; final String number; final String status; final String paymentTerms; final int currentVersion; final String? titleAr; final String vehicleId; final String orgId;
+  /// Who the order is FOR — a workshop scans cars, not order numbers (owner review 2026-08-23).
+  final String? vehicleLabelAr; final String? vehiclePlateAr;
   final String subtotal; final String vatAmount; final String total; final String depositRequired; final DateTime createdAt; final DateTime? promisedReadyAt; final List<WoItem> items;
-  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
+  /// «تويوتا 2002 · د م و 777» — the row's identity; falls back to the technical title, then the number.
+  String get carLine { final parts = [vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).cast<String>().toList(); return parts.isEmpty ? (titleAr ?? number) : parts.join(' · '); }
+  bool get knowsCar => (vehicleLabelAr ?? vehiclePlateAr) != null;
+  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
   bool get awaitingApproval => status == 'awaiting_approval';
   bool get isActive => !const {'closed', 'cancelled', 'abandoned'}.contains(status);
 }

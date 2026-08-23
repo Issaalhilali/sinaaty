@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,8 @@ import 'package:sinaaty/features/parts/presentation/request_screen.dart';
 import 'package:sinaaty/features/parts/presentation/supplier_screens.dart';
 import 'package:sinaaty/features/parts/presentation/workshop_parts_screen.dart';
 import 'package:sinaaty/features/work_orders/domain/work_order.dart';
+import 'package:sinaaty/features/transport/domain/transport_repository.dart';
+import 'package:sinaaty/features/transport/presentation/providers.dart';
 import 'package:sinaaty/features/workshop/domain/workshop.dart';
 import 'package:sinaaty/features/workshop/domain/workshop_repository.dart';
 import 'package:sinaaty/features/workshop/presentation/providers.dart';
@@ -37,6 +40,9 @@ class FakeParts implements PartsRepository, QrScanner {
   @override Future<Result<PartOrder>> accept(String requestId, String bidId, {String paymentTerms = 'prepaid'}) async { final r = requests[requestId]!; requests[requestId] = _with(r, status: 'awarded', awarded: bidId, bids: r.bids.map((b) => PartBid(id: b.id, supplierOrgId: b.supplierOrgId, condition: b.condition, unitPrice: b.unitPrice, quantity: b.quantity, deliveryFee: b.deliveryFee, etaHours: b.etaHours, warrantyDays: b.warrantyDays, notesAr: b.notesAr, status: b.id == bidId ? 'accepted' : 'rejected', createdAt: b.createdAt)).toList()); seq++; final o = PartOrder(id: 'po$seq', number: 'PO-2026-00077$seq', source: 'reverse_auction', status: 'pending_payment', paymentTerms: paymentTerms, supplierOrgId: 'scrap', buyerOrgId: 'ws1', total: '172.50', createdAt: DateTime(2026, 8, 19), items: const [PartOrderItem(descriptionAr: 'دسكات أمامية كامري', condition: 'used_scrapyard', quantity: 1, unitPrice: '150.00', lineTotal: '150.00', warrantyDays: 30)], invoiceId: 'inv8'); store[o.id] = o; return Result.ok(o); }
   @override Future<Result<List<PartOrder>>> orders({String? orgId, bool asSupplier = false}) async => Result.ok(store.values.toList());
   @override Future<Result<PartOrder>> order(String id) async => Result.ok(store[id]!);
+  ({String orderId, int calls})? deliveryRequested; var deliveryStatus = 'requested';
+  PartOrder _withDelivery(PartOrder o) => PartOrder(id: o.id, number: o.number, source: o.source, status: o.status, paymentTerms: o.paymentTerms, supplierOrgId: o.supplierOrgId, buyerOrgId: o.buyerOrgId, total: o.total, createdAt: o.createdAt, items: o.items, invoiceId: o.invoiceId, delivery: (id: 'tj-d1', number: 'TJ-2026-000090', status: deliveryStatus, price: '46.00'));
+  @override Future<Result<void>> requestDelivery(String orderId) async { deliveryRequested = (orderId: orderId, calls: (deliveryRequested?.calls ?? 0) + 1); store[orderId] = _withDelivery(store[orderId]!); return const Result.ok(null); }
   @override Future<Result<void>> confirm(String orderId) async { final o = store[orderId]!; store[orderId] = PartOrder(id: o.id, number: o.number, source: o.source, status: 'confirmed', paymentTerms: o.paymentTerms, supplierOrgId: o.supplierOrgId, buyerOrgId: o.buyerOrgId, total: o.total, createdAt: o.createdAt, items: o.items); return const Result.ok(null); }
   @override Future<Result<List<TradeAccount>>> tradeAccounts({required String orgId, required bool asSeller}) async => Result.ok(tas);
   @override Future<Result<TradeAccount>> requestTradeAccount({required String sellerOrgId, required String buyerOrgId}) async => const Result.err(UnknownFailure());
@@ -70,6 +76,11 @@ class FakeWorkshop implements WorkshopRepository {
   @override Future<Result<VoiceNote>> createVoiceNote(String woId, {required String mediaId, String? hintAr}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> applyVoiceNote(String noteId, List<NewItem> items) async => const Result.ok(null);
 }
+class FakeTransportLive implements TransportRealtime {
+  final controller = StreamController<void>.broadcast();
+  @override Stream<void> changes(String jobId) => controller.stream;
+}
+
 class FakeAuth implements AuthRepository {
   final String Function() org; FakeAuth(this.org);
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
@@ -81,11 +92,11 @@ Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); f
 
 void main() {
   setUpAll(loadArabicFont);
-  late FakeParts parts; late MemoryTokenStore ts;
-  Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts)],
+  late FakeParts parts; late FakeTransportLive live; late MemoryTokenStore ts;
+  Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts), transportRealtimeProvider.overrideWithValue(live)],
     child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
   GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
-  setUp(() async { parts = FakeParts(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
+  setUp(() async { parts = FakeParts(); live = FakeTransportLive(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
   void size(WidgetTester t) { t.view.physicalSize = const Size(1170, 2532); t.view.devicePixelRatio = 3; addTearDown(t.view.reset); }
 
   testWidgets('workshop: VIN search → offers (trade price with active account) → Buy Now deferred → order screen', (tester) async {
@@ -126,6 +137,9 @@ void main() {
   testWidgets('QR install: scan → genuine → pick WO part item → installed → warranty number shown', (tester) async {
     size(tester); parts.scanned = 'ok-token-123';
     await tester.pumpWidget(app(router('/parts'))); await tester.pumpAndSettle();
+    // QR moved into the quiet «أدواتي» group at the foot of the tab (the tab shows ONE task now).
+    await tester.scrollUntilVisible(find.text('امسح QR القطعة'), 300, scrollable: find.byType(Scrollable).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('امسح QR القطعة')); await tester.pumpAndSettle();
     expect(find.text('قطعة أصلية موثّقة'), findsOneWidget);
     await tester.tap(find.text('دسكات أمامية أصلي')); await tester.pumpAndSettle();
@@ -139,5 +153,32 @@ void main() {
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/supplier_sales_dark.png'));
     await tester.tap(find.text('اعتمد الحساب (1)')); await tester.pumpAndSettle(); await tester.tap(find.text('اعتمد الحساب').last); await tester.pumpAndSettle();
     expect(parts.tas.first.status, 'active'); expect(find.text('اعتمد الحساب (1)'), findsNothing);
+  });
+
+  testWidgets('platform delivery: the supplier sends it, and the manual ship/deliver buttons leave', (tester) async {
+    size(tester);
+    parts.store['po9'] = PartOrder(id: 'po9', number: 'PO-2026-000099', source: 'catalog_buy_now', status: 'paid', paymentTerms: 'prepaid', supplierOrgId: 'ws1', buyerOrgId: 'buyer', total: '483.00', createdAt: DateTime(2026, 8, 22, 10), items: const [PartOrderItem(descriptionAr: 'دسكات فرامل أمامية', condition: 'oem_new', quantity: 1, unitPrice: '420.00', lineTotal: '420.00', warrantyDays: 365)]);
+    await tester.pumpWidget(app(router('/parts/orders/po9'))); await tester.pumpAndSettle();
+    expect(find.text('أرسلها بتوصيل المنصة'), findsOneWidget);
+    await tester.tap(find.text('أرسلها بتوصيل المنصة')); await tester.pumpAndSettle();
+    expect(parts.deliveryRequested!.orderId, 'po9');
+    expect(find.text('توصيل المنصة'), findsOneWidget);                    // the tracking card appeared
+    expect(find.textContaining('TJ-2026-000090'), findsOneWidget);
+    expect(find.text('جهّز الطلب'), findsNothing);                        // and the manual path is gone:
+    expect(find.text('شُحنت'), findsNothing);                              // the order follows the driver now
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/part_delivery_light.png'));
+  });
+
+  testWidgets('the order follows the driver: a channel tick advances what the screen shows', (tester) async {
+    size(tester);
+    parts.store['po9'] = PartOrder(id: 'po9', number: 'PO-2026-000099', source: 'catalog_buy_now', status: 'paid', paymentTerms: 'prepaid', supplierOrgId: 'ws1', buyerOrgId: 'buyer', total: '483.00', createdAt: DateTime(2026, 8, 22, 10), items: const [], delivery: (id: 'tj-d1', number: 'TJ-2026-000090', status: 'assigned', price: '46.00'));
+    await tester.pumpWidget(app(router('/parts/orders/po9'))); await tester.pumpAndSettle();
+    // The timeline always lists every step; what moves is the badge — the journey's current state.
+    expect(find.text('تم تعيين سائق'), findsWidgets);
+    parts.deliveryStatus = 'picked_up';
+    parts.store['po9'] = parts._withDelivery(parts.store['po9']!);        // the driver picked it up…
+    live.controller.add(null);                                            // …and the channel ticks
+    await tester.pumpAndSettle();
+    expect(find.text('القطعة مع السائق'), findsWidgets);                       // the journey moved with no user action
   });
 }

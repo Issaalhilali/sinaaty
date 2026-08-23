@@ -902,5 +902,8 @@
   "ptDeliveryPickedUp": "With the driver",
   "srNoVehicle": "Add your car first",
   "srNoVehicleBody": "Workshops price by make and model — without it they cannot estimate a cost.",
-  "srAddVehicle": "Add a car"
+  "srAddVehicle": "Add a car",
+  "ptEndedNoBids": "Ended with no offers — repost wider, or buy from the search results",
+  "ptToolsTitle": "My tools",
+  "ptTradeRowSub": "Your credit account with suppliers"
 }

@@ -164,7 +164,7 @@ void main() {
     await be.create(const NewWorkOrder(orgId: 'org1', plate: 'y', customerPhone: '+966512345679', titleAr: 'فرامل باترول', paymentTerms: 'on_delivery', items: [NewItem(type: 'part', descriptionAr: 'دسكات', unitPrice: '420')]));
     be._st(be.orders['wo1']!, 'approved'); be._st(be.orders['wo2']!, 'awaiting_approval');
     await tester.pumpWidget(app(router('/'))); await tester.pumpAndSettle();
-    expect(find.text('يحتاج تصرّفك الآن'), findsOneWidget); expect(find.text('ابدأ العمل'), findsOneWidget); expect(find.text('2'), findsWidgets);
+    expect(find.textContaining('يحتاج تصرّفك الآن'), findsOneWidget);   // the car leads the hero now; the phrase moved below it expect(find.text('ابدأ العمل'), findsOneWidget); expect(find.text('2'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/workshop_today_light.png'));
     await tester.pumpWidget(app(router('/'), dark: true)); await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/workshop_today_dark.png'));

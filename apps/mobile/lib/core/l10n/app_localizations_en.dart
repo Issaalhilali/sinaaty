@@ -1915,4 +1915,14 @@ class L10nEn extends L10n {
 
   @override
   String get srAddVehicle => 'Add a car';
+
+  @override
+  String get ptEndedNoBids =>
+      'Ended with no offers — repost wider, or buy from the search results';
+
+  @override
+  String get ptToolsTitle => 'My tools';
+
+  @override
+  String get ptTradeRowSub => 'Your credit account with suppliers';
 }
