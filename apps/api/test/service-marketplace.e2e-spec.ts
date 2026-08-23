@@ -173,7 +173,7 @@ describe('Service marketplace (e2e)', () => {
     const f = await http().get('/v1/admin/pilot/funnel').set(auth(adminTok)).expect(200);
     expect(f.body.service).toBeTruthy();
     expect(f.body.service.requested).toBeGreaterThanOrEqual(2);      // طلبان على الأقل من هذه الحزمة
-    expect(f.body.service.offered).toBeGreaterThanOrEqual(2);
+    expect(f.body.service.offered).toBeGreaterThanOrEqual(1);        // الفوج يعدّ الطلبات التي نالت عرضاً لا عدد العروض
     expect(f.body.service.accepted).toBeGreaterThanOrEqual(1);
     expect(Number(f.body.service.accept_rate)).toBeGreaterThan(0);   // نسبة تحويل حقيقية لا صفراً
     // فوج واحد: كل مرحلة جزء من سابقتها بالبناء — لا نسبة تتجاوز المئة مهما تغيّر التتبع في منتصف الطريق
