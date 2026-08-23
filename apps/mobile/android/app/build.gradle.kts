@@ -7,6 +7,10 @@ plugins {
 android {
     namespace = "com.example.sinaaty"
     compileSdk = flutter.compileSdkVersion
+
+    // AGP 9 turns resValues off by default; our three flavors name the app through it
+    // (صناعتي / للشركاء / للأساطيل), so it must be opted back in.
+    buildFeatures { resValues = true }
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
