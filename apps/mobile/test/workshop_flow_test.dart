@@ -112,7 +112,7 @@ void main() {
     size(tester); await tester.pumpWidget(app(router('/ws/new'))); await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextField, 'جوال العميل'), '0512345678');
     await tester.enterText(find.widgetWithText(TextField, 'رقم اللوحة'), 'أ ب ج 4821');
-    await tester.enterText(find.widgetWithText(TextField, 'وصف مختصر للعمل'), 'سمكرة رفرف');
+    // لا نكتب وصفاً: الحقل صار اختيارياً والأمر يُسمّى ببنوده — حقلٌ أقل في كل سيارة تدخل الورشة.
     // البند بسطر واحد كما يكتبه صاحب الورشة — لا ورقة ولا خمسة حقول.
     await tester.enterText(find.widgetWithText(TextField, 'أضف بنداً بسطر'), 'سمكرة ودهان رفرف أمامي بسعر 650');
     await tester.pumpAndSettle();
@@ -121,7 +121,8 @@ void main() {
     expect(find.textContaining('747.50'), findsWidgets); // 650 × 1.15
     await tester.tap(find.textContaining('إنشاء الأمر')); await tester.pumpAndSettle();
     expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsNothing, reason: 'form rejected');
-    expect(be.orders.length, 1); final id = be.orders.keys.first; expect(find.textContaining('WO-2026-000041'), findsWidgets);
+    expect(be.orders.length, 1); final id = be.orders.keys.first;
+    expect(be.orders[id]!.titleAr, 'سمكرة ودهان رفرف أمامي', reason: 'الاسم التلقائي من البند الوحيد'); expect(find.textContaining('WO-2026-000041'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/workshop_order_light.png'));
     // draft → received
     await tester.tap(find.text('استلام السيارة')); await tester.pumpAndSettle(); expect(be.orders[id]!.status, 'received');
