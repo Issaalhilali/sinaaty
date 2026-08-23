@@ -36,6 +36,15 @@ describe('Work orders (e2e)', () => {
     expect(res.body.subtotal).toBe('1190.00'); expect(res.body.vatAmount).toBe('178.50'); expect(res.body.total).toBe('1368.50');
     itemId = res.body.items[1].id;
   });
+  it('an order created without a title still says what it is — never a row that names itself by its number', async () => {
+    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: customerPhone, plate: 'ع ن و 4242', items: [
+      { type: 'labor', description_ar: 'تغيير زيت وفلتر', quantity: 1, unit_price: '200' },
+      { type: 'part', description_ar: 'فلتر هواء', quantity: 1, unit_price: '60' },
+    ] }).expect(201);
+    expect(wo.body.titleAr).toBe('تغيير زيت وفلتر +1');
+    expect(wo.body.vehiclePlateAr).toBe('ع ن و 4242');   // والسيارة تسافر مع الأمر في القائمة والتفصيل
+  });
+
   it('customer sees it in their list; a stranger cannot read it', async () => {
     const mine = await http().get('/v1/work-orders').set(auth(custTok)).expect(200);
     expect(mine.body.map((w: { id: string }) => w.id)).toContain(woId);

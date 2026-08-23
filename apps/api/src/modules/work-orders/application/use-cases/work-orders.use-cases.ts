@@ -31,6 +31,14 @@ import type { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, Cha
 void OTP_REPOSITORY_TOKEN;
 
 const lineOf = (i: { quantity: string; unit_price: string; discount?: string; vat_rate?: number }) => computeLine({ quantity: i.quantity, unitPrice: Money.of(i.unit_price), discount: Money.of(i.discount ?? '0'), vatRatePct: i.vat_rate ?? 15 });
+/** A title that says something when the advisor typed none: «تغيير زيت وفلتر +2» — never a row that
+ *  identifies itself by its own number. (Seen on screen: a whole order list of bare numbers, because
+ *  the title is optional and nobody fills it in the rush of receiving a car.) */
+const summariseItems = (items?: Array<{ description_ar: string }>): string | undefined => {
+  if (!items?.length) return undefined;
+  const first = items[0]!.description_ar.trim();
+  return items.length > 1 ? `${first} +${items.length - 1}` : first;
+};
 
 @Injectable()
 export class WorkOrdersUseCases {
@@ -116,7 +124,7 @@ export class WorkOrdersUseCases {
     } else if (!(await this.vehicles.findById(vehicleId))) throw new AppError('NOT_FOUND', { messageAr: 'المركبة غير موجودة.', messageEn: 'Vehicle not found.' });
     const wo = await this.uow.run(async (tx) => {
       const number = await this.repo.nextNumber(tx);
-      const created = await this.repo.create({ number, orgId: dto.org_id, vehicleId: vehicleId, customerUserId, customerOrgId, paymentTerms: dto.payment_terms as PaymentTerms, titleAr: dto.title_ar, complaintAr: dto.complaint_ar, depositRequired: dto.deposit_required, dueDate: dto.due_date ? new Date(dto.due_date) : undefined, promisedReadyAt: dto.promised_ready_at ? new Date(dto.promised_ready_at) : undefined, createdBy: u.id }, tx);
+      const created = await this.repo.create({ number, orgId: dto.org_id, vehicleId: vehicleId, customerUserId, customerOrgId, paymentTerms: dto.payment_terms as PaymentTerms, titleAr: dto.title_ar ?? summariseItems(dto.items), complaintAr: dto.complaint_ar, depositRequired: dto.deposit_required, dueDate: dto.due_date ? new Date(dto.due_date) : undefined, promisedReadyAt: dto.promised_ready_at ? new Date(dto.promised_ready_at) : undefined, createdBy: u.id }, tx);
       for (const [idx, i] of dto.items.entries()) await this.insertItem(created.id, 1, i, idx, tx);
       await this.recomputeTotals(created.id, tx);
       await this.repo.addHistory({ woId: created.id, from: null, to: 'draft', actorUserId: u.id }, tx);
