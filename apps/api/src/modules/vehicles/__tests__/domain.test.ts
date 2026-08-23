@@ -15,10 +15,28 @@ describe('vehicles domain', () => {
     expect(modelYearFromVin('4T1B11HK5IU000001', now)).toBeNull();
   });
   it('normalizes Saudi plates in Arabic and Latin, incl. Arabic-Indic digits', () => {
-    expect(normalizePlate('أ ب ج 4821')).toEqual({ ar: 'أ ب ج 4821', en: 'ABJ 4821' });
-    expect(normalizePlate('أبج٤٨٢١')).toEqual({ ar: 'أ ب ج 4821', en: 'ABJ 4821' });
-    expect(normalizePlate('ABJ 4821')?.ar).toBe('ا ب ح 4821');
+    expect(normalizePlate('أ ب ج 4821')).toEqual({ ar: 'أ ب ح 4821', en: 'ABJ 4821' });
+    expect(normalizePlate('أبج٤٨٢١')).toEqual({ ar: 'أ ب ح 4821', en: 'ABJ 4821' });
+    expect(normalizePlate('ABJ 4821')?.ar).toBe('أ ب ح 4821');
     expect(normalizePlate('12345')).toBeNull();
+  });
+  it('reads the plate in either order — the plate itself carries both, and so does the driver', () => {
+    // شكوى المالك ٢٣ أغسطس: كتب اللوحة بالأرقام أولاً كما تُقرأ، فرُفضت لوحة صحيحة.
+    expect(normalizePlate('4821 أ ب ج')).toEqual(normalizePlate('أ ب ج 4821'));
+    expect(normalizePlate('٤٨٢١ أبج')).toEqual(normalizePlate('أ ب ج 4821'));
+    expect(normalizePlate('4821 ABJ')).toEqual(normalizePlate('ABJ 4821'));
+  });
+  it('refuses letters that are not Saudi plate letters instead of storing «?»', () => {
+    // «ت» و«ث» و«خ» ليست من حروف اللوحات. قبولها كان يكتب لوحة مشوّهة تُطبع على فاتورة ضريبية.
+    expect(normalizePlate('ر ن ت 5566')).toBeNull();
+    expect(normalizePlate('ث خ ز 12')).toBeNull();
+    expect(normalizePlate('ABC 4821')).toBeNull();   // C ليس حرف لوحة
+  });
+  it('the same plate written differently normalizes to one value', () => {
+    const forms = ['ا ب ج 4821', 'أ ب ح 4821', 'أبح٤٨٢١', '4821 ا ب ح', 'ABJ 4821'];
+    const all = forms.map((f) => normalizePlate(f));
+    expect(new Set(all.map((p) => JSON.stringify(p))).size).toBe(1);
+    expect(all[0]).toEqual({ ar: 'أ ب ح 4821', en: 'ABJ 4821' });
   });
   it('ownership + public passport masks PII', () => {
     const v: Vehicle = { id: 'v', vin: '4T1B11HK5KU000001', plateNumber: 'أ ب ج 4821', plateNumberEn: 'ABJ 4821', makeId: 1, modelId: 1, makeNameAr: 'تويوتا', makeNameEn: 'Toyota', modelNameAr: 'Camry', modelNameEn: 'Camry', modelYear: 2019, trim: null, engine: null, fuelType: 'petrol', colorAr: null, odometerKm: 84250, ownerType: 'user', ownerUserId: 'u1', ownerOrgId: null, fleetAssetCode: null, ownershipVerifiedAt: null, passportPublicToken: 't', createdAt: new Date() };

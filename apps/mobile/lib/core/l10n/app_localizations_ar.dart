@@ -1978,4 +1978,16 @@ class L10nAr extends L10n {
 
   @override
   String get wsInboxUnpaid => 'مسلَّمة بلا فاتورة';
+
+  @override
+  String get wsTitleOptional => 'وصف مختصر (اختياري)';
+
+  @override
+  String get wsTitleAuto => 'إن تركته فارغاً يُسمّى الأمر ببنوده.';
+
+  @override
+  String get wsNeedCar => 'أضف لوحة السيارة أو رقم الهيكل.';
+
+  @override
+  String get wsNeedItem => 'أضف بنداً واحداً على الأقل.';
 }

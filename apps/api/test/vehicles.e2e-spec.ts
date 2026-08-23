@@ -30,11 +30,24 @@ describe('Vehicles (e2e)', () => {
     const other = await http().post('/v1/vehicles').set(auth(tokB)).send({ vin }).expect(409);
     expect(other.body.code).toBe('CONFLICT');
   });
-  it('adds a vehicle by plate only; invalid plate rejected', async () => {
+  it('adds a vehicle by plate only; invalid plate rejected in Arabic', async () => {
     await http().post('/v1/vehicles').set(auth(tokA)).send({ plate: 'د هـ و 1190', make_id: 1, model_year: 2021 }).expect(201);
-    await http().post('/v1/vehicles').set(auth(tokA)).send({ plate: '1234' }).expect(400);
+    const bad = await http().post('/v1/vehicles').set(auth(tokA)).send({ plate: '1234' }).expect(400);
+    expect(bad.body.message_ar).toContain('الحروف المعتمدة');   // لا نصّ مبرمج بالإنجليزية في وجه صاحب السيارة
     const list = await http().get('/v1/vehicles').set(auth(tokA)).expect(200);
     expect(list.body).toHaveLength(2);
+  });
+  it('the plate is read in either order, and the same car is never added twice', async () => {
+    // شكوى المالك ٢٣ أغسطس: كتب اللوحة بالأرقام أولاً كما تُقرأ على اللوحة، فرُفضت لوحة صحيحة.
+    const flipped = await http().post('/v1/vehicles').set(auth(tokA)).send({ plate: '1190 د ه و' }).expect(201);
+    expect(flipped.body.already_exists).toBe(true);            // هي نفسها «د هـ و 1190» لا سيارة ثانية
+    expect(flipped.body.plateNumber).toBe('د ه و 1190');
+    const list = await http().get('/v1/vehicles').set(auth(tokA)).expect(200);
+    expect(list.body).toHaveLength(2);                         // بلا تكرار
+  });
+  it('refuses a letter that is not a Saudi plate letter instead of storing «?»', async () => {
+    const bad = await http().post('/v1/vehicles').set(auth(tokA)).send({ plate: 'ر ن ت 5566' }).expect(400);
+    expect(bad.body.code).toBe('VALIDATION');
   });
   it('ownership: other user cannot read/update; odometer cannot go backwards', async () => {
     await http().get(`/v1/vehicles/${vehicleId}`).set(auth(tokB)).expect(403);

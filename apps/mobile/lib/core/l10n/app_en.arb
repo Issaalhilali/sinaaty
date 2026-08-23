@@ -936,5 +936,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "wsTitleOptional": "Short description (optional)",
+  "wsTitleAuto": "Leave it empty and the order is named after its items.",
+  "wsNeedCar": "Add the plate number or the VIN.",
+  "wsNeedItem": "Add at least one item."
 }

@@ -2001,4 +2001,17 @@ class L10nEn extends L10n {
 
   @override
   String get wsInboxUnpaid => 'Delivered without an invoice';
+
+  @override
+  String get wsTitleOptional => 'Short description (optional)';
+
+  @override
+  String get wsTitleAuto =>
+      'Leave it empty and the order is named after its items.';
+
+  @override
+  String get wsNeedCar => 'Add the plate number or the VIN.';
+
+  @override
+  String get wsNeedItem => 'Add at least one item.';
 }

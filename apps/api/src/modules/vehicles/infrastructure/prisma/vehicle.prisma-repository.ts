@@ -18,6 +18,11 @@ export class VehiclePrismaRepository implements VehicleRepository {
   }
   async findById(id: string) { const r = await this.prisma.vehicle.findFirst({ where: { id, deletedAt: null }, select }); return r ? toVehicle(r) : null; }
   async findByVin(vin: string) { const r = await this.prisma.vehicle.findFirst({ where: { vin, deletedAt: null }, select }); return r ? toVehicle(r) : null; }
+  async findByPlateForOwner(plateAr: string, owner: { userId?: string; orgId?: string }) {
+    if (!owner.userId && !owner.orgId) return null;
+    const r = await this.prisma.vehicle.findFirst({ where: { plateNumber: plateAr, deletedAt: null, ...(owner.orgId ? { ownerOrgId: owner.orgId } : { ownerUserId: owner.userId }) }, select });
+    return r ? toVehicle(r) : null;
+  }
   async listByOwner(o: { userId?: string; orgId?: string }) { const rows = await this.prisma.vehicle.findMany({ where: { deletedAt: null, ...(o.orgId ? { ownerOrgId: o.orgId } : { ownerUserId: o.userId }) }, orderBy: { createdAt: 'desc' }, select }); return rows.map(toVehicle); }
   async updateOdometer(id: string, km: number, tx?: TxHandle) { const db = tx ? asTx(tx) : this.prisma; await db.vehicle.update({ where: { id }, data: { odometerKm: km } }); }
   async setPassportToken(id: string, token: string | null) { await this.prisma.vehicle.update({ where: { id }, data: { passportPublicToken: token } }); }

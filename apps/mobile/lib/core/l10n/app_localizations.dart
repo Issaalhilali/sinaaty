@@ -3786,6 +3786,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'مسلَّمة بلا فاتورة'**
   String get wsInboxUnpaid;
+
+  /// No description provided for @wsTitleOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصف مختصر (اختياري)'**
+  String get wsTitleOptional;
+
+  /// No description provided for @wsTitleAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'إن تركته فارغاً يُسمّى الأمر ببنوده.'**
+  String get wsTitleAuto;
+
+  /// No description provided for @wsNeedCar.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف لوحة السيارة أو رقم الهيكل.'**
+  String get wsNeedCar;
+
+  /// No description provided for @wsNeedItem.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف بنداً واحداً على الأقل.'**
+  String get wsNeedItem;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

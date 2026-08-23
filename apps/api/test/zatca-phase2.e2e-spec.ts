@@ -13,7 +13,7 @@ describe('ZATCA Phase 2 (e2e)', () => {
   const auth = (t: string) => ({ authorization: `Bearer ${t}` }); const suffix = String(Date.now()).slice(-7); const custPhone = `+96650${suffix}`;
   let wsTok: string; let custTok: string; let orgId: string; let deviceId: string; let invoice1: string; let invoice2: string;
   const issueInvoice = async (price: string) => {
-    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: `ز ك ا ${suffix.slice(0, 4)}`, title_ar: 'صيانة', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'صيانة دورية', quantity: 1, unit_price: price }] }).expect(201);
+    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: `س ك ا ${suffix.slice(0, 4)}`, title_ar: 'صيانة', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'صيانة دورية', quantity: 1, unit_price: price }] }).expect(201);
     await http().post(`/v1/work-orders/${wo.body.id}/transition`).set(auth(wsTok)).send({ to: 'received' }).expect(200);
     await http().post(`/v1/work-orders/${wo.body.id}/request-approval`).set(auth(wsTok)).send({}).expect(200);
     const init = await http().post(`/v1/work-orders/${wo.body.id}/approve`).set(auth(custTok)).send({ method: 'otp' }).expect(200);

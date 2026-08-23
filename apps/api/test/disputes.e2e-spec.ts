@@ -17,7 +17,7 @@ describe('Disputes (e2e)', () => {
     wsTok = await login('+966500000001'); custTok = await login(custPhone); adminTok = await login('+966500000099');
     orgId = (await http().get('/v1/me').set(auth(wsTok)).expect(200)).body.orgs[0].org_id;
     // work order → approved → executed → delivered, paid (money sits in escrow)
-    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: `ن ز ع ${suffix.slice(0, 4)}`, title_ar: 'صيانة متنازع عليها', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'إصلاح ناقل الحركة', quantity: 1, unit_price: '1000' }] }).expect(201);
+    const wo = await http().post('/v1/work-orders').set(auth(wsTok)).send({ org_id: orgId, customer_phone: custPhone, plate: `ن ط ع ${suffix.slice(0, 4)}`, title_ar: 'صيانة متنازع عليها', payment_terms: 'on_delivery', items: [{ type: 'labor', description_ar: 'إصلاح ناقل الحركة', quantity: 1, unit_price: '1000' }] }).expect(201);
     woId = wo.body.id;
     await http().post(`/v1/work-orders/${woId}/transition`).set(auth(wsTok)).send({ to: 'received' }).expect(200);
     await http().post(`/v1/work-orders/${woId}/request-approval`).set(auth(wsTok)).send({}).expect(200);

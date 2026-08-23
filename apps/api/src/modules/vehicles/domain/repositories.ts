@@ -6,6 +6,8 @@ export interface VehicleRepository {
   create(input: { vin?: string; plateAr?: string; plateEn?: string; makeId?: number; modelId?: number; modelYear?: number; trim?: string; engine?: string; fuelType?: FuelType; colorAr?: string; odometerKm?: number; ownerType: VehicleOwnerType; ownerUserId?: string; ownerOrgId?: string; fleetAssetCode?: string; vinDecoded?: unknown }): Promise<Vehicle>;
   findById(id: string): Promise<Vehicle | null>;
   findByVin(vin: string): Promise<Vehicle | null>;
+  /** نفس اللوحة عند نفس المالك — من لا يرى سيارته يُضيفها ثانيةً، فتتكرّر بصمت. */
+  findByPlateForOwner(plateAr: string, owner: { userId?: string; orgId?: string }): Promise<Vehicle | null>;
   listByOwner(owner: { userId?: string; orgId?: string }): Promise<Vehicle[]>;
   updateOdometer(id: string, km: number, tx?: TxHandle): Promise<void>;
   setPassportToken(id: string, token: string | null): Promise<void>;

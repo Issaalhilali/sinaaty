@@ -6,7 +6,7 @@ import { UNIT_OF_WORK, type UnitOfWork } from '../../../../common/ports/unit-of-
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { isPlatformStaff } from '../../../identity/domain/auth-user';
 import { isOwner, toPublicPassport } from '../../domain/vehicle';
-import { modelYearFromVin, normalizePlate, normalizeVin } from '../../domain/vin';
+import { modelYearFromVin, normalizePlate, normalizeVin, PLATE_LETTERS_AR } from '../../domain/vin';
 import { VEHICLE_EVENT_REPOSITORY, type VehicleEventRepository, VEHICLE_REPOSITORY, type VehicleRepository } from '../../domain/repositories';
 import { VIN_DECODER_PORT, type VinDecoderPort } from '../ports/vin-decoder.port';
 import { VehicleEventsWriter } from '../vehicle-events.writer';
@@ -30,10 +30,24 @@ export class VehiclesUseCases {
 
   async add(user: AuthUser, dto: AddVehicleDto) {
     const vin = dto.vin ? normalizeVin(dto.vin) : null;
-    if (dto.vin && !vin) throw new AppError('VALIDATION', { details: [{ path: 'vin', message: 'invalid VIN' }] });
+    if (dto.vin && !vin) throw new AppError('VALIDATION', {
+      messageAr: 'رقم الهيكل ١٧ خانة من أرقام وحروف إنجليزية، بلا I أو O أو Q. راجعه من الاستمارة أو من لوحة الهيكل.',
+      messageEn: 'The VIN is 17 characters, letters and digits, without I, O or Q.',
+      details: [{ path: 'vin', message: 'invalid VIN' }],
+    });
     const plate = dto.plate ? normalizePlate(dto.plate) : null;
-    if (dto.plate && !plate) throw new AppError('VALIDATION', { details: [{ path: 'plate', message: 'plate must be 3 letters + 1–4 digits (e.g. أ ب ج 1234)' }] });
+    // الرسالة تُقرأ من صاحب السيارة لا من مبرمج: تقول الشكل المقبول والحروف المسموحة بالعربية.
+    if (dto.plate && !plate) throw new AppError('VALIDATION', {
+      messageAr: `اكتب اللوحة بثلاثة أحرف وأرقامها، بأي ترتيب: «أ ب ج ١٢٣٤» أو «١٢٣٤ أ ب ج». الحروف المعتمدة: ${PLATE_LETTERS_AR}`,
+      messageEn: 'Plate is 3 letters and 1–4 digits, in either order (e.g. أ ب ج 1234 or 1234 أ ب ج).',
+      details: [{ path: 'plate', message: 'invalid plate' }],
+    });
     if (dto.owner_org_id && !user.orgs.some((o) => o.orgId === dto.owner_org_id) && !isPlatformStaff(user)) throw new AppError('FORBIDDEN');
+    // اللوحة كذلك: من أضاف سيارته ولم يرها على الشاشة يُضيفها مرة أخرى — فتصير سيارتين لسيارة واحدة.
+    if (!vin && plate) {
+      const same = await this.vehicles.findByPlateForOwner(plate.ar, { userId: dto.owner_org_id ? undefined : user.id, orgId: dto.owner_org_id });
+      if (same) return { ...same, already_exists: true };
+    }
     if (vin) { const existing = await this.vehicles.findByVin(vin); if (existing) { if (isOwner(existing, user)) return { ...existing, already_exists: true }; throw new AppError('CONFLICT', { messageAr: 'هذه المركبة مسجّلة باسم مالك آخر.', messageEn: 'This vehicle is registered to another owner.' }); } }
     let makeId = dto.make_id, modelId = dto.model_id, modelYear = dto.model_year, engine: string | undefined, fuelType = dto.fuel_type, trim: string | undefined, decoded: unknown;
     if (vin) {

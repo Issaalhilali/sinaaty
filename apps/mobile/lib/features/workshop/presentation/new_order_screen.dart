@@ -10,6 +10,7 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../auth/domain/normalize_phone.dart';
+import '../domain/order_title.dart';
 import '../domain/workshop.dart';
 import 'quick_item_field.dart';
 import 'providers.dart';
@@ -18,6 +19,7 @@ class NewOrderScreen extends ConsumerStatefulWidget { const NewOrderScreen({supe
 class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
   final _phone = TextEditingController(); final _vin = TextEditingController(); final _plate = TextEditingController(); final _title = TextEditingController();
   String _terms = 'on_delivery'; final _items = <NewItem>[]; bool _busy = false; String? _error;
+  String? get _autoTitle => autoTitle([for (final i in _items) i.descriptionAr]);
   double get _subtotal => _items.fold(0, (a, i) => a + (double.tryParse(i.unitPrice) ?? 0) * (double.tryParse(i.quantity) ?? 1));
   Future<void> _addItem() async {
     final l = L10n.of(context); final desc = TextEditingController(); final price = TextEditingController(); final qty = TextEditingController(text: '1'); final warranty = TextEditingController(text: '0'); var type = 'labor';
@@ -33,9 +35,12 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
   }
   Future<void> _create() async {
     final l = L10n.of(context); final org = ref.read(currentOrgIdProvider); final phone = normalizeSaudiPhone(_phone.text);
-    if (org == null || phone == null || _title.text.trim().isEmpty || _items.isEmpty || (_vin.text.trim().isEmpty && _plate.text.trim().isEmpty)) { setState(() => _error = l.errorInvalidPhone); return; }
+    // رسالة واحدة لكل نقص: «تحقّق من الرقم» حين ينقص السيارةَ رقمُ لوحة لا تُصلح شيئاً.
+    if (phone == null) { setState(() => _error = l.errorInvalidPhone); return; }
+    if (_vin.text.trim().isEmpty && _plate.text.trim().isEmpty) { setState(() => _error = l.wsNeedCar); return; }
+    if (org == null || _items.isEmpty) { setState(() => _error = l.wsNeedItem); return; }
     setState(() { _busy = true; _error = null; });
-    final r = await ref.read(workshopRepositoryProvider).create(NewWorkOrder(orgId: org, vin: _vin.text.trim().isEmpty ? null : _vin.text.trim().toUpperCase(), plate: _plate.text.trim().isEmpty ? null : _plate.text.trim(), customerPhone: phone, titleAr: _title.text.trim(), paymentTerms: _terms, items: _items));
+    final r = await ref.read(workshopRepositoryProvider).create(NewWorkOrder(orgId: org, vin: _vin.text.trim().isEmpty ? null : _vin.text.trim().toUpperCase(), plate: _plate.text.trim().isEmpty ? null : _plate.text.trim(), customerPhone: phone, titleAr: _title.text.trim().isEmpty ? (_autoTitle ?? '') : _title.text.trim(), paymentTerms: _terms, items: _items));
     if (!mounted) return; setState(() => _busy = false);
     r.when(ok: (wo) { ref.invalidate(orgOrdersProvider); context.pushReplacement('/ws/orders/${wo.id}'); }, err: (f) => setState(() => _error = f.message(Localizations.localeOf(context).languageCode)));
   }
@@ -48,7 +53,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         const SizedBox(height: SinaatySpace.md),
         Row(children: [Expanded(child: TextField(controller: _plate, decoration: InputDecoration(labelText: l.plateLabel, hintText: 'أ ب ج 1234'))), const SizedBox(width: SinaatySpace.md), Expanded(child: TextField(controller: _vin, textDirection: TextDirection.ltr, textCapitalization: TextCapitalization.characters, maxLength: 17, inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]'))], decoration: InputDecoration(labelText: l.vinLabel, counterText: '', suffixIcon: VinScanButton(controller: _vin))))]),
         const SizedBox(height: SinaatySpace.md),
-        TextField(controller: _title, decoration: InputDecoration(labelText: l.wsTitle, hintText: l.wsTitleHint)),
+        // الاسم يكتبه البنود؛ والحقل تجاوزٌ لمن أراد اسماً أوضح («صيانة ١٠ آلاف»).
+        TextField(controller: _title, onChanged: (_) => setState(() {}), decoration: InputDecoration(labelText: l.wsTitleOptional, hintText: _autoTitle ?? l.wsTitleHint, helperText: _autoTitle != null && _title.text.trim().isEmpty ? l.wsTitleAuto : null, helperMaxLines: 2)),
         const SizedBox(height: SinaatySpace.lg), SectionTitle(l.wsItems),
         // سطر واحد بدل ورقة من خمسة حقول — والورقة تبقى خلف «تفاصيل» لمن احتاجها (الضمان، حالة القطعة).
         SectionCard(child: Column(children: [
