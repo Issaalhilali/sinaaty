@@ -29,6 +29,14 @@ json.dump(cfg, open(path, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 print(f"▸ عنوان الخادم: {was} ← {url}" if was != url else f"▸ عنوان الخادم كما هو: {url}")
 PY
 
+# والأمر المجرد `flutter run` لا يمرر ملف البيئة — فيقرأ هذا الثابت المولَّد بدل «localhost».
+python3 - "lib/core/config/dev_host.dart" "http://$HOST:$PORT" <<'PY'
+import re, sys
+path, url = sys.argv[1], sys.argv[2]
+src = open(path, encoding='utf-8').read()
+open(path, 'w', encoding='utf-8').write(re.sub(r"const String kDevLanHost = '[^']*';", f"const String kDevLanHost = '{url}';", src))
+PY
+
 # التحقق مبكراً خير من اكتشافه بعد عشر دقائق حيرة أمام شاشة جامدة.
 if [ "$HOST" != "localhost" ] && ! nc -z "$HOST" "$PORT" 2>/dev/null; then
   echo "  ⚠ لا شيء يستمع على $HOST:$PORT — شغّل الـ API واجعله يستمع على 0.0.0.0 لا 127.0.0.1،"

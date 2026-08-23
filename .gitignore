@@ -92,3 +92,6 @@ apps/admin-web/out/
 apps/admin-web/test-results/
 apps/admin-web/playwright-report/
 .vscode/
+
+# عنوان شبكة الجهاز — يولّده tool/api-host.sh ويختلف بكل شبكة
+apps/mobile/lib/core/config/dev_host.dart
