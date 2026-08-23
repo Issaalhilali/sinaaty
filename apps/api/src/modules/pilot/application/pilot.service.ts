@@ -132,7 +132,7 @@ export class PilotService {
     if (q.org_id) { if (!membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN'); }
     else if (!isPlatformStaff(u)) throw new AppError('FORBIDDEN');
     const { from, to } = this.window(q);
-    const rows = await this.repo.funnel({ from, to, zone: q.zone, orgId: q.org_id });
+    const [rows, firstOffer] = await Promise.all([this.repo.funnel({ from, to, zone: q.zone, orgId: q.org_id }), this.repo.firstOfferMinutes({ from, to, zone: q.zone })]);
     const by = (e: string) => rows.find((r) => r.event === e)?.count ?? 0;
     const created = by('work_order.created');
     const approved = by('work_order.approved');
@@ -146,6 +146,11 @@ export class PilotService {
         approval_rate: pct(approved, created), invoice_rate: pct(invoiced, approved), payment_rate: pct(paid, invoiced),
       },
       parts: { requested: by('part_request.created'), bid: by('part_bid.submitted'), ordered: by('part_order.created') },
+      // سوق الإصلاح: كم طلباً فُتح، كم ردّت عليه السوق، كم تحوّل إلى أمر عمل — وكم دقيقة حتى أول ردّ.
+      service: (() => {
+        const requested = by('service_request.opened'); const offered = by('service_offer.submitted'); const accepted = by('service_request.accepted');
+        return { requested, offered, accepted, quiet: by('service_request.quiet'), offer_rate: pct(offered, requested), accept_rate: pct(accepted, requested), avg_first_offer_minutes: firstOffer };
+      })(),
     };
   }
 

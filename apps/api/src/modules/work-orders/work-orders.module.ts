@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { FleetModule } from '../fleet/fleet.module';
+import { PartsModule } from '../parts/parts.module';
 import { IdentityModule } from '../identity/identity.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { VehiclesModule } from '../vehicles/vehicles.module';
@@ -18,7 +19,7 @@ import { ApprovalLinkService } from './application/approval-link.service';
 import { RealtimeGateway } from './interface/ws/realtime.gateway';
 
 @Module({
-  imports: [forwardRef(() => FleetModule), IdentityModule, OrganizationsModule, VehiclesModule],
+  imports: [forwardRef(() => FleetModule), forwardRef(() => PartsModule), IdentityModule, OrganizationsModule, VehiclesModule],
   controllers: [AdminAbandonedController, WorkOrdersController, ApprovalPageController],
   providers: [
     AbandonedUseCases,

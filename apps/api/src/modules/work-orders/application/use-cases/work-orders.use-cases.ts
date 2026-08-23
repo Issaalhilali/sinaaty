@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
 import Decimal from 'decimal.js';
 import type { InspectionType, PartCondition, PaymentTerms, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
 import { FleetUseCases } from '../../../fleet/application/fleet.use-cases';
+import { PARTS_REPOSITORY, type PartsRepository } from '../../../parts/domain/repositories';
 import { AppError } from '../../../../common/errors';
 import { AppConfig } from '../../../../config';
 import { AuditLogWriter } from '../../../../common/audit';
@@ -35,6 +36,7 @@ const lineOf = (i: { quantity: string; unit_price: string; discount?: string; va
 export class WorkOrdersUseCases {
   constructor(
     @Inject(WORK_ORDER_REPOSITORY) private readonly repo: WorkOrderRepository,
+    @Inject(PARTS_REPOSITORY) private readonly parts: PartsRepository,
     @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository,
     @Inject(VEHICLE_REPOSITORY) private readonly vehicles: VehicleRepository,
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
@@ -63,6 +65,41 @@ export class WorkOrdersUseCases {
   async canAccessId(id: string, u: AuthUser) { const wo = await this.repo.findById(id); return !!wo && this.canRead(wo, u); }
 
   // ---------- create / read ----------
+  /** «أعدها؟» — the customer's own repeatable history, shaped ready for prefilled forms. The card is
+   *  the gift; the SEND stays their explicit tap (review arbitration: no blind one-tap repeats). */
+  async repeatables(u: AuthUser) {
+    const done = (await this.repo.list({ customerUserId: u.id, status: ['closed', 'delivered'], limit: 5 }))[0] ?? null;
+    let service = null;
+    if (done) {
+      const org = await this.orgs.findById(done.orgId); const v = done.vehicleId ? await this.vehicles.findById(done.vehicleId) : null;
+      if (org?.status === 'active') service = { kind: 'service_revisit', work_order_id: done.id, org_id: done.orgId, org_name_ar: org.tradeNameAr ?? org.legalNameAr, title_ar: done.titleAr, vehicle_id: done.vehicleId, vehicle_label: v ? `${v.makeNameAr ?? ''} ${v.plateNumber ?? ''}`.trim() || null : null, last_at: done.deliveredAt ?? done.createdAt };
+    }
+    let part = null;
+    {
+      const pr = (await this.parts.listRequests({ requesterUserId: u.id, limit: 3 })).find((x) => !!x.partNameAr) ?? null;
+      if (pr) part = { kind: 'part_request', part_request_id: pr.id, last_at: pr.createdAt, prefill: { part_name_ar: pr.partNameAr, part_number: pr.partNumber, accepted_conditions: pr.acceptedConditions, quantity: pr.quantity, vehicle_id: pr.vehicleId, vin: pr.vin, radius_km: pr.searchRadiusKm } };
+    }
+    return { cards: [service, part].filter(Boolean) };
+  }
+
+  /** «أعد الصيانة عند نفس الورشة» — a DRAFT order at the workshop that served them before; the workshop
+   *  is told its customer is coming back. Price/items follow the normal legal chain from zero. */
+  async repeat(u: AuthUser, dto: { work_order_id: string; title_ar?: string; note_ar?: string }) {
+    const src = await this.repo.findById(dto.work_order_id); if (!src) throw new AppError('NOT_FOUND');
+    if (src.customerUserId !== u.id) throw new AppError('FORBIDDEN');
+    if (!['closed', 'delivered'].includes(src.status)) throw new AppError('CONFLICT', { messageAr: 'الإعادة لأمر مكتمل.', messageEn: 'Repeat a completed order.' });
+    const org = await this.orgs.findById(src.orgId);
+    if (org?.status !== 'active') throw new AppError('CONFLICT', { messageAr: 'الورشة غير متاحة حالياً.', messageEn: 'The workshop is not available.' });
+    const wo = await this.uow.run(async (tx) => {
+      const number = await this.repo.nextNumber(tx);
+      const created = await this.repo.create({ number, orgId: src.orgId, vehicleId: src.vehicleId, customerUserId: u.id, paymentTerms: src.paymentTerms, titleAr: dto.title_ar ?? src.titleAr ?? 'إعادة صيانة', complaintAr: dto.note_ar ?? `إعادة زيارة — الأمر السابق ${src.number}`, createdBy: u.id }, tx);
+      await this.audit.write(tx, { action: 'work_order.repeat', entityType: 'work_order', entityId: created.id, orgId: src.orgId, actorUserId: u.id, after: { number: created.number, source: src.number } });
+      await this.outbox.publish(tx, { eventType: 'WorkOrderRepeated', aggregateType: 'work_order', aggregateId: created.id, payload: { number: created.number, sourceNumber: src.number, orgId: src.orgId, customerUserId: u.id, titleAr: created.titleAr } });
+      return created;
+    });
+    return { work_order: { id: wo.id, number: wo.number, status: wo.status, org_id: src.orgId }, source_number: src.number };
+  }
+
   async create(u: AuthUser, dto: CreateWorkOrderDto) {
     if (!u.orgs.some((o) => o.orgId === dto.org_id && WORKSHOP_WRITE_ROLES.includes(o.role)) && !isStaff(u)) throw new AppError('FORBIDDEN');
     const org = await this.orgs.findById(dto.org_id); if (!org || org.status !== 'active') throw new AppError('CONFLICT', { messageAr: 'المنشأة غير مفعّلة بعد.', messageEn: 'Organization is not active.' });

@@ -21,6 +21,15 @@ export class PilotPrismaRepository implements PilotRepository {
     });
   }
 
+  async firstOfferMinutes(q: { from: Date; to: Date; zone?: string }) {
+    const rows = await this.prisma.$queryRaw<Array<{ m: number | null }>>`
+      SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (o.first_offer - r.created_at)) / 60.0)::float AS m
+      FROM service_requests r
+      JOIN LATERAL (SELECT MIN(so.created_at) AS first_offer FROM service_offers so WHERE so.request_id = r.id) o ON true
+      WHERE r.created_at >= ${q.from} AND r.created_at < ${q.to} AND o.first_offer IS NOT NULL`;
+    const m = rows[0]?.m;
+    return m == null ? null : Math.max(1, Math.round(m));
+  }
   async funnel(q: { from: Date; to: Date; zone?: string; orgId?: string }): Promise<FunnelRow[]> {
     const rows = await this.prisma.$queryRaw<Array<{ event: string; count: bigint; orgs: bigint }>>`
       SELECT event, count(*) AS count, count(DISTINCT org_id) AS orgs

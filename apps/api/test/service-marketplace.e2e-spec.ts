@@ -148,6 +148,21 @@ describe('Service marketplace (e2e)', () => {
     await http().post(`/v1/service-requests/${r.body.id}/cancel`).set(auth(custTok)).send({ reason_ar: 'انحلّت' }).expect(200);
   });
 
+  it('the pilot funnel SEES the market: opened → offered → accepted, with the first-reply pulse', async () => {
+    await outbox.drain(500); await outbox.drain(500);
+    const f = await http().get('/v1/admin/pilot/funnel').set(auth(adminTok)).expect(200);
+    expect(f.body.service).toBeTruthy();
+    expect(f.body.service.requested).toBeGreaterThanOrEqual(2);      // طلبان على الأقل من هذه الحزمة
+    expect(f.body.service.offered).toBeGreaterThanOrEqual(2);
+    expect(f.body.service.accepted).toBeGreaterThanOrEqual(1);
+    expect(Number(f.body.service.accept_rate)).toBeGreaterThan(0);   // نسبة تحويل حقيقية لا صفراً
+    expect(f.body.service.avg_first_offer_minutes).toBeGreaterThanOrEqual(1);
+    // ونفس الأحداث محفوظة بلا تكرار عند إعادة التشغيل (unique per event×entity)
+    const before = await prisma.analyticsEvent.count({ where: { event: 'service_request.accepted' } });
+    await outbox.drain(500);
+    expect(await prisma.analyticsEvent.count({ where: { event: 'service_request.accepted' } })).toBe(before);
+  });
+
   it('parts bids now say WHERE the part is: supplier name, place and km from the delivery point', async () => {
     const pr = await http().post('/v1/parts/requests').set(auth(custTok)).send({ part_name_ar: 'مساعد أمامي يمين', accepted_conditions: ['oem_new', 'aftermarket_new'], quantity: 1, ...RIYADH, radius_km: 40, bidding_minutes: 60 }).expect(201);
     await http().post(`/v1/parts/requests/${pr.body.id}/bids`).set(auth(dealerTok)).send({ org_id: dealerOrg, condition: 'aftermarket_new', unit_price: '350', quantity: 1, eta_hours: 4, warranty_days: 90 }).expect(200);
@@ -158,4 +173,19 @@ describe('Service marketplace (e2e)', () => {
     expect(bid.distance_km).toBeLessThan(10);
     expect(bid.where_text).toMatch(/كم/);
   });
+  it("«أعدها؟»: the customer's own history comes back prefilled, and a repeat opens a draft at the same workshop", async () => {
+    // the accepted request's work order is delivered then closed → it becomes repeatable
+    const wo = await prisma.workOrder.findFirst({ where: { orgId: nearOrg }, orderBy: { createdAt: 'desc' } });
+    await prisma.workOrder.update({ where: { id: wo!.id }, data: { status: 'delivered', deliveredAt: new Date() } });
+    const cards = await http().get('/v1/work-orders/repeatables').set(auth(custTok)).expect(200);
+    const service = cards.body.cards.find((c: { kind: string }) => c.kind === 'service_revisit');
+    expect(service).toBeTruthy(); expect(service.org_id).toBe(nearOrg); expect(service.org_name_ar).toContain('القريبة');
+    const part = cards.body.cards.find((c: { kind: string }) => c.kind === 'part_request');
+    expect(part?.prefill?.part_name_ar).toBe('مساعد أمامي يمين');   // الطلب السابق يعود مملوءاً لا مُرسلاً
+    const r = await http().post('/v1/work-orders/repeat').set(auth(custTok)).send({ work_order_id: service.work_order_id, title_ar: 'فحص دوري بعد الإصلاح' }).expect(201);
+    expect(r.body.work_order.status).toBe('draft'); expect(r.body.work_order.org_id).toBe(nearOrg); expect(r.body.source_number).toBe(wo!.number);
+    // a stranger cannot repeat someone else's order
+    await http().post('/v1/work-orders/repeat').set(auth(await login(`+96659${suffix}`))).send({ work_order_id: service.work_order_id }).expect(403);
+  });
+
 });

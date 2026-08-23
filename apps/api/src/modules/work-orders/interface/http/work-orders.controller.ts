@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Header, HttpCode, Param, ParseIntPipe, P
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import type { WorkOrderStatus } from '@sinaaty/shared-types';
-import { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, ChangeOrderDto, CreateWorkOrderDto, InspectionDto, ItemDto, TransitionDto, UpdateItemDto, UpdateWorkOrderDto } from '../../application/dto/work-orders.dto';
+import { ApproveCompleteDto, ApproveInitDto, AttachMediaDto, CancelDto, ChangeOrderDto, CreateWorkOrderDto, InspectionDto, ItemDto, RepeatDto, TransitionDto, UpdateItemDto, UpdateWorkOrderDto } from '../../application/dto/work-orders.dto';
 import { AbandonedUseCases } from '../../application/abandoned.use-cases';
 import { WorkOrdersUseCases } from '../../application/use-cases/work-orders.use-cases';
 import type { AuthUser } from '../../../identity/domain/auth-user';
@@ -23,6 +23,11 @@ export class AdminAbandonedController {
 @ApiTags('work-orders') @ApiBearerAuth() @Controller('work-orders')
 export class WorkOrdersController {
   constructor(private readonly uc: WorkOrdersUseCases, private readonly abandoned: AbandonedUseCases) {}
+
+  @Get('repeatables') @ApiOperation({ summary: '«أعدها؟» — آخر ما يستحق التكرار عند هذا العميل، مهيأً لملء النموذج' })
+  repeatables(@CurrentUser() u: AuthUser) { return this.uc.repeatables(u); }
+  @Post('repeat') @HttpCode(201) @ApiOperation({ summary: 'إعادة الصيانة عند نفس الورشة — أمر مسودة، والسعر على المسار القانوني كالعادة' })
+  repeat(@CurrentUser() u: AuthUser, @Body(zod(RepeatDto)) dto: RepeatDto) { return this.uc.repeat(u, dto); }
 
   @Post() @HttpCode(201) @ApiOperation({ summary: 'Workshop creates a work order (customer by phone, vehicle by id/VIN/plate, optional items)' })
   create(@CurrentUser() u: AuthUser, @Body(zod(CreateWorkOrderDto)) dto: CreateWorkOrderDto) { return this.uc.create(u, dto); }

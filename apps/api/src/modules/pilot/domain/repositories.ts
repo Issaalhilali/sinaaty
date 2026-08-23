@@ -17,6 +17,8 @@ export interface ZoneRow { zone: string | null; orgs: number; workOrders: number
 export interface PilotRepository {
   /** Idempotent per (event, entity): an outbox replay must not double-count a funnel step. */
   record(e: AnalyticsEventInput, tx?: TxHandle): Promise<void>;
+  /** Median minutes from a request opening to its FIRST offer — the market's pulse, not its size. */
+  firstOfferMinutes(q: { from: Date; to: Date; zone?: string }): Promise<number | null>;
   funnel(q: { from: Date; to: Date; zone?: string; orgId?: string }): Promise<FunnelRow[]>;
   byZone(q: { from: Date; to: Date }): Promise<ZoneRow[]>;
   /** Activation: which pilot organizations actually used the product in the window. */

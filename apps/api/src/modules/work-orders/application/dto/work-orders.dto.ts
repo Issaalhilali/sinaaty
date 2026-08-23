@@ -35,3 +35,5 @@ export const InspectionDto = z.object({ type: z.enum(InspectionTypeValues as [st
 export type InspectionDto = z.infer<typeof InspectionDto>;
 export const AttachMediaDto = z.object({ media_ids: z.array(z.string().uuid()).min(1).max(40), label: z.enum(['before', 'after', 'progress', 'damage', 'receipt', 'other']).default('progress'), item_id: z.string().uuid().optional() });
 export type AttachMediaDto = z.infer<typeof AttachMediaDto>;
+export const RepeatDto = z.object({ work_order_id: z.string().uuid(), title_ar: z.string().min(3).max(200).optional(), note_ar: z.string().max(1000).optional() });
+export type RepeatDto = z.infer<typeof RepeatDto>;

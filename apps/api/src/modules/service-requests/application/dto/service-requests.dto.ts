@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 export const CreateServiceRequestDto = z.object({
-  vehicle_id: z.string().uuid(),
+  // إلزامي عمداً (تحكيم 2026-08-23): كل إصلاح يُقيَّد على سيارة، والقبول ينشئ أمر عمل يتطلبها —
+  // فالرفض هنا أرحم من انهيار بعد انتظار العروض. والرسالة عربية مفهومة لا «مدخل غير صالح».
+  vehicle_id: z.string({ required_error: 'اختر سيارتك أولاً' }).uuid('اختر سيارتك أولاً'),
   title_ar: z.string().min(5).max(200),
   description_ar: z.string().max(2000).optional(),
   lat: z.number().min(-90).max(90),
