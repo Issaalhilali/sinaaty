@@ -9,7 +9,7 @@ import { PrismaService } from '../src/prisma';
 describe('Invoicing (e2e)', () => {
   let app: INestApplication; let prisma: PrismaService; const http = () => request(app.getHttpServer());
   const suffix = String(Date.now()).slice(-7);
-  const wsPhone = '+966500000001'; const custPhone = `+96659${suffix}`;
+  const wsPhone = '+966500000009'; const custPhone = `+96659${suffix}`;
   let wsTok: string; let custTok: string; let orgId: string; let woId: string; let invId: string; let snapshotTotal: string; let snapshotVat: string;
   const login = async (phone: string) => { const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200); const v = await http().post('/v1/auth/otp/verify').send({ phone, code: r.body.debug_code }).expect(200); return v.body.accessToken as string; };
   const auth = (t: string) => ({ authorization: `Bearer ${t}` });
@@ -58,9 +58,9 @@ describe('Invoicing (e2e)', () => {
     const inv = await http().post('/v1/invoices').set(auth(wsTok)).send({ work_order_id: woId, notes_ar: 'شكراً لتعاملكم' }).expect(201);
     invId = inv.body.id;
     expect(inv.body.type).toBe('simplified_tax'); expect(inv.body.status).toBe('issued'); expect(inv.body.total).toBe(snapshotTotal); expect(inv.body.vatTotal).toBe(snapshotVat); expect(inv.body.lines).toHaveLength(3);
-    expect(inv.body.number).toMatch(/^INV-\d{4}-\d{6}$/); expect(inv.body.sellerSnapshot.vat_number).toBe('300000000000003');
+    expect(inv.body.number).toMatch(/^INV-\d{4}-\d{6}$/); expect(inv.body.sellerSnapshot.vat_number).toBe('300000000000093');
     const qr = decodeQr(inv.body.zatcaQr).fields;
-    expect(qr.vatNumber).toBe('300000000000003'); expect(qr.total).toBe(snapshotTotal); expect(qr.vat).toBe(snapshotVat); expect(qr.sellerName).toBe(inv.body.sellerSnapshot.name_ar);
+    expect(qr.vatNumber).toBe('300000000000093'); expect(qr.total).toBe(snapshotTotal); expect(qr.vat).toBe(snapshotVat); expect(qr.sellerName).toBe(inv.body.sellerSnapshot.name_ar);
   });
   it('per-line VAT: 2 × 210 − 20 = 400 → VAT 60.00; totals sum lines', async () => {
     const inv = await http().get(`/v1/invoices/${invId}`).set(auth(custTok)).expect(200);
