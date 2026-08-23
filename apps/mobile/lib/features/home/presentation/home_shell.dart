@@ -28,18 +28,30 @@ import '../../parts/presentation/workshop_parts_screen.dart';
 /// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
 class HomeShell extends ConsumerStatefulWidget { const HomeShell({super.key}); @override ConsumerState<HomeShell> createState() => _HomeShellState(); }
 class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserver {
-  @override void initState() { super.initState(); WidgetsBinding.instance.addObserver(this); }
-  @override void dispose() { WidgetsBinding.instance.removeObserver(this); super.dispose(); }
+  Timer? _poll;
+  @override void initState() {
+    super.initState(); WidgetsBinding.instance.addObserver(this);
+    // Resume is not enough: a tab left open all day never refreshes at all. A customer watched his
+    // home screen carry orders that had been closed half an hour earlier, «راجع واعتمد» still on them
+    // (owner walk 2026-08-23). Whatever is on screen gets refetched quietly — invalidating a provider
+    // nobody is watching is a no-op, so this costs exactly one request for the visible list.
+    _poll = Timer.periodic(const Duration(seconds: 45), (_) => _refreshLive());
+  }
+  @override void dispose() { _poll?.cancel(); WidgetsBinding.instance.removeObserver(this); super.dispose(); }
 
-  /// A workshop keeps the app open all day; without this it reads yesterday's numbers as today's
-  /// (owner review 2026-08-23 §1 — the most dangerous defect because it is silent).
-  @override void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed || !mounted) return;
+  void _refreshLive() {
+    if (!mounted) return;
     ref.invalidate(orgOrdersProvider);
     ref.invalidate(orgWalletProvider);
     ref.invalidate(workOrdersProvider);
     ref.invalidate(invoicesProvider);
     ref.invalidate(unreadCountProvider);
+  }
+
+  /// A workshop keeps the app open all day; without this it reads yesterday's numbers as today's
+  /// (owner review 2026-08-23 §1 — the most dangerous defect because it is silent).
+  @override void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshLive();
   }
 
   int _index = 0;
