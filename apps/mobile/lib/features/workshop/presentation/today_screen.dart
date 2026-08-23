@@ -1,3 +1,4 @@
+import 'action_inbox_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,11 +19,13 @@ class TodayScreen extends ConsumerWidget {
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final orders = ref.watch(orgOrdersProvider); final wallet = ref.watch(orgWalletProvider); final pending = ref.watch(syncControllerProvider);
     return AsyncResultView<List<WorkOrder>>(value: orders, onRetry: () => ref.invalidate(orgOrdersProvider), builder: (all) {
-      final active = all.where((w) => w.isActive).toList(); final awaiting = active.where((w) => w.awaitingApproval).length;
+      final active = all.where((w) => w.isActive).toList();
       final needs = active.where((w) => workshopNext.containsKey(w.status) || w.status == 'draft').toList()..sort((a, b) => _prio(a.status).compareTo(_prio(b.status)));
       final hero = needs.firstOrNull; final available = wallet.value?.valueOrNull?.available ?? '0';
       if (all.isEmpty) return EmptyState(icon: Icons.build_outlined, title: l.wsNoOrders, body: l.wsNoOrdersBody, actionLabel: l.wsNewOrder, onAction: () => context.push('/ws/new'));
       return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); await ref.read(orgOrdersProvider.future); }, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
+        // كل الأنظمة في صندوق واحد: ماذا ينتظرني؟ — وهو السؤال الذي يُفتح التطبيق من أجله.
+        const ActionInboxCard(),
         if (pending > 0) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: StatusBadge(l.wsPendingSync(pending), tone: BadgeTone.warn, icon: Icons.cloud_upload_outlined)),
         // Nearby repair requests (scope §1.ج) — the hot-request card pattern, behind its flag.
         if ((ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.serviceMarketplace))
@@ -43,7 +46,9 @@ class TodayScreen extends ConsumerWidget {
               const SizedBox(height: SinaatySpace.md),
             ];
           })(),
-        Row(children: [_Kpi(value: '${active.length}', label: l.wsInShop), const SizedBox(width: 10), _Kpi(value: '$awaiting', label: l.wsAwaitingCustomer), const SizedBox(width: 10), _Kpi(value: Fmt.money(available, locale: locale).split(' ').first.replaceAll(RegExp(r'\.00$'), ''), label: l.wsReadyToPayout)]),
+        // «بانتظار اعتماد العميل» انتقل إلى صندوق «ما يحتاجك الآن» ومعه طريق إليه — ورقمٌ يُعرض مرتين
+        // على شاشة واحدة ضجيج لا معلومة. يبقى هنا ما يُقرأ ولا يُفعل: كم سيارة عندي، وكم مالي جاهز.
+        Row(children: [_Kpi(value: '${active.length}', label: l.wsInShop), const SizedBox(width: 10), _Kpi(value: Fmt.money(available, locale: locale).split(' ').first.replaceAll(RegExp(r'\.00$'), ''), label: l.wsReadyToPayout)]),
         if (hero != null) ...[const SizedBox(height: SinaatySpace.md), _HeroAction(order: hero)],
         SectionTitle(l.wsTodayCars, trailing: TextButton(onPressed: () => context.push('/ws/orders'), child: Text(l.wsAll))),
         SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in active.take(6)) AppListRow(icon: Icons.directions_car_outlined, title: w.carLine, subtitle: Fmt.meta([if (w.knowsCar) w.titleAr, Fmt.date(w.createdAt, locale: locale)]), trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : w.status == 'ready' ? BadgeTone.seal : BadgeTone.plain), onTap: () => context.push('/ws/orders/${w.id}'))])),

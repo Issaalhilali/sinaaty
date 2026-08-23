@@ -146,7 +146,7 @@ class L10nAr extends L10n {
 
   @override
   String get addCarSubtitle =>
-      'أدخل رقم الهيكل (17 خانة) أو رقم اللوحة — سنتعرّف على السيارة تلقائياً.';
+      'رقم الهيكل يعرّف سيارتك بنوعها وموديلها. وتكفي اللوحة وحدها للبدء — بأي ترتيب: «أ ب ج 1234» أو «1234 أ ب ج».';
 
   @override
   String get addCarSubmit => 'إضافة السيارة';
@@ -1946,4 +1946,36 @@ class L10nAr extends L10n {
 
   @override
   String get vinScanNotFound => 'هذا الرمز ليس رقم هيكل — جرّب ملصق عمود الباب';
+
+  @override
+  String get wsInbox => 'ما يحتاجك الآن';
+
+  @override
+  String wsInboxCount(int n) {
+    return '$n بند';
+  }
+
+  @override
+  String get wsInboxDisputes => 'نزاعات مفتوحة — المبلغ مجمّد حتى القرار';
+
+  @override
+  String get wsInboxAbandonRisk => 'سيارات جاهزة لم يستلمها أصحابها';
+
+  @override
+  String get wsInboxAwaitingApproval => 'أوامر تنتظر اعتماد العميل';
+
+  @override
+  String get wsInboxReady => 'جاهزة للتسليم';
+
+  @override
+  String get wsInboxCheckout => 'تحتاج فحص تسليم';
+
+  @override
+  String get wsInboxServiceRequests => 'طلبات إصلاح قريبة تنتظر عرضك';
+
+  @override
+  String get wsInboxPartBids => 'طلبات قطع تنتظر عرضك';
+
+  @override
+  String get wsInboxUnpaid => 'مسلَّمة بلا فاتورة';
 }

@@ -364,7 +364,7 @@ abstract class L10n {
   /// No description provided for @addCarSubtitle.
   ///
   /// In ar, this message translates to:
-  /// **'أدخل رقم الهيكل (17 خانة) أو رقم اللوحة — سنتعرّف على السيارة تلقائياً.'**
+  /// **'رقم الهيكل يعرّف سيارتك بنوعها وموديلها. وتكفي اللوحة وحدها للبدء — بأي ترتيب: «أ ب ج 1234» أو «1234 أ ب ج».'**
   String get addCarSubtitle;
 
   /// No description provided for @addCarSubmit.
@@ -3726,6 +3726,66 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'هذا الرمز ليس رقم هيكل — جرّب ملصق عمود الباب'**
   String get vinScanNotFound;
+
+  /// No description provided for @wsInbox.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما يحتاجك الآن'**
+  String get wsInbox;
+
+  /// No description provided for @wsInboxCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} بند'**
+  String wsInboxCount(int n);
+
+  /// No description provided for @wsInboxDisputes.
+  ///
+  /// In ar, this message translates to:
+  /// **'نزاعات مفتوحة — المبلغ مجمّد حتى القرار'**
+  String get wsInboxDisputes;
+
+  /// No description provided for @wsInboxAbandonRisk.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارات جاهزة لم يستلمها أصحابها'**
+  String get wsInboxAbandonRisk;
+
+  /// No description provided for @wsInboxAwaitingApproval.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوامر تنتظر اعتماد العميل'**
+  String get wsInboxAwaitingApproval;
+
+  /// No description provided for @wsInboxReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاهزة للتسليم'**
+  String get wsInboxReady;
+
+  /// No description provided for @wsInboxCheckout.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحتاج فحص تسليم'**
+  String get wsInboxCheckout;
+
+  /// No description provided for @wsInboxServiceRequests.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات إصلاح قريبة تنتظر عرضك'**
+  String get wsInboxServiceRequests;
+
+  /// No description provided for @wsInboxPartBids.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات قطع تنتظر عرضك'**
+  String get wsInboxPartBids;
+
+  /// No description provided for @wsInboxUnpaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسلَّمة بلا فاتورة'**
+  String get wsInboxUnpaid;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

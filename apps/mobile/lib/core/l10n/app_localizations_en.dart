@@ -146,7 +146,7 @@ class L10nEn extends L10n {
 
   @override
   String get addCarSubtitle =>
-      'Enter the 17-character VIN or the plate — we identify the car automatically.';
+      'The VIN identifies the make and model. The plate alone is enough to start — in either order.';
 
   @override
   String get addCarSubmit => 'Add car';
@@ -1968,4 +1968,37 @@ class L10nEn extends L10n {
   @override
   String get vinScanNotFound =>
       'That code is not a VIN — try the door-pillar label';
+
+  @override
+  String get wsInbox => 'What needs you now';
+
+  @override
+  String wsInboxCount(int n) {
+    return '$n item(s)';
+  }
+
+  @override
+  String get wsInboxDisputes => 'Open disputes — money frozen until decided';
+
+  @override
+  String get wsInboxAbandonRisk => 'Ready cars nobody collected';
+
+  @override
+  String get wsInboxAwaitingApproval => 'Waiting for customer approval';
+
+  @override
+  String get wsInboxReady => 'Ready to hand over';
+
+  @override
+  String get wsInboxCheckout => 'Need a check-out inspection';
+
+  @override
+  String get wsInboxServiceRequests =>
+      'Nearby repair requests awaiting your offer';
+
+  @override
+  String get wsInboxPartBids => 'Part requests awaiting your bid';
+
+  @override
+  String get wsInboxUnpaid => 'Delivered without an invoice';
 }

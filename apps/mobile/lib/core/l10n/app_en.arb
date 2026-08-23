@@ -51,7 +51,7 @@
   "vinLabel": "VIN",
   "plateLabel": "Plate number",
   "addCarTitle": "Add your car",
-  "addCarSubtitle": "Enter the 17-character VIN or the plate — we identify the car automatically.",
+  "addCarSubtitle": "The VIN identifies the make and model. The plate alone is enough to start — in either order.",
   "addCarSubmit": "Add car",
   "addCarNeedOne": "Enter a VIN or a plate number.",
   "carPassport": "Car passport",
@@ -919,5 +919,22 @@
   "wsTowing": "Towing",
   "sar": "SAR",
   "vinScan": "Scan the VIN",
-  "vinScanNotFound": "That code is not a VIN — try the door-pillar label"
+  "vinScanNotFound": "That code is not a VIN — try the door-pillar label",
+  "wsInbox": "What needs you now",
+  "wsInboxCount": "{n} item(s)",
+  "wsInboxDisputes": "Open disputes — money frozen until decided",
+  "wsInboxAbandonRisk": "Ready cars nobody collected",
+  "wsInboxAwaitingApproval": "Waiting for customer approval",
+  "wsInboxReady": "Ready to hand over",
+  "wsInboxCheckout": "Need a check-out inspection",
+  "wsInboxServiceRequests": "Nearby repair requests awaiting your offer",
+  "wsInboxPartBids": "Part requests awaiting your bid",
+  "wsInboxUnpaid": "Delivered without an invoice",
+  "@wsInboxCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }
