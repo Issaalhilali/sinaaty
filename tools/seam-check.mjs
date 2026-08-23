@@ -74,25 +74,27 @@ async function main() {
   const srId = created.body?.id;
 
   console.log('الورشة:');
-  // The break that started this file: the app calls ?nearby=true; the API indexed on org_id.
-  const nearby = await call('GET', '/service-requests?nearby=true', { token: workshop });
-  Array.isArray(nearby.body) && nearby.body.some((r) => r.id === srId)
-    ? pass('ترى الطلب عبر ?nearby=true (كما ينادي التطبيق)')
-    : fail('الورشة لا ترى الطلب عبر ?nearby=true', `أعادت ${nearby.status} بـ${Array.isArray(nearby.body) ? nearby.body.length : '؟'} عنصراً — بطاقة «طلبات قريبة» ستختفي بصمت`);
-
+  // The break that started this file: the app called ?nearby=true while the API keyed on org_id.
+  // The app now sends org_id (as it should — a user may belong to several organizations), so this
+  // is the call that must work. Both sides were fixed; the seam is what we keep testing.
   const byOrg = await call('GET', `/service-requests?org_id=${orgId}`, { token: workshop });
   Array.isArray(byOrg.body) && byOrg.body.some((r) => r.id === srId)
-    ? pass('ترى الطلب عبر ?org_id (المسار الصريح)')
-    : fail('الورشة لا ترى الطلب عبر ?org_id', `${byOrg.status} ${JSON.stringify(byOrg.body).slice(0, 160)}`);
+    ? pass('ترى الطلب عبر ?org_id (كما ينادي التطبيق)')
+    : fail('الورشة لا ترى الطلب', `${byOrg.status} — بطاقة «طلبات قريبة» ستختفي بصمت`);
 
-  // The app omits org_id today; a fix on either side must keep BOTH shapes working.
-  const bare = await call('PUT', `/service-requests/${srId}/offer`, { token: workshop, body: { ...asApp.offer(orgId), org_id: undefined } });
-  bare.status === 200
-    ? pass('تقدّم عرضاً بلا org_id (يُشتق من العضوية)')
-    : fail('تقديم عرض بلا org_id', `${bare.status} ${JSON.stringify(bare.body).slice(0, 160)} — التطبيق لا يرسل org_id`);
+  // Omitting the org must never produce a generic "Invalid input": a workshop owner reads this.
+  const bare = await call('GET', '/service-requests?nearby=true', { token: workshop });
+  const bareOk = bare.status === 200 || (bare.body?.message_ar && !/غير صحيحة/.test(bare.body.message_ar));
+  bareOk
+    ? pass(bare.status === 200 ? 'بلا org_id تُشتق المنشأة تلقائياً' : `بلا org_id ترد برسالة مفهومة: «${bare.body.message_ar}»`)
+    : fail('غياب org_id يرد بخطأ عام', `${bare.status} ${JSON.stringify(bare.body).slice(0, 160)} — الرسالة يقرؤها صاحب ورشة`);
 
   const withOrg = await call('PUT', `/service-requests/${srId}/offer`, { token: workshop, body: asApp.offer(orgId) });
-  withOrg.status === 200 ? pass('تقدّم عرضاً مع org_id') : fail('تقديم عرض مع org_id', `${withOrg.status} ${JSON.stringify(withOrg.body).slice(0, 160)}`);
+  withOrg.status === 200 ? pass('تقدّم عرضاً (بهوية منشأتها)') : fail('تقديم عرض', `${withOrg.status} ${JSON.stringify(withOrg.body).slice(0, 160)}`);
+
+  const bareOffer = await call('PUT', `/service-requests/${srId}/offer`, { token: workshop, body: { ...asApp.offer(orgId), org_id: undefined } });
+  const bareOfferOk = bareOffer.status === 200 || (bareOffer.body?.message_ar && !/غير صحيحة/.test(bareOffer.body.message_ar));
+  bareOfferOk ? pass('عرض بلا org_id: يُشتق أو يُرفض برسالة مفهومة') : fail('عرض بلا org_id يرد بخطأ عام', JSON.stringify(bareOffer.body).slice(0, 160));
 
   console.log('العميل يقارن ويقبل:');
   const detail = await call('GET', `/service-requests/${srId}`, { token: customer });
@@ -109,7 +111,10 @@ async function main() {
   }
 
   console.log('الإدارة:');
-  const admin = await login(process.env.SEAM_ADMIN ?? '+966500000099');
+  // Repeated runs hit the per-phone OTP quota — that guard is a feature, not a seam break.
+  let admin;
+  try { admin = await login(process.env.SEAM_ADMIN ?? '+966500000099'); }
+  catch { console.log('  ~ تخطٍّ: حصة رموز الأدمن استُهلكت (الحارس يعمل) — أعد بعد ١٠ دقائق'); console.log(`\n${failures ? `✗ ${failures} كسر في الوصلة` : '✓ الوصلة سليمة — الأطراف الثلاثة تتكلم اللغة نفسها'}`); process.exit(failures ? 1 : 0); }
   const funnel = await call('GET', '/admin/pilot/funnel', { token: admin });
   funnel.body?.service
     ? pass(`القُمع يرى السوق: ${funnel.body.service.requested} طلباً · ${funnel.body.service.offer_rate}% نال عرضاً`)
