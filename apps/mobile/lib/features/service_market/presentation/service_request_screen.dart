@@ -6,6 +6,7 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
 import '../domain/service_request.dart';
 import 'providers.dart';
 
@@ -85,9 +86,11 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       ])),
     )));
     if (ok != true || !mounted) return;
+    final org = ref.read(currentOrgIdProvider);
+    if (org == null) return;                       // no org, no offer — and no frozen button either
     setState(() => _busy = true);
     final res = await ref.read(serviceMarketRepositoryProvider).offer(widget.id,
-      offerType: type, diagnosisAr: diagnosis.text.trim(),
+      orgId: org, offerType: type, diagnosisAr: diagnosis.text.trim(),
       priceMin: type == 'estimate' ? min.text.trim() : null,
       priceMax: type == 'estimate' && max.text.trim().isNotEmpty ? max.text.trim() : null,
       availability: avail);

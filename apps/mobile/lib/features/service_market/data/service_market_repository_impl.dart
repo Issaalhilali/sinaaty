@@ -49,10 +49,10 @@ class ServiceMarketRepositoryImpl implements ServiceMarketRepository {
         'preferred_time': ?preferredTime, 'media_ids': mediaIds,
       })).data!));
   @override Future<Result<List<ServiceRequest>>> mine() => _run(() async => (await api.dio.get<List<dynamic>>('/service-requests', queryParameters: {'mine': 'true'})).data!.cast<Map<String, dynamic>>().map(requestFromJson).toList());
-  @override Future<Result<List<ServiceRequest>>> nearby() => _run(() async => (await api.dio.get<List<dynamic>>('/service-requests', queryParameters: {'nearby': 'true'})).data!.cast<Map<String, dynamic>>().map(requestFromJson).toList());
+  @override Future<Result<List<ServiceRequest>>> nearby({String? orgId}) => _run(() async => (await api.dio.get<List<dynamic>>('/service-requests', queryParameters: {'org_id': ?orgId})).data!.cast<Map<String, dynamic>>().map(requestFromJson).toList());
   @override Future<Result<ServiceRequest>> byId(String id) => _run(() async => requestFromJson((await api.dio.get<Map<String, dynamic>>('/service-requests/$id')).data!));
-  @override Future<Result<void>> offer(String id, {required String offerType, required String diagnosisAr, String? priceMin, String? priceMax, String? availability}) =>
-      _run(() async => (await api.dio.put<Map<String, dynamic>>('/service-requests/$id/offer', data: {'offer_type': offerType, 'diagnosis_ar': diagnosisAr, 'price_min': ?priceMin, 'price_max': ?priceMax, 'availability': ?availability})).data);
+  @override Future<Result<void>> offer(String id, {required String orgId, required String offerType, required String diagnosisAr, String? priceMin, String? priceMax, String? availability}) =>
+      _run(() async => (await api.dio.put<Map<String, dynamic>>('/service-requests/$id/offer', data: {'org_id': orgId, 'offer_type': offerType, 'diagnosis_ar': diagnosisAr, 'price_min': ?priceMin, 'price_max': ?priceMax, 'availability': ?availability})).data);
   @override Future<Result<String>> accept(String id, {required String offerId}) =>
       _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/service-requests/$id/accept', data: {'offer_id': offerId})).data!; return (d['work_order_id'] ?? d['workOrderId']) as String; });
   @override Future<Result<void>> widen(String id, {required int radiusKm}) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/service-requests/$id/widen', data: {'radius_km': radiusKm})).data);

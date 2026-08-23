@@ -22,6 +22,7 @@ import 'package:sinaaty/features/service_market/presentation/providers.dart';
 import 'package:sinaaty/features/transport/presentation/providers.dart';
 import 'package:sinaaty/features/vehicles/domain/vehicle.dart';
 import 'package:sinaaty/features/vehicles/presentation/providers.dart';
+import 'package:sinaaty/features/workshop/presentation/providers.dart' show currentOrgIdProvider;
 
 import 'customer_flow_test.dart' show FakeAuth;
 import 'feature_flags_test.dart' show FakeFlags;
@@ -50,9 +51,11 @@ class FakeServiceMarket implements ServiceMarketRepository {
     final r = _seed(); store[r.id] = r; return Result.ok(r);
   }
   @override Future<Result<List<ServiceRequest>>> mine() async => Result.ok(store.values.toList());
-  @override Future<Result<List<ServiceRequest>>> nearby() async => Result.ok(store.values.toList());
+  String? nearbyOrg; String? offerOrg;
+  @override Future<Result<List<ServiceRequest>>> nearby({String? orgId}) async { nearbyOrg = orgId; return Result.ok(store.values.toList()); }
   @override Future<Result<ServiceRequest>> byId(String id) async => Result.ok(store[id]!);
-  @override Future<Result<void>> offer(String id, {required String offerType, required String diagnosisAr, String? priceMin, String? priceMax, String? availability}) async {
+  @override Future<Result<void>> offer(String id, {required String orgId, required String offerType, required String diagnosisAr, String? priceMin, String? priceMax, String? availability}) async {
+    offerOrg = orgId;
     final r = store[id]!;
     store[id] = ServiceRequest(id: r.id, number: r.number, status: r.status, titleAr: r.titleAr, radiusKm: r.radiusKm, preferredTime: r.preferredTime, createdAt: r.createdAt,
       offers: [ServiceOffer(id: 'of-mine', offerType: offerType, diagnosisAr: diagnosisAr, priceMin: priceMin, priceMax: priceMax, availability: availability)]);
@@ -86,6 +89,7 @@ void main() {
     flagsRepositoryProvider.overrideWithValue(FakeFlags(Result.ok(FeatureFlags(flags)))),
     serviceMarketRepositoryProvider.overrideWithValue(market),
     serviceRequestRealtimeProvider.overrideWithValue(live),
+    currentOrgIdProvider.overrideWithValue('org-1'),   // the workshop seat: the API keys its inbox and its offer on this
     vehiclesProvider.overrideWith((ref) async => Result.ok(withVehicle
         ? const [Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)]
         : const <Vehicle>[])),
@@ -142,6 +146,7 @@ void main() {
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
       serviceMarketRepositoryProvider.overrideWithValue(market),
       serviceRequestRealtimeProvider.overrideWithValue(live),
+    currentOrgIdProvider.overrideWithValue('org-1'),   // the workshop seat: the API keys its inbox and its offer on this
     ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: ThemeMode.dark, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
       localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: GoRouter(initialLocation: '/service-requests/sr1', routes: [GoRoute(path: '/service-requests/:id', builder: (_, s) => ServiceRequestScreen(id: s.pathParameters['id']!))]))));
@@ -196,6 +201,19 @@ void main() {
     expect(find.text('أضف سيارة'), findsOneWidget);
     expect(find.text('أرسل الطلب'), findsNothing);                          // the API requires a vehicle: no send button at all
     expect(find.text('نطاق البحث'), findsNothing);                          // and nothing to fill in before the car exists
+  });
+
+  testWidgets('the workshop side carries its org id — the inbox and the offer both die without it', (tester) async {
+    size(tester);
+    market.store['sr1'] = market._seed();
+    await tester.pumpWidget(app('/ws/service-requests/sr1')); await tester.pumpAndSettle();
+    await tester.tap(find.text('قدّم عرضك')); await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'الأرجح جلد مقصات — صوت المطبات مؤشره.');
+    await tester.enterText(find.byType(TextField).at(1), '350');
+    await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle();
+    // The API rejects an offer without org_id and indexes the nearby inbox by it: it must travel.
+    expect(market.offerOrg, isNotNull);
+    expect(market.offerOrg, 'org-1');
   });
 
   testWidgets('flag off: «أصلح سيارتي» does not exist', (tester) async {
