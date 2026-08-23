@@ -56,7 +56,8 @@
 | ~~Accept `suggested_items` into the work order in one tap~~ ✅ 2026-08-21 — «أضفها لأمر العمل» with per-line pricing sheet (the report carries no prices), riding the normal addItem path so versioning/re-approval behave as if typed (14907b1) | Step 21 | — | done |
 | Attach check-out photos to the accident claim file | Step 21 | photo count is sent; upload needs the provider's attachment API | after the agreement is signed |
 | Scheduled refresh of open accident files (assessment lands days later) | Step 21 | manual refresh endpoint exists | Step 25 |
-| Tow: «استخدم موقعي الحالي» + map picker (needs a location plugin + platform permissions) | Step 23 | pasted maps link / coordinates covers the pilot | Step 25 |
+| **P1 — «استخدم موقعي الحالي» (geolocator + permissions)**: promoted from Step 23 by the live product walk on 2026-08-23 — pasting a maps link was acceptable while location served the tow alone; the repair marketplace makes «الورش القريبة» the whole premise, so location is now a precondition of the owner's flagship feature, not a convenience. Paste stays as the fallback. | Step 23 → service marketplace | — | next mobile round |
+| Repair request from a customer with no car reaches the workshop with no make/model — pricing in the dark. Inline «أضف سيارتك» invite in the sheet (sending stays allowed) | live product walk 2026-08-23 | — | next mobile round |
 | Tow: pick the destination workshop from the nearby list instead of typing it | Step 23 | discovery API exists; mobile has no orgs repository yet | Step 23b/26 |
 | Live tow tracking on a map (the API already streams `transport:{id}`) | Step 23 | status timeline + refresh for now | Step 30 |
 | Warranty claim from the wallet (open a claim on a warranty) | Step 23 | API supports claims; screen lists warranties only | Step 26 |
