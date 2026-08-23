@@ -174,6 +174,9 @@ Rules: widgets never call Dio/drift directly; state lives in Riverpod notifiers;
 
 **Enforcement:** ESLint `import/no-restricted-paths` (api) and `dart_code_metrics`/`import_lint` (mobile) forbid inward-layer violations; CI fails on violation. Add an ADR (`docs/adr/0007-clean-architecture.md`) in Step 0.
 
+- **الحارس في طبقة واحدة ليس حارساً.** أي حقل يظهر في مستند قانوني (الرقم الضريبي، السجل التجاري) أو يعمل هوية دخول (الجوال) يُحرس بقيد في قاعدة البيانات لا في الـDTO وحده — البذور والأدوات و`UPDATE` اليدوي تكتب تحت الطبقة، فيظهر الخلل في أعمق نقطة وبأسوأ رسالة وفي أسوأ لحظة. والحقل **المعمّى** (IBAN، الهوية الوطنية، CSID) تسقط عنه حراسة القاعدة حتماً — فحارسه الوحيد دالة التشفير المركزية، لا نسخة تحقق في كل مستدعٍ (`docs/design/identity-fields-audit.md`).
+- **الاختبارات تختبر ما نعرف أننا بنيناه، والفاحص يختبر ما يفعله الناس** (`tools/seam-check.mjs` في CI): ثلاثة أعطال صامتة في يوم واحد عاشت بين حزمتَي اختبارات خضراوين لأن كل طرف اختبر افتراضه ولم يختبر أحد الوصلة. وما لم يُنظر إليه على شاشة حقيقية لم يُثبت أنه يعمل.
+
 ### 5.6 Code style
 - TypeScript `strict: true`, no `any` (use `unknown` + Zod). ESLint + Prettier. Files kebab-case; classes PascalCase; DB snake_case (Prisma `@map`).
 - NestJS module layout follows §5.5 (`domain/ application/ infrastructure/ interface/`), plus `<name>.module.ts` and `__tests__/`.

@@ -77,7 +77,8 @@ BEGIN NEW.updated_at = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;
 -- =============================================================================
 CREATE TABLE users (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  phone_e164         varchar(20) UNIQUE,                       -- +9665XXXXXXXX
+  phone_e164         varchar(20) UNIQUE
+    CHECK (phone_e164 ~ '^\+9665[0-9]{8}$'),                    -- هوية الدخول وقناة رمز التوقيع: رقم مشوّه = حساب لا يُدخل إليه
   email              citext UNIQUE,
   full_name_ar       varchar(150),
   full_name_en       varchar(150),
@@ -156,7 +157,8 @@ CREATE TABLE organizations (
   trade_name_ar         varchar(200),
   trade_name_en         varchar(200),
   slug                  varchar(80) UNIQUE,
-  cr_number             varchar(20) UNIQUE,                    -- السجل التجاري
+  cr_number             varchar(20) UNIQUE
+    CHECK (cr_number IS NULL OR cr_number ~ '^[0-9]{10}$'),      -- السجل التجاري (يُطبع على الفاتورة الضريبية)
   vat_number            varchar(15) UNIQUE
     CHECK (vat_number IS NULL OR vat_number ~ '^3[0-9]{13}3$'),  -- 15 رقماً يبدأ وينتهي بـ3؛ القاعدة تعيد التحقق (البذور والأدوات تتجاوز الـDTO)
   vat_registered        boolean NOT NULL DEFAULT false,
@@ -324,7 +326,8 @@ ALTER TABLE kyb_documents ADD CONSTRAINT fk_kyb_media FOREIGN KEY (media_id) REF
 -- =============================================================================
 CREATE TABLE vehicles (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  vin              char(17) UNIQUE,
+  vin              char(17) UNIQUE
+    CHECK (vin IS NULL OR vin ~ '^[A-HJ-NPR-Z0-9]{17}$'),        -- معيار VIN: بلا I/O/Q
   plate_number     varchar(12),                                -- e.g. "أ ب ج 1234"
   plate_number_en  varchar(12),
   make_id          smallint REFERENCES vehicle_makes(id),
