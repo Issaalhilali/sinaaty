@@ -9,6 +9,7 @@ import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../transport/domain/transport.dart' show parseLocationLink;
 import '../../vehicles/domain/vehicle.dart';
+import '../../vehicles/presentation/providers.dart';
 import 'providers.dart';
 
 /// «أصلح سيارتي» (scope §1.أ, on the part-request sheet's template): pick the car, describe the
@@ -32,12 +33,29 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
       Text(l.srFix, style: Theme.of(ctx).textTheme.titleLarge),
       const SizedBox(height: 4),
       Text(l.srFixBody, style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
-      if (vehicles.isNotEmpty) ...[
+      // The API requires a vehicle — and rightly so: accepting an offer opens a work order, which
+      // has no meaning without a car. So a customer with none is invited to add one, never sent
+      // into a validation dead end.
+      if (vehicles.isEmpty) ...[
+        const SizedBox(height: SinaatySpace.md),
+        SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(Icons.directions_car_outlined, size: 20, color: Theme.of(ctx).colorScheme.primary),
+            const SizedBox(width: SinaatySpace.sm),
+            Expanded(child: Text(l.srNoVehicle, style: Theme.of(ctx).textTheme.titleSmall)),
+          ]),
+          const SizedBox(height: 4),
+          Text(l.srNoVehicleBody, style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Theme.of(ctx).colorScheme.onSurfaceVariant, height: 1.5)),
+        ])),
+        const SizedBox(height: SinaatySpace.lg),
+        PrimaryButton(label: l.srAddVehicle, icon: Icons.add, onPressed: () => Navigator.pop(ctx, false)),
+      ] else ...[
         const SizedBox(height: SinaatySpace.md),
         DropdownButtonFormField<String>(initialValue: vehicleId, isExpanded: true, decoration: InputDecoration(labelText: l.reqPartVehicle),
           items: [for (final v in vehicles) DropdownMenuItem(value: v.id, child: Text(v.title, overflow: TextOverflow.ellipsis))],
           onChanged: (v) => setS(() => vehicleId = v)),
       ],
+      if (vehicles.isNotEmpty) ...[
       const SizedBox(height: SinaatySpace.md),
       TextField(controller: desc, minLines: 2, maxLines: 4, autofocus: vehicles.length <= 1, decoration: InputDecoration(labelText: l.srDescribe, hintText: l.srDescribeHint, suffixIcon: VoiceMicButton(controller: desc, title: l.srDescribe))),
       const SizedBox(height: SinaatySpace.sm),
@@ -60,11 +78,19 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
       ]),
       const SizedBox(height: SinaatySpace.lg),
       PrimaryButton(label: l.srSend, icon: Icons.build_outlined, onPressed: () {
-        if (desc.text.trim().length < 5 || parseLocationLink(where.text) == null) return;
+        if (vehicleId == null || desc.text.trim().length < 5 || parseLocationLink(where.text) == null) return;
         Navigator.pop(ctx, true);
       }),
+      ],
     ])),
   )));
+  if (ok == false && context.mounted) {
+    await context.push('/vehicles/add');
+    if (!context.mounted) return;
+    final fresh = ref.read(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
+    if (fresh.isNotEmpty) await openFixCarSheet(context, ref, fresh, pickImage: pickImage);
+    return;
+  }
   if (ok != true || !context.mounted) return;
 
   final repo = ref.read(serviceMarketRepositoryProvider);

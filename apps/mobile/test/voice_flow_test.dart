@@ -19,6 +19,7 @@ import 'package:sinaaty/features/home/presentation/request_hub_screen.dart';
 import 'package:sinaaty/features/parts/presentation/providers.dart';
 import 'package:sinaaty/features/service_market/presentation/providers.dart';
 import 'package:sinaaty/features/transport/presentation/providers.dart';
+import 'package:sinaaty/features/vehicles/domain/vehicle.dart';
 import 'package:sinaaty/features/vehicles/presentation/providers.dart';
 import 'package:sinaaty/features/work_orders/presentation/providers.dart';
 import 'package:sinaaty/features/workshop/domain/workshop.dart';
@@ -84,7 +85,7 @@ void main() {
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
       serviceMarketRepositoryProvider.overrideWithValue(market),
       voiceInputProvider.overrideWithValue(FakeVoice()),
-      vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
+      vehiclesProvider.overrideWith((ref) async => const Result.ok([Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)])),
       myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
       myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
     ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
@@ -136,7 +137,7 @@ void main() {
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
       serviceMarketRepositoryProvider.overrideWithValue(market),
       voiceInputProvider.overrideWithValue(FakeVoice(script: const [])),      // the engine accepts, the session dies empty
-      vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
+      vehiclesProvider.overrideWith((ref) async => const Result.ok([Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)])),
       myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
       myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
     ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,

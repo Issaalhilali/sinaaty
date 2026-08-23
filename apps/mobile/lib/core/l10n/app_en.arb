@@ -894,5 +894,13 @@
   "voDevTyped": "Dev environment — dictation unavailable on the simulator",
   "voDevTypedHint": "Type what you would have said",
   "voDevBroken": "Dev environment — dictation does not work on this simulator",
-  "voTypeInstead": "Type instead"
+  "voTypeInstead": "Type instead",
+  "ptSendDelivery": "Send with platform delivery",
+  "ptDeliverySent": "Sent — finding a nearby driver",
+  "ptDeliveryTitle": "Platform delivery",
+  "ptManualShip": "Shipped manually (outside platform delivery)",
+  "ptDeliveryPickedUp": "With the driver",
+  "srNoVehicle": "Add your car first",
+  "srNoVehicleBody": "Workshops price by make and model — without it they cannot estimate a cost.",
+  "srAddVehicle": "Add a car"
 }

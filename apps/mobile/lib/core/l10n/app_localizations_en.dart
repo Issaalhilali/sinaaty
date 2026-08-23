@@ -1890,4 +1890,29 @@ class L10nEn extends L10n {
 
   @override
   String get voTypeInstead => 'Type instead';
+
+  @override
+  String get ptSendDelivery => 'Send with platform delivery';
+
+  @override
+  String get ptDeliverySent => 'Sent — finding a nearby driver';
+
+  @override
+  String get ptDeliveryTitle => 'Platform delivery';
+
+  @override
+  String get ptManualShip => 'Shipped manually (outside platform delivery)';
+
+  @override
+  String get ptDeliveryPickedUp => 'With the driver';
+
+  @override
+  String get srNoVehicle => 'Add your car first';
+
+  @override
+  String get srNoVehicleBody =>
+      'Workshops price by make and model — without it they cannot estimate a cost.';
+
+  @override
+  String get srAddVehicle => 'Add a car';
 }

@@ -20,6 +20,7 @@ import 'package:sinaaty/features/service_market/domain/service_market_repository
 import 'package:sinaaty/features/service_market/presentation/service_request_screen.dart';
 import 'package:sinaaty/features/service_market/presentation/providers.dart';
 import 'package:sinaaty/features/transport/presentation/providers.dart';
+import 'package:sinaaty/features/vehicles/domain/vehicle.dart';
 import 'package:sinaaty/features/vehicles/presentation/providers.dart';
 
 import 'customer_flow_test.dart' show FakeAuth;
@@ -79,13 +80,15 @@ void main() {
   late FakeServiceMarket market; late FakeSrRealtime live; late MemoryTokenStore ts;
   setUp(() async { market = FakeServiceMarket(); live = FakeSrRealtime(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
 
-  Widget app(String initial, {Map<String, bool> flags = const {'service_marketplace': true}}) => ProviderScope(key: UniqueKey(), overrides: [
+  Widget app(String initial, {Map<String, bool> flags = const {'service_marketplace': true}, bool withVehicle = true}) => ProviderScope(key: UniqueKey(), overrides: [
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     flagsRepositoryProvider.overrideWithValue(FakeFlags(Result.ok(FeatureFlags(flags)))),
     serviceMarketRepositoryProvider.overrideWithValue(market),
     serviceRequestRealtimeProvider.overrideWithValue(live),
-    vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
+    vehiclesProvider.overrideWith((ref) async => Result.ok(withVehicle
+        ? const [Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)]
+        : const <Vehicle>[])),
     myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
     myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
   ], child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
@@ -183,6 +186,16 @@ void main() {
 
   test('the quiet-push deep link resolves to the request screen route', () {
     expect(InboxScreen.routeFor('sinaaty://service-requests/sr1'), '/service-requests/sr1');
+  });
+
+  testWidgets('a customer with no car is invited to add one — never sent into a validation dead end', (tester) async {
+    size(tester);
+    await tester.pumpWidget(app('/', withVehicle: false)); await tester.pumpAndSettle();
+    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    expect(find.text('أضف سيارتك أولاً'), findsOneWidget);
+    expect(find.text('أضف سيارة'), findsOneWidget);
+    expect(find.text('أرسل الطلب'), findsNothing);                          // the API requires a vehicle: no send button at all
+    expect(find.text('نطاق البحث'), findsNothing);                          // and nothing to fill in before the car exists
   });
 
   testWidgets('flag off: «أصلح سيارتي» does not exist', (tester) async {

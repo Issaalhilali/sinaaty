@@ -1869,4 +1869,29 @@ class L10nAr extends L10n {
 
   @override
   String get voTypeInstead => 'اكتب بدلاً';
+
+  @override
+  String get ptSendDelivery => 'أرسلها بتوصيل المنصة';
+
+  @override
+  String get ptDeliverySent => 'أُرسلت — نبحث عن سائق قريب';
+
+  @override
+  String get ptDeliveryTitle => 'توصيل المنصة';
+
+  @override
+  String get ptManualShip => 'شُحنت يدوياً (خارج توصيل المنصة)';
+
+  @override
+  String get ptDeliveryPickedUp => 'القطعة مع السائق';
+
+  @override
+  String get srNoVehicle => 'أضف سيارتك أولاً';
+
+  @override
+  String get srNoVehicleBody =>
+      'الورش تسعّر حسب نوع السيارة وموديلها — بدونها لا تستطيع تقدير التكلفة.';
+
+  @override
+  String get srAddVehicle => 'أضف سيارة';
 }

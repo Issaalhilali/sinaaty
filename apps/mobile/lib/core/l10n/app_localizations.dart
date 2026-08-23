@@ -3576,6 +3576,54 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'اكتب بدلاً'**
   String get voTypeInstead;
+
+  /// No description provided for @ptSendDelivery.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسلها بتوصيل المنصة'**
+  String get ptSendDelivery;
+
+  /// No description provided for @ptDeliverySent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسلت — نبحث عن سائق قريب'**
+  String get ptDeliverySent;
+
+  /// No description provided for @ptDeliveryTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'توصيل المنصة'**
+  String get ptDeliveryTitle;
+
+  /// No description provided for @ptManualShip.
+  ///
+  /// In ar, this message translates to:
+  /// **'شُحنت يدوياً (خارج توصيل المنصة)'**
+  String get ptManualShip;
+
+  /// No description provided for @ptDeliveryPickedUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'القطعة مع السائق'**
+  String get ptDeliveryPickedUp;
+
+  /// No description provided for @srNoVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف سيارتك أولاً'**
+  String get srNoVehicle;
+
+  /// No description provided for @srNoVehicleBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'الورش تسعّر حسب نوع السيارة وموديلها — بدونها لا تستطيع تقدير التكلفة.'**
+  String get srNoVehicleBody;
+
+  /// No description provided for @srAddVehicle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف سيارة'**
+  String get srAddVehicle;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
