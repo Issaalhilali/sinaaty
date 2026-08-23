@@ -6,6 +6,7 @@ import { WORK_ORDER_REPOSITORY, type WorkOrderRepository } from '../../work-orde
 import { isCustomer, isWorkshopMember } from '../../work-orders/domain/work-order';
 import { DISPUTE_REPOSITORY, type DisputeRepository } from '../../disputes/domain/repositories';
 import { SERVICE_REQUEST_REPOSITORY, type ServiceRequestRepository } from '../../service-requests/domain/repositories';
+import { PARTS_REPOSITORY, type PartsRepository } from '../../parts/domain/repositories';
 import { isRequester } from '../../service-requests/domain/service-request';
 import { isDisputeParty } from '../../disputes/domain/dispute';
 import { MEDIA_REPOSITORY, type MediaRepository } from '../domain/media';
@@ -30,6 +31,7 @@ export class DownloadMediaUseCase {
     @Inject(WORK_ORDER_REPOSITORY) private readonly workOrders: WorkOrderRepository,
     @Inject(DISPUTE_REPOSITORY) private readonly disputes: DisputeRepository,
     @Inject(SERVICE_REQUEST_REPOSITORY) private readonly serviceRequests: ServiceRequestRepository,
+    @Inject(PARTS_REPOSITORY) private readonly parts: PartsRepository,
     @Inject(OBJECT_STORAGE_PORT) private readonly storage: ObjectStoragePort,
   ) {}
 
@@ -45,6 +47,12 @@ export class DownloadMediaUseCase {
     if (isPlatformStaff(u) || (uploadedBy != null && uploadedBy === u.id)) return true;
     const viewer = { id: u.id, orgs: u.orgs, platformRole: u.platformRole };
     for (const link of await this.media.linksOf(mediaId)) {
+      if (link.entityType === 'part_bid') {
+        // An offer photo belongs to the supplier who posted it and to the buyer comparing offers.
+        const ctx = await this.parts.bidViewContext(link.entityId);
+        if (ctx && (viewer.orgs.some((o) => o.orgId === ctx.supplierOrgId) || ctx.requesterUserId === u.id || (ctx.requesterOrgId && viewer.orgs.some((o) => o.orgId === ctx.requesterOrgId)))) return true;
+        continue;
+      }
       if (link.entityType === 'service_request') {
         // Problem photos belong to the requester and to every workshop the request reached — a
         // workshop cannot quote a dent it is not allowed to see.

@@ -61,6 +61,22 @@ export class PartsPrismaRepository implements PartsRepository {
   async findRequest(id: string, tx?: TxHandle) { const r = await this.db(tx).partRequest.findUnique({ where: { id } }); return r ? toReq(r) : null; }
   async listRequests(q: Parameters<PartsRepository['listRequests']>[0]) { const rows = await this.prisma.partRequest.findMany({ where: { requesterUserId: q.requesterUserId, requesterOrgId: q.requesterOrgId, status: q.status ? { in: q.status } : undefined, biddingEndsAt: q.endedBefore ? { lte: q.endedBefore } : undefined, ...(q.recipientOrgId ? { partRequestRecipients: { some: { orgId: q.recipientOrgId } } } : {}) }, orderBy: { createdAt: 'desc' }, take: q.limit }); return rows.map(toReq); }
   async updateRequest(id: string, p: Parameters<PartsRepository['updateRequest']>[1], tx?: TxHandle) { await this.db(tx).partRequest.update({ where: { id }, data: { status: p.status, awardedBidId: p.awardedBidId === undefined ? undefined : p.awardedBidId } }); }
+  async attachBidMedia(bidId: string, mediaIds: string[], tx?: TxHandle) {
+    if (!mediaIds.length) return 0;
+    const r = await this.db(tx).mediaLink.createMany({ data: mediaIds.map((mediaId) => ({ mediaId, entityType: 'part_bid', entityId: bidId, label: 'offer_photo' })), skipDuplicates: true });
+    return r.count;
+  }
+  async bidMediaOf(bidIds: string[]) {
+    const out = new Map<string, string[]>();
+    if (!bidIds.length) return out;
+    const rows = await this.prisma.mediaLink.findMany({ where: { entityType: 'part_bid', entityId: { in: bidIds } }, select: { entityId: true, mediaId: true } });
+    for (const r of rows) out.set(r.entityId, [...(out.get(r.entityId) ?? []), r.mediaId]);
+    return out;
+  }
+  async bidViewContext(bidId: string) {
+    const r = await this.prisma.partBid.findUnique({ where: { id: bidId }, select: { supplierOrgId: true, request: { select: { requesterUserId: true, requesterOrgId: true } } } });
+    return r ? { supplierOrgId: r.supplierOrgId, requesterUserId: r.request.requesterUserId, requesterOrgId: r.request.requesterOrgId } : null;
+  }
   async deliveryPointOf(orderId: string) {
     const rows = await this.prisma.$queryRaw<Array<{ lat: number | null; lng: number | null; address: string | null }>>`
       SELECT COALESCE(ST_Y(r.deliver_to_geo::geometry), ST_Y(bl.geo::geometry)) AS lat,

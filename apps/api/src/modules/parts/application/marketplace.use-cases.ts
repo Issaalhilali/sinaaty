@@ -49,10 +49,12 @@ export class MarketplaceUseCases {
     // «القطعة موجودة، سعرها النهائي، ووينها» — the supplier's name and place ride every bid the
     // requester compares (owner directive 2026-08-22); distance is measured from the delivery point.
     const where = await this.repo.whereOfOrgs([...new Set(visible.map((b) => b.supplierOrgId))], { requestId: id });
+    // «شوف القطعة قبل ما تشتري» — a used part without a photo is a gamble (backlog 27).
+    const photos = await this.repo.bidMediaOf(visible.map((b) => b.id));
     const enriched = await Promise.all(visible.map(async (b) => {
       const w = where.get(b.supplierOrgId); const org = await this.orgs.findById(b.supplierOrgId);
       const place = w?.district ?? w?.city ?? null; const dist = w?.distanceKm == null ? null : `${w.distanceKm.toFixed(1)} كم`;
-      return { ...b, supplier_name_ar: org?.tradeNameAr ?? org?.legalNameAr ?? null, supplier_city: w?.city ?? null, supplier_district: w?.district ?? null, distance_km: w?.distanceKm ?? null, where_text: [place, dist].filter(Boolean).join(' — ') || null };
+      return { ...b, media_ids: photos.get(b.id) ?? [], supplier_name_ar: org?.tradeNameAr ?? org?.legalNameAr ?? null, supplier_city: w?.city ?? null, supplier_district: w?.district ?? null, distance_km: w?.distanceKm ?? null, where_text: [place, dist].filter(Boolean).join(' — ') || null };
     }));
     return { ...r, bids: enriched, bids_count: bids.length, lowest_bid: bids.find((b) => b.status === 'submitted')?.unitPrice ?? null, recipients: mine ? await this.repo.listRecipients(id) : undefined };
   }
@@ -69,7 +71,9 @@ export class MarketplaceUseCases {
     if (!r.acceptedConditions.includes(dto.condition as PartCondition)) throw new AppError('VALIDATION', { messageAr: 'حالة القطعة غير مقبولة في هذا الطلب.', messageEn: 'Condition not accepted for this request.' });
     if (dto.inventory_id) { const inv = await this.repo.findInventory(dto.inventory_id); if (!inv || inv.orgId !== dto.org_id) throw new AppError('VALIDATION', { messageEn: 'inventory item not found for org' }); }
     const bid = await this.uow.run(async (tx) => {
-      const b = await this.repo.upsertBid({ requestId, supplierOrgId: dto.org_id, inventoryId: dto.inventory_id ?? null, condition: dto.condition as PartCondition, unitPrice: dto.unit_price, quantity: dto.quantity, vatRate: '15.00', deliveryFee: dto.delivery_fee, deliveryEtaHours: dto.delivery_eta_hours ?? null, warrantyDays: dto.warranty_days, warrantyTermsAr: dto.warranty_terms_ar ?? null, donorVin: dto.donor_vin ?? null, notesAr: dto.notes_ar ?? null }, tx);
+      const b0 = await this.repo.upsertBid({ requestId, supplierOrgId: dto.org_id, inventoryId: dto.inventory_id ?? null, condition: dto.condition as PartCondition, unitPrice: dto.unit_price, quantity: dto.quantity, vatRate: '15.00', deliveryFee: dto.delivery_fee, deliveryEtaHours: dto.delivery_eta_hours ?? null, warrantyDays: dto.warranty_days, warrantyTermsAr: dto.warranty_terms_ar ?? null, donorVin: dto.donor_vin ?? null, notesAr: dto.notes_ar ?? null }, tx);
+      await this.repo.attachBidMedia(b0.id, dto.media_ids, tx);
+      const b = b0;
       if (r.status === 'open') await this.repo.updateRequest(requestId, { status: 'bidding' }, tx);
       await this.repo.addRecipients(requestId, [{ orgId: dto.org_id, distanceKm: null }], tx);
       await this.audit.write(tx, { action: 'part_bid.submit', entityType: 'part_bid', entityId: b.id, orgId: dto.org_id, actorUserId: u.id, after: { request: r.number, unit_price: dto.unit_price, condition: dto.condition } });

@@ -178,9 +178,17 @@ describe('Service marketplace (e2e)', () => {
     const view = await http().get(`/v1/parts/requests/${pr.body.id}`).set(auth(custTok)).expect(200);
     const bid = view.body.bids[0];
     expect(bid.supplier_name_ar).toContain('قطع الموقع');
+    expect(bid.media_ids).toEqual([]);   // بلا صورة حتى الآن
     expect(bid.supplier_city).toBe('الرياض');
     expect(bid.distance_km).toBeLessThan(10);
     expect(bid.where_text).toMatch(/كم/);
+    // «شوف القطعة قبل ما تشتري»: التاجر يرفق صورة، فيراها المشتري المقارن — ولا يراها غريب
+    const shot = await http().post('/v1/media/presign').set(auth(dealerTok)).send({ kind: 'image', mime_type: 'image/jpeg', size_bytes: 800, sha256: 'b'.repeat(64), purpose: 'part_bid' }).expect(200);
+    await http().post(`/v1/parts/requests/${pr.body.id}/bids`).set(auth(dealerTok)).send({ org_id: dealerOrg, condition: 'aftermarket_new', unit_price: '340', quantity: 1, eta_hours: 4, warranty_days: 90, media_ids: [shot.body.media_id] }).expect(200);
+    const withPhoto = await http().get(`/v1/parts/requests/${pr.body.id}`).set(auth(custTok)).expect(200);
+    expect(withPhoto.body.bids[0].media_ids).toEqual([shot.body.media_id]);
+    await http().get(`/v1/media/${shot.body.media_id}/download`).set(auth(custTok)).expect(200);      // المشتري المقارن
+    await http().get(`/v1/media/${shot.body.media_id}/download`).set(auth(farTok)).expect(403);       // ورشة لا شأن لها
   });
   it("«أعدها؟»: the customer's own history comes back prefilled, and a repeat opens a draft at the same workshop", async () => {
     // the accepted request's work order is delivered then closed → it becomes repeatable

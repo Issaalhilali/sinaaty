@@ -29,6 +29,11 @@ export interface PartsRepository {
   /** Supplier orgs (active, supplier types) with a location within the radius of the request point; distance in km. */
   /** «وين المحل» — primary-location city/district for orgs, with km from a point when given (owner directive). */
   /** Where a part order should be delivered: the auction request's point, else the buyer org's primary location. */
+  /** Photos a supplier attaches to their bid — «شوف القطعة قبل ما تشتري» (backlog 27). */
+  attachBidMedia(bidId: string, mediaIds: string[], tx?: TxHandle): Promise<number>;
+  bidMediaOf(bidIds: string[]): Promise<Map<string, string[]>>;
+  /** Who may look at a bid's photos: the bidding supplier and the requester comparing offers. */
+  bidViewContext(bidId: string): Promise<{ supplierOrgId: string; requesterUserId: string | null; requesterOrgId: string | null } | null>;
   deliveryPointOf(orderId: string): Promise<{ lat: number; lng: number; address: string | null } | null>;
   whereOfOrgs(orgIds: string[], from?: { lat: number; lng: number } | { requestId: string }): Promise<Map<string, { city: string | null; district: string | null; distanceKm: number | null }>>;
   matchSuppliers(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;
