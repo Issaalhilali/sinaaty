@@ -35,7 +35,10 @@ export async function bootstrap(): Promise<void> {
   }
 
   const port = config.get('PORT');
-  await app.listen(port);
+  // Bind every interface by default: a real phone on the LAN must reach dev. (The mobile session hit
+  // this — «localhost» inside the API means the Mac itself, so the app on a handset just times out
+  // with no error to show.) Containers bind the same way; HOST still pins it when someone wants that.
+  await app.listen(port, process.env.HOST ?? '0.0.0.0');
   logger.log(`API listening on ${config.get('API_BASE_URL')} (env=${config.get('APP_ENV')}) — docs at /docs`);
 }
 
