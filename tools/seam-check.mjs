@@ -56,11 +56,24 @@ async function login(phone) {
   return v.body.accessToken;
 }
 
+
+/** موقع الورشة كما يراه الخادم — كي يقع طلب الفحص داخل نطاقها يقيناً. */
+async function workshopPoint(token, orgId) {
+  const org = await call('GET', `/organizations/${orgId}`, { token });
+  const loc = (org.body?.locations ?? [])[0];
+  const lat = Number(loc?.lat), lng = Number(loc?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    console.log('  ~ تعذّر قراءة موقع الورشة — يُستعمل موقع افتراضي في الرياض');
+    return { lat: 24.632, lng: 46.792 };
+  }
+  return { lat, lng };
+}
+
 /** Exactly the shape the mobile repository sends — copy changes here only when the app changes. */
 const asApp = {
-  createServiceRequest: (vehicleId) => ({
+  createServiceRequest: (vehicleId, at = { lat: 24.632, lng: 46.792 }) => ({
     vehicle_id: vehicleId, title_ar: 'فحص وصلة آلي', description_ar: 'طلب من فاحص الوصلة — يُلغى فوراً',
-    lat: 24.632, lng: 46.792, radius_km: 15, preferred_time: 'today',
+    lat: at.lat, lng: at.lng, radius_km: 15, preferred_time: 'today',
   }),
   offer: (orgId) => ({
     org_id: orgId, offer_type: 'estimate', diagnosis_ar: 'فحص وصلة آلي', price_min: '100', price_max: '200', availability: 'today',
@@ -224,7 +237,11 @@ async function main() {
   const vehicleId = Array.isArray(vehicles.body) ? vehicles.body[0]?.id : undefined;
   if (!vehicleId) { fail('عميل الفحص بلا سيارة', 'أضف سيارة للحساب التجريبي أولاً'); process.exit(1); }
 
-  const created = await call('POST', '/service-requests', { token: customer, body: asApp.createServiceRequest(vehicleId) });
+  // الطلب يُرسل من *موقع ورشة الفحص نفسها*. المطابقة تأخذ الأقرب فالأقرب حتى حدٍّ أعلى، وقاعدة
+  // التطوير فيها عشرات الورش المزروعة على نقطة واحدة — فورشة الفحص كانت تسقط خارج الحدّ ويُقرأ
+  // ذلك «كسراً في المنتج». الفاحص يجب أن يقيس الوصلة لا حظّ البذور.
+  const at = await workshopPoint(workshop, orgId);
+  const created = await call('POST', '/service-requests', { token: customer, body: asApp.createServiceRequest(vehicleId, at) });
   created.status === 201
     ? pass(`يرسل طلب إصلاح (${created.body.number}) — وصل ${created.body.recipients_notified} ورشة`)
     : fail('إرسال طلب إصلاح', `${created.status} ${JSON.stringify(created.body)}`);
