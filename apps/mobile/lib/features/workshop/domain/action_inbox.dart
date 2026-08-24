@@ -52,6 +52,11 @@ List<InboxItem> buildInbox({
   return items;
 }
 
+/// سيارة سُلّمت ولم تُصدَر لها فاتورة: العمل تمّ ولم يُطالَب بمقابله. لا حالة في أمر العمل تقولها
+/// (الفاتورة لا تغيّر حالته)، فتُقرأ من فرق مجموعتين: ما سُلّم، وما صدرت له فاتورة.
+int deliveredUninvoicedCount(List<({String id, String status})> orders, Set<String> invoicedWorkOrderIds) =>
+    orders.where((o) => o.status == _delivered && !invoicedWorkOrderIds.contains(o.id)).length;
+
 /// عدد ما ينتظر فعلاً — للشارة على التبويب، وللقرار: صندوق فارغ لا يُعرض إطلاقاً.
 int inboxTotal(List<InboxItem> items) => items.fold(0, (a, i) => a + i.count);
 

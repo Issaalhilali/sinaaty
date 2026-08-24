@@ -49,6 +49,10 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
   @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) => _run(() async { if (p.uploadUrl.isEmpty || p.uploadUrl.startsWith('mock://')) return; await Dio().put<void>(p.uploadUrl, data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': mimeType, 'content-length': bytes.length})); });
   @override Future<Result<void>> inspect(String woId, NewInspection i) => _run(() async { await api.dio.post<void>('/work-orders/$woId/inspections', data: {'type': i.type, 'odometer_km': ?i.odometerKm, 'fuel_level_pct': ?i.fuelLevelPct, 'checklist': {'angles': i.anglesToMedia}, 'damages': i.damages.map((d) => {'zone': d.zone, 'severity': d.severity, 'note_ar': ?d.noteAr}).toList(), 'media_ids': i.mediaIds}); });
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) => _run(() async { await api.dio.post<void>('/work-orders/$woId/media', data: {'media_ids': mediaIds, 'label': label}); });
+  @override Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId) => _run(() async {
+        final rows = (await api.dio.get<List<dynamic>>('/invoices', queryParameters: {'org_id': orgId, 'as': 'seller'})).data ?? const [];
+        return {for (final r in rows) (r as Map<String, dynamic>)['workOrderId'] as String? ?? ''}..remove('');
+      });
   @override Future<Result<String>> issueInvoice(String woId) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/invoices', data: {'work_order_id': woId})).data!['id'] as String);
   @override Future<Result<OrgWallet>> wallet(String orgId) => _run(() async { final d = (await api.dio.get<Map<String, dynamic>>('/organizations/$orgId/wallet')).data!; return OrgWallet(held: d['held'].toString(), available: d['available'].toString(), inTransit: d['payouts_in_transit'].toString(), payouts: ((d['payouts'] as List?) ?? []).cast<Map<String, dynamic>>().map((p) => (id: p['id'] as String, amount: p['amount'].toString(), status: p['status'] as String, scheduledFor: DateTime.parse(p['scheduledFor'] as String))).toList()); });
 }

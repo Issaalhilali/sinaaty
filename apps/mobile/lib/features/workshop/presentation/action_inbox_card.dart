@@ -23,6 +23,8 @@ class ActionInboxCard extends ConsumerWidget {
     final nearby = ref.watch(sm.nearbyServiceRequestsProvider).value?.valueOrNull ?? const [];
     final partReqs = ref.watch(incomingRequestsProvider).value?.valueOrNull ?? const [];
 
+    // الفواتير الصادرة: لا لعرض مبلغ، بل لكشف سيارةٍ سُلّمت ولم يُطالَب بمالها.
+    final invoiced = ref.watch(invoicedWorkOrderIdsProvider).value?.valueOrNull ?? const <String>{};
     final now = DateTime.now();
     final items = buildInbox(
       orderStatuses: [for (final o in orders) o.status],
@@ -30,7 +32,7 @@ class ActionInboxCard extends ConsumerWidget {
       openDisputes: disputes.where((d) => !['resolved', 'closed', 'rejected'].contains(d.status)).length,
       nearbyServiceRequests: nearby.length,
       incomingPartRequests: partReqs.length,
-      deliveredUninvoiced: 0,   // الفواتير تُقاس من شاشة المحفظة؛ لا نداء إضافي هنا
+      deliveredUninvoiced: deliveredUninvoicedCount([for (final o in orders) (id: o.id, status: o.status)], invoiced),
     );
     if (items.isEmpty) return const SizedBox.shrink();
 

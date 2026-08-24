@@ -15,6 +15,8 @@ abstract interface class WorkshopRepository {
   Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'});
   Future<Result<String>> issueInvoice(String woId);
   Future<Result<OrgWallet>> wallet(String orgId);
+  /// أرقام أوامر العمل التي صدرت لها فاتورة من هذه المنشأة — لمعرفة ما سُلّم بلا فاتورة.
+  Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId);
   /// Abandoned-vehicle path (Step 29): the machine may remind; only a person declares.
   Future<Result<AbandonedStatus>> abandonedStatus(String woId);
   Future<Result<void>> abandonedDeclare(String woId, {String? reasonAr});

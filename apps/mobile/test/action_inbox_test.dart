@@ -40,4 +40,11 @@ void main() {
     expect(isSettled('delivered'), isTrue);
     expect(isSettled('in_progress'), isFalse);
   });
+
+  test('سُلّمت ولم تُصدَر لها فاتورة: عملٌ تمّ بلا مطالبة بالمال', () {
+    const orders = [(id: 'w1', status: 'delivered'), (id: 'w2', status: 'delivered'), (id: 'w3', status: 'in_progress')];
+    expect(deliveredUninvoicedCount(orders, const {'w1'}), 1, reason: 'w2 وحدها بلا فاتورة');
+    expect(deliveredUninvoicedCount(orders, const {'w1', 'w2'}), 0);
+    expect(deliveredUninvoicedCount(orders, const {}), 2, reason: 'قيد التنفيذ لا يُحتسب — لم يُسلَّم بعد');
+  });
 }

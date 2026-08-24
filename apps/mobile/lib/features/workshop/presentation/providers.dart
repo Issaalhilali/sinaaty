@@ -28,6 +28,11 @@ final currentOrgInfoProvider = FutureProvider<({String type, String nameAr})?>((
 });
 const supplierOrgTypes = {'scrapyard', 'parts_dealer', 'parts_distributor', 'parts_brand_agent'};
 final orgOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(workshopRepositoryProvider).orgOrders(org); });
+/// الأوامر التي صدرت لها فاتورة — نداء واحد يكشف ما سُلّم بلا مطالبة بالمال.
+final invoicedWorkOrderIdsProvider = FutureProvider.autoDispose<Result<Set<String>>>((ref) async {
+  final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok(<String>{});
+  return ref.watch(workshopRepositoryProvider).invoicedWorkOrderIds(org);
+});
 final abandonedStatusProvider = FutureProvider.autoDispose.family<Result<AbandonedStatus>, String>((ref, woId) => ref.watch(workshopRepositoryProvider).abandonedStatus(woId));
 final orgWalletProvider = FutureProvider.autoDispose<Result<OrgWallet>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.err(UnknownFailure()); return ref.watch(workshopRepositoryProvider).wallet(org); });
 

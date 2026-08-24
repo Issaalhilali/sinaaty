@@ -59,6 +59,7 @@ class FakeParts implements PartsRepository, QrScanner {
 class FakeWorkshop implements WorkshopRepository {
   final String type; final String Function() org; FakeWorkshop(this.type, this.org);
   @override Future<Result<List<OrgBrief>>> myOrgs() async => Result.ok([OrgBrief(id: org(), nameAr: 'x', type: type, status: 'active')]);
+  @override Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId) async => const Result.ok(<String>{});
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) async => Result.ok([WorkOrder(id: 'wo1', number: 'WO-2026-000042', status: 'in_progress', paymentTerms: 'on_delivery', currentVersion: 1, titleAr: 'تغيير دسكات', vehicleId: 'v1', orgId: 'ws1', subtotal: '720', vatAmount: '108', total: '828', depositRequired: '0', createdAt: DateTime(2026, 8, 19), items: const [WoItem(id: 'it1', type: 'part', descriptionAr: 'دسكات أمامية أصلي', quantity: '1', unitPrice: '600', lineTotal: '600', warrantyDays: 365)])]);
   @override Future<Result<WorkOrder>> create(NewWorkOrder wo) async => const Result.err(UnknownFailure());
   @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) async => const Result.err(UnknownFailure());
