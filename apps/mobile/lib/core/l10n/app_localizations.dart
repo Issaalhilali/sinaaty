@@ -1693,6 +1693,18 @@ abstract class L10n {
   /// **'ينتهي خلال {m} د'**
   String ptEndsIn(int m);
 
+  /// No description provided for @ptEndsInHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي خلال {h} ساعة'**
+  String ptEndsInHours(int h);
+
+  /// No description provided for @ptEndsInDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي خلال {d} يوم'**
+  String ptEndsInDays(int d);
+
   /// No description provided for @ptEnded.
   ///
   /// In ar, this message translates to:

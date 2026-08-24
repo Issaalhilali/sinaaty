@@ -395,6 +395,22 @@
       }
     }
   },
+  "ptEndsInHours": "Ends in {h} h",
+  "@ptEndsInHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInDays": "Ends in {d} d",
+  "@ptEndsInDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
   "ptEnded": "Ended",
   "ptAcceptBid": "Accept this bid",
   "ptAccepted": "Accepted — purchase order created",

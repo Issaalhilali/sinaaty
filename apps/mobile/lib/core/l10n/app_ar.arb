@@ -395,6 +395,22 @@
       }
     }
   },
+  "ptEndsInHours": "ينتهي خلال {h} ساعة",
+  "@ptEndsInHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInDays": "ينتهي خلال {d} يوم",
+  "@ptEndsInDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
   "ptEnded": "انتهى",
   "ptAcceptBid": "اقبل هذا العرض",
   "ptAccepted": "تم القبول — أُنشئ طلب الشراء",

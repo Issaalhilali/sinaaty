@@ -13,4 +13,15 @@ abstract final class Labels {
   static String terms(L10n l, String s) => switch (s) { 'prepaid' => l.termsPrepaid, 'on_delivery' => l.termsOnDelivery, 'deferred' => l.termsDeferred, 'installments' => l.termsInstallments, 'fleet_monthly' => l.termsFleetMonthly, _ => s };
   static String disputeStatus(L10n l, String s) => switch (s) { 'open' => l.dsStOpen, 'under_review' => l.dsStUnderReview, 'awaiting_parties' => l.dsStAwaiting, 'escalated' => l.dsStEscalated, 'resolved' => l.dsStResolved, 'closed' => l.dsStClosed, _ => s };
   static String disputeCategory(L10n l, String s) => switch (s) { 'scope' => l.dsCatScope, 'quality' => l.dsCatQuality, 'price' => l.dsCatPrice, 'delay' => l.dsCatDelay, 'damage' => l.dsCatDamage, 'part_defect' => l.dsCatPartDefect, 'no_show' => l.dsCatNoShow, _ => s };
+
+  /// «ينتهي خلال ١٨ د» ثم «٣ ساعة» ثم «يومان» — الوحدة تكبر مع المدة، فلا يقرأ أحد «1064 د».
+  static String endsIn(L10n l, Duration d) {
+    final r = remainingIn(d);
+    return switch (r.unit) {
+      RemainingUnit.ended => l.ptEnded,
+      RemainingUnit.minutes => l.ptEndsIn(r.value),
+      RemainingUnit.hours => l.ptEndsInHours(r.value),
+      RemainingUnit.days => l.ptEndsInDays(r.value),
+    };
+  }
 }

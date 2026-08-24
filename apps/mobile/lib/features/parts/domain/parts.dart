@@ -50,3 +50,22 @@ List<PartBid> sortedForCompare(List<PartBid> bids) {
   });
   return list;
 }
+
+/// «ينتهي خلال 1064 د» ليس وقتاً يفهمه إنسان. الوحدة تكبر مع المدة: دقائق ثم ساعات ثم أيام
+/// (مشي المالك ٢٤ أغسطس ٢٠٢٦ — شاشة المورّد).
+enum RemainingUnit { ended, minutes, hours, days }
+({RemainingUnit unit, int value}) remainingIn(Duration d) {
+  final m = d.inMinutes;
+  if (m <= 0) return (unit: RemainingUnit.ended, value: 0);
+  if (m < 90) return (unit: RemainingUnit.minutes, value: m);
+  if (d.inHours < 24) return (unit: RemainingUnit.hours, value: d.inHours);
+  return (unit: RemainingUnit.days, value: d.inDays);
+}
+
+/// ترتيب صندوق المورّد: الحيّ أولاً بالأقرب انتهاءً — فما انتهى لا يُقدَّم عليه شيء يمكن الفوز به.
+/// وذيل المنتهي مقصوص: المورّد فتح شاشته فوجد مقبرة طلبات ميتة تحجب ثلاثة أحياء.
+List<PartRequest> supplierInbox(List<PartRequest> all, {int deadTail = 5}) {
+  final open = all.where((r) => r.open).toList()..sort((a, b) => a.biddingEndsAt.compareTo(b.biddingEndsAt));
+  final dead = all.where((r) => !r.open).toList()..sort((a, b) => b.biddingEndsAt.compareTo(a.biddingEndsAt));
+  return [...open, ...dead.take(deadTail)];
+}

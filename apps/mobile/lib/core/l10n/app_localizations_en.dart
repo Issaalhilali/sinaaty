@@ -864,6 +864,16 @@ class L10nEn extends L10n {
   }
 
   @override
+  String ptEndsInHours(int h) {
+    return 'Ends in $h h';
+  }
+
+  @override
+  String ptEndsInDays(int d) {
+    return 'Ends in $d d';
+  }
+
+  @override
   String get ptEnded => 'Ended';
 
   @override

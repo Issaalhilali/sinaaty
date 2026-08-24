@@ -861,6 +861,16 @@ class L10nAr extends L10n {
   }
 
   @override
+  String ptEndsInHours(int h) {
+    return 'ينتهي خلال $h ساعة';
+  }
+
+  @override
+  String ptEndsInDays(int d) {
+    return 'ينتهي خلال $d يوم';
+  }
+
+  @override
   String get ptEnded => 'انتهى';
 
   @override
