@@ -179,14 +179,22 @@ async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}
   step(`  ↳ قارن السعر والضمان «ووين القطعة» على ${pr.number}`);
 
   // ---- المشهد ٥: سطحة سلّمت وفاتورتها تنتظر «ادفع» --------------------------
-  const drvTok = await login(PHONES.driver);
-  await call('PUT', '/transport/driver/profile', { token: drvTok, body: { truck_plate: 'ن ق ل ٩٩', truck_type: 'flatbed_tow' } });
+  // السائق يعمل باسم منشأة نقل: بدونها لا تصدر فاتورة ضريبية، وكانت الرحلة تُسلَّم ثم تموت الفوترة صامتة.
+  const tow = await ensureOrg(PHONES.driver, 'logistics', 'سطحات الطريق السريع', { lat: RIYADH_IND2.lat + 0.01, lng: RIYADH_IND2.lng }, { vat: '399980000000003' });
+  const drvTok = tow.tok;
+  await call('PUT', '/transport/driver/profile', { token: drvTok, body: { org_id: tow.orgId, truck_plate: 'ن ق ل ٩٩', truck_type: 'flatbed_tow' } });
   await call('PUT', '/transport/driver/online', { token: drvTok, body: { online: true, lat: RIYADH_IND2.lat + 0.01, lng: RIYADH_IND2.lng } });
   await reuse('المشهد ٥: سطحة سلّمت بإثبات',
-    async () => (await call('GET', '/transport/jobs?as=requester', { token: custTok })).find((j) => j.status === 'delivered'),
+    // «مسلَّمة» وحدها لا تكفي: رحلة قديمة بلا منشأة ناقلة سلّمت ولم تُفوتَر أبداً، وإعادة استخدامها
+    // تُبقي المشهد ناقصاً بلا زر «ادفع». المشهد مكتمل حين تكون له فاتورة.
+    async () => {
+      const delivered = (await call('GET', '/transport/jobs?as=requester', { token: custTok })).filter((j) => j.status === 'delivered');
+      for (const j of delivered) { const full = await call('GET', `/transport/jobs/${j.id}`, { token: custTok }); if (full.invoice) return full; }
+      return null;
+    },
     async () => {
       const job = await call('POST', '/transport/jobs', { token: custTok, body: { type: 'flatbed_tow', vehicle_id: car.id, pickup: { lat: 25.1800, lng: 46.1500 }, pickup_address: 'طريق الملك فهد — حي العليا', dropoff: RIYADH_IND2, dropoff_address: 'ورشة النور — الصناعية الثانية' } });
-      await call('POST', `/transport/jobs/${job.id}/accept`, { token: drvTok, body: {} });
+      await call('POST', `/transport/jobs/${job.id}/accept`, { token: drvTok, body: { org_id: tow.orgId } });
       for (const to of ['en_route_pickup', 'picked_up', 'en_route_dropoff']) await call('POST', `/transport/jobs/${job.id}/transition`, { token: drvTok, body: { to } });
       const media = await call('POST', '/media/presign', { token: drvTok, body: { kind: 'image', mime_type: 'image/jpeg', size_bytes: 900, sha256: 'd'.repeat(64), purpose: 'proof_of_delivery' } });
       const otp = await call('POST', `/transport/jobs/${job.id}/proof/otp`, { token: drvTok });

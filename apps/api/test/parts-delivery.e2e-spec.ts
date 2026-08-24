@@ -62,9 +62,13 @@ describe('Parts delivery rides logistics (e2e)', () => {
   });
 
   it('the DRIVER moves the order: pickup → shipped (stock once), proof-of-delivery → delivered → confirm releases escrow', async () => {
-    await http().put('/v1/transport/driver/profile').set(auth(driverTok)).send({ truck_plate: `و ص ل ${suffix.slice(0, 2)}`, truck_type: 'parts_delivery' }).expect(200);
+    // التوصيل خدمة تُفوتَر باسم منشأة النقل كالسطحة تماماً، فالسائق يعمل باسم منشأة لا كفرد.
+    const dOrg = await http().post('/v1/organizations').set(auth(driverTok)).send({ type: 'logistics', legal_name_ar: `توصيل القطع ${suffix}`, cr_number: `46${suffix}3` }).expect(201);
+    await prisma.organization.update({ where: { id: dOrg.body.id }, data: { status: 'active', verifiedAt: new Date(), vatNumber: `3${suffix}0000023` } });
+    driverTok = await login(driverPhone);
+    await http().put('/v1/transport/driver/profile').set(auth(driverTok)).send({ org_id: dOrg.body.id, truck_plate: `و ص ل ${suffix.slice(0, 2)}`, truck_type: 'parts_delivery' }).expect(200);
     await http().put('/v1/transport/driver/online').set(auth(driverTok)).send({ online: true, lat: STAGE.lat, lng: STAGE.lng }).expect(200);
-    await http().post(`/v1/transport/jobs/${jobId}/accept`).set(auth(driverTok)).send({}).expect(200);
+    await http().post(`/v1/transport/jobs/${jobId}/accept`).set(auth(driverTok)).send({ org_id: dOrg.body.id }).expect(200);
     await http().post(`/v1/transport/jobs/${jobId}/transition`).set(auth(driverTok)).send({ to: 'en_route_pickup' }).expect(200);
     await http().post(`/v1/transport/jobs/${jobId}/transition`).set(auth(driverTok)).send({ to: 'picked_up' }).expect(200);
     await outbox.drain(300);

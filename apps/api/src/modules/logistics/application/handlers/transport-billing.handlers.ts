@@ -22,7 +22,11 @@ export class TransportBillingHandlers implements OnModuleInit {
   onModuleInit() {
     this.registry.on('TransportDelivered', 'logistics.issue-invoice', async (ev) => {
       const j = await this.jobs.findById(ev.aggregateId);
-      if (!j || j.status !== 'delivered' || !j.providerOrgId) return;
+      if (!j || j.status !== 'delivered') return;
+      // بلا منشأة ناقلة لا فاتورة ولا مستحقّ: كان السطر يعود بصمت هنا، فتنتهي الرحلة مسلَّمةً بإثبات
+      // والعميل مدينٌ بمبلغ لا يُطالَب به أبداً، والسائق لا يُدفع له، ولا أثر في أي شاشة. المال يصرخ
+      // أو لا يكون: نرفع الخطأ ليعيد الصندوق المحاولة ثم يضعه في الرسائل الميتة أمام العمليات.
+      if (!j.providerOrgId) throw new Error(`transport ${j.number}: delivered with no provider org — cannot invoice`);
       const inv = await this.invoices.issueForTransportJob({
         transportJobId: j.id,
         jobNumber: j.number,

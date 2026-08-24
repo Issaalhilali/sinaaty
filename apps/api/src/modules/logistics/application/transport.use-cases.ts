@@ -94,11 +94,20 @@ export class TransportUseCases {
   async accept(u: AuthUser, id: string, dto: AcceptDto) {
     const driver = await this.repo.findDriver(u.id); if (!driver) throw new AppError('FORBIDDEN', { messageAr: 'أكمل ملف السائق أولاً.', messageEn: 'Complete the driver profile first.' });
     const j = await this.repo.findById(id); if (!j) throw new AppError('NOT_FOUND');
+    // «ذهبت المهمة» أولاً: هي الحقيقة الأقرب لسائق يتسابق عليها، مهما كانت حالته.
     if (j.status !== 'requested' || j.driverUserId) throw new AppError('CONFLICT', { messageAr: 'أُسندت المهمة لسائق آخر.', messageEn: 'Job already assigned.' });
+    // ثم: لا يُقبل عملٌ لا يمكن أن يُفوتر. الفاتورة الضريبية تحتاج منشأة بائعة برقم ضريبي؛ سائق بلا
+    // منشأة كان يقبل المهمة ويسلّمها بإثبات، ثم تموت الفوترة صامتة — العميل مدين بلا مطالبة والسائق
+    // بلا مقابل ولا أثر في أي شاشة. الرفض عند بداية العمل أرحم من اكتشافه بعد أن تُنقل السيارة.
+    const providerOrgId = dto.org_id ?? driver.orgId ?? null;
+    if (!providerOrgId) throw new AppError('FORBIDDEN', {
+      messageAr: 'اربط حسابك بمنشأة النقل قبل قبول المهام — الفاتورة الضريبية تصدر باسم المنشأة.',
+      messageEn: 'Link your account to a transport establishment before accepting jobs — the tax invoice is issued in its name.',
+    });
     await this.uow.run(async (tx) => {
       const fresh = await this.repo.findById(id, tx); if (!fresh || fresh.driverUserId || fresh.status !== 'requested') throw new AppError('CONFLICT', { messageAr: 'أُسندت المهمة لسائق آخر.', messageEn: 'Job already assigned.' });
-      await this.repo.update(id, { status: 'assigned', driverUserId: u.id, providerOrgId: dto.org_id ?? driver.orgId ?? null, assignedAt: new Date() }, tx);
-      await this.audit.write(tx, { action: 'transport.assign', entityType: 'transport_job', entityId: id, orgId: dto.org_id ?? driver.orgId ?? null, actorUserId: u.id, after: { driver: u.id } });
+      await this.repo.update(id, { status: 'assigned', driverUserId: u.id, providerOrgId, assignedAt: new Date() }, tx);
+      await this.audit.write(tx, { action: 'transport.assign', entityType: 'transport_job', entityId: id, orgId: providerOrgId, actorUserId: u.id, after: { driver: u.id } });
       await this.outbox.publish(tx, { eventType: 'TransportAssigned', aggregateType: 'transport_job', aggregateId: id, payload: { number: j.number, driverUserId: u.id, requesterUserId: j.requesterUserId, requesterOrgId: j.requesterOrgId, driverNameAr: driver.fullNameAr, truckPlate: driver.truckPlate } });
     });
     this.rt?.publish(`transport:${id}`, 'assigned', { job_id: id, driver_name: driver.fullNameAr, truck_plate: driver.truckPlate });

@@ -13,12 +13,17 @@ describe('Logistics — tow request (e2e)', () => {
   const suffix = String(Date.now()).slice(-7); const custPhone = `+96652${suffix}`; const driverPhone = `+96656${suffix}`; const otherDriverPhone = `+96655${suffix}`;
   const PICKUP = { lat: 24.7136, lng: 46.6753 };   // وسط الرياض
   const DROPOFF = { lat: 24.6300, lng: 46.7900 };  // ورشة النور — الصناعية الثانية
-  let custTok: string; let driverTok: string; let otherTok: string; let adminTok: string; let jobId: string; let mediaId: string; let vehicleId: string;
+  let custTok: string; let driverTok: string; let otherTok: string; let adminTok: string; let jobId: string; let mediaId: string; let vehicleId: string; let providerOrgId: string;
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile(); app = mod.createNestApplication({ rawBody: true }); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
     prisma = app.get(PrismaService); outbox = app.get(OutboxProcessor);
     custTok = await login(custPhone); driverTok = await login(driverPhone); otherTok = await login(otherDriverPhone); adminTok = await login('+966500000099');
     const v = await http().post('/v1/vehicles').set(auth(custTok)).send({ vin: `JTDKN3DU9A0${suffix.slice(0, 6)}`, plate: `س ط ح ${suffix.slice(0, 4)}` }).expect(201); vehicleId = v.body.id;
+    // منشأة النقل: السائق يقبد المهام باسمها، لأن الفاتورة الضريبية تصدر باسم منشأة لا باسم فرد.
+    const org = await http().post('/v1/organizations').set(auth(driverTok)).send({ type: 'logistics', legal_name_ar: `سطحات الطريق ${suffix}`, cr_number: `48${suffix}1` }).expect(201);
+    providerOrgId = org.body.id;
+    await prisma.organization.update({ where: { id: providerOrgId }, data: { status: 'active', verifiedAt: new Date(), vatNumber: `3${suffix}0000013` } });
+    driverTok = await login(driverPhone);   // العضوية الجديدة تركب رمزاً جديداً
   });
   afterAll(async () => { await app.close(); });
 
@@ -43,7 +48,7 @@ describe('Logistics — tow request (e2e)', () => {
   });
   it('driver profile + going online is required before seeing nearby offers', async () => {
     await http().get('/v1/transport/driver/offers').set(auth(driverTok)).expect(403);           // no profile yet
-    await http().put('/v1/transport/driver/profile').set(auth(driverTok)).send({ truck_plate: `ن ق ل ${suffix.slice(0, 3)}`, truck_type: 'flatbed_tow' }).expect(200);
+    await http().put('/v1/transport/driver/profile').set(auth(driverTok)).send({ org_id: providerOrgId, truck_plate: `ن ق ل ${suffix.slice(0, 3)}`, truck_type: 'flatbed_tow' }).expect(200);
     await http().get('/v1/transport/driver/offers').set(auth(driverTok)).expect(409);           // no location yet
     await http().put('/v1/transport/driver/online').set(auth(driverTok)).send({ online: true, lat: 24.7100, lng: 46.6800 }).expect(200);
     const offers = await http().get('/v1/transport/driver/offers?radius_km=30').set(auth(driverTok)).expect(200);
@@ -55,6 +60,13 @@ describe('Logistics — tow request (e2e)', () => {
     expect(far.body.map((j: { id: string }) => j.id)).not.toContain(jobId);
     const near = await http().get(`/v1/admin/transport/drivers/near?lat=${PICKUP.lat}&lng=${PICKUP.lng}&radius_km=30`).set(auth(adminTok)).expect(200);
     expect(near.body[0].distanceKm).toBeLessThan(30);
+  });
+  it('a driver with no establishment cannot accept a paid job — it could never be invoiced', async () => {
+    // كان يقبلها ويسلّمها بإثبات، ثم تموت الفوترة صامتة: العميل مدين بلا مطالبة والسائق بلا مقابل.
+    const refused = await http().post(`/v1/transport/jobs/${jobId}/accept`).set(auth(otherTok)).send({}).expect(403);
+    expect(refused.body.message_ar).toContain('منشأة النقل');
+    const still = await http().get(`/v1/transport/jobs/${jobId}`).set(auth(custTok)).expect(200);
+    expect(still.body.status).toBe('requested');   // المهمة لم تُسند
   });
   it('first driver to accept wins; the second gets a conflict', async () => {
     const a = await http().post(`/v1/transport/jobs/${jobId}/accept`).set(auth(driverTok)).send({}).expect(200);
