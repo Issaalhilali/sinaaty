@@ -20,4 +20,9 @@ export async function api<T>(path: string, init: RequestInit & { raw?: boolean }
   return (await r.json()) as T;
 }
 export const fmtMoney = (s: string | number | null | undefined) => `${Number(s ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ر.س`;
-export const fmtDate = (d: string | Date | null | undefined) => (d ? new Date(d).toLocaleString('en-GB', { timeZone: 'Asia/Riyadh', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—');
+// عربي بأشهر عربية وأرقام غربية — كما يعرض التطبيق تماماً (§5.1: الأرقام غربية دائماً).
+// كانت 'en-GB' تكتب «27 Aug 2026» وسط شاشة عربية بالكامل. و'ca-gregory' صريحة لأن 'ar-SA'
+// وحدها تنزلق إلى التقويم الهجري، والتواريخ هنا قانونية ومالية لا تحتمل التباساً.
+const AR_DATE = 'ar-u-nu-latn-ca-gregory';
+export const fmtDate = (d: string | Date | null | undefined) => (d ? new Date(d).toLocaleString(AR_DATE, { timeZone: 'Asia/Riyadh', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—');
+export const fmtDay = (d: string | Date | null | undefined) => (d ? new Date(d).toLocaleDateString(AR_DATE, { timeZone: 'Asia/Riyadh', day: '2-digit', month: 'short', year: 'numeric' }) : '—');

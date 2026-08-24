@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Shell } from '@/components/shell';
 import { Empty, ErrorBox, Eyebrow, Kpi, Loading, Pill, ReasonDialog } from '@/components/ui';
-import { api, fmtMoney } from '@/lib/api';
+import { api, fmtDay, fmtMoney } from '@/lib/api';
 
 type Flag = { key: string; rule: { enabled?: boolean; orgs?: string[]; org_types?: string[]; zones?: string[]; pct?: number }; known: boolean };
 type Zone = { code: string; nameAr: string; city: string; radiusKm: number };
@@ -216,7 +216,7 @@ export default function PilotPage() {
                     <td className="p-3 font-semibold">{r.nameAr}</td>
                     <td className="p-3 text-muted num">{r.zone ?? '—'}</td>
                     <td className="p-3 num">{r.workOrders}</td>
-                    <td className="p-3">{r.workOrders === 0 ? <Pill label="لم تُستخدم بعد" tone="pill-warn" /> : <span className="text-muted text-xs">{r.lastActiveAt ? new Date(r.lastActiveAt).toLocaleDateString('en-GB') : '—'}</span>}</td>
+                    <td className="p-3">{r.workOrders === 0 ? <Pill label="لم تُستخدم بعد" tone="pill-warn" /> : <span className="text-muted text-xs">{r.lastActiveAt ? fmtDay(r.lastActiveAt) : '—'}</span>}</td>
                   </tr>
                 ))}
               </tbody>
