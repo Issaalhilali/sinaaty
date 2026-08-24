@@ -11,8 +11,10 @@ type Overview = { orgs: { total: number; active: number; pending_kyb: number }; 
 export default function OverviewPage() {
   const q = useQuery({ queryKey: ['overview'], queryFn: () => api<Overview>('/admin/overview'), refetchInterval: 30_000 });
   // نزاع بمال مجمَّد وطلب صرف بانتظار موافقة ثانية لا يظهران في /overview — وهما أوجب ما يوجب إنساناً.
+  // «مفتوح» وحدها لا تكفي: المبلغ يبقى مجمَّداً في «قيد الدراسة» و«بانتظار الأطراف» و«مُصعَّد» —
+  // نفس القائمة التي تستعملها صفحة النزاعات لزرّ «المفتوحة».
   // نداءان زهيدان، وفشل أيٍّ منهما يُسقط بنده من الشريط ولا يعطّل الصفحة.
-  const disputes = useQuery({ queryKey: ['overview-disputes'], queryFn: () => api<unknown[]>('/admin/disputes?status=open'), refetchInterval: 30_000, retry: false });
+  const disputes = useQuery({ queryKey: ['overview-disputes'], queryFn: () => api<unknown[]>('/admin/disputes?status=open,under_review,awaiting_parties,escalated'), refetchInterval: 30_000, retry: false });
   const approvals = useQuery({ queryKey: ['overview-approvals'], queryFn: () => api<unknown[]>('/admin/approvals?status=requested'), refetchInterval: 30_000, retry: false });
   const attention = q.data ? attentionItems({
     ledgerImbalance: q.data.money.ledger_imbalance,
