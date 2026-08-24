@@ -14,6 +14,17 @@ class SealCard extends StatelessWidget {
       DefaultTextStyle.merge(style: const TextStyle(color: Colors.white), child: IconTheme.merge(data: const IconThemeData(color: Colors.white), child: Padding(padding: padding, child: child))),
     ])));
 }
+/// نفس سطح الختم بلا بطاقة ولا حواف — يملأ ما يُعطى له (ترويسة شاشة الدخول مثلاً).
+/// الطلاء واحد لأن الهوية واحدة؛ فرقه الوحيد أنه لا يُقصّ ولا يُظلَّل.
+class SealSurface extends StatelessWidget {
+  final Widget child; const SealSurface({super.key, required this.child});
+  @override Widget build(BuildContext context) => Stack(fit: StackFit.expand, children: [
+    const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(center: Alignment(1, -1.2), radius: 1.6, colors: [Color(0xFF137A61), SinaatyColors.seal, SinaatyColors.sealDeep], stops: [0, .4, 1]))),
+    CustomPaint(painter: _HatchPainter()),
+    PositionedDirectional(end: -110, top: 40, child: Container(width: 320, height: 320, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [SinaatyColors.dSeal.withValues(alpha: .40), SinaatyColors.dSeal.withValues(alpha: 0)], stops: const [0, .65])))),
+    DefaultTextStyle.merge(style: const TextStyle(color: Colors.white), child: IconTheme.merge(data: const IconThemeData(color: Colors.white), child: child)),
+  ]);
+}
 class _HatchPainter extends CustomPainter {
   @override void paint(Canvas c, Size s) {
     final p = Paint()..color = Colors.white.withValues(alpha: .05)..strokeWidth = 1; const gap = 22.0; final n = ((s.width + s.height) / gap).ceil();

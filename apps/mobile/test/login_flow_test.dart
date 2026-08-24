@@ -11,7 +11,10 @@ import 'package:sinaaty/core/theme/app_theme.dart';
 import 'package:sinaaty/features/auth/domain/auth_entities.dart';
 import 'package:sinaaty/features/auth/domain/auth_repository.dart';
 import 'package:sinaaty/features/auth/presentation/login_screen.dart';
+import 'package:sinaaty/features/auth/presentation/otp_screen.dart';
 import 'package:sinaaty/features/auth/presentation/providers.dart';
+
+import 'fleet_flow_test.dart' show loadArabicFont;
 
 class FakeAuthRepo implements AuthRepository {
   String? requested;
@@ -22,6 +25,7 @@ class FakeAuthRepo implements AuthRepository {
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 void main() {
+  setUpAll(loadArabicFont);
   testWidgets('login screen validates phone locally, then requests OTP with E.164 and navigates', (tester) async {
     final repo = FakeAuthRepo();
     final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const LoginScreen()), GoRoute(path: '/login/otp', builder: (_, _) => const Scaffold(body: Text('otp-screen')))]);
@@ -36,5 +40,29 @@ void main() {
     await tester.enterText(find.byType(TextField), '0501234567');
     await tester.tap(find.text('أرسل الرمز')); await tester.pumpAndSettle();
     expect(repo.requested, '+966501234567'); expect(find.text('otp-screen'), findsOneWidget);
+  });
+
+  testWidgets('login: أول شاشة يراها إنسان — لقطة ذهبية فاتحة وداكنة', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    for (final (name, theme) in [('light', AppTheme.light()), ('dark', AppTheme.dark())]) {
+      await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+        overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+        child: MaterialApp(theme: theme, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+          localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+          home: const LoginScreen())));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/login_$name.png'));
+    }
+  });
+
+  testWidgets('otp: الشاشة الثانية بنفس اللغة — لا سقوط إلى شكل آخر', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        routerConfig: GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const OtpScreen(phone: '+966501234567'))]))));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/otp_light.png'));
   });
 }

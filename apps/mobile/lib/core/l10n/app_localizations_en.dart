@@ -40,10 +40,10 @@ class L10nEn extends L10n {
   String get tabMySales => 'My sales';
 
   @override
-  String get loginTitle => 'Welcome to Sinaaty';
+  String get loginTitle => 'Sign in with your phone';
 
   @override
-  String get loginSubtitle => 'Enter your mobile number and we’ll send a code';
+  String get loginSubtitle => 'We will send you a one-time code';
 
   @override
   String get phoneLabel => 'Mobile number';
@@ -2042,4 +2042,21 @@ class L10nEn extends L10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get loginPromise =>
+      'Your car under a signed work order, and your money held until you receive it.';
+
+  @override
+  String get loginTrustSign => 'Nafath signature';
+
+  @override
+  String get loginTrustEscrow => 'Money held';
+
+  @override
+  String get loginTrustInvoice => 'Tax invoice';
+
+  @override
+  String get loginNafathNote =>
+      'Sign in with your phone; you sign with Nafath when approving any work.';
 }

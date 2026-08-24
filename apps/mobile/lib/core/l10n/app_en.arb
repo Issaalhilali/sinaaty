@@ -10,8 +10,8 @@
   "tabParts": "Parts",
   "tabRequests": "Requests",
   "tabMySales": "My sales",
-  "loginTitle": "Welcome to Sinaaty",
-  "loginSubtitle": "Enter your mobile number and we’ll send a code",
+  "loginTitle": "Sign in with your phone",
+  "loginSubtitle": "We will send you a one-time code",
   "phoneLabel": "Mobile number",
   "phoneHint": "05xxxxxxxx",
   "sendCode": "Send code",
@@ -966,5 +966,10 @@
         "type": "int"
       }
     }
-  }
+  },
+  "loginPromise": "Your car under a signed work order, and your money held until you receive it.",
+  "loginTrustSign": "Nafath signature",
+  "loginTrustEscrow": "Money held",
+  "loginTrustInvoice": "Tax invoice",
+  "loginNafathNote": "Sign in with your phone; you sign with Nafath when approving any work."
 }

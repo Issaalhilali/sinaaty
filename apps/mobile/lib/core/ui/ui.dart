@@ -8,4 +8,5 @@ export 'widgets/section_card.dart';
 export 'widgets/timeline.dart';
 export 'widgets/async_view.dart';
 export 'widgets/seal_card.dart';
+export 'widgets/seal_scaffold.dart';
 export 'widgets/media_thumb.dart';

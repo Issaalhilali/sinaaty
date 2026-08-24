@@ -40,10 +40,10 @@ class L10nAr extends L10n {
   String get tabMySales => 'مبيعاتي';
 
   @override
-  String get loginTitle => 'أهلاً بك في صناعتي';
+  String get loginTitle => 'ادخل بجوالك';
 
   @override
-  String get loginSubtitle => 'أدخل رقم جوالك لنرسل لك رمز التحقق';
+  String get loginSubtitle => 'نرسل لك رمز تحقق لمرة واحدة';
 
   @override
   String get phoneLabel => 'رقم الجوال';
@@ -2018,4 +2018,20 @@ class L10nAr extends L10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get loginPromise => 'سيارتك بأمر عمل موقّع، ومالك محفوظ حتى تستلمها.';
+
+  @override
+  String get loginTrustSign => 'توقيع نفاذ';
+
+  @override
+  String get loginTrustEscrow => 'المبلغ محفوظ';
+
+  @override
+  String get loginTrustInvoice => 'فاتورة نظامية';
+
+  @override
+  String get loginNafathNote =>
+      'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.';
 }

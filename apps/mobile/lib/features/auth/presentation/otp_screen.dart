@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/di/core_providers.dart';
+import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
@@ -20,12 +21,26 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   }
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final t = Theme.of(context);
-    return Scaffold(appBar: AppBar(), body: SafeArea(child: Padding(padding: const EdgeInsets.all(SinaatySpace.xl), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(l.otpTitle, style: t.textTheme.headlineSmall), const SizedBox(height: SinaatySpace.sm), Text(l.otpSubtitle(widget.phone), style: t.textTheme.bodyMedium?.copyWith(color: t.colorScheme.onSurfaceVariant)),
-      const SizedBox(height: SinaatySpace.xl),
-      TextField(controller: _code, autofocus: true, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, textAlign: TextAlign.center, maxLength: 6, style: const TextStyle(fontSize: 28, letterSpacing: 8, fontWeight: FontWeight.w700), inputFormatters: [FilteringTextInputFormatter.digitsOnly], decoration: InputDecoration(counterText: '', errorText: _error), onChanged: (v) { if (v.length == 6) _verify(); }),
-      const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.verify, onPressed: _verify, loading: _loading),
-      TextButton(onPressed: () => context.pop(), child: Text(l.resendCode)),
-    ]))));
+    return SealScaffold(
+      onBack: () => context.pop(),
+      // نفس أخضر الشاشة السابقة: الرقم الذي أدخله للتوّ مكتوب أمامه، فلا يشكّ أنه أخطأ فيه.
+      top: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Icon(Icons.sms_outlined, size: 34, color: Colors.white),
+        const SizedBox(height: SinaatySpace.lg),
+        Text(l.otpTitle, style: t.textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.35)),
+        const SizedBox(height: SinaatySpace.sm),
+        Text(l.otpSubtitle(Fmt.ltr(widget.phone)), style: t.textTheme.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .8))),
+      ]),
+      sheet: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(controller: _code, autofocus: true, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, textAlign: TextAlign.center, maxLength: 6,
+          style: const TextStyle(fontSize: 28, letterSpacing: 8, fontWeight: FontWeight.w700),
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: InputDecoration(counterText: '', errorText: _error),
+          onChanged: (v) { if (v.length == 6) _verify(); }),
+        const SizedBox(height: SinaatySpace.lg),
+        PrimaryButton(label: l.verify, onPressed: _verify, loading: _loading),
+        TextButton(onPressed: () => context.pop(), child: Text(l.resendCode)),
+      ]),
+    );
   }
 }

@@ -160,13 +160,13 @@ abstract class L10n {
   /// No description provided for @loginTitle.
   ///
   /// In ar, this message translates to:
-  /// **'أهلاً بك في صناعتي'**
+  /// **'ادخل بجوالك'**
   String get loginTitle;
 
   /// No description provided for @loginSubtitle.
   ///
   /// In ar, this message translates to:
-  /// **'أدخل رقم جوالك لنرسل لك رمز التحقق'**
+  /// **'نرسل لك رمز تحقق لمرة واحدة'**
   String get loginSubtitle;
 
   /// No description provided for @phoneLabel.
@@ -3840,6 +3840,36 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'{n, plural, =1{فاتورة واحدة بانتظار السداد} =2{فاتورتان بانتظار السداد} other{{n} بانتظار السداد}}'**
   String dueCount(int n);
+
+  /// No description provided for @loginPromise.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك بأمر عمل موقّع، ومالك محفوظ حتى تستلمها.'**
+  String get loginPromise;
+
+  /// No description provided for @loginTrustSign.
+  ///
+  /// In ar, this message translates to:
+  /// **'توقيع نفاذ'**
+  String get loginTrustSign;
+
+  /// No description provided for @loginTrustEscrow.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ محفوظ'**
+  String get loginTrustEscrow;
+
+  /// No description provided for @loginTrustInvoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتورة نظامية'**
+  String get loginTrustInvoice;
+
+  /// No description provided for @loginNafathNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.'**
+  String get loginNafathNote;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
