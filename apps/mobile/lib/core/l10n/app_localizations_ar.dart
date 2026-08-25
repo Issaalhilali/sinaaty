@@ -1826,6 +1826,9 @@ class L10nAr extends L10n {
   }
 
   @override
+  String get voUnavailable => 'الإملاء الصوتي غير متاح على هذا الجهاز.';
+
+  @override
   String get voSpeak => 'تكلم الآن';
 
   @override

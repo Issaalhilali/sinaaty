@@ -75,3 +75,15 @@ final voiceModeProvider = FutureProvider<VoiceMode>((ref) async {
 });
 /// Resolved once per session: does this device take voice input? Drives every mic's existence.
 final voiceAvailableProvider = FutureProvider<bool>((ref) async => (await ref.watch(voiceModeProvider.future)) != VoiceMode.none);
+
+/// عُرف أن هذا الجهاز لا يُملي — بعد محاولة فعلية، لا بفحص عند الإقلاع.
+///
+/// الفحص نفسه (`initialize()`) هو ما يطلب إذن التسجيل، فمراقبته في بناء الهيكل كانت تضع سؤال
+/// «اسمح بتسجيل الصوت؟» فوق أول شاشة يراها المستخدم قبل أن يلمس شيئاً (مشية أندرويد ٢٥ أغسطس).
+/// فصار الميكروفون يظهر ابتداءً، ويُطلب الإذن عند الضغط، وإن تبيّن أن الجهاز لا يُملي اختفى
+/// الزر لبقية الجلسة — فلا إذنٌ مبكر ولا زرٌّ ميت باقٍ.
+class VoiceDead extends Notifier<bool> {
+  @override bool build() => false;
+  void mark() => state = true;
+}
+final voiceDeadProvider = NotifierProvider<VoiceDead, bool>(VoiceDead.new);

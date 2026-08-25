@@ -94,10 +94,15 @@ void main() {
     expect(find.text('TOW-SCREEN'), findsOneWidget);
   });
 
-  testWidgets('no dictation on the device → no mic anywhere', (tester) async {
+  testWidgets('no dictation on the device → the mic goes after one honest attempt, not before', (tester) async {
+    // فحص القدرة هو نفسه ما يطلب إذن التسجيل، فإجراؤه عند الإقلاع كان يضع سؤال الإذن فوق أول
+    // شاشة يراها المستخدم (مشية أندرويد ٢٥ أغسطس). فالزر يظهر، وأول ضغطة تكشف الحقيقة وتخفيه.
     size(tester);
     await tester.pumpWidget(app(voice: DeafVoice()));
     await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.mic_none), findsNothing);
+    expect(find.byIcon(Icons.mic_none), findsWidgets);          // موجود قبل أي محاولة
+    await tester.tap(find.byIcon(Icons.mic_none).first); await tester.pumpAndSettle();
+    expect(find.text('الإملاء الصوتي غير متاح على هذا الجهاز.'), findsOneWidget);
+    expect(find.byIcon(Icons.mic_none), findsNothing);          // ولا يبقى زرّاً ميتاً
   });
 }

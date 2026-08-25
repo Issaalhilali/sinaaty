@@ -1844,6 +1844,9 @@ class L10nEn extends L10n {
   }
 
   @override
+  String get voUnavailable => 'Voice input is not available on this device.';
+
+  @override
   String get voSpeak => 'Speak now';
 
   @override

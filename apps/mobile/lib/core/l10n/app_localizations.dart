@@ -3487,6 +3487,12 @@ abstract class L10n {
   /// **'يرد خلال ~{n} دقيقة'**
   String srRespondsIn(int n);
 
+  /// No description provided for @voUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإملاء الصوتي غير متاح على هذا الجهاز.'**
+  String get voUnavailable;
+
   /// No description provided for @voSpeak.
   ///
   /// In ar, this message translates to:

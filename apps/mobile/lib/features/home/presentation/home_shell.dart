@@ -93,11 +93,10 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     if (_index >= tabs.length) _index = 0; final title = tabs[_index].$1; final name = me?.fullNameAr ?? '';
     final body = tabs[_index].$3;
     final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
-    final voiceOk = ref.watch(voiceAvailableProvider).value ?? false;
     final partner = flavor == AppFlavor.partner;
     return AppScaffold(title: title, subtitle: _index == 0 && name.isNotEmpty ? '${l.welcomeBack} $name' : null, leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        if (voiceOk) IconButton(tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none), onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier)),
+        if (!ref.watch(voiceDeadProvider)) IconButton(tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none), onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier)),
         if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
       ]),
       moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],

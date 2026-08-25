@@ -10,11 +10,20 @@ import 'voice_input.dart';
 /// The one dictation surface used everywhere: a pulsing seal mic, the words appearing as they are
 /// spoken, and two honest buttons — أعد or تم. Returns the final transcript, or null.
 Future<String?> showVoiceSheet(BuildContext context, WidgetRef ref, {String? title}) async {
+  // الإذن يُطلب هنا — عند أول ضغطة على الميكروفون — لا عند فتح التطبيق. كان `voiceModeProvider`
+  // يُراقَب في بناء الهيكل، و`initialize()` تطلب إذن التسجيل، فيقابل المستخدمَ سؤالُ «اسمح
+  // بتسجيل الصوت؟» فوق أول شاشة يراها قبل أن يلمس شيئاً (مشية أندرويد ٢٥ أغسطس ٢٠٢٦).
+  final mode = await ref.read(voiceModeProvider.future);
+  if (!context.mounted) return null;
+  if (mode == VoiceMode.none) {
+    ref.read(voiceDeadProvider.notifier).mark();   // يختفي الزر من كل مكان بعدها
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).voUnavailable)));
+    return null;
+  }
   final voice = ref.read(voiceInputProvider);
-  final typedDev = ref.read(voiceModeProvider).value == VoiceMode.typedDev;
   final dev = ref.read(appConfigProvider).appEnv == 'dev';
   return showModalBottomSheet<String>(context: context, showDragHandle: true, isScrollControlled: true, isDismissible: false,
-    builder: (ctx) => typedDev ? _TypedDevSheetBody(title: title) : _VoiceSheetBody(voice: voice, title: title, devFallback: dev));
+    builder: (ctx) => mode == VoiceMode.typedDev ? _TypedDevSheetBody(title: title) : _VoiceSheetBody(voice: voice, title: title, devFallback: dev));
 }
 
 /// The dev-only stand-in when the simulator cannot dictate: same contract, typed instead of spoken,
@@ -113,8 +122,9 @@ class VoiceMicButton extends ConsumerWidget {
   final TextEditingController controller; final String? title;
   const VoiceMicButton({super.key, required this.controller, this.title});
   @override Widget build(BuildContext context, WidgetRef ref) {
-    final available = ref.watch(voiceAvailableProvider).value ?? false;
-    if (!available) return const SizedBox.shrink();
+    // بلا `voiceAvailableProvider` هنا: مراقبته تُشغّل الفحص فيُطلب الإذن مبكراً. الزر موجود حتى
+    // تُثبت محاولةٌ أن الجهاز لا يُملي.
+    if (ref.watch(voiceDeadProvider)) return const SizedBox.shrink();
     final l = L10n.of(context);
     return IconButton(tooltip: l.voSpeak, icon: const Icon(Icons.mic_none), onPressed: () async {
       final text = await showVoiceSheet(context, ref, title: title);
