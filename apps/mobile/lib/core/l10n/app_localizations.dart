@@ -3856,7 +3856,7 @@ abstract class L10n {
   /// No description provided for @loginPromise.
   ///
   /// In ar, this message translates to:
-  /// **'سيارتك بأمر عمل موقّع، ومالك محفوظ حتى تستلمها.'**
+  /// **'المكان الأسهل والأسرع لكل ما تحتاجه سيارتك.'**
   String get loginPromise;
 
   /// No description provided for @loginTrustSign.

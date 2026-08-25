@@ -2026,7 +2026,7 @@ class L10nAr extends L10n {
   }
 
   @override
-  String get loginPromise => 'سيارتك بأمر عمل موقّع، ومالك محفوظ حتى تستلمها.';
+  String get loginPromise => 'المكان الأسهل والأسرع لكل ما تحتاجه سيارتك.';
 
   @override
   String get loginTrustSign => 'توقيع نفاذ';

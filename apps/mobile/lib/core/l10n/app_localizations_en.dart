@@ -2051,7 +2051,7 @@ class L10nEn extends L10n {
 
   @override
   String get loginPromise =>
-      'Your car under a signed work order, and your money held until you receive it.';
+      'The easiest, fastest place for everything your car needs.';
 
   @override
   String get loginTrustSign => 'Nafath signature';
