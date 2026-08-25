@@ -90,7 +90,7 @@ const asApp = {
  * الطلب، وسائق يقبل أولاً بأول، وتسليم لا يُصدَّق إلا بصورة **ورمز يملكه المستلم نفسه** — ثم فاتورة
  * تلقائية تركب خط الدفع القائم. الرمز يُرسل للمستلم لا للسائق: لا شيء يمنع سائقاً من ادعاء تسليم لم يقع.
  */
-async function walkTow({ customer, driverPhone }) {
+async function walkTow({ customer, driverPhone, driverOrgId }) {
   console.log('السطحة — من السعر المسبق إلى التسليم المُثبت:');
   const pickup = { lat: 24.632, lng: 46.792 }, dropoff = { lat: 24.66, lng: 46.72 };
   // transport_repository_impl.dart:37 — the price the customer sees BEFORE committing
@@ -107,7 +107,9 @@ async function walkTow({ customer, driverPhone }) {
   let driver;
   try { driver = await login(driverPhone); }
   catch { throttled++; console.log('  ~ تخطٍّ: تعذّر دخول السائق (حدّ المعدل/الحصة) — رحلة السائق لم تُفحص'); return; }
-  await call('PUT', '/transport/driver/profile', { token: driver, body: { truck_plate: 'س ط ح 1', truck_type: 'flatbed_tow' } });
+  // المنشأة مطلوبة: الخادم يرفض القبول بلا منشأة لأن الفاتورة الضريبية تصدر باسمها. فالفاحص
+  // يمشي المسار بحساب الورشة نفسه حين لا يوجد سائق مزروع — أربع شاشات كانت تُتخطّى كل مرة.
+  await call('PUT', '/transport/driver/profile', { token: driver, body: { ...(driverOrgId ? { org_id: driverOrgId } : {}), truck_plate: 'س ط ح 1', truck_type: 'flatbed_tow' } });
   await call('PUT', '/transport/driver/online', { token: driver, body: { online: true, ...pickup } });
   const offers = await call('GET', '/transport/driver/offers', { token: driver });
   Array.isArray(offers.body) && offers.body.some((o) => o.id === id)
@@ -294,8 +296,7 @@ async function main() {
     else console.log('  ~ تخطٍّ: حساب التاجر بلا منشأة (شغّل البذرة)');
   } catch (e) { console.log(`  ~ تخطٍّ سلسلة الأجل: ${e.message}`); }
 
-  if (process.env.SEAM_DRIVER) await walkTow({ customer, driverPhone: process.env.SEAM_DRIVER });
-  else console.log('السطحة: ~ تخطٍّ (مرّر SEAM_DRIVER=<جوال سائق> لمشيها)');
+  await walkTow({ customer, driverPhone: process.env.SEAM_DRIVER ?? WORKSHOP, driverOrgId: process.env.SEAM_DRIVER ? undefined : orgId });
 
   console.log('الإدارة:');
   // Repeated runs hit the per-phone OTP quota — that guard is a feature, not a seam break.
