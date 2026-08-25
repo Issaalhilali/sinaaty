@@ -1039,5 +1039,17 @@
         "type": "int"
       }
     }
+  },
+  "inNewService": "طلب إصلاح وصلك الآن",
+  "inNewPart": "طلب قطعة وصلك الآن",
+  "inMore": "+{n} آخر",
+  "inOpen": "شوف الطلب",
+  "inIgnore": "تجاهل",
+  "@inMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

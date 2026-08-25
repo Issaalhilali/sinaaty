@@ -1039,5 +1039,17 @@
         "type": "int"
       }
     }
+  },
+  "inNewService": "A repair request just arrived",
+  "inNewPart": "A part request just arrived",
+  "inMore": "+{n} more",
+  "inOpen": "See the request",
+  "inIgnore": "Ignore",
+  "@inMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

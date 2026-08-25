@@ -4194,6 +4194,36 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'صور القطعة'**
   String get ptSeePart;
+
+  /// No description provided for @inNewService.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلب إصلاح وصلك الآن'**
+  String get inNewService;
+
+  /// No description provided for @inNewPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلب قطعة وصلك الآن'**
+  String get inNewPart;
+
+  /// No description provided for @inMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'+{n} آخر'**
+  String inMore(int n);
+
+  /// No description provided for @inOpen.
+  ///
+  /// In ar, this message translates to:
+  /// **'شوف الطلب'**
+  String get inOpen;
+
+  /// No description provided for @inIgnore.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل'**
+  String get inIgnore;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

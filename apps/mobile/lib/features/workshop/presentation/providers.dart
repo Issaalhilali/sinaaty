@@ -8,6 +8,8 @@ import '../../work_orders/domain/work_order.dart';
 import '../data/pending_actions_file.dart';
 import '../data/workshop_repository_impl.dart';
 import '../domain/workshop.dart';
+import '../data/org_channel_impl.dart';
+import '../domain/incoming.dart';
 import '../domain/workshop_repository.dart';
 final workshopRepositoryProvider = Provider<WorkshopRepository>((ref) => WorkshopRepositoryImpl(ref.watch(apiClientProvider)));
 final pendingActionsProvider = Provider<PendingActions>((_) => FilePendingActions());
@@ -63,3 +65,25 @@ class SyncController extends Notifier<int> {
   }
 }
 final syncControllerProvider = NotifierProvider<SyncController, int>(SyncController.new);
+
+/// القناة الحيّة للمنشأة — تُبدَّل في الاختبارات بتيار جاهز.
+final orgChannelProvider = Provider<OrgChannel>((ref) => OrgChannelImpl(baseUrl: ref.watch(appConfigProvider).apiBaseUrl, tokens: ref.watch(tokenStoreProvider)));
+
+/// طابور ما وصل الآن. يستمع ما دامت المنشأة معروفة، ويصمت حين لا منشأة.
+class IncomingQueue extends Notifier<List<Incoming>> {
+  final _dismissed = <String>{};
+  @override List<Incoming> build() {
+    final org = ref.watch(currentOrgIdProvider);
+    if (org == null) return const [];
+    final sub = ref.watch(orgChannelProvider).incoming(org).listen((item) {
+      state = pushIncoming(state, item, dismissed: _dismissed);
+    });
+    ref.onDispose(sub.cancel);
+    return const [];
+  }
+
+  /// يُخفيها لهذه الجلسة: الطلب يبقى في قائمته، ولا يعود يعلو الشاشة.
+  void dismiss(String id) { _dismissed.add(id); state = state.where((x) => x.id != id).toList(); }
+}
+
+final incomingQueueProvider = NotifierProvider<IncomingQueue, List<Incoming>>(IncomingQueue.new);

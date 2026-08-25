@@ -22,6 +22,7 @@ import '../../workshop/presentation/org_wallet_screen.dart';
 import '../../workshop/presentation/providers.dart';
 import '../../transport/presentation/driver_home_screen.dart';
 import '../../transport/presentation/providers.dart';
+import '../../workshop/presentation/incoming_banner.dart';
 import '../../workshop/presentation/today_screen.dart';
 import '../../parts/presentation/supplier_screens.dart';
 import 'request_hub_screen.dart';
@@ -101,7 +102,11 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       ]),
       moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],
       onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') unawaited(context.push('/notifications')); },
-      bottom: FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i), items: [for (final t in tabs) (icon: t.$2, label: t.$1)]));
+      // البطاقة تعلو أي تبويب لأن الطلب لا يعرف أين صاحب الورشة الآن — وأول من يردّ يأخذ العمل.
+      bottom: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (partner) const IncomingBanner(),
+        FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i), items: [for (final t in tabs) (icon: t.$2, label: t.$1)]),
+      ]));
   }
 
   /// One sentence in → the right screen out. Money and legal actions are never voice-executed;

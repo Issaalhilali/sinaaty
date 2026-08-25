@@ -1,4 +1,5 @@
 import '../../../core/result/result.dart';
+import 'incoming.dart';
 import '../../work_orders/domain/work_order.dart';
 import 'workshop.dart';
 abstract interface class WorkshopRepository {
@@ -34,3 +35,8 @@ abstract interface class PendingActions {
 class PendingAction { final String id; final String kind; final Map<String, dynamic> payload; final DateTime createdAt; const PendingAction({required this.id, required this.kind, required this.payload, required this.createdAt});
   Map<String, dynamic> toJson() => {'id': id, 'kind': kind, 'payload': payload, 'createdAt': createdAt.toIso8601String()};
   factory PendingAction.fromJson(Map<String, dynamic> j) => PendingAction(id: j['id'] as String, kind: j['kind'] as String, payload: (j['payload'] as Map).cast<String, dynamic>(), createdAt: DateTime.parse(j['createdAt'] as String)); }
+
+/// قناة المنشأة الحيّة: ما يصلها الآن من طلبات — بلا نداء ولا سحب.
+abstract interface class OrgChannel {
+  Stream<Incoming> incoming(String orgId);
+}

@@ -2205,4 +2205,21 @@ class L10nAr extends L10n {
 
   @override
   String get ptSeePart => 'صور القطعة';
+
+  @override
+  String get inNewService => 'طلب إصلاح وصلك الآن';
+
+  @override
+  String get inNewPart => 'طلب قطعة وصلك الآن';
+
+  @override
+  String inMore(int n) {
+    return '+$n آخر';
+  }
+
+  @override
+  String get inOpen => 'شوف الطلب';
+
+  @override
+  String get inIgnore => 'تجاهل';
 }

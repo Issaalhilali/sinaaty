@@ -2233,4 +2233,21 @@ class L10nEn extends L10n {
 
   @override
   String get ptSeePart => 'Part photos';
+
+  @override
+  String get inNewService => 'A repair request just arrived';
+
+  @override
+  String get inNewPart => 'A part request just arrived';
+
+  @override
+  String inMore(int n) {
+    return '+$n more';
+  }
+
+  @override
+  String get inOpen => 'See the request';
+
+  @override
+  String get inIgnore => 'Ignore';
 }
