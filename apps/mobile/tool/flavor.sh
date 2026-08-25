@@ -35,6 +35,12 @@ API=$(python3 -c "import json;print(json.load(open('env/dev.json'))['API_BASE_UR
 echo "▶ $NAME (com.example.sinaaty.$FLAVOR) → $API"
 # على iOS تكفي الـxcconfig أعلاه: `--flavor` هناك يطلب مخططات Xcode مخصّصة لا وجود لها،
 # فيفشل البناء. على أندرويد النكهات gradle حقيقية فتحتاج الراية.
+# ونكتشف أندرويد من الأجهزة الموصولة لا من الوسائط: `tool/flavor.sh partner` على جوال أندرويد
+# موصول كان يبني بلا الراية فتفشل بـ«Gradle build failed to produce an .apk file» — وهي رسالة
+# تُضيّع وقت من يقرؤها لأنها لا تذكر النكهات إطلاقاً.
 EXTRA=()
-if [[ "${*:2}" == *"android"* || "${ANDROID:-}" == "1" ]]; then EXTRA+=(--flavor "$FLAVOR"); fi
+DEVICES="$(flutter devices --machine 2>/dev/null || echo '[]')"
+if [[ "${*:2}" == *"android"* || "${ANDROID:-}" == "1" ]] || grep -q '"targetPlatform": *"android' <<<"$DEVICES"; then
+  EXTRA+=(--flavor "$FLAVOR")
+fi
 exec flutter run "${EXTRA[@]}" -t "lib/main_$FLAVOR.dart" --dart-define-from-file=env/dev.json "${@:2}"
