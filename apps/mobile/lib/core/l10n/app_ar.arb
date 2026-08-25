@@ -971,5 +971,43 @@
   "loginTrustSign": "توقيع نفاذ",
   "loginTrustEscrow": "المبلغ محفوظ",
   "loginTrustInvoice": "فاتورة نظامية",
-  "loginNafathNote": "تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل."
+  "loginNafathNote": "تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.",
+  "drvOnline": "متصل — تصلك المهام",
+  "drvOffline": "غير متصل",
+  "drvNearby": "مهام قريبة منك",
+  "drvNeedOrg": "اربط حسابك بمنشأة النقل قبل قبول المهام — الفاتورة تصدر باسم المنشأة.",
+  "drvPickup": "الاستلام",
+  "drvDropoff": "التسليم",
+  "drvKm": "{km} كم",
+  "drvOfflineTitle": "أنت غير متصل",
+  "drvOfflineBody": "فعّل الاتصال أعلاه لترى المهام القريبة منك.",
+  "drvNoOffersTitle": "لا مهام قريبة الآن",
+  "drvNoOffersBody": "سنعرض لك أي طلب سطحة يصل قرب موقعك.",
+  "drvActStart": "في الطريق للاستلام",
+  "drvActLoaded": "حمّلت السيارة",
+  "drvActHeading": "في الطريق للتسليم",
+  "drvActDeliver": "تسليم وإثبات",
+  "drvActDone": "تمّت",
+  "truckFlatbed": "سطحة",
+  "truckWheelLift": "رافعة عجلات",
+  "truckPartsDelivery": "توصيل قطع",
+  "drvProofTitle": "إثبات التسليم",
+  "drvProofWhy": "صورة السيارة عند التسليم، ورمزٌ تقرؤه من المستلم. بهما تُغلق المهمة ويُصرف المبلغ.",
+  "drvPhotoStep": "صوّر السيارة في مكان التسليم",
+  "drvPhotoDone": "الصورة جاهزة",
+  "drvTakePhoto": "التقط صورة",
+  "drvRetakePhoto": "إعادة التصوير",
+  "drvCodeStep": "اطلب الرمز ليصل إلى جوال المستلم، ثم اقرأه منه.",
+  "drvCodeSent": "أُرسل الرمز إلى جوال المستلم.",
+  "drvSendCode": "أرسل الرمز",
+  "drvResendCode": "إعادة الإرسال",
+  "drvComplete": "إنهاء المهمة",
+  "tabDriverJobs": "مهامي",
+  "@drvKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  }
 }

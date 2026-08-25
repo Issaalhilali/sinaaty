@@ -69,6 +69,15 @@ class TransportJob {
   bool get payable => invoice != null && invoice!.status != 'paid';
 }
 
+/// ملف السائق كما يعيده الخادم — بلا منشأة نقل لا يستطيع قبول مهمة (الفاتورة تصدر باسمها).
+class DriverProfile {
+  final String userId; final String? orgId; final String? truckPlate; final String? truckType;
+  final bool online; final GeoPoint? lastGeo; final String? ratingAvg;
+  const DriverProfile({required this.userId, this.orgId, this.truckPlate, this.truckType, this.online = false, this.lastGeo, this.ratingAvg});
+  /// الخادم يرفض القبول بلا منشأة برسالة صريحة؛ الشاشة تقولها قبل أن يضغط، لا بعده.
+  bool get canAcceptJobs => orgId != null;
+}
+
 /// Ordered steps for the customer's timeline — one row per real milestone, nothing else.
 const towSteps = ['requested', 'assigned', 'picked_up', 'delivered'];
 

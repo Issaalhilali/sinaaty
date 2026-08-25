@@ -2059,4 +2059,103 @@ class L10nEn extends L10n {
   @override
   String get loginNafathNote =>
       'Sign in with your phone; you sign with Nafath when approving any work.';
+
+  @override
+  String get drvOnline => 'Online — jobs reach you';
+
+  @override
+  String get drvOffline => 'Offline';
+
+  @override
+  String get drvNearby => 'Jobs near you';
+
+  @override
+  String get drvNeedOrg =>
+      'Link your account to a transport establishment before accepting jobs — the tax invoice is issued in its name.';
+
+  @override
+  String get drvPickup => 'Pick-up';
+
+  @override
+  String get drvDropoff => 'Drop-off';
+
+  @override
+  String drvKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get drvOfflineTitle => 'You are offline';
+
+  @override
+  String get drvOfflineBody => 'Go online above to see jobs near you.';
+
+  @override
+  String get drvNoOffersTitle => 'No jobs nearby';
+
+  @override
+  String get drvNoOffersBody =>
+      'We will show any tow request that arrives near you.';
+
+  @override
+  String get drvActStart => 'Heading to pick-up';
+
+  @override
+  String get drvActLoaded => 'Car loaded';
+
+  @override
+  String get drvActHeading => 'Heading to drop-off';
+
+  @override
+  String get drvActDeliver => 'Deliver with proof';
+
+  @override
+  String get drvActDone => 'Done';
+
+  @override
+  String get truckFlatbed => 'Flatbed';
+
+  @override
+  String get truckWheelLift => 'Wheel lift';
+
+  @override
+  String get truckPartsDelivery => 'Parts delivery';
+
+  @override
+  String get drvProofTitle => 'Proof of delivery';
+
+  @override
+  String get drvProofWhy =>
+      'A photo at the drop-off and a code read from the receiver. Together they close the job and release the money.';
+
+  @override
+  String get drvPhotoStep => 'Photograph the car at the drop-off';
+
+  @override
+  String get drvPhotoDone => 'Photo ready';
+
+  @override
+  String get drvTakePhoto => 'Take a photo';
+
+  @override
+  String get drvRetakePhoto => 'Retake';
+
+  @override
+  String get drvCodeStep =>
+      'Send the code to the receiver\'s phone, then read it from them.';
+
+  @override
+  String get drvCodeSent => 'Code sent to the receiver\'s phone.';
+
+  @override
+  String get drvSendCode => 'Send the code';
+
+  @override
+  String get drvResendCode => 'Resend';
+
+  @override
+  String get drvComplete => 'Finish the job';
+
+  @override
+  String get tabDriverJobs => 'My jobs';
 }

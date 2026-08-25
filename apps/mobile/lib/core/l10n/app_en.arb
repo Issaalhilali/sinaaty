@@ -971,5 +971,43 @@
   "loginTrustSign": "Nafath signature",
   "loginTrustEscrow": "Money held",
   "loginTrustInvoice": "Tax invoice",
-  "loginNafathNote": "Sign in with your phone; you sign with Nafath when approving any work."
+  "loginNafathNote": "Sign in with your phone; you sign with Nafath when approving any work.",
+  "drvOnline": "Online — jobs reach you",
+  "drvOffline": "Offline",
+  "drvNearby": "Jobs near you",
+  "drvNeedOrg": "Link your account to a transport establishment before accepting jobs — the tax invoice is issued in its name.",
+  "drvPickup": "Pick-up",
+  "drvDropoff": "Drop-off",
+  "drvKm": "{km} km",
+  "drvOfflineTitle": "You are offline",
+  "drvOfflineBody": "Go online above to see jobs near you.",
+  "drvNoOffersTitle": "No jobs nearby",
+  "drvNoOffersBody": "We will show any tow request that arrives near you.",
+  "drvActStart": "Heading to pick-up",
+  "drvActLoaded": "Car loaded",
+  "drvActHeading": "Heading to drop-off",
+  "drvActDeliver": "Deliver with proof",
+  "drvActDone": "Done",
+  "truckFlatbed": "Flatbed",
+  "truckWheelLift": "Wheel lift",
+  "truckPartsDelivery": "Parts delivery",
+  "drvProofTitle": "Proof of delivery",
+  "drvProofWhy": "A photo at the drop-off and a code read from the receiver. Together they close the job and release the money.",
+  "drvPhotoStep": "Photograph the car at the drop-off",
+  "drvPhotoDone": "Photo ready",
+  "drvTakePhoto": "Take a photo",
+  "drvRetakePhoto": "Retake",
+  "drvCodeStep": "Send the code to the receiver's phone, then read it from them.",
+  "drvCodeSent": "Code sent to the receiver's phone.",
+  "drvSendCode": "Send the code",
+  "drvResendCode": "Resend",
+  "drvComplete": "Finish the job",
+  "tabDriverJobs": "My jobs",
+  "@drvKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  }
 }

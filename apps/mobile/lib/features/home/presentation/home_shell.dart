@@ -20,6 +20,8 @@ import '../../work_orders/presentation/providers.dart' show workOrdersProvider;
 import '../../workshop/presentation/orders_screen.dart';
 import '../../workshop/presentation/org_wallet_screen.dart';
 import '../../workshop/presentation/providers.dart';
+import '../../transport/presentation/driver_home_screen.dart';
+import '../../transport/presentation/providers.dart';
 import '../../workshop/presentation/today_screen.dart';
 import '../../parts/presentation/supplier_screens.dart';
 import 'request_hub_screen.dart';
@@ -58,6 +60,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final flavor = ref.watch(appConfigProvider).flavor; final me = ref.watch(authControllerProvider).me;
     final orgType = ref.watch(currentOrgInfoProvider).value?.type; final isSupplier = flavor == AppFlavor.partner && supplierOrgTypes.contains(orgType);
+    final isDriver = flavor == AppFlavor.partner && (ref.watch(driverProfileProvider).value?.isOk ?? false);
     // Feature flags decide which entry points exist at all (charter §5.0 #3); a failed load hides nothing.
     final flags = ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible;
     final tabs = isSupplier ? <(String, IconData, Widget)>[
@@ -71,7 +74,10 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         (l.tabWallet, Icons.account_balance_wallet_outlined, const WalletScreen()),
         (l.tabAccount, Icons.person_outline, const AccountScreen()),
       ],
+      // السائق يُعرف بملفّه لا بنوع منشأته: قد يعمل تحت شركة نقل أو ورشة لها سطحة، والحقيقة
+      // الوحيدة أنه يقود. تبويبٌ واحد يسبق الباقي لأنه كل عمله.
       AppFlavor.partner => <(String, IconData, Widget)>[
+        if (isDriver) (l.tabDriverJobs, Icons.local_shipping_outlined, const DriverHomeScreen()),
         (l.tabToday, Icons.today_outlined, const TodayScreen()),
         (l.tabOrders, Icons.receipt_long_outlined, const OrdersScreen()),
         if (flags.enabled(Flags.partsMarketplace)) (l.tabParts, Icons.settings_input_component_outlined, const WorkshopPartsScreen()),

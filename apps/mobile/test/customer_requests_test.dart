@@ -100,6 +100,44 @@ class FakeTransport implements TransportRepository {
   @override Future<Result<List<TransportJob>>> myJobs() async => Result.ok(jobs.values.toList());
   @override Future<Result<TransportJob>> job(String id) async => jobs.containsKey(id) ? Result.ok(jobs[id]!) : const Result.err(UnknownFailure());
   @override Future<Result<void>> cancel(String id, {String? reasonAr}) async { final j = jobs[id]!; jobs[id] = TransportJob(id: j.id, number: j.number, type: j.type, status: 'cancelled', quotedPrice: j.quotedPrice, createdAt: j.createdAt); return const Result.ok(null); }
+
+  // ---- السائق: خادمٌ مصغّر يحاكي السباق على المهمة وإثبات التسليم.
+  DriverProfile driver = const DriverProfile(userId: 'd1', orgId: 'org-tow', truckPlate: 'س ط ح 1', truckType: 'flatbed_tow');
+  final offerPool = <TransportJob>[];
+  String? proofMediaId; String? proofCode; bool codeSent = false;
+  /// حين تكون true، أول قبول يخسر السباق كما يحدث فعلاً بين سائقين.
+  bool takenByAnother = false;
+
+  TransportJob _with(TransportJob j, String status) => TransportJob(id: j.id, number: j.number, type: j.type, status: status,
+      pickup: j.pickup, dropoff: j.dropoff, pickupAddress: j.pickupAddress, dropoffAddress: j.dropoffAddress,
+      distanceKm: j.distanceKm, quotedPrice: j.quotedPrice, createdAt: j.createdAt);
+
+  @override Future<Result<DriverProfile>> driverMe() async => Result.ok(driver);
+  @override Future<Result<DriverProfile>> upsertDriver({String? orgId, String? truckPlate, String? truckType}) async {
+    driver = DriverProfile(userId: 'd1', orgId: orgId ?? driver.orgId, truckPlate: truckPlate ?? driver.truckPlate, truckType: truckType ?? driver.truckType, online: driver.online);
+    return Result.ok(driver);
+  }
+  @override Future<Result<DriverProfile>> setOnline(bool online, {GeoPoint? at}) async {
+    driver = DriverProfile(userId: driver.userId, orgId: driver.orgId, truckPlate: driver.truckPlate, truckType: driver.truckType, online: online, lastGeo: at ?? driver.lastGeo);
+    return Result.ok(driver);
+  }
+  @override Future<Result<List<TransportJob>>> offers({double? radiusKm}) async => Result.ok(driver.online ? offerPool : const []);
+  @override Future<Result<TransportJob>> acceptOffer(String id, {String? orgId}) async {
+    if (takenByAnother) return const Result.err(ApiFailure(409, 'CONFLICT', 'أُسندت المهمة لسائق آخر.', 'Job already assigned.'));
+    final j = offerPool.firstWhere((x) => x.id == id);
+    offerPool.removeWhere((x) => x.id == id);
+    final assigned = _with(j, 'assigned'); jobs[j.id] = assigned; return Result.ok(assigned);
+  }
+  @override Future<Result<TransportJob>> driverTransition(String id, String to) async {
+    final next = _with(jobs[id]!, to); jobs[id] = next; return Result.ok(next);
+  }
+  @override Future<Result<List<TransportJob>>> driverJobs() async => Result.ok(jobs.values.toList());
+  @override Future<Result<void>> sendReceiverCode(String id) async { codeSent = true; return const Result.ok(null); }
+  @override Future<Result<TransportJob>> completeWithProof(String id, {required String mediaId, required String code}) async {
+    if (code != '123456') return const Result.err(ValidationFailure('الرمز غير صحيح.', 'Wrong code.'));
+    proofMediaId = mediaId; proofCode = code;
+    final done = _with(jobs[id]!, 'delivered'); jobs[id] = done; return Result.ok(done);
+  }
 }
 
 class FakeVehicles implements VehiclesRepository {

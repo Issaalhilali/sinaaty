@@ -2034,4 +2034,101 @@ class L10nAr extends L10n {
   @override
   String get loginNafathNote =>
       'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.';
+
+  @override
+  String get drvOnline => 'متصل — تصلك المهام';
+
+  @override
+  String get drvOffline => 'غير متصل';
+
+  @override
+  String get drvNearby => 'مهام قريبة منك';
+
+  @override
+  String get drvNeedOrg =>
+      'اربط حسابك بمنشأة النقل قبل قبول المهام — الفاتورة تصدر باسم المنشأة.';
+
+  @override
+  String get drvPickup => 'الاستلام';
+
+  @override
+  String get drvDropoff => 'التسليم';
+
+  @override
+  String drvKm(String km) {
+    return '$km كم';
+  }
+
+  @override
+  String get drvOfflineTitle => 'أنت غير متصل';
+
+  @override
+  String get drvOfflineBody => 'فعّل الاتصال أعلاه لترى المهام القريبة منك.';
+
+  @override
+  String get drvNoOffersTitle => 'لا مهام قريبة الآن';
+
+  @override
+  String get drvNoOffersBody => 'سنعرض لك أي طلب سطحة يصل قرب موقعك.';
+
+  @override
+  String get drvActStart => 'في الطريق للاستلام';
+
+  @override
+  String get drvActLoaded => 'حمّلت السيارة';
+
+  @override
+  String get drvActHeading => 'في الطريق للتسليم';
+
+  @override
+  String get drvActDeliver => 'تسليم وإثبات';
+
+  @override
+  String get drvActDone => 'تمّت';
+
+  @override
+  String get truckFlatbed => 'سطحة';
+
+  @override
+  String get truckWheelLift => 'رافعة عجلات';
+
+  @override
+  String get truckPartsDelivery => 'توصيل قطع';
+
+  @override
+  String get drvProofTitle => 'إثبات التسليم';
+
+  @override
+  String get drvProofWhy =>
+      'صورة السيارة عند التسليم، ورمزٌ تقرؤه من المستلم. بهما تُغلق المهمة ويُصرف المبلغ.';
+
+  @override
+  String get drvPhotoStep => 'صوّر السيارة في مكان التسليم';
+
+  @override
+  String get drvPhotoDone => 'الصورة جاهزة';
+
+  @override
+  String get drvTakePhoto => 'التقط صورة';
+
+  @override
+  String get drvRetakePhoto => 'إعادة التصوير';
+
+  @override
+  String get drvCodeStep => 'اطلب الرمز ليصل إلى جوال المستلم، ثم اقرأه منه.';
+
+  @override
+  String get drvCodeSent => 'أُرسل الرمز إلى جوال المستلم.';
+
+  @override
+  String get drvSendCode => 'أرسل الرمز';
+
+  @override
+  String get drvResendCode => 'إعادة الإرسال';
+
+  @override
+  String get drvComplete => 'إنهاء المهمة';
+
+  @override
+  String get tabDriverJobs => 'مهامي';
 }

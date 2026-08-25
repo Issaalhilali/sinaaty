@@ -3870,6 +3870,192 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.'**
   String get loginNafathNote;
+
+  /// No description provided for @drvOnline.
+  ///
+  /// In ar, this message translates to:
+  /// **'متصل — تصلك المهام'**
+  String get drvOnline;
+
+  /// No description provided for @drvOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير متصل'**
+  String get drvOffline;
+
+  /// No description provided for @drvNearby.
+  ///
+  /// In ar, this message translates to:
+  /// **'مهام قريبة منك'**
+  String get drvNearby;
+
+  /// No description provided for @drvNeedOrg.
+  ///
+  /// In ar, this message translates to:
+  /// **'اربط حسابك بمنشأة النقل قبل قبول المهام — الفاتورة تصدر باسم المنشأة.'**
+  String get drvNeedOrg;
+
+  /// No description provided for @drvPickup.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاستلام'**
+  String get drvPickup;
+
+  /// No description provided for @drvDropoff.
+  ///
+  /// In ar, this message translates to:
+  /// **'التسليم'**
+  String get drvDropoff;
+
+  /// No description provided for @drvKm.
+  ///
+  /// In ar, this message translates to:
+  /// **'{km} كم'**
+  String drvKm(String km);
+
+  /// No description provided for @drvOfflineTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنت غير متصل'**
+  String get drvOfflineTitle;
+
+  /// No description provided for @drvOfflineBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'فعّل الاتصال أعلاه لترى المهام القريبة منك.'**
+  String get drvOfflineBody;
+
+  /// No description provided for @drvNoOffersTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا مهام قريبة الآن'**
+  String get drvNoOffersTitle;
+
+  /// No description provided for @drvNoOffersBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنعرض لك أي طلب سطحة يصل قرب موقعك.'**
+  String get drvNoOffersBody;
+
+  /// No description provided for @drvActStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق للاستلام'**
+  String get drvActStart;
+
+  /// No description provided for @drvActLoaded.
+  ///
+  /// In ar, this message translates to:
+  /// **'حمّلت السيارة'**
+  String get drvActLoaded;
+
+  /// No description provided for @drvActHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق للتسليم'**
+  String get drvActHeading;
+
+  /// No description provided for @drvActDeliver.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسليم وإثبات'**
+  String get drvActDeliver;
+
+  /// No description provided for @drvActDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تمّت'**
+  String get drvActDone;
+
+  /// No description provided for @truckFlatbed.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة'**
+  String get truckFlatbed;
+
+  /// No description provided for @truckWheelLift.
+  ///
+  /// In ar, this message translates to:
+  /// **'رافعة عجلات'**
+  String get truckWheelLift;
+
+  /// No description provided for @truckPartsDelivery.
+  ///
+  /// In ar, this message translates to:
+  /// **'توصيل قطع'**
+  String get truckPartsDelivery;
+
+  /// No description provided for @drvProofTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إثبات التسليم'**
+  String get drvProofTitle;
+
+  /// No description provided for @drvProofWhy.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة السيارة عند التسليم، ورمزٌ تقرؤه من المستلم. بهما تُغلق المهمة ويُصرف المبلغ.'**
+  String get drvProofWhy;
+
+  /// No description provided for @drvPhotoStep.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوّر السيارة في مكان التسليم'**
+  String get drvPhotoStep;
+
+  /// No description provided for @drvPhotoDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصورة جاهزة'**
+  String get drvPhotoDone;
+
+  /// No description provided for @drvTakePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقط صورة'**
+  String get drvTakePhoto;
+
+  /// No description provided for @drvRetakePhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة التصوير'**
+  String get drvRetakePhoto;
+
+  /// No description provided for @drvCodeStep.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب الرمز ليصل إلى جوال المستلم، ثم اقرأه منه.'**
+  String get drvCodeStep;
+
+  /// No description provided for @drvCodeSent.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرسل الرمز إلى جوال المستلم.'**
+  String get drvCodeSent;
+
+  /// No description provided for @drvSendCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل الرمز'**
+  String get drvSendCode;
+
+  /// No description provided for @drvResendCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة الإرسال'**
+  String get drvResendCode;
+
+  /// No description provided for @drvComplete.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنهاء المهمة'**
+  String get drvComplete;
+
+  /// No description provided for @tabDriverJobs.
+  ///
+  /// In ar, this message translates to:
+  /// **'مهامي'**
+  String get tabDriverJobs;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
