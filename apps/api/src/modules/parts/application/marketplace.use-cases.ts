@@ -39,6 +39,14 @@ export class MarketplaceUseCases {
     // Matching runs right after (PostGIS); recipients get the outbox event → notification. Idempotent on re-run.
     const matched = await this.repo.matchSuppliers(req.id, req.searchRadiusKm, 200);
     await this.uow.run(async (tx) => { await this.repo.addRecipients(req.id, matched, tx); await this.outbox.publish(tx, { eventType: 'PartRequestCreated', aggregateType: 'part_request', aggregateId: req.id, payload: { number: req.number, partNameAr: req.partNameAr, recipientOrgIds: matched.map((m) => m.orgId), requesterUserId: req.requesterUserId, requesterOrgId: req.requesterOrgId, endsAt: endsAt.toISOString() } }); });
+    // ويسمعه التشليح والوكيل لحظتَه على قناة منشأتهم، لا حين يفتحون التطبيق. القطعة تُباع لمن
+    // يردّ أولاً — ودقيقةُ تأخير هنا تعني بيعاً ذهب لغيرك.
+    for (const m of matched) {
+      this.rt?.publish(`org:${m.orgId}`, 'part-request', {
+        request_id: req.id, number: req.number, part_name_ar: req.partNameAr,
+        vin: req.vin, quantity: req.quantity, distance_km: m.distanceKm, ends_at: endsAt.toISOString(),
+      });
+    }
     return { ...req, recipients: matched.length };
   }
   async get(u: AuthUser, id: string) {

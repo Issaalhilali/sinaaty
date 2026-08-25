@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { type INestApplication, VersioningType } from '@nestjs/common';
 import request from 'supertest';
+import { io, type Socket } from 'socket.io-client';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma';
 import { OutboxProcessor } from '../src/modules/integrations/outbox/outbox.processor';
@@ -221,4 +222,29 @@ describe('Service marketplace (e2e)', () => {
     await http().post('/v1/work-orders/repeat').set(auth(await login(`+96659${suffix}`))).send({ work_order_id: service.work_order_id }).expect(403);
   });
 
+  it('الورشة تسمع الطلب لحظتَه على قناة منشأتها — لا تنتظر أن تفتح التطبيق وتسحب القائمة', async () => {
+    // الحلقة التي يقوم عليها المنتج (توجيه المالك ٢٥ أغسطس): عطلٌ يُرسَل ⟵ تُدَقّ أبواب الورش
+    // القريبة فوراً ⟵ تقبل واحدة. كل القنوات قبل اليوم مفتاحها كيانٌ يعرفه المزوّد سلفاً، فلم يكن
+    // ثمة ما يسمع عليه «وصلك طلب الآن».
+    const baseUrl = await app.getUrl();
+    const connect = (token: string) => new Promise<Socket>((res, rej) => {
+      const s = io(`${baseUrl}/realtime`, { auth: { token }, transports: ['websocket'] });
+      s.on('connect', () => res(s)); s.on('connect_error', rej);
+    });
+    const sock = await connect(nearTok);
+    const joined = await sock.emitWithAck('subscribe', { channel: `org:${nearOrg}` });
+    expect(joined.ok).toBe(true);
+    // وقناة منشأة أخرى مرفوضة — العضوية هي الحارس
+    const denied = await sock.emitWithAck('subscribe', { channel: `org:${farOrg}` });
+    expect(denied.ok).toBe(false);
+
+    const heard = new Promise<{ number: string; title_ar: string; distance_km: number | null }>((res) => sock.once('service-request', res));
+    await http().post('/v1/service-requests').set(auth(custTok)).send({
+      vehicle_id: vehicleId, title_ar: 'صوت طقطقة من الأمام', lat: RIYADH.lat, lng: RIYADH.lng, radius_km: 15, preferred_time: 'now',
+    }).expect(201);
+    const ev = await Promise.race([heard, new Promise<never>((_, rej) => setTimeout(() => rej(new Error('لم تسمع الورشة شيئاً')), 5000))]);
+    expect(ev.number).toMatch(/^SR-\d{4}-\d{6}$/);
+    expect(ev.title_ar).toContain('طقطقة');        // البطاقة تُرسم من الحمولة بلا نداء ثانٍ
+    sock.close();
+  });
 });

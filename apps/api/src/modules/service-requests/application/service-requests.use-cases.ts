@@ -64,6 +64,16 @@ export class ServiceRequestsUseCases {
       if (n > 0) await this.outbox.publish(tx, { eventType: 'ServiceRequestOpened', aggregateType: 'service_request', aggregateId: req.id, payload: { number: req.number, titleAr: req.titleAr, preferredTime: req.preferredTime, orgIds: wanted.map((m) => m.orgId), customerUserId: req.customerUserId } });
       return n;
     });
+    // ثم يُدقّ الباب: كل ورشة مطابقة تسمع الطلب على قناتها لحظتَه، لا حين تفتح التطبيق وتسحب
+    // القائمة. الحمولة كاملة كي تُرسم البطاقة بلا نداء ثانٍ — الورشة تقرأ وتقبل، وهذا كل العمل.
+    if (added > 0) {
+      for (const m of wanted) {
+        this.rt?.publish(`org:${m.orgId}`, 'service-request', {
+          request_id: req.id, number: req.number, title_ar: req.titleAr,
+          preferred_time: req.preferredTime, distance_km: m.distanceKm, created_at: req.createdAt,
+        });
+      }
+    }
     return added;
   }
 

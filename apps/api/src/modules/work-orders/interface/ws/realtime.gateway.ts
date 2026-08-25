@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
 import { TOKEN_PORT, type TokenPort } from '../../../identity/application/ports/token.port';
 import type { AuthUser } from '../../../identity/domain/auth-user';
@@ -13,21 +13,35 @@ import type { ChannelAccessChecker, RealtimePublisher } from '../../application/
  */
 @Injectable()
 @WebSocketGateway({ namespace: '/realtime', cors: { origin: true, credentials: true } })
-export class RealtimeGateway implements OnGatewayConnection, RealtimePublisher {
+export class RealtimeGateway implements OnGatewayInit, RealtimePublisher {
   @WebSocketServer() server!: Server;
   private readonly channelAccess = new Map<string, ChannelAccessChecker>();
   constructor(@Inject(TOKEN_PORT) private readonly tokens: TokenPort, @Inject(WORK_ORDER_REPOSITORY) private readonly repo: WorkOrderRepository) {}
 
-  async handleConnection(client: Socket) {
-    const token = (client.handshake.auth as { token?: string })?.token ?? (client.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
-    try { (client.data as { user?: AuthUser }).user = await this.tokens.verifyAccess(token); } catch { client.emit('error', { code: 'UNAUTHORIZED' }); client.disconnect(true); }
+  /**
+   * التحقّق في وسيط المصافحة لا بعد الاتصال: `handleConnection` غير متزامنة، فالعميل الذي يشترك
+   * فور `connect` كان يُردّ بـFORBIDDEN لأن رمزه لم يكن قد تحقّق بعد — سباقٌ يظهر كـ«ليست لديك
+   * صلاحية» على قناة يملكها صاحبها. الوسيط يمنع قيام الاتصال أصلاً قبل أن يُعرف صاحبه.
+   */
+  afterInit(server: Server) {
+    server.use(async (socket, next) => {
+      const token = (socket.handshake.auth as { token?: string })?.token ?? (socket.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
+      try { (socket.data as { user?: AuthUser }).user = await this.tokens.verifyAccess(token); next(); }
+      catch { next(new Error('UNAUTHORIZED')); }
+    });
   }
   @SubscribeMessage('subscribe')
   async subscribe(@ConnectedSocket() client: Socket, @MessageBody() body: { channel?: string }) {
     const user = (client.data as { user?: AuthUser }).user; const channel = body?.channel ?? '';
     const m = /^([a-z-]+):([0-9a-f-]{36})$/i.exec(channel);
     if (!user || !m) return { ok: false, code: 'FORBIDDEN', channel };
-    if (m[1] === 'work-order') {
+    // org:{id} — القناة التي تسمع عليها المنشأة ما يصلها الآن: طلب إصلاح قريب، طلب قطعة.
+    // كل القنوات الأخرى مفتاحها كيانٌ يعرفه المزوّد سلفاً، فلا يسمع الجديد إلا إن سحب القائمة.
+    // والحلقة التي يقوم عليها المنتج هي أن يسمع الورشةُ العطلَ لحظةَ حدوثه (توجيه المالك ٢٥ أغسطس).
+    // العضوية محمولة في الرمز أصلاً، فالحارس هنا بلا نداء قاعدة.
+    if (m[1] === 'org') {
+      if (!(user.orgs.some((o) => o.orgId === m[2]) || isStaff(user))) return { ok: false, code: 'FORBIDDEN', channel };
+    } else if (m[1] === 'work-order') {
       const wo = await this.repo.findById(m[2]!);
       if (!wo || !(isWorkshopMember(wo, user) || isCustomer(wo, user) || isStaff(user))) return { ok: false, code: 'FORBIDDEN', channel };
     } else {
