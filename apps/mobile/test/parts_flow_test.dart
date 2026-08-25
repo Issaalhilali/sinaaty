@@ -10,6 +10,7 @@ import 'package:sinaaty/core/auth/token_store.dart';
 import 'package:sinaaty/core/config/app_config.dart';
 import 'package:sinaaty/core/di/core_providers.dart';
 import 'package:sinaaty/core/l10n/app_localizations.dart';
+import 'package:sinaaty/core/ui/ui.dart';
 import 'package:sinaaty/core/result/result.dart';
 import 'package:sinaaty/core/theme/app_theme.dart';
 import 'package:sinaaty/features/auth/domain/auth_entities.dart';
@@ -30,6 +31,7 @@ import 'package:sinaaty/features/workshop/domain/workshop_repository.dart';
 import 'package:sinaaty/features/workshop/presentation/providers.dart';
 
 class FakeParts implements PartsRepository, QrScanner {
+  List<String> lastBidMedia = const [];
   final requests = <String, PartRequest>{}; final store = <String, PartOrder>{}; var tas = <TradeAccount>[]; String? scanned; final installs = <String>[]; int seq = 0; String currentOrg = 'ws1';
   @override Future<Result<FitResult>> fit({String? vin, String? vehicleId, String? categoryCode, String? text, String? buyerOrgId}) async => Result.ok(FitResult(make: 'تويوتا', model: 'كامري', year: 2019, offers: [PartOffer(inventoryId: 'inv1', supplierOrgId: 'dist', supplierNameAr: 'الوكيل المتحد', titleAr: 'دسكات فرامل أمامية كامري — أصلي', partNumber: '04465-33471', brandAr: 'تويوتا (أصلي)', condition: 'oem_new', price: '480.00', tradePrice: tas.any((a) => a.status == 'active') ? '420.00' : null, tradeAccountId: tas.any((a) => a.status == 'active') ? 'ta1' : null, quantity: 12, warrantyDays: 365, leadTimeHours: 6, isSerialized: true, fitmentSource: 'catalog'), const PartOffer(inventoryId: 'inv2', supplierOrgId: 'shop', supplierNameAr: 'الشرق للقطع', titleAr: 'دسكات بديل معتمد BP1421', partNumber: 'BP1421', brandAr: 'بوش', condition: 'aftermarket_new', price: '265.00', quantity: 30, warrantyDays: 365, leadTimeHours: 24, isSerialized: false, fitmentSource: 'catalog')]));
   @override Future<Result<PartOrder>> buyNow({String? orgId, String? workOrderId, required String paymentTerms, required List<({String inventoryId, int quantity})> items}) async { seq++; final o = PartOrder(id: 'po$seq', number: 'PO-2026-00077$seq', source: 'catalog_buy_now', status: paymentTerms == 'deferred' ? 'paid' : 'pending_payment', paymentTerms: paymentTerms, supplierOrgId: 'dist', buyerOrgId: orgId, total: (420 * items.first.quantity * 1.15).toStringAsFixed(2), createdAt: DateTime(2026, 8, 19), items: [PartOrderItem(descriptionAr: 'دسكات فرامل أمامية كامري — أصلي · 04465-33471', condition: 'oem_new', quantity: items.first.quantity, unitPrice: '420.00', lineTotal: (420 * items.first.quantity).toStringAsFixed(2), warrantyDays: 365)], invoiceId: 'inv9'); store[o.id] = o; return Result.ok(o); }
@@ -50,7 +52,7 @@ class FakeParts implements PartsRepository, QrScanner {
   @override Future<Result<SerialVerify>> verify(String qrToken) async => Result.ok(SerialVerify(genuine: qrToken.startsWith('ok'), alert: false, status: 'sold', serialNumber: 'S-001', partNameAr: 'دسكات فرامل أمامية', partNumber: '04465-33471', brandAr: 'تويوتا (أصلي)', issuerAr: 'الوكيل المتحد', messageAr: qrToken.startsWith('ok') ? 'قطعة أصلية موثّقة.' : 'غير مسجّل', messageEn: 'x'));
   @override Future<Result<Warranty>> install({required String qrToken, required String workOrderItemId, int laborWarrantyDays = 180}) async { installs.add('$qrToken:$workOrderItemId:$laborWarrantyDays'); return Result.ok(Warranty(id: 'w1', number: 'WR-2026-000100', covers: 'part_and_labor', coverageAr: 'ضمان ثلاثي', startsAt: DateTime(2026, 8, 19), endsAt: DateTime(2027, 8, 19), status: 'active')); }
   @override Future<Result<List<Warranty>>> warranties({String? orgId}) async => const Result.ok([]);
-  @override Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr}) async { final r = requests[requestId]!; final b = PartBid(id: 'b${r.bids.length + 1}', supplierOrgId: orgId, condition: condition, unitPrice: double.parse(unitPrice).toStringAsFixed(2), quantity: quantity, deliveryFee: deliveryFee, etaHours: etaHours, warrantyDays: warrantyDays, notesAr: notesAr, status: 'submitted', createdAt: DateTime.now()); requests[requestId] = _with(r, status: 'bidding', bids: [...r.bids.where((x) => x.supplierOrgId != orgId), b]); return Result.ok(b); }
+  @override Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr, List<String> mediaIds = const []}) async { lastBidMedia = mediaIds; final r = requests[requestId]!; final b = PartBid(id: 'b${r.bids.length + 1}', supplierOrgId: orgId, condition: condition, unitPrice: double.parse(unitPrice).toStringAsFixed(2), quantity: quantity, deliveryFee: deliveryFee, etaHours: etaHours, warrantyDays: warrantyDays, notesAr: notesAr, status: 'submitted', createdAt: DateTime.now(), mediaIds: mediaIds); requests[requestId] = _with(r, status: 'bidding', bids: [...r.bids.where((x) => x.supplierOrgId != orgId), b]); return Result.ok(b); }
   @override Future<Result<PartOrder>> transition(String orderId, String to) async { final o = store[orderId]!; store[orderId] = PartOrder(id: o.id, number: o.number, source: o.source, status: to, paymentTerms: o.paymentTerms, supplierOrgId: o.supplierOrgId, buyerOrgId: o.buyerOrgId, total: o.total, createdAt: o.createdAt, items: o.items); return Result.ok(store[orderId]!); }
   @override Future<Result<List<InventoryItem>>> inventory(String orgId) async => const Result.ok([InventoryItem(id: 'inv1', titleAr: 'دسكات فرامل أمامية كامري — أصلي', partNumber: '04465-33471', condition: 'oem_new', price: '480.00', tradePrice: '420.00', quantity: 12, reservedQty: 1)]);
   @override Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count}) async => Result.ok((issued: count, batchCode: 'B1'));
@@ -66,7 +68,9 @@ class FakeWorkshop implements WorkshopRepository {
   @override Future<Result<WorkOrder>> removeItem(String woId, String itemId) async => const Result.err(UnknownFailure());
   @override Future<Result<WorkOrder>> transition(String woId, String to, {String? noteAr}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> requestApproval(String woId) async => const Result.err(UnknownFailure());
-  @override Future<Result<Presigned>> presign({required String mimeType, required int sizeBytes, required String sha256, required String purpose}) async => const Result.err(UnknownFailure());
+  int presigns = 0;
+  /// كان يرفض دائماً لأن لا شاشة كانت ترفع من هنا؛ ورقة العرض صارت ترفع صور القطعة.
+  @override Future<Result<Presigned>> presign({required String mimeType, required int sizeBytes, required String sha256, required String purpose}) async { presigns++; return Result.ok(Presigned(mediaId: 'media$presigns', uploadUrl: 'http://x/up/$presigns')); }
   @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) async => const Result.ok(null);
   @override Future<Result<void>> inspect(String woId, NewInspection ins) async => const Result.ok(null);
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) async => const Result.ok(null);
@@ -97,7 +101,8 @@ void main() {
   late FakeParts parts; late FakeTransportLive live; late MemoryTokenStore ts;
   Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType, () => parts.currentOrg)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts), transportRealtimeProvider.overrideWithValue(live)],
     child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
-  GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
+  final fakeJpeg = Uint8List.fromList(List<int>.filled(64, 9));
+  GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
   setUp(() async { parts = FakeParts(); live = FakeTransportLive(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
   void size(WidgetTester t) { t.view.physicalSize = const Size(1170, 2532); t.view.devicePixelRatio = 3; addTearDown(t.view.reset); }
 
@@ -127,12 +132,17 @@ void main() {
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/supplier_requests_light.png'));
     await tester.tap(find.text('قدّم عرضك').first); await tester.pumpAndSettle();
     await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle(); // request screen primary → bid sheet
-    await tester.enterText(find.widgetWithText(TextField, 'سعرك'), '150'); await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'سعرك'), '150');
+    // القطعة المستعملة تُشترى بالعين: المورّد يصوّرها، والخادم يقبل ستّ صور منذ زمن ولم يكن أحد يرسلها.
+    await tester.tap(find.text('صوّر القطعة')); await tester.pumpAndSettle();
+    await tester.tap(find.text('قدّم عرضك').last); await tester.pumpAndSettle();
     expect(parts.requests[rid]!.bids.length, 1); expect(parts.requests[rid]!.bids.first.supplierOrgId, 'scrap'); expect(find.text('أُرسل عرضك — سنخبرك عند القبول'), findsWidgets);
+    expect(parts.lastBidMedia, hasLength(1), reason: 'الصورة رُفعت وسافرت مع العرض');
     // requester accepts
     parts.currentOrg = 'ws1';
     await tester.pumpWidget(app(router('/parts/requests/$rid'))); await tester.pumpAndSettle();
     expect(find.text('اقبل هذا العرض'), findsOneWidget);
+    expect(find.byType(MediaStrip), findsWidgets, reason: 'المشتري يرى صورة القطعة تحت العرض لا خلف نقرة');
     await tester.tap(find.text('اقبل هذا العرض')); await tester.pumpAndSettle(); await tester.tap(find.text('اقبل هذا العرض').last); await tester.pumpAndSettle();
     expect(parts.requests[rid]!.status, 'awarded'); expect(parts.store.length, 1); expect(find.text('بانتظار الدفع'), findsWidgets); expect(find.text('ادفع الآن'), findsOneWidget);
   });

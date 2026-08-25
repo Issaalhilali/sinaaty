@@ -1028,5 +1028,15 @@
   "flOutOne": "One approver",
   "flOutTwo": "Two approvers",
   "flOutOverBudget": "Over budget",
-  "flPolicyEntry": "Spending rules"
+  "flPolicyEntry": "Spending rules",
+  "spAddPhoto": "Photograph the part",
+  "spAddMorePhotos": "Another photo ({n} left)",
+  "ptSeePart": "Part photos",
+  "@spAddMorePhotos": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

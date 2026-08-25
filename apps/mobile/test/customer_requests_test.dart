@@ -77,7 +77,7 @@ class FakeCustomerParts implements PartsRepository {
   @override Future<Result<TradeAccount>> approveTradeAccount(String id, {required String creditLimit, int termsDays = 30, int discountBps = 0}) async => const Result.err(UnknownFailure());
   @override Future<Result<SerialVerify>> verify(String qrToken) async => const Result.err(UnknownFailure());
   @override Future<Result<Warranty>> install({required String qrToken, required String workOrderItemId, int laborWarrantyDays = 180}) async => const Result.err(UnknownFailure());
-  @override Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr}) async => const Result.err(UnknownFailure());
+  @override Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr, List<String> mediaIds = const []}) async => const Result.err(UnknownFailure());
   @override Future<Result<PartOrder>> transition(String orderId, String to) async => const Result.err(UnknownFailure());
   @override Future<Result<List<InventoryItem>>> inventory(String orgId) async => const Result.ok([]);
   @override Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count}) async => const Result.ok((issued: 0, batchCode: ''));

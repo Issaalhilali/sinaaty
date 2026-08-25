@@ -2219,4 +2219,15 @@ class L10nEn extends L10n {
 
   @override
   String get flPolicyEntry => 'Spending rules';
+
+  @override
+  String get spAddPhoto => 'Photograph the part';
+
+  @override
+  String spAddMorePhotos(int n) {
+    return 'Another photo ($n left)';
+  }
+
+  @override
+  String get ptSeePart => 'Part photos';
 }

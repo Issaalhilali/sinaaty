@@ -1028,5 +1028,15 @@
   "flOutOne": "اعتماد واحد",
   "flOutTwo": "اعتماد شخصين",
   "flOutOverBudget": "يتجاوز الميزانية",
-  "flPolicyEntry": "قواعد الصرف"
+  "flPolicyEntry": "قواعد الصرف",
+  "spAddPhoto": "صوّر القطعة",
+  "spAddMorePhotos": "صورة أخرى ({n} متبقية)",
+  "ptSeePart": "صور القطعة",
+  "@spAddMorePhotos": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

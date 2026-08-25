@@ -4170,6 +4170,24 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'قواعد الصرف'**
   String get flPolicyEntry;
+
+  /// No description provided for @spAddPhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوّر القطعة'**
+  String get spAddPhoto;
+
+  /// No description provided for @spAddMorePhotos.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة أخرى ({n} متبقية)'**
+  String spAddMorePhotos(int n);
+
+  /// No description provided for @ptSeePart.
+  ///
+  /// In ar, this message translates to:
+  /// **'صور القطعة'**
+  String get ptSeePart;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

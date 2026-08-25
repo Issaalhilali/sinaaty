@@ -2191,4 +2191,15 @@ class L10nAr extends L10n {
 
   @override
   String get flPolicyEntry => 'قواعد الصرف';
+
+  @override
+  String get spAddPhoto => 'صوّر القطعة';
+
+  @override
+  String spAddMorePhotos(int n) {
+    return 'صورة أخرى ($n متبقية)';
+  }
+
+  @override
+  String get ptSeePart => 'صور القطعة';
 }

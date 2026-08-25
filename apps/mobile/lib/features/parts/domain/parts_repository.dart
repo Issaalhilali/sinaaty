@@ -20,7 +20,7 @@ abstract interface class PartsRepository {
   Future<Result<Warranty>> install({required String qrToken, required String workOrderItemId, int laborWarrantyDays = 180});
   Future<Result<List<Warranty>>> warranties({String? orgId});
   // supplier
-  Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr});
+  Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr, List<String> mediaIds = const []});
   Future<Result<PartOrder>> transition(String orderId, String to);
   Future<Result<List<InventoryItem>>> inventory(String orgId);
   Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count});
