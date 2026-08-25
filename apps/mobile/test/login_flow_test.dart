@@ -70,7 +70,7 @@ void main() {
     // جهاز حقيقي بلوحة مفاتيح مفتوحة = ارتفاعٌ مرئي أقل بنحو الثلث. الترويسة مرنة واللوح يعلو،
     // فإن لم يُختبر هذا ظهر «RenderFlex overflowed» على جهاز المالك لا في الاختبارات.
     tester.view.physicalSize = const Size(1080, 1920); tester.view.devicePixelRatio = 3;
-    tester.view.viewInsets = FakeViewPadding(bottom: 900); // لوحة مفاتيح
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900); // لوحة مفاتيح
     addTearDown(tester.view.reset);
     await tester.pumpWidget(ProviderScope(key: UniqueKey(),
       overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],

@@ -55,6 +55,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const SizedBox(width: 6),
           Flexible(child: Text(l.loginNafathNote, textAlign: TextAlign.center, style: t.textTheme.bodySmall?.copyWith(color: t.colorScheme.onSurfaceVariant))),
         ]),
+        // في بناء التطوير وحده: العنوان الذي يخاطبه التطبيق. ساعةٌ ضاعت في مطاردة «لا يوجد اتصال
+        // بالإنترنت» بينما الشبكة سليمة والعنوان قديم — سطرٌ واحد يجعل التشخيص نظرة.
+        if (ref.watch(appConfigProvider).appEnv != 'prod') ...[
+          const SizedBox(height: SinaatySpace.sm),
+          Text(ref.watch(appConfigProvider).apiBaseUrl, textAlign: TextAlign.center, textDirection: TextDirection.ltr,
+            style: t.textTheme.bodySmall?.copyWith(color: t.colorScheme.onSurfaceVariant.withValues(alpha: .55), fontSize: 11)),
+        ],
       ]),
     );
   }

@@ -20,7 +20,10 @@ sealed class Failure {
   String message(String locale) => locale == 'ar' ? messageAr : messageEn;
 }
 final class ApiFailure extends Failure { final int status; const ApiFailure(this.status, super.code, super.messageAr, super.messageEn, [super.details]); }
-final class NetworkFailure extends Failure { const NetworkFailure() : super('NETWORK', 'لا يوجد اتصال بالإنترنت. تحقق من الشبكة وأعد المحاولة.', 'No internet connection.'); }
+/// انقطاع الوصول: قد يكون الجهاز بلا شبكة، وقد تكون الشبكة سليمة والخادم بعيداً عن المتناول.
+/// النص كان يجزم بالأول («لا يوجد اتصال بالإنترنت») بينما الجهاز متصل والعنوان هو المعطوب — فيبحث
+/// صاحبه في المكان الخطأ. الصيغة الآن تصف ما نعرفه فعلاً وتذكر ما يُتحقَّق منه.
+final class NetworkFailure extends Failure { const NetworkFailure() : super('NETWORK', 'تعذّر الوصول إلى الخادم. تحقّق من اتصالك ثم أعد المحاولة.', 'Could not reach the server. Check your connection and try again.'); }
 final class UnauthorizedFailure extends Failure { const UnauthorizedFailure() : super('UNAUTHORIZED', 'انتهت الجلسة، سجّل الدخول مجدداً.', 'Session expired, please sign in again.'); }
 final class ValidationFailure extends Failure { const ValidationFailure(String ar, String en, [Object? d]) : super('VALIDATION', ar, en, d); }
 final class UnknownFailure extends Failure { const UnknownFailure([Object? d]) : super('UNKNOWN', 'حدث خطأ غير متوقع، حاول مرة أخرى.', 'Something went wrong.', d); }
