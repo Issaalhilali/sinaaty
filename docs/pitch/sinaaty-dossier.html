@@ -1,0 +1,395 @@
+<title>ملف مشروع صناعتي</title>
+<style>
+  :root{
+    --seal:#0E6B54; --seal-deep:#083A2E; --seal-soft:#DCEFE6; --seal-ink:#0A4F3E;
+    --brass:#B8862B; --brass-soft:#F4EAD3; --brass-ink:#7D5A14;
+    --ink:#0F1C18; --ink-2:#3B4A45; --muted:#697A73;
+    --ground:#F3F6F4; --surface:#FFFFFF; --line:#E1E7E3;
+    --bad:#B4382F; --warn:#C27A12;
+    --shadow:0 1px 2px rgba(15,28,24,.04), 0 18px 38px -22px rgba(15,28,24,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --seal:#3FBF95; --seal-deep:#04211A; --seal-soft:#0E332A; --seal-ink:#8FE3C6;
+      --brass:#D9A94A; --brass-soft:#33280F; --brass-ink:#EBC981;
+      --ink:#E8EFEB; --ink-2:#AFC0B9; --muted:#8A9C95;
+      --ground:#0A1512; --surface:#101D19; --line:#1E2F29;
+      --bad:#E3776B; --warn:#E0A64A;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 38px -22px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --seal:#3FBF95; --seal-deep:#04211A; --seal-soft:#0E332A; --seal-ink:#8FE3C6;
+    --brass:#D9A94A; --brass-soft:#33280F; --brass-ink:#EBC981;
+    --ink:#E8EFEB; --ink-2:#AFC0B9; --muted:#8A9C95;
+    --ground:#0A1512; --surface:#101D19; --line:#1E2F29;
+    --bad:#E3776B; --warn:#E0A64A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 18px 38px -22px rgba(0,0,0,.7);
+  }
+
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+    font-family:"SF Arabic","Noto Sans Arabic","Segoe UI",system-ui,-apple-system,sans-serif;
+    font-size:16.5px; line-height:1.85; font-feature-settings:"kern" 1;
+  }
+  .wrap{ max-width:940px; margin:0 auto; padding:0 22px 96px; }
+  h1,h2,h3{ line-height:1.35; text-wrap:balance; margin:0; }
+  p{ margin:0 0 1em; }
+  a{ color:var(--seal-ink); }
+  strong{ font-weight:800; }
+  .num{ font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+
+  /* ── الترويسة ── */
+  .hero{ background:var(--seal-deep); color:#fff; margin-bottom:44px; position:relative; overflow:hidden; }
+  .hero::after{
+    content:""; position:absolute; inset:0; opacity:.5;
+    background:
+      radial-gradient(1100px 420px at 88% -20%, rgba(63,191,149,.35), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.045) 0 1px, transparent 1px 22px);
+    pointer-events:none;
+  }
+  .hero-inner{ max-width:940px; margin:0 auto; padding:56px 22px 46px; position:relative; z-index:1; }
+  .mark{ display:flex; align-items:center; gap:12px; margin-bottom:30px; }
+  .mark i{ width:42px; height:42px; border-radius:13px; background:rgba(255,255,255,.14); display:grid; place-items:center; }
+  .mark i b{ width:17px; height:17px; border-radius:50%; border:3px solid #fff; display:block; }
+  .mark span{ font-size:19px; font-weight:800; letter-spacing:.2px; }
+  .hero h1{ font-size:clamp(30px,5.2vw,46px); font-weight:850; margin:0 0 14px; }
+  .hero p{ font-size:clamp(16px,2.2vw,19px); color:rgba(255,255,255,.86); max-width:44ch; margin:0 0 26px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:9px; }
+  .chip{ background:rgba(255,255,255,.16); border-radius:999px; padding:6px 14px; font-size:13.5px; font-weight:700; }
+  .stamp{ margin-top:30px; font-size:13px; color:rgba(255,255,255,.65); border-top:1px solid rgba(255,255,255,.15); padding-top:14px; }
+
+  /* ── الأقسام ── */
+  section{ margin:0 0 52px; }
+  .eyebrow{ display:flex; align-items:center; gap:10px; font-size:12.5px; font-weight:800;
+            letter-spacing:.10em; color:var(--muted); text-transform:uppercase; margin-bottom:10px; }
+  .eyebrow::before{ content:""; width:16px; height:3px; border-radius:2px; background:var(--brass); }
+  h2{ font-size:clamp(22px,3.4vw,29px); font-weight:850; margin-bottom:14px; }
+  h3{ font-size:18px; font-weight:800; margin:26px 0 8px; }
+  .lede{ font-size:18px; color:var(--ink-2); }
+
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:22px 24px; box-shadow:var(--shadow); }
+  .grid{ display:grid; gap:16px; }
+  @media (min-width:720px){ .g2{ grid-template-columns:1fr 1fr; } .g3{ grid-template-columns:repeat(3,1fr); } }
+
+  .stat{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-shadow:var(--shadow); }
+  .stat b{ display:block; font-size:29px; font-weight:850; letter-spacing:-.5px; }
+  .stat span{ display:block; font-size:13.5px; color:var(--muted); margin-top:3px; line-height:1.5; }
+
+  /* السلسلة القانونية */
+  ol.chain{ list-style:none; margin:0; padding:0; counter-reset:s; }
+  ol.chain li{ counter-increment:s; position:relative; padding:0 46px 22px 0; }
+  ol.chain li::before{
+    content:counter(s); position:absolute; right:0; top:2px; width:30px; height:30px; border-radius:50%;
+    background:var(--seal); color:#fff; display:grid; place-items:center; font-size:14px; font-weight:800;
+  }
+  ol.chain li::after{ content:""; position:absolute; right:14.5px; top:34px; bottom:2px; width:1.5px; background:var(--line); }
+  ol.chain li:last-child::after{ display:none; }
+  ol.chain b{ display:block; font-size:16.5px; }
+  ol.chain span{ color:var(--ink-2); font-size:15.5px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:15px; }
+  .scroll{ overflow-x:auto; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); }
+  th,td{ text-align:right; padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{ font-size:12.5px; font-weight:800; color:var(--muted); letter-spacing:.04em; background:var(--ground); }
+  tr:last-child td{ border-bottom:0; }
+  td.n{ font-variant-numeric:tabular-nums; direction:ltr; text-align:left; white-space:nowrap; }
+
+  .pill{ display:inline-block; border-radius:999px; padding:3px 11px; font-size:12.5px; font-weight:800; white-space:nowrap; }
+  .p-done{ background:var(--seal-soft); color:var(--seal-ink); }
+  .p-wait{ background:var(--brass-soft); color:var(--brass-ink); }
+  .p-risk{ background:color-mix(in srgb, var(--bad) 14%, transparent); color:var(--bad); }
+
+  ul.clean{ margin:0; padding:0 20px 0 0; }
+  ul.clean li{ margin-bottom:.55em; }
+
+  .note{ border-inline-start:4px solid var(--brass); background:var(--surface); border-radius:0 14px 14px 0;
+         padding:16px 20px; box-shadow:var(--shadow); }
+  .note.hard{ border-inline-start-color:var(--bad); }
+  .note b{ display:block; margin-bottom:4px; }
+
+  footer{ border-top:1px solid var(--line); padding-top:20px; color:var(--muted); font-size:13.5px; }
+</style>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="mark"><i><b></b></i><span>صناعتي</span></div>
+    <h1>قطاع صيانة السيارات يعمل بلا عقد، ولا إثبات، ولا وسيلة تحصيل.</h1>
+    <p>صناعتي تضيف الطبقة الناقصة: أمر عمل موقّع بنفاذ، ومبلغ محفوظ حتى الاستلام، وسند لأمر إلكتروني يُغلق تلقائياً عند السداد.</p>
+    <div class="chips">
+      <span class="chip">نفاذ</span><span class="chip">نافذ</span><span class="chip">ناجز</span>
+      <span class="chip">ZATCA المرحلة الثانية</span><span class="chip">حساب ضامن</span>
+    </div>
+    <div class="stamp">ملف تعريفي للجهات الداعمة · أغسطس ٢٠٢٦ · الحالة: جاهز للتشغيل التجريبي، بانتظار الاعتمادات الرسمية</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <div class="eyebrow">المشكلة</div>
+  <h2>الخلاف لا يبدأ في الورشة — يبدأ حين لا يوجد ما يُثبت شيئاً</h2>
+  <p class="lede">دورة الإصلاح اليوم تقوم على الكلام: تقدير شفهي، عمل يزيد بلا موافقة موثّقة، وسيارة تُسلَّم مقابل وعد بالدفع. حين يختلف الطرفان لا يوجد مستند يحسم، ولا وسيلة تحصيل أمام صاحب ورشة صغيرة سوى الاحتفاظ بالسيارة.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">على صاحب السيارة</h3>
+      <ul class="clean">
+        <li>سعرٌ يتضاعف بعد الفتح، بلا نسخة موقّعة يقارن بها.</li>
+        <li>يدفع كاملاً قبل أن يرى النتيجة، فلا ضمانة للاسترداد.</li>
+        <li>لا سجل يثبت ما فعله بسيارته، فتفقد قيمتها عند البيع.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">على الورشة والمورّد</h3>
+      <ul class="clean">
+        <li>عملٌ يُنجَز ثم لا يُسدَّد، والمطالبة تحتاج قضية كاملة.</li>
+        <li>البيع بالآجل مخاطرة شخصية بلا أداة ضمان.</li>
+        <li>سيارات مهجورة تشغل المكان بلا مسار نظامي لإخراجها.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">الحل</div>
+  <h2>سلسلة واحدة تبدأ بتوقيع وتنتهي بمخالصة</h2>
+  <p class="lede">لا نبيع «تطبيق حجز ورشة». نبني الطبقة القانونية والمالية التي تجعل كل خطوة قابلة للإثبات والتنفيذ — وهي ما لا يستطيع تطبيق حجز أن ينسخه.</p>
+  <div class="card" style="margin-top:18px">
+    <ol class="chain">
+      <li><b>أمر عمل موقّع رقمياً</b><span>العميل يوقّع نسخةً محدّدة ببصمة SHA-256 عبر نفاذ. أي زيادة في العمل = نسخة جديدة وتوقيع جديد. لا يُنفَّذ ما لم يُعتمَد.</span></li>
+      <li><b>المبلغ يُحفظ في حساب ضامن</b><span>الدفع عبر مزوّد مرخّص يدخل حجزاً، ولا يُفرج عنه للورشة إلا بتأكيد الاستلام أو بعد مهلة محدّدة. كل حركة قيدٌ مزدوج في دفتر أستاذ متوازن.</span></li>
+      <li><b>فاتورة ضريبية نظامية</b><span>فوترة إلكترونية بمعيار ZATCA — رمز QR، وXML موقّع بـXAdES، وسلسلة تجزئة لكل جهاز إصدار.</span></li>
+      <li><b>الآجل يصير سنداً لأمر إلكترونياً</b><span>ما لا يُدفع فوراً يصدر به سند عبر نافذ — أداة تنفيذية بذاتها، لا مجرد دَين دفتري.</span></li>
+      <li><b>السداد يُغلق السند ويُصدر مخالصة</b><span>لحظة الدفع تُقفل السند آلياً وتُصدر مخالصة موثّقة. لا مطالبة بعد السداد، ولا حاجة لمتابعة يدوية.</span></li>
+      <li><b>التعثّر له مسار، لا انتظار</b><span>جدول إنذارات ثم إنذار رسمي، ثم ملف تنفيذ عبر ناجز بحزمة أدلة مبنيّة آلياً: السند، الفاتورة، التواقيع، صور الفحص.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">السوق ودورة القيمة</div>
+  <h2>ستة أطراف على منصة واحدة</h2>
+  <p>القيمة لا تأتي من طرف واحد بل من إغلاق الدورة بينهم: كل طرف يجلب الذي يليه، والطبقة القانونية هي ما يجعل التعامل بينهم ممكناً أصلاً.</p>
+  <div class="scroll" style="margin-top:16px">
+    <table>
+      <thead><tr><th>الطرف</th><th>ما يحصل عليه</th><th>ما يُدخله للمنصة</th></tr></thead>
+      <tbody>
+        <tr><td><strong>صاحب السيارة / الأسطول</strong></td><td>سعر معتمد قبل العمل، مالٌ محفوظ، سجل مركبة كامل، ضمان رقمي</td><td>الطلب والدفع</td></tr>
+        <tr><td><strong>الورشة</strong></td><td>تحصيل مضمون، أوامر جديدة من سوق الإصلاح، شراء قطع بالآجل</td><td>العرض والتنفيذ</td></tr>
+        <tr><td><strong>موزّع القطع / الوكيل</strong></td><td>بيع بالآجل مضمون بسند، مصادقة قطع أصلية برمز QR</td><td>المخزون والقطع الأصلية</td></tr>
+        <tr><td><strong>التشليح</strong></td><td>وصول لطلبات مطابقة برقم الهيكل بدل الانتظار</td><td>القطع المستعملة بسعر أقل</td></tr>
+        <tr><td><strong>سائق السطحة</strong></td><td>مهام قريبة، وتسليم مُثبَت بصورة ورمز فيُصرف المقابل</td><td>الحركة اللوجستية</td></tr>
+        <tr><td><strong>شركات الأساطيل</strong></td><td>سياسة صرف تُطبَّق آلياً، اعتماد بمستويين، كشوف شهرية</td><td>حجم متكرّر ومنتظم</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">حالة المشروع</div>
+  <h2>الهندسة منجزة ومُثبتة — والمتبقّي اعتمادات لا أكواد</h2>
+  <p class="lede">هذا ليس عرضاً لفكرة على ورق. المنصة مبنيّة بالكامل وتعمل من طرف إلى طرف على بيئة تشغيل حقيقية، والتكاملات الرسمية مبنيّة خلف منافذ (Ports) جاهزة لاستبدال المحاكي بالعقد الحقيقي دون إعادة كتابة.</p>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="stat"><b class="num">22</b><span>وحدة خلفية مكتملة (أوامر، فوترة، مدفوعات، سندات، قطع، لوجستيات، أساطيل، نزاعات…)</span></div>
+    <div class="stat"><b class="num">86</b><span>جدولاً في قاعدة البيانات، بقيود وحرّاس على مستوى القاعدة لا على مستوى الواجهة</span></div>
+    <div class="stat"><b class="num">31</b><span>حزمة اختبارات تكامل من طرف إلى طرف، تُشغَّل على قاعدة نظيفة</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card">
+      <h3 style="margin-top:0">أدلّة هندسية قابلة للتحقق</h3>
+      <ul class="clean">
+        <li><strong>ZATCA المرحلة الثانية:</strong> توقيع XAdES وسلسلة التجزئة مُثبتة تشفيرياً — التوقيع يُتحقَّق منه، والعبث به يُرفض، وOpenSSL يقبل طلب الشهادة.</li>
+        <li><strong>الدفتر المالي:</strong> اختبار خاصية يثبت أن كل قيد متوازن، وقيدٌ على مستوى القاعدة يرفض أي اختلال.</li>
+        <li><strong>الأداء:</strong> مسار أمر العمل عند <span class="num">20</span> مستخدماً متزامناً: زمن استجابة p95 عند <span class="num">52</span> ملّي ثانية، صفر إخفاقات.</li>
+        <li><strong>الصمود:</strong> اجتاز اختبارَي ضغط غير مخطّطين (أحدهما <span class="num">8,000</span> طلب/ثانية لمدة <span class="num">45</span> دقيقة) والميزان المالي بقي صفراً طوال الوقت.</li>
+        <li><strong>الاسترجاع:</strong> تمرين نسخ واسترجاع منفَّذ فعلياً مع تحقّق من الأرصدة إلى الهللة.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">حالة التكاملات الرسمية</h3>
+      <div class="scroll" style="border:0;box-shadow:none">
+        <table>
+          <tbody>
+            <tr><td>نفاذ (التوقيع)</td><td><span class="pill p-wait">بانتظار العقد</span></td></tr>
+            <tr><td>نافذ (السندات)</td><td><span class="pill p-wait">بانتظار العقد</span></td></tr>
+            <tr><td>ناجز (التنفيذ)</td><td><span class="pill p-wait">بانتظار العقد</span></td></tr>
+            <tr><td>ZATCA</td><td><span class="pill p-wait">بانتظار بيئة الاختبار</span></td></tr>
+            <tr><td>مزوّد الدفع</td><td><span class="pill p-wait">بانتظار الترخيص التجاري</span></td></tr>
+            <tr><td>البنية والمحرّك التشغيلي</td><td><span class="pill p-done">منجز</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:14px 0 0;font-size:14.5px;color:var(--ink-2)">كل تكامل مكتوب خلف منفذ مع محاكٍ ووثيقة تصف العقد المفترض. تفعيل الحقيقي = تبديل إعداد، لا إعادة بناء.</p>
+    </div>
+  </div>
+  <div class="note hard" style="margin-top:16px">
+    <b>ما لا ندّعيه</b>
+    لا يوجد مستخدمون حقيقيون بعد، ولا إيرادات. المنصة لم تُشغَّل تجارياً لأن التشغيل التجاري يتطلب الاعتمادات أعلاه. أي رقم في هذا المستند هو قياس هندسي قابل لإعادة التنفيذ، لا مؤشر سوقي.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">نموذج العمل</div>
+  <h2>خمسة مصادر دخل، كلها مبنيّة في المنتج اليوم</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>المصدر</th><th>الآلية</th><th>الحالة في المنتج</th></tr></thead>
+      <tbody>
+        <tr><td><strong>عمولة على العمل المنجز</strong></td><td>نسبة بنقاط أساس تُخصم عند تحرير المبلغ من الضمان، تختلف بالباقة</td><td><span class="pill p-done">مبنيّ ويعمل</span></td></tr>
+        <tr><td><strong>اشتراكات المنشآت</strong></td><td>باقات شهرية تفتح ميزات متقدّمة وتخفض نسبة العمولة</td><td><span class="pill p-done">مبنيّ ويعمل</span></td></tr>
+        <tr><td><strong>هامش القطع والحسابات الآجلة</strong></td><td>هامش على أوامر القطع، ورسوم على تسهيل الحساب الآجل المضمون بسند</td><td><span class="pill p-done">مبنيّ ويعمل</span></td></tr>
+        <tr><td><strong>هامش النقل</strong></td><td>هامش مجمَّد على سعر السطحة عند الطلب، يُرحَّل عند إثبات التسليم</td><td><span class="pill p-done">مبنيّ ويعمل</span></td></tr>
+        <tr><td><strong>خدمات الامتثال</strong></td><td>إصدار الفواتير النظامية والسندات والمخالصات للمنشآت الصغيرة</td><td><span class="pill p-done">مبنيّ ويعمل</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note" style="margin-top:16px">
+    <b>ملاحظة على الأرقام</b>
+    تقدير حجم السوق والإيراد المتوقع يحتاج بيانات مصدرها جهات رسمية (أعداد المركبات، أحجام الإنفاق على الصيانة، عدد المنشآت المرخّصة). لم نُدرج تقديرات هنا لأن رقماً غير موثّق أمام جهة داعمة يُضعف الملف كله. جاهزون لبنائها فور توفّر مصدر معتمد.
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">خطة التشغيل</div>
+  <h2>تجربة محدودة تُثبت السلوك قبل التوسّع</h2>
+  <div class="grid g3">
+    <div class="card">
+      <h3 style="margin-top:0">المرحلة ١ · التمهيد</h3>
+      <ul class="clean">
+        <li>إتمام الاعتمادات الرسمية والترخيص.</li>
+        <li>ربط بيئة اختبار الفوترة والتوقيع.</li>
+        <li>اختبار اختراق خارجي مستقل.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">المرحلة ٢ · التجربة</h3>
+      <ul class="clean">
+        <li>نطاق صناعي واحد في الرياض، عدد محدود من الورش.</li>
+        <li>تشغيل مرافق مع كل ورشة في أول أسبوع.</li>
+        <li>قياس يومي عبر لوحة قُمع مبنيّة أصلاً.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">المرحلة ٣ · التوسّع</h3>
+      <ul class="clean">
+        <li>مدن إضافية عبر الإعداد لا عبر التطوير.</li>
+        <li>فتح سوق القطع والأساطيل بعد استقرار الأساس.</li>
+        <li>تفعيل الميزات المتقدّمة تدريجياً برايات الميزات.</li>
+      </ul>
+    </div>
+  </div>
+  <h3>مؤشرات نجاح التجربة — مقيسة آلياً في المنصة</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>المؤشر</th><th>لماذا هو الحاسم</th></tr></thead>
+      <tbody>
+        <tr><td>نسبة الأوامر المعتمدة خلال ساعة</td><td>يقيس ما إذا كان التوقيع الرقمي أسرع من الاتصال الهاتفي — وهو شرط التبنّي</td></tr>
+        <tr><td>نسبة الأوامر التي تكتمل حتى الإغلاق</td><td>يكشف أين يتسرّب الناس من الدورة</td></tr>
+        <tr><td>عدد الورش التي تفتح التطبيق يومياً بلا تذكير</td><td>الفرق بين منتج مستعمَل ومنتج مثبَّت</td></tr>
+        <tr><td>نسبة السندات المسدَّدة قبل الإنذار</td><td>يقيس الأثر الحقيقي: هل غيّرت الأداة سلوك السداد؟</td></tr>
+        <tr><td>نسبة النزاعات إلى الأوامر</td><td>مقياس مباشر لجودة الطبقة القانونية</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">المطلوب</div>
+  <h2>ما نحتاجه من الجهة الداعمة</h2>
+  <p class="lede">الحاجة الأولى ليست مالاً — بل وصولاً. المنتج جاهز، والعقبة الحقيقية هي أبواب رسمية لا يفتحها فريقٌ صغير بلا سند مؤسسي.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">١ · تسهيل الاعتمادات <span class="pill p-risk">الأولوية القصوى</span></h3>
+      <ul class="clean">
+        <li>اتفاقية تكامل مع نفاذ للتوقيع الرقمي.</li>
+        <li>اتفاقية مع نافذ لإصدار السندات الإلكترونية.</li>
+        <li>الدخول إلى بيئة اختبار الفوترة الإلكترونية.</li>
+        <li>توجيه بشأن ترخيص خدمات الدفع والحساب الضامن.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">٢ · شركاء التجربة</h3>
+      <ul class="clean">
+        <li>الوصول إلى ورش مرخّصة في نطاق صناعي واحد.</li>
+        <li>أسطول واحد لتجربة دورة الاعتماد والكشوف.</li>
+        <li>موزّع قطع واحد لتجربة الحساب الآجل المضمون.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">٣ · التمويل وأوجه صرفه</h3>
+      <ul class="clean">
+        <li>تشغيل البنية التحتية ومزوّدي الخدمات خلال التجربة.</li>
+        <li>مراجعة أمنية واختبار اختراق من جهة مستقلة.</li>
+        <li>فريق تشغيل ميداني يرافق الورش في أسابيعها الأولى.</li>
+        <li>الرسوم النظامية والامتثال.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">٤ · الإرشاد</h3>
+      <ul class="clean">
+        <li>مرشد نظامي في التوقيع الإلكتروني والأوراق التجارية.</li>
+        <li>خبرة تشغيلية في قطاع خدمات السيارات.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">المخاطر</div>
+  <h2>ما قد يُفشل المشروع — وكيف عولج مسبقاً</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>الخطر</th><th>الأثر</th><th>المعالجة القائمة</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>تأخّر الاعتمادات الرسمية</strong></td>
+          <td>يؤخّر التشغيل التجاري بالكامل</td>
+          <td>كل تكامل خلف منفذ ومحاكٍ، والتطوير لم يتوقف بانتظارها. التبديل إعداد لا بناء.</td>
+        </tr>
+        <tr>
+          <td><strong>اختلاف العقد الحقيقي عن المفترض</strong></td>
+          <td>إعادة كتابة الوسيط</td>
+          <td>الافتراضات موثّقة صراحةً لكل مزوّد، والمنطق التجاري لا يعرف المزوّد إطلاقاً.</td>
+        </tr>
+        <tr>
+          <td><strong>ضعف التبنّي من الورش</strong></td>
+          <td>سوق بلا عرض</td>
+          <td>المنتج يبدأ من مكسب فوري للورشة (تحصيل مضمون وأوامر جديدة)، لا من مطالبتها بتغيير عاداتها.</td>
+        </tr>
+        <tr>
+          <td><strong>حساسية البيانات وموقعها</strong></td>
+          <td>مخاطر امتثال</td>
+          <td>البيانات الحسّاسة مشفّرة، ومنع صريح لأي خدمة خارجية تخزّن بيانات شخصية خارج المملكة دون قرار موثّق.</td>
+        </tr>
+        <tr>
+          <td><strong>خطأ مالي في التحصيل أو التحرير</strong></td>
+          <td>خسارة ثقة لا تُستعاد</td>
+          <td>قيد مزدوج على كل حركة، جداول لا تقبل التعديل، ومبدأ «شخصان» على الاسترداد.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">لماذا نحن</div>
+  <h2>ما يصعب تقليده ليس الشاشات</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">حاجز الدخول الحقيقي</h3>
+      <p style="margin:0">تطبيق حجز ورشة يُبنى في أسابيع. أما ربط توقيع رسمي بسند تنفيذي بحساب ضامن بفوترة نظامية — وجعل السداد يُغلق السند ويُصدر مخالصة في معاملة واحدة — فيتطلب عملاً هندسياً وقانونياً متشابكاً، وهو المنجَز فعلاً.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">مبنيّ للامتثال من اليوم الأول</h3>
+      <p style="margin:0">الفوترة النظامية وحفظ الأدلة والتشفير وسجل تدقيق غير قابل للتعديل ليست إضافات لاحقة — هي أساس البناء. المنصات التي تؤجّل هذا تُعيد بناء نفسها لاحقاً تحت ضغط.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin:0"><strong>صناعتي</strong> · ملف تعريفي للجهات الداعمة · أغسطس ٢٠٢٦</p>
+  <p style="margin:4px 0 0">كل رقم هندسي في هذا المستند قابل لإعادة التنفيذ والتحقّق أمام أي مراجع تقني.</p>
+</footer>
+
+</div>
