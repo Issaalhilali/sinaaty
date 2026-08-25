@@ -133,6 +133,12 @@ class L10nAr extends L10n {
   String get noActiveOrders => 'لا توجد أوامر إصلاح حالياً';
 
   @override
+  String get servicesTitle => 'ماذا تحتاج؟';
+
+  @override
+  String get emptyCarsServices => 'وهذا ما نقدّمه لك:';
+
+  @override
   String get myCars => 'سياراتي';
 
   @override

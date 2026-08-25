@@ -47,6 +47,8 @@
   "comingSoon": "قريباً",
   "activeOrders": "أوامر الإصلاح الحالية",
   "noActiveOrders": "لا توجد أوامر إصلاح حالياً",
+  "servicesTitle": "ماذا تحتاج؟",
+  "emptyCarsServices": "وهذا ما نقدّمه لك:",
   "myCars": "سياراتي",
   "vinLabel": "رقم الهيكل (VIN)",
   "plateLabel": "رقم اللوحة",

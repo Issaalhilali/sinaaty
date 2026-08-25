@@ -6,9 +6,9 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
-import '../../../core/voice/voice_sheet.dart';
 import '../../../core/ui/ui.dart';
 import '../../parts/domain/parts.dart';
+import '../../parts/presentation/part_request_sheet.dart';
 import '../../parts/presentation/providers.dart';
 import '../../service_market/domain/service_request.dart';
 import '../../service_market/presentation/fix_car_sheet.dart';
@@ -22,55 +22,6 @@ import '../../vehicles/presentation/providers.dart';
 /// Everything else the customer needs already lives in سياراتي / محفظتي (charter §5.0 #2, #3).
 class RequestHubScreen extends ConsumerWidget {
   const RequestHubScreen({super.key});
-
-  Future<void> _requestPart(BuildContext context, WidgetRef ref, List<Vehicle> vehicles) async {
-    final l = L10n.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
-    final name = TextEditingController();
-    final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'};
-    String? vehicleId = vehicles.length == 1 ? vehicles.first.id : null;
-    var minutes = 60;
-
-    final ok = await showModalBottomSheet<bool>(
-      context: context, showDragHandle: true, isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(
-        padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(l.reqPart, style: Theme.of(ctx).textTheme.titleLarge),
-          const SizedBox(height: 4), Text(l.reqPartBody, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
-          const SizedBox(height: SinaatySpace.md),
-          TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint, suffixIcon: VoiceMicButton(controller: name, title: l.ptPartName))),
-          if (vehicles.isNotEmpty) ...[
-            const SizedBox(height: SinaatySpace.md),
-            DropdownButtonFormField<String>(
-              initialValue: vehicleId, isExpanded: true, decoration: InputDecoration(labelText: l.reqPartVehicle),
-              items: [DropdownMenuItem(value: null, child: Text(l.reqPartAnyVehicle)), for (final v in vehicles) DropdownMenuItem(value: v.id, child: Text(v.title, overflow: TextOverflow.ellipsis))],
-              onChanged: (v) => setS(() => vehicleId = v),
-            ),
-          ],
-          const SizedBox(height: SinaatySpace.md),
-          Text(l.ptAcceptedConditions, style: Theme.of(ctx).textTheme.titleSmall),
-          const SizedBox(height: 6),
-          Wrap(spacing: 8, children: [for (final c in ['oem_new', 'aftermarket_new', 'used_scrapyard', 'refurbished']) FilterChip(label: Text(Labels.condition(l, c)), selected: conds.contains(c), showCheckmark: false, onSelected: (sel) => setS(() => sel ? conds.add(c) : conds.remove(c)))]),
-          const SizedBox(height: SinaatySpace.md),
-          Row(children: [
-            Text(l.ptBiddingMinutes, style: Theme.of(ctx).textTheme.titleSmall), const Spacer(),
-            SegmentedButton<int>(segments: const [ButtonSegment(value: 30, label: Text('30')), ButtonSegment(value: 60, label: Text('60')), ButtonSegment(value: 240, label: Text('240'))], selected: {minutes}, showSelectedIcon: false, onSelectionChanged: (sel) => setS(() => minutes = sel.first)),
-          ]),
-          const SizedBox(height: SinaatySpace.lg),
-          PrimaryButton(label: l.reqPartSend, icon: Icons.gavel_outlined, onPressed: () { if (name.text.trim().length < 2 || conds.isEmpty) return; Navigator.pop(ctx, true); }),
-        ]),
-      )),
-    );
-    if (ok != true || !context.mounted) return;
-    final vin = vehicles.where((v) => v.id == vehicleId).firstOrNull?.vin;
-    final res = await ref.read(partsRepositoryProvider).createRequest(vin: vin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes);
-    if (!context.mounted) return;
-    res.when(
-      ok: (r) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${r.id}'); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
-    );
-  }
 
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme;
@@ -113,7 +64,7 @@ class RequestHubScreen extends ConsumerWidget {
           _Choice(icon: Icons.build_outlined, title: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
           if (partsOn || towOn) const SizedBox(height: SinaatySpace.md),
         ],
-        if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => _requestPart(context, ref, vehicles)),
+        if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
         if (partsOn && towOn) const SizedBox(height: SinaatySpace.md),
         if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
         if (fixes.isNotEmpty) ...[

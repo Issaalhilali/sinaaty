@@ -133,6 +133,12 @@ class L10nEn extends L10n {
   String get noActiveOrders => 'No repair orders right now';
 
   @override
+  String get servicesTitle => 'What do you need?';
+
+  @override
+  String get emptyCarsServices => 'Here is what we can do for you:';
+
+  @override
   String get myCars => 'My cars';
 
   @override

@@ -25,9 +25,20 @@ FLAVOR_SUFFIX = .$FLAVOR
 FLAVOR_NAME = $NAME
 CFG
 
-echo "▶ $NAME (com.example.sinaaty.$FLAVOR)"
+# عنوان الـAPI يُحسب عند التشغيل لا يُكتب في ملف: كان `env/dev.json` يحمل عنوان الشبكة المحلية،
+# فإذا تغيّر عنوان الجهاز (شبكة أخرى أو DHCP جديد) صمت التطبيق بـ«لا يوجد اتصال بالإنترنت» بلا
+# سبب ظاهر. المحاكي يرى مضيفه على localhost، ومحاكي أندرويد على 10.0.2.2، والجهاز الحقيقي وحده
+# يحتاج عنوان الشبكة — فيُلتقط آلياً.
+API="http://localhost:3000"
+if [[ "${*:2}" == *"android"* || "${ANDROID:-}" == "1" ]]; then API="http://10.0.2.2:3000"; fi
+if [[ "${DEVICE:-}" == "1" ]]; then
+  LAN=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)
+  [[ -n "$LAN" ]] && API="http://$LAN:3000" || { echo "تعذّر معرفة عنوان الشبكة — مرّر API=... يدوياً" >&2; exit 3; }
+fi
+
+echo "▶ $NAME (com.example.sinaaty.$FLAVOR) → $API"
 # على iOS تكفي الـxcconfig أعلاه: `--flavor` هناك يطلب مخططات Xcode مخصّصة لا وجود لها،
 # فيفشل البناء. على أندرويد النكهات gradle حقيقية فتحتاج الراية.
 EXTRA=()
 if [[ "${*:2}" == *"android"* || "${ANDROID:-}" == "1" ]]; then EXTRA+=(--flavor "$FLAVOR"); fi
-exec flutter run "${EXTRA[@]}" -t "lib/main_$FLAVOR.dart" --dart-define-from-file=env/dev.json "${@:2}"
+exec flutter run "${EXTRA[@]}" -t "lib/main_$FLAVOR.dart" --dart-define-from-file=env/dev.json --dart-define=API_BASE_URL="$API" "${@:2}"

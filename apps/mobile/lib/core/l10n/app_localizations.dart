@@ -337,6 +337,18 @@ abstract class L10n {
   /// **'لا توجد أوامر إصلاح حالياً'**
   String get noActiveOrders;
 
+  /// No description provided for @servicesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا تحتاج؟'**
+  String get servicesTitle;
+
+  /// No description provided for @emptyCarsServices.
+  ///
+  /// In ar, this message translates to:
+  /// **'وهذا ما نقدّمه لك:'**
+  String get emptyCarsServices;
+
   /// No description provided for @myCars.
   ///
   /// In ar, this message translates to:

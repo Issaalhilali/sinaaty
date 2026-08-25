@@ -47,6 +47,8 @@
   "comingSoon": "Coming soon",
   "activeOrders": "Current repair orders",
   "noActiveOrders": "No repair orders right now",
+  "servicesTitle": "What do you need?",
+  "emptyCarsServices": "Here is what we can do for you:",
   "myCars": "My cars",
   "vinLabel": "VIN",
   "plateLabel": "Plate number",
