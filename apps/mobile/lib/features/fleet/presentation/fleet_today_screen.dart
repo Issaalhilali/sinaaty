@@ -5,6 +5,7 @@ import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
 import '../domain/fleet.dart';
 import 'providers.dart';
 
@@ -63,6 +64,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
   @override
   Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme;
+    final orgId = ref.watch(currentOrgIdProvider);
     final overview = ref.watch(fleetOverviewProvider);
     final pending = ref.watch(fleetPendingProvider);
     final o = overview.value?.valueOrNull;
@@ -105,6 +107,8 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
               o?.policyNameAr != null ? l.flPolicyLine(o!.policyNameAr!, Fmt.money(o.autoApproveBelow ?? '0', locale: locale)) : l.flNoPolicy,
               style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85)),
             )),
+            // القاعدة تُقرأ هنا منذ اليوم الأول؛ ومن يقرؤها هو من يجب أن يملك تغييرها.
+            if (orgId != null) TextButton(onPressed: () => context.push('/fleet/policy', extra: orgId), child: Text(l.flPolicyEntry, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
           ]),
         ])),
         const SizedBox(height: SinaatySpace.lg),

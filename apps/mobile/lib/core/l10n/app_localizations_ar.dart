@@ -2131,4 +2131,58 @@ class L10nAr extends L10n {
 
   @override
   String get tabDriverJobs => 'مهامي';
+
+  @override
+  String get flPolicyTitle => 'قواعد الصرف';
+
+  @override
+  String get flPolicyName => 'سياسة الأسطول';
+
+  @override
+  String get flPolicyWhy =>
+      'ثلاثة أرقام تحكم كل أمر إصلاح: ما يمرّ بلا اعتماد، وما يحتاج شخصين، وسقف الشهر.';
+
+  @override
+  String get flPolicyAuto => 'اعتماد تلقائي تحت';
+
+  @override
+  String get flPolicyAutoHint => 'أقل من هذا المبلغ يمرّ بلا انتظار أحد.';
+
+  @override
+  String get flPolicyTwo => 'يحتاج معتمدَين فوق';
+
+  @override
+  String get flPolicyTwoHint =>
+      'اتركه فارغاً إن كان اعتماد شخص واحد يكفي دائماً.';
+
+  @override
+  String get flPolicyBudget => 'ميزانية الشهر';
+
+  @override
+  String get flPolicyBudgetHint => 'يُرفض ما يتجاوزها. اتركه فارغاً بلا سقف.';
+
+  @override
+  String get flPolicyMeaning => 'ماذا يعني ذلك';
+
+  @override
+  String get flPolicySave => 'حفظ القواعد';
+
+  @override
+  String get flPolicyContradiction =>
+      'حدّ المعتمدَين أقل من حدّ الاعتماد التلقائي — لن يمرّ أي أمر باعتماد واحد.';
+
+  @override
+  String get flOutAuto => 'يمرّ تلقائياً';
+
+  @override
+  String get flOutOne => 'اعتماد واحد';
+
+  @override
+  String get flOutTwo => 'اعتماد شخصين';
+
+  @override
+  String get flOutOverBudget => 'يتجاوز الميزانية';
+
+  @override
+  String get flPolicyEntry => 'قواعد الصرف';
 }

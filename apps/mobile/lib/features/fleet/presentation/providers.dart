@@ -23,3 +23,7 @@ final fleetStatementsProvider = FutureProvider.autoDispose<Result<List<FleetStat
   return ref.watch(fleetRepositoryProvider).statements(org);
 });
 final fleetStatementProvider = FutureProvider.autoDispose.family<Result<FleetStatement>, String>((ref, id) => ref.watch(fleetRepositoryProvider).statement(id));
+
+/// قواعد الصرف — تُقرأ مرة وتُبطَل عند الحفظ.
+final fleetPoliciesProvider = FutureProvider.autoDispose.family<Result<List<FleetPolicy>>, String>(
+    (ref, orgId) => ref.watch(fleetRepositoryProvider).policies(orgId));

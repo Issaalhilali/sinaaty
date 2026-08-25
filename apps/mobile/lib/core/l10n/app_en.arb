@@ -1009,5 +1009,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flPolicyTitle": "Spending rules",
+  "flPolicyName": "Fleet policy",
+  "flPolicyWhy": "Three numbers govern every repair: what passes without approval, what needs two people, and the monthly cap.",
+  "flPolicyAuto": "Auto-approve below",
+  "flPolicyAutoHint": "Anything under this passes without waiting for anyone.",
+  "flPolicyTwo": "Two approvers above",
+  "flPolicyTwoHint": "Leave empty if one approver is always enough.",
+  "flPolicyBudget": "Monthly budget",
+  "flPolicyBudgetHint": "Anything over it is refused. Leave empty for no cap.",
+  "flPolicyMeaning": "What this means",
+  "flPolicySave": "Save rules",
+  "flPolicyContradiction": "The two-approver threshold is below the auto-approve threshold — nothing would ever need one approver.",
+  "flOutAuto": "Passes automatically",
+  "flOutOne": "One approver",
+  "flOutTwo": "Two approvers",
+  "flOutOverBudget": "Over budget",
+  "flPolicyEntry": "Spending rules"
 }

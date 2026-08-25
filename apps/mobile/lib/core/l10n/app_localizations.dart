@@ -4056,6 +4056,108 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'مهامي'**
   String get tabDriverJobs;
+
+  /// No description provided for @flPolicyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'قواعد الصرف'**
+  String get flPolicyTitle;
+
+  /// No description provided for @flPolicyName.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة الأسطول'**
+  String get flPolicyName;
+
+  /// No description provided for @flPolicyWhy.
+  ///
+  /// In ar, this message translates to:
+  /// **'ثلاثة أرقام تحكم كل أمر إصلاح: ما يمرّ بلا اعتماد، وما يحتاج شخصين، وسقف الشهر.'**
+  String get flPolicyWhy;
+
+  /// No description provided for @flPolicyAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتماد تلقائي تحت'**
+  String get flPolicyAuto;
+
+  /// No description provided for @flPolicyAutoHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل من هذا المبلغ يمرّ بلا انتظار أحد.'**
+  String get flPolicyAutoHint;
+
+  /// No description provided for @flPolicyTwo.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتاج معتمدَين فوق'**
+  String get flPolicyTwo;
+
+  /// No description provided for @flPolicyTwoHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتركه فارغاً إن كان اعتماد شخص واحد يكفي دائماً.'**
+  String get flPolicyTwoHint;
+
+  /// No description provided for @flPolicyBudget.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميزانية الشهر'**
+  String get flPolicyBudget;
+
+  /// No description provided for @flPolicyBudgetHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُرفض ما يتجاوزها. اتركه فارغاً بلا سقف.'**
+  String get flPolicyBudgetHint;
+
+  /// No description provided for @flPolicyMeaning.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا يعني ذلك'**
+  String get flPolicyMeaning;
+
+  /// No description provided for @flPolicySave.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ القواعد'**
+  String get flPolicySave;
+
+  /// No description provided for @flPolicyContradiction.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدّ المعتمدَين أقل من حدّ الاعتماد التلقائي — لن يمرّ أي أمر باعتماد واحد.'**
+  String get flPolicyContradiction;
+
+  /// No description provided for @flOutAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'يمرّ تلقائياً'**
+  String get flOutAuto;
+
+  /// No description provided for @flOutOne.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتماد واحد'**
+  String get flOutOne;
+
+  /// No description provided for @flOutTwo.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتماد شخصين'**
+  String get flOutTwo;
+
+  /// No description provided for @flOutOverBudget.
+  ///
+  /// In ar, this message translates to:
+  /// **'يتجاوز الميزانية'**
+  String get flOutOverBudget;
+
+  /// No description provided for @flPolicyEntry.
+  ///
+  /// In ar, this message translates to:
+  /// **'قواعد الصرف'**
+  String get flPolicyEntry;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

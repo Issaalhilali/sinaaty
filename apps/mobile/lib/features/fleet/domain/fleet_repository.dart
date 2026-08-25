@@ -4,6 +4,9 @@ import 'fleet.dart';
 abstract interface class FleetRepository {
   Future<Result<FleetOverview>> overview(String orgId);
   Future<Result<List<FleetPending>>> pending(String orgId);
+  Future<Result<List<FleetPolicy>>> policies(String orgId);
+  /// ينشئ سياسة أو يحدّث القائمة — الأسطول يملك قاعدته بلا وسيط.
+  Future<Result<FleetPolicy>> savePolicy(String orgId, FleetPolicy p);
   /// One approver's decision on one repair version. The signature itself stays a separate, personal act.
   Future<Result<FleetDecision>> decide(String workOrderId, {required String decision, String? noteAr});
   Future<Result<List<FleetStatement>>> statements(String orgId);

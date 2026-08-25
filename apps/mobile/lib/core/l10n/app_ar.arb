@@ -1009,5 +1009,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "flPolicyTitle": "قواعد الصرف",
+  "flPolicyName": "سياسة الأسطول",
+  "flPolicyWhy": "ثلاثة أرقام تحكم كل أمر إصلاح: ما يمرّ بلا اعتماد، وما يحتاج شخصين، وسقف الشهر.",
+  "flPolicyAuto": "اعتماد تلقائي تحت",
+  "flPolicyAutoHint": "أقل من هذا المبلغ يمرّ بلا انتظار أحد.",
+  "flPolicyTwo": "يحتاج معتمدَين فوق",
+  "flPolicyTwoHint": "اتركه فارغاً إن كان اعتماد شخص واحد يكفي دائماً.",
+  "flPolicyBudget": "ميزانية الشهر",
+  "flPolicyBudgetHint": "يُرفض ما يتجاوزها. اتركه فارغاً بلا سقف.",
+  "flPolicyMeaning": "ماذا يعني ذلك",
+  "flPolicySave": "حفظ القواعد",
+  "flPolicyContradiction": "حدّ المعتمدَين أقل من حدّ الاعتماد التلقائي — لن يمرّ أي أمر باعتماد واحد.",
+  "flOutAuto": "يمرّ تلقائياً",
+  "flOutOne": "اعتماد واحد",
+  "flOutTwo": "اعتماد شخصين",
+  "flOutOverBudget": "يتجاوز الميزانية",
+  "flPolicyEntry": "قواعد الصرف"
 }

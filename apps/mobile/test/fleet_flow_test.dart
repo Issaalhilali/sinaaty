@@ -17,6 +17,7 @@ import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'package:sinaaty/features/fleet/domain/fleet.dart';
 import 'package:sinaaty/features/fleet/domain/fleet_repository.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_statements_screen.dart';
+import 'package:sinaaty/features/fleet/presentation/fleet_policy_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_today_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/providers.dart';
 
@@ -29,6 +30,11 @@ class FakeFleet implements FleetRepository {
     vehicles: 5, openWorkOrders: 3, awaitingApproval: 3, monthSpend: '9877.50',
     budgetRemaining: '50122.50', budgetUsedPct: '16.5', openNotes: 0,
     policyNameAr: 'سياسة صيانة 2026', autoApproveBelow: '500.00', monthlyBudget: '60000.00'));
+
+  FleetPolicy policy = const FleetPolicy(id: 'p1', nameAr: 'سياسة صيانة 2026', autoApproveBelow: '500.00', requiresTwoApproversAbove: '5000.00', monthlyBudget: '60000.00');
+  FleetPolicy? saved;
+  @override Future<Result<List<FleetPolicy>>> policies(String orgId) async => Result.ok([policy]);
+  @override Future<Result<FleetPolicy>> savePolicy(String orgId, FleetPolicy p) async { saved = p; policy = p; return Result.ok(p); }
 
   @override Future<Result<List<FleetPending>>> pending(String orgId) async => Result.ok([
     FleetPending(workOrderId: 'w1', number: 'WO-2026-004361', total: '8280.00', workshopNameAr: 'ورشة النور للسمكرة والميكانيكا', assetCode: 'TRK-001', plate: null,
@@ -149,5 +155,34 @@ void main() {
     await tester.tap(find.text('نسخ CSV')); await tester.pumpAndSettle();
     expect(fleet.copiedCsvId, 's1');
     expect(find.text('نُسخ الكشف — ألصقه في جداولك'), findsOneWidget);
+  });
+
+  testWidgets('قواعد الصرف: تُقرأ، ويُرى أثرها على مبالغ حقيقية، ثم تُحفظ', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    fleet = FakeFleet();
+    await tester.pumpWidget(app(GoRouter(initialLocation: '/policy', routes: [
+      GoRoute(path: '/', builder: (_, _) => const Scaffold(body: Text('الأسطول'))),
+      GoRoute(path: '/policy', builder: (_, _) => const FleetPolicyScreen(orgId: 'org1')),
+    ])));
+    await tester.pumpAndSettle();
+
+    // القيم الحالية محمّلة، والمعنى معروض بها لا بأرقام فارغة.
+    expect(find.text('500.00'), findsWidgets);
+    expect(find.text('يمرّ تلقائياً'), findsOneWidget, reason: '350 تحت حدّ الـ500');
+    expect(find.text('اعتماد شخصين'), findsOneWidget, reason: '6000 فوق حدّ الـ5000');
+
+    // حدّان متناقضان يُرفضان قبل أن يصلا الخادم.
+    await tester.enterText(find.widgetWithText(TextField, 'يحتاج معتمدَين فوق'), '100');
+    await tester.tap(find.text('حفظ القواعد')); await tester.pumpAndSettle();
+    expect(find.textContaining('لن يمرّ أي أمر باعتماد واحد'), findsOneWidget);
+    expect(fleet.saved, isNull, reason: 'لم يُرسل شيء');
+
+    await tester.enterText(find.widgetWithText(TextField, 'يحتاج معتمدَين فوق'), '4000');
+    await tester.pumpAndSettle();
+    expect(find.textContaining('لن يمرّ أي أمر باعتماد واحد'), findsNothing, reason: 'الخطأ يزول مع تصحيح سببه');
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/fleet_policy_light.png'));
+    await tester.tap(find.text('حفظ القواعد')); await tester.pumpAndSettle();
+    expect(fleet.saved?.requiresTwoApproversAbove, '4000');
+    expect(fleet.saved?.autoApproveBelow, '500.00', reason: 'ما لم يُلمس يبقى كما هو');
   });
 }

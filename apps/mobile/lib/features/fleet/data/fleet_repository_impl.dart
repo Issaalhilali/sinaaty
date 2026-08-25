@@ -38,6 +38,15 @@ FleetPending pendingFromJson(Map<String, dynamic> j) {
   );
 }
 
+FleetPolicy _policy(Map<String, dynamic> j) => FleetPolicy(
+      id: j['id'] as String?, nameAr: (j['nameAr'] ?? j['name_ar'] ?? '') as String,
+      autoApproveBelow: (j['autoApproveBelow'] ?? j['auto_approve_below'] ?? '0').toString(),
+      requiresTwoApproversAbove: (j['requiresTwoApproversAbove'] ?? j['requires_two_approvers_above'])?.toString(),
+      monthlyBudget: (j['monthlyBudget'] ?? j['monthly_budget'])?.toString(),
+      allowedOrgIds: [for (final x in (j['allowedOrgIds'] ?? j['allowed_org_ids'] ?? const []) as List) x as String],
+      isActive: (j['isActive'] ?? j['is_active'] ?? true) as bool,
+    );
+
 class FleetRepositoryImpl implements FleetRepository {
   final ApiClient api;
   FleetRepositoryImpl(this.api);
@@ -53,6 +62,23 @@ class FleetRepositoryImpl implements FleetRepository {
   @override Future<Result<FleetStatement>> statement(String id) => _run(() async => statementFromJson((await api.dio.get<Map<String, dynamic>>('/fleet/statements/$id')).data!));
   @override Future<Result<FleetStatement>> generateStatement(String orgId, String month) => _run(() async => statementFromJson((await api.dio.post<Map<String, dynamic>>('/fleet/$orgId/statements', data: {'month': month})).data!));
   @override Future<Result<String>> statementCsv(String id) => _run(() async => (await api.dio.get<String>('/fleet/statements/$id/export.csv', options: Options(responseType: ResponseType.plain))).data!);
+
+  @override Future<Result<List<FleetPolicy>>> policies(String orgId) => _run(() async =>
+      ((await api.dio.get<List<dynamic>>('/fleet/$orgId/policies')).data ?? const [])
+          .map((e) => _policy(e as Map<String, dynamic>)).toList());
+
+  @override Future<Result<FleetPolicy>> savePolicy(String orgId, FleetPolicy p) => _run(() async {
+        final body = <String, dynamic>{
+          'name_ar': p.nameAr,
+          'auto_approve_below': p.autoApproveBelow,
+          'requires_two_approvers_above': p.requiresTwoApproversAbove,
+          'monthly_budget': p.monthlyBudget,
+        };
+        final r = p.id == null
+            ? await api.dio.post<Map<String, dynamic>>('/fleet/$orgId/policies', data: body)
+            : await api.dio.put<Map<String, dynamic>>('/fleet/policies/${p.id}', data: {...body, 'is_active': p.isActive});
+        return _policy(r.data!);
+      });
 }
 
 FleetStatement statementFromJson(Map<String, dynamic> j) => FleetStatement(

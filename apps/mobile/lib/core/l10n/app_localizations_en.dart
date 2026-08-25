@@ -2158,4 +2158,59 @@ class L10nEn extends L10n {
 
   @override
   String get tabDriverJobs => 'My jobs';
+
+  @override
+  String get flPolicyTitle => 'Spending rules';
+
+  @override
+  String get flPolicyName => 'Fleet policy';
+
+  @override
+  String get flPolicyWhy =>
+      'Three numbers govern every repair: what passes without approval, what needs two people, and the monthly cap.';
+
+  @override
+  String get flPolicyAuto => 'Auto-approve below';
+
+  @override
+  String get flPolicyAutoHint =>
+      'Anything under this passes without waiting for anyone.';
+
+  @override
+  String get flPolicyTwo => 'Two approvers above';
+
+  @override
+  String get flPolicyTwoHint => 'Leave empty if one approver is always enough.';
+
+  @override
+  String get flPolicyBudget => 'Monthly budget';
+
+  @override
+  String get flPolicyBudgetHint =>
+      'Anything over it is refused. Leave empty for no cap.';
+
+  @override
+  String get flPolicyMeaning => 'What this means';
+
+  @override
+  String get flPolicySave => 'Save rules';
+
+  @override
+  String get flPolicyContradiction =>
+      'The two-approver threshold is below the auto-approve threshold — nothing would ever need one approver.';
+
+  @override
+  String get flOutAuto => 'Passes automatically';
+
+  @override
+  String get flOutOne => 'One approver';
+
+  @override
+  String get flOutTwo => 'Two approvers';
+
+  @override
+  String get flOutOverBudget => 'Over budget';
+
+  @override
+  String get flPolicyEntry => 'Spending rules';
 }

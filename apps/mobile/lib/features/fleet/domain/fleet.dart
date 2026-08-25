@@ -13,6 +13,15 @@ class FleetOverview {
   const FleetOverview({required this.vehicles, required this.openWorkOrders, required this.awaitingApproval, required this.monthSpend, this.budgetRemaining, this.budgetUsedPct, required this.openNotes, this.policyNameAr, this.autoApproveBelow, this.monthlyBudget});
 }
 
+/// قاعدة الصرف كما يضبطها مسؤول الأسطول — الحدود نصوص لأن المبالغ لا تُخزَّن أرقاماً عشرية.
+class FleetPolicy {
+  final String? id; final String nameAr;
+  final String autoApproveBelow; final String? requiresTwoApproversAbove; final String? monthlyBudget;
+  final List<String> allowedOrgIds; final bool isActive;
+  const FleetPolicy({this.id, required this.nameAr, required this.autoApproveBelow,
+    this.requiresTwoApproversAbove, this.monthlyBudget, this.allowedOrgIds = const [], this.isActive = true});
+}
+
 class FleetApprovalRecord { final String? byNameAr; final String decision; final String? noteAr; final DateTime at; const FleetApprovalRecord({this.byNameAr, required this.decision, this.noteAr, required this.at}); }
 
 /// One repair waiting on the fleet, with what its own policy says about it.
