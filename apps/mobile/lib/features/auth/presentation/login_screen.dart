@@ -44,6 +44,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           autofillHints: const [AutofillHints.telephoneNumber],
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+٠-٩ ]'))],
           decoration: InputDecoration(labelText: l.phoneLabel, hintText: l.phoneHint, errorText: _error, prefixIcon: const Icon(Icons.phone_iphone)),
+          // الخطأ يعيش ما دام سببه: كان يُمسح عند الإرسال وحده، فيبقى «أدخل رقم جوال سعودي صحيح»
+          // والحقل أحمر بينما الرقم أمام عينيه صحيح — يصحّح ولا يرى أثراً لتصحيحه.
+          onChanged: (_) { if (_error != null) setState(() => _error = null); },
           onSubmitted: (_) => _send(),
         ),
         const SizedBox(height: SinaatySpace.lg),

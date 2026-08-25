@@ -66,6 +66,24 @@ void main() {
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/otp_light.png'));
   });
 
+  testWidgets('الخطأ لا يعيش بعد سببه: أول تعديل يمسحه', (tester) async {
+    // ظهر في مشية أندرويد: رقم صحيح مكتوب في الحقل، و«أدخل رقم جوال سعودي صحيح» باقية والحقل
+    // أحمر — يصحّح المستخدم ولا يرى أثراً لتصحيحه، فيظن أن التطبيق لا يستجيب.
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        home: const LoginScreen())));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('أرسل الرمز')); await tester.pumpAndSettle();
+    expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '0');   // أول حرف يُصحّح
+    await tester.pumpAndSettle();
+    expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsNothing);
+  });
+
   testWidgets('لوحة المفاتيح مفتوحة على شاشة قصيرة: لا فيضان في التخطيط', (tester) async {
     // جهاز حقيقي بلوحة مفاتيح مفتوحة = ارتفاعٌ مرئي أقل بنحو الثلث. الترويسة مرنة واللوح يعلو،
     // فإن لم يُختبر هذا ظهر «RenderFlex overflowed» على جهاز المالك لا في الاختبارات.
