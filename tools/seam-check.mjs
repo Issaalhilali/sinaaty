@@ -195,6 +195,13 @@ async function walkDeferredParts({ workshop, workshopOrgId, dealer, dealerOrgId 
   // ٢) طلب قطعة → عرض التاجر → قبول بالآجل (هنا يُفحص الحدّ الائتماني قبل أي التزام)
   const pr = await call('POST', '/parts/requests', { token: workshop, body: { org_id: workshopOrgId, part_name_ar: 'طقم فحمات أمامي', accepted_conditions: ['aftermarket_new'], quantity: 1, lat: 24.63, lng: 46.79, radius_km: 50, bidding_minutes: 60 } });
   if (!pr.body?.id) return fail('طلب القطعة لم يُفتح', `${pr.status} ${JSON.stringify(pr.body).slice(0, 160)}`);
+  // الوصلة التي أسكتت سوق الإصلاح مرة: الشاشة تنادي ?as=supplier، فإن لم يصل الطلب هنا فتبويب
+  // «طلبات» عند التشليح/التاجر فارغ أبداً — والمزاد يبدو ميتاً وهو حيّ.
+  const inbox = await call('GET', `/parts/requests?org_id=${dealerOrgId}&as=supplier`, { token: dealer });
+  Array.isArray(inbox.body) && inbox.body.some((r) => r.id === pr.body.id)
+    ? pass('التاجر يرى الطلب في تبويب «طلبات» (كما ينادي التطبيق)')
+    : fail('الطلب لا يصل المورّد', `${inbox.status} — تبويب «طلبات» سيبقى فارغاً وهو مليء`);
+
   const bid = await call('POST', `/parts/requests/${pr.body.id}/bids`, { token: dealer, body: { org_id: dealerOrgId, condition: 'aftermarket_new', unit_price: '450', quantity: 1, eta_hours: 6, warranty_days: 90 } });
   if (!bid.body?.id) return fail('التاجر لا يستطيع تقديم عرض', `${bid.status} ${JSON.stringify(bid.body).slice(0, 160)}`);
   const accepted = await call('POST', `/parts/requests/${pr.body.id}/accept`, { token: workshop, body: { bid_id: bid.body.id, payment_terms: 'deferred' } });
