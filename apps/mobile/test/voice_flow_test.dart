@@ -152,14 +152,18 @@ void main() {
     expect(find.widgetWithText(TextField, 'صوت طقطقة من الأمام'), findsOneWidget);
   });
 
-  testWidgets('flag off or no dictation on the device: the menu entry does not exist', (tester) async {
+  testWidgets('الراية مطفأة ⟵ لا مدخل؛ والجهاز غير المُملي لا يُسأل عن الإذن عند فتح الأمر', (tester) async {
     size(tester);
     await tester.pumpWidget(partnerApp('/ws/orders/wo1', flags: const {'voice_to_invoice': false})); await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.more_horiz)); await tester.pumpAndSettle();
-    expect(find.text('أملِ البنود صوتاً'), findsNothing);
-    await tester.tap(find.text('تقرير الحادث')); await tester.pumpAndSettle();  // close the menu by navigating away is overkill — dismiss
+    expect(find.text('أملِ البنود صوتاً'), findsNothing, reason: 'الراية رخصةٌ للإخفاء');
+    await tester.tap(find.text('تقرير الحادث')); await tester.pumpAndSettle();
+
+    // العقد الجديد (بعد أن ظهرت نافذة «اسمح بتسجيل الصوت» فوق أول شاشة على أندرويد): فحص القدرة
+    // **هو نفسه** ما يطلب الإذن، فلا يُشغَّل عند البناء. المدخل موجود حتى تُثبت محاولةٌ صادقة أن
+    // الجهاز لا يُملي — وعندها يختفي من كل مكان (مثبَّت في assistant_test).
     await tester.pumpWidget(partnerApp('/ws/orders/wo1', voice: FakeVoice(available: false))); await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.more_horiz)); await tester.pumpAndSettle();
-    expect(find.text('أملِ البنود صوتاً'), findsNothing);                       // flag on, but the device cannot dictate
+    expect(find.text('أملِ البنود صوتاً'), findsOneWidget, reason: 'لا إذن يُطلب لمجرد فتح أمر عمل');
   });
 }
