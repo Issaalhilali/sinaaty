@@ -65,4 +65,20 @@ void main() {
     await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/otp_light.png'));
   });
+
+  testWidgets('لوحة المفاتيح مفتوحة على شاشة قصيرة: لا فيضان في التخطيط', (tester) async {
+    // جهاز حقيقي بلوحة مفاتيح مفتوحة = ارتفاعٌ مرئي أقل بنحو الثلث. الترويسة مرنة واللوح يعلو،
+    // فإن لم يُختبر هذا ظهر «RenderFlex overflowed» على جهاز المالك لا في الاختبارات.
+    tester.view.physicalSize = const Size(1080, 1920); tester.view.devicePixelRatio = 3;
+    tester.view.viewInsets = FakeViewPadding(bottom: 900); // لوحة مفاتيح
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        home: const LoginScreen())));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull, reason: 'لا فيضان مع لوحة المفاتيح');
+    expect(find.text('أرسل الرمز'), findsOneWidget, reason: 'الزرّ يبقى في متناول الإصبع');
+  });
 }

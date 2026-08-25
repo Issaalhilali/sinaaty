@@ -20,23 +20,30 @@ class SealScaffold extends StatelessWidget {
 
   @override Widget build(BuildContext context) => Scaffold(
         backgroundColor: SinaatyColors.sealDeep,
-        body: Column(children: [
-          Expanded(child: SealSurface(child: SafeArea(bottom: false, child: Stack(children: [
-            if (onBack != null) PositionedDirectional(start: 4, top: 4, child: IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_forward), color: Colors.white)),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.xl), child: Center(child: top)),
-          ])))),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-              boxShadow: [BoxShadow(color: SinaatyColors.sealDeep.withValues(alpha: .35), blurRadius: 34, offset: const Offset(0, -12))],
-            ),
-            child: SafeArea(top: false, child: Padding(
-              padding: EdgeInsets.fromLTRB(SinaatySpace.xl, SinaatySpace.xl, SinaatySpace.xl, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
-              child: sheet,
-            )),
+        // السقالة تُقلّص الجسم فوق لوحة المفاتيح؛ فلا نضيف ارتفاعها مرة ثانية داخل اللوح (كان حشواً
+        // مزدوجاً)، والتمرير يستوعب ما تبقّى بدل أن يفيض التخطيط على جهاز قصير.
+        body: LayoutBuilder(builder: (context, box) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: box.maxHeight),
+            child: IntrinsicHeight(child: Column(children: [
+              Expanded(child: SealSurface(child: SafeArea(bottom: false, child: Stack(children: [
+                if (onBack != null) PositionedDirectional(start: 4, top: 4, child: IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_forward), color: Colors.white)),
+                Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.xl, SinaatySpace.xl, SinaatySpace.xl, SinaatySpace.xl), child: Center(child: top)),
+              ])))),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  boxShadow: [BoxShadow(color: SinaatyColors.sealDeep.withValues(alpha: .35), blurRadius: 34, offset: const Offset(0, -12))],
+                ),
+                child: SafeArea(top: false, child: Padding(
+                  padding: const EdgeInsets.all(SinaatySpace.xl),
+                  child: sheet,
+                )),
+              ),
+            ])),
           ),
-        ]),
+        )),
       );
 }
