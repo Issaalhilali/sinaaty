@@ -105,7 +105,8 @@ describe('Logistics — tow request (e2e)', () => {
     const codes = inbox.body.map((n: { templateCode: string }) => n.templateCode);
     for (const c of ['transport.assigned', 'transport.status', 'transport.proof', 'transport.delivered']) expect(codes).toContain(c);
     const assigned = inbox.body.find((n: { templateCode: string }) => n.templateCode === 'transport.assigned');
-    expect(assigned.bodyAr).toContain('ن ق ل'); expect(assigned.data.deep_link).toBe(`sinaaty://transport/${jobId}`);
+    // `tow/` لا `transport/`: المسار الحقيقي في الموجّه؛ الصيغة القديمة كانت نقرةً خرساء.
+    expect(assigned.bodyAr).toContain('ن ق ل'); expect(assigned.data.deep_link).toBe(`sinaaty://tow/${jobId}`);
     const proof = inbox.body.find((n: { templateCode: string }) => n.templateCode === 'transport.proof');
     expect(proof.bodyAr).toMatch(/\d{6}/);
   });

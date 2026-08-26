@@ -64,7 +64,8 @@ describe('Transport payment (e2e)', () => {
   it('the customer is told «فاتورة سطحتك جاهزة», deep-linked to the job — not the generic invoice copy', async () => {
     const inbox = await http().get('/v1/me/notifications?limit=30').set(auth(custTok)).expect(200);
     const n = inbox.body.find((x: { templateCode: string }) => x.templateCode === 'transport.invoice.issued');
-    expect(n).toBeTruthy(); expect(n.titleAr).toContain('سطحت'); expect(n.bodyAr).toContain('وصلت سيارتك'); expect(n.data.deep_link).toBe(`sinaaty://transport/${jobId}`);
+    // `tow/` لا `transport/`: هذا هو المسار الذي يعرفه الموجّه فعلاً — والاختبار كان يثبّت رابطاً لا يفتح شيئاً.
+    expect(n).toBeTruthy(); expect(n.titleAr).toContain('سطحت'); expect(n.bodyAr).toContain('وصلت سيارتك'); expect(n.data.deep_link).toBe(`sinaaty://tow/${jobId}`);
   });
 
   it('paying after proven delivery releases the escrow in the same transaction, split by the job margin', async () => {
