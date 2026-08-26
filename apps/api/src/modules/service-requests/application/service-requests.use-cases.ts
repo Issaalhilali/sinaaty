@@ -1,5 +1,6 @@
-import { Inject, Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { AppError } from '../../../common/errors';
+import { pickRecipients } from '../domain/service-request';
 import { AuditLogWriter } from '../../../common/audit';
 import { OutboxWriter } from '../../../common/outbox';
 import { AppConfig } from '../../../config';
@@ -15,7 +16,11 @@ import { SERVICE_REQUEST_REPOSITORY, type ServiceRequestRepository } from '../do
 import type { AcceptOfferDto, CancelDto, CreateServiceRequestDto, SubmitOfferDto, WidenDto } from './dto/service-requests.dto';
 
 const WRITE_ROLES = ['owner', 'manager', 'service_advisor', 'technician'];
-const MATCH_LIMIT = 40;
+// الحدّ ليس رقماً اعتباطياً: هو حدّ الإزعاج — كم ورشة يُعقل أن يُدَقّ بابها لطلب واحد. والقسمة
+// تحته: الأقرب مضمون، والبقية بالدور. البركة أوسع من الحدّ كي يكون هناك «باقٍ» أصلاً يُنصَف.
+const MATCH_CAP = 40;
+const MATCH_GUARANTEED_NEAREST = 25;
+const MATCH_POOL = 200;
 
 /**
  * سوق طلبات الإصلاح (owner directive 2026-08-22): the customer posts the problem WITH their own search
@@ -26,6 +31,7 @@ const MATCH_LIMIT = 40;
  */
 @Injectable()
 export class ServiceRequestsUseCases {
+  private readonly log = new Logger('ServiceRequests');
   constructor(
     @Inject(SERVICE_REQUEST_REPOSITORY) private readonly repo: ServiceRequestRepository,
     @Inject(VEHICLE_REPOSITORY) private readonly vehicles: VehicleRepository,
@@ -57,8 +63,11 @@ export class ServiceRequestsUseCases {
 
   /** Match workshops inside the request's radius and notify only the ones not already reached. */
   private async notifyMatches(req: ServiceRequest, afterKm: number | null): Promise<number> {
-    const matches = await this.repo.matchWorkshops(req.id, req.radiusKm, MATCH_LIMIT);
-    const wanted = afterKm == null ? matches : matches.filter((m) => m.distanceKm == null || m.distanceKm > afterKm);
+    const pool = await this.repo.matchWorkshops(req.id, req.radiusKm, MATCH_POOL);
+    const inRange = afterKm == null ? pool : pool.filter((m) => m.distanceKm == null || m.distanceKm > afterKm);
+    const { chosen: wanted, excluded } = pickRecipients(inRange, { cap: MATCH_CAP, guaranteedNearest: MATCH_GUARANTEED_NEAREST });
+    // لا حدَّ صامتاً: من استُبعد يُقال، فيظهر في السجل وفي قُمع التشغيل بدل أن يختفي السوق بهدوء.
+    if (excluded > 0) this.log.log(`${req.number}: ${inRange.length} ورشة في النطاق، أُبلغت ${wanted.length} وأُجّلت ${excluded} (حدّ الإزعاج)`);
     const added = await this.uow.run(async (tx) => {
       const n = await this.repo.addRecipients(req.id, wanted, tx);
       if (n > 0) await this.outbox.publish(tx, { eventType: 'ServiceRequestOpened', aggregateType: 'service_request', aggregateId: req.id, payload: { number: req.number, titleAr: req.titleAr, preferredTime: req.preferredTime, orgIds: wanted.map((m) => m.orgId), customerUserId: req.customerUserId } });

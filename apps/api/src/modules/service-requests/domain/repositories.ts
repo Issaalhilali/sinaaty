@@ -1,5 +1,5 @@
 import type { TxHandle } from '../../../common/ports/unit-of-work.port';
-import type { OfferView, ServiceOffer, ServiceRequest, ServiceRequestStatus } from './service-request';
+import type { MatchCandidate, OfferView, ServiceOffer, ServiceRequest, ServiceRequestStatus } from './service-request';
 
 export interface ServiceRequestRepository {
   nextNumber(tx?: TxHandle): Promise<string>;                                  // SR-2026-000123 via next_number('SR')
@@ -15,7 +15,7 @@ export interface ServiceRequestRepository {
   listQuietSinceHalfWindow(now: Date, withinMinutes: number): Promise<Array<{ id: string; number: string; customerUserId: string; titleAr: string; radiusKm: number; offers: number }>>;
 
   /** Active workshops within radiusKm of the request point (workshop/service_center/body_shop). */
-  matchWorkshops(requestId: string, radiusKm: number, limit: number): Promise<Array<{ orgId: string; distanceKm: number | null }>>;
+  matchWorkshops(requestId: string, radiusKm: number, poolLimit: number): Promise<MatchCandidate[]>;
   addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle): Promise<number>;
   isRecipient(requestId: string, orgIds: string[]): Promise<boolean>;
   /** Which of these orgs actually received the request — resolves «باسم أي منشأة أقدّم العرض؟». */

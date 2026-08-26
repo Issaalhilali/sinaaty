@@ -1577,6 +1577,8 @@ CREATE TABLE service_request_recipients (                      -- أي الور�
   notified_at  timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (request_id, org_id)
 );
+-- «متى وصل هذه المنشأةَ طلبٌ آخر مرة؟» — سؤال القسمة العادلة، يُسأل عند إنشاء كل طلب.
+CREATE INDEX idx_service_request_recipients_org ON service_request_recipients(org_id, notified_at DESC);
 
 CREATE TABLE service_offers (                                  -- ردّ الورشة: تحليل + سعر + جاهزية
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -64,16 +64,21 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
         AND (SELECT count(*) FROM service_offers o WHERE o.request_id = r.id AND o.status = 'submitted') < 2`;
     return rows.map((r) => ({ id: r.id, number: r.number, customerUserId: r.customer_user_id, titleAr: r.title_ar, radiusKm: r.radius_km, offers: r.offers }));
   }
-  async matchWorkshops(requestId: string, radiusKm: number, limit: number) {
-    const rows = await this.prisma.$queryRaw<Array<{ org_id: string; distance_km: number | null }>>`
-      SELECT o.id AS org_id, MIN(ST_Distance(l.geo, r.geo) / 1000.0)::float AS distance_km
+  /** بركة المرشّحين داخل النطاق ومعها متى وصل كلَّ منشأة طلبٌ آخر مرة — القسمة العادلة تقع في
+   *  `pickRecipients` النقية، لا في الاستعلام. */
+  async matchWorkshops(requestId: string, radiusKm: number, poolLimit: number) {
+    const rows = await this.prisma.$queryRaw<Array<{ org_id: string; distance_km: number | null; last_notified_at: Date | null }>>`
+      SELECT o.id AS org_id, MIN(ST_Distance(l.geo, r.geo) / 1000.0)::float AS distance_km,
+             -- استعلام قياسي لا ضمّ: الضمّ يضاعف الصفوف (منشأة × مواقعها × كل طلب وصلها) قبل
+             -- التجميع، وهي منشأة نشطة قد وصلها آلاف الطلبات. هذا يُقيَّم مرة لكل مجموعة.
+             (SELECT MAX(rr.notified_at) FROM service_request_recipients rr WHERE rr.org_id = o.id) AS last_notified_at
       FROM service_requests r
       CROSS JOIN organizations o
       JOIN organization_locations l ON l.org_id = o.id
       WHERE r.id = ${requestId}::uuid AND o.status = 'active' AND o.type::text = ANY(${WORKSHOP_TYPES}::text[])
         AND l.geo IS NOT NULL AND ST_DWithin(l.geo, r.geo, ${radiusKm * 1000})
-      GROUP BY o.id ORDER BY distance_km ASC LIMIT ${limit}`;
-    return rows.map((r) => ({ orgId: r.org_id, distanceKm: r.distance_km == null ? null : Math.round(r.distance_km * 100) / 100 }));
+      GROUP BY o.id ORDER BY distance_km ASC LIMIT ${poolLimit}`;
+    return rows.map((r) => ({ orgId: r.org_id, distanceKm: r.distance_km == null ? null : Math.round(r.distance_km * 100) / 100, lastNotifiedAt: r.last_notified_at }));
   }
   async addRecipients(requestId: string, rows: Array<{ orgId: string; distanceKm: number | null }>, tx?: TxHandle) {
     if (!rows.length) return 0;

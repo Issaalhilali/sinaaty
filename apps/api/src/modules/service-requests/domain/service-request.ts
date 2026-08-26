@@ -75,3 +75,33 @@ export function whereText(o: Pick<OfferView, 'city' | 'district' | 'distanceKm'>
 
 export const isRequestOpen = (r: Pick<ServiceRequest, 'status' | 'expiresAt'>, now = new Date()) => r.status === 'open' && r.expiresAt > now;
 export const isRequester = (r: Pick<ServiceRequest, 'customerUserId'>, userId: string) => r.customerUserId === userId;
+
+/** مرشّح للمطابقة: المسافة، ومتى آخر مرة وصله طلبٌ من المنصة (null = لم يصله شيء قط). */
+export interface MatchCandidate { orgId: string; distanceKm: number | null; lastNotifiedAt: Date | null }
+
+/**
+ * من يصله الطلب حين يكون المرشّحون أكثر من الحدّ.
+ *
+ * «الأقرب فالأقرب» وحدها تُجوّع السوق: في حيٍّ كثيف تأخذ الأربعون الأولى كل طلب، فورشةٌ على بعد
+ * ثلاثة كيلومترات لا يصلها طلبٌ واحد أبداً ولا تعرف السبب — فتترك المنصة. والعشوائية تُفسد
+ * الملاءمة: لا معنى لأن يصل الطلبُ ورشةً على ١٤ كم وتُترك واحدة على ١ كم.
+ *
+ * فالقسمة: **الأقرب مضمون** (العميل يصل إليه أقرب الناس دائماً)، والبقية **بالدور** — من طال
+ * انتظاره يسبق. الترتيب حتميّ لا عشوائي، فيمكن شرحه لصاحب ورشة سأل: «لماذا لا يصلني شيء؟».
+ */
+export function pickRecipients(
+  candidates: MatchCandidate[],
+  opts: { cap: number; guaranteedNearest: number },
+): { chosen: MatchCandidate[]; excluded: number } {
+  const byDistance = [...candidates].sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+  if (byDistance.length <= opts.cap) return { chosen: byDistance, excluded: 0 };
+  const nearest = byDistance.slice(0, Math.min(opts.guaranteedNearest, opts.cap));
+  const waiting = byDistance.slice(nearest.length).sort((a, b) => {
+    const at = a.lastNotifiedAt?.getTime() ?? -1;      // من لم يصله شيء قط يسبق الجميع
+    const bt = b.lastNotifiedAt?.getTime() ?? -1;
+    if (at !== bt) return at - bt;
+    return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);   // ثم الأقرب عند التساوي
+  });
+  const chosen = [...nearest, ...waiting.slice(0, opts.cap - nearest.length)];
+  return { chosen, excluded: byDistance.length - chosen.length };
+}

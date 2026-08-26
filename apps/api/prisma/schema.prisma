@@ -719,6 +719,8 @@ model Organization {
   promissoryNotesAsDebtorOrg   PromissoryNote[]          @relation("promissory_notes_debtor_org_idToorganizations")
   reviewsAsReviewerOrg         Review[]                  @relation("reviews_reviewer_org_idToorganizations")
   reviewsAsTargetOrg           Review[]                  @relation("reviews_target_org_idToorganizations")
+  serviceOffers                ServiceOffer[]
+  serviceRequestRecipients     ServiceRequestRecipient[]
   settlementsAsCreditorOrg     Settlement[]              @relation("settlements_creditor_org_idToorganizations")
   settlementsAsDebtorOrg       Settlement[]              @relation("settlements_debtor_org_idToorganizations")
   subscriptions                Subscription[]
@@ -735,8 +737,6 @@ model Organization {
   workOrdersAsCustomerOrg      WorkOrder[]               @relation("work_orders_customer_org_idToorganizations")
   workOrdersAsOrg              WorkOrder[]               @relation("work_orders_org_idToorganizations")
   zatcaDevices                 ZatcaDevice[]
-  serviceRequestRecipients     ServiceRequestRecipient[]
-  serviceOffers                ServiceOffer[]
 
   @@index([tradeNameAr(ops: raw("gin_trgm_ops"))], map: "idx_orgs_trade_name_trgm", type: Gin)
   @@index([type, status], map: "idx_orgs_type_status")
@@ -997,12 +997,12 @@ model ServiceRequest {
   expiresAt       DateTime                  @map("expires_at") @db.Timestamptz(6)
   createdAt       DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime                  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  offers          ServiceOffer[]            @relation("service_offers_request")
+  recipients      ServiceRequestRecipient[]
+  acceptedOffer   ServiceOffer?             @relation("service_requests_accepted_offer", fields: [acceptedOfferId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sr_accepted_offer")
   customerUser    User                      @relation(fields: [customerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   vehicle         Vehicle?                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   workOrder       WorkOrder?                @relation(fields: [workOrderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  acceptedOffer   ServiceOffer?             @relation("service_requests_accepted_offer", fields: [acceptedOfferId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sr_accepted_offer")
-  recipients      ServiceRequestRecipient[]
-  offers          ServiceOffer[]            @relation("service_offers_request")
 
   @@index([geo], map: "idx_service_requests_geo", type: Gist)
   @@index([status, expiresAt], map: "idx_service_requests_status")
@@ -1015,10 +1015,11 @@ model ServiceRequestRecipient {
   orgId      String         @map("org_id") @db.Uuid
   distanceKm Decimal?       @map("distance_km") @db.Decimal(6, 2)
   notifiedAt DateTime       @default(now()) @map("notified_at") @db.Timestamptz(6)
-  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   org        Organization   @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([requestId, orgId])
+  @@index([orgId, notifiedAt(sort: Desc)], map: "idx_service_request_recipients_org")
   @@map("service_request_recipients")
 }
 
@@ -1037,9 +1038,9 @@ model ServiceOffer {
   createdBy     String?          @map("created_by") @db.Uuid
   createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime         @default(now()) @map("updated_at") @db.Timestamptz(6)
-  request       ServiceRequest   @relation("service_offers_request", fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  org           Organization     @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdByUser User?            @relation(fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  org           Organization     @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  request       ServiceRequest   @relation("service_offers_request", fields: [requestId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   acceptedFor   ServiceRequest[] @relation("service_requests_accepted_offer")
 
   @@unique([requestId, orgId])
@@ -1574,10 +1575,8 @@ model User {
   updatedAt                      DateTime                 @default(now()) @map("updated_at") @db.Timestamptz(6)
   deletedAt                      DateTime?                @map("deleted_at") @db.Timestamptz(6)
   accidentReports                AccidentReport[]
-  adminApprovalsRequested        AdminApproval[]          @relation("admin_approvals_requested")
-  serviceRequests                ServiceRequest[]
-  serviceOffersCreated           ServiceOffer[]
   adminApprovalsDecided          AdminApproval[]          @relation("admin_approvals_decided")
+  adminApprovalsRequested        AdminApproval[]          @relation("admin_approvals_requested")
   analyticsEvents                AnalyticsEvent[]
   devices                        Device[]
   disputeMessages                DisputeMessage[]
@@ -1609,6 +1608,8 @@ model User {
   refunds                        Refund[]
   reviewsAsReviewerUser          Review[]                 @relation("reviews_reviewer_user_idTousers")
   reviewsAsTargetUser            Review[]                 @relation("reviews_target_user_idTousers")
+  serviceOffersCreated           ServiceOffer[]
+  serviceRequests                ServiceRequest[]
   settlements                    Settlement[]
   tradeAccounts                  TradeAccount[]
   transportJobsAsDriverUser      TransportJob[]           @relation("transport_jobs_driver_user_idTousers")
@@ -1706,6 +1707,7 @@ model Vehicle {
   inspections         Inspection[]
   partRequests        PartRequest[]
   partSerials         PartSerial[]
+  serviceRequests     ServiceRequest[]
   transportJobs       TransportJob[]
   vehicleEvents       VehicleEvent[]
   make                VehicleMake?       @relation(fields: [makeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -1714,7 +1716,6 @@ model Vehicle {
   ownerUser           User?              @relation(fields: [ownerUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   warranties          Warranty[]
   workOrders          WorkOrder[]
-  serviceRequests     ServiceRequest[]
 
   @@index([ownerOrgId], map: "idx_vehicles_owner_org")
   @@index([ownerUserId], map: "idx_vehicles_owner_user")
@@ -1957,6 +1958,7 @@ model WorkOrder {
   payments               Payment[]
   promissoryNotes        PromissoryNote[]
   reviews                Review[]
+  serviceRequests        ServiceRequest[]
   settlements            Settlement[]
   transportJobs          TransportJob[]
   voiceNotes             VoiceNote[]
@@ -1971,7 +1973,6 @@ model WorkOrder {
   location               OrganizationLocation?    @relation(fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   org                    Organization             @relation("work_orders_org_idToorganizations", fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   vehicle                Vehicle                  @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  serviceRequests        ServiceRequest[]
 
   @@index([customerUserId, createdAt(sort: Desc)], map: "idx_wo_customer")
   @@index([customerOrgId, createdAt(sort: Desc)], map: "idx_wo_customer_org")
@@ -2074,8 +2075,8 @@ model AdminApproval {
   decidedAt        DateTime? @map("decided_at") @db.Timestamptz(6)
   decisionReasonAr String?   @map("decision_reason_ar")
   expiresAt        DateTime  @map("expires_at") @db.Timestamptz(6)
-  requestedByUser  User      @relation("admin_approvals_requested", fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
   decidedByUser    User?     @relation("admin_approvals_decided", fields: [decidedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  requestedByUser  User      @relation("admin_approvals_requested", fields: [requestedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("admin_approvals")
 }
