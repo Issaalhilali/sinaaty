@@ -92,3 +92,15 @@
 | Index parts catalog in Meilisearch for part-name search (organizations only today) | Step 30 | fit-by-VIN covers the main path | after pilot |
 | Analytics rollup + media lifecycle rules (cost tuning items from Step 30) | Step 30 | small volumes during the pilot | after pilot |
 
+
+## شاشات وعدت بها الإشعارات ولا وجود لها (٢٦ أغسطس ٢٠٢٦)
+
+كشفها اختبار `apps/mobile/test/deep_links_resolve_test.dart`. أُزيلت روابطها مؤقتاً — صفٌّ غير
+قابل للنقر أصدق من نقرةٍ خرساء — وتبقى الشاشات مطلوبة:
+
+- **تقييم الورشة بعد الإغلاق**: الـAPI يقبل التقييمات منذ الخطوة ١٦ وترفع `rating_avg`، ولا شاشة
+  تُدخلها. `wo.status.closed` كان يَعِد بـ`/work-orders/{id}/review` — يفتح الأمر نفسه الآن.
+  بلا هذه الشاشة لا تُبنى سمعةٌ في السوق أصلاً.
+- **توثيق المنشأة (KYB) داخل التطبيق**: `org.draft` يقول «طلب التوثيق يحتاج تعديلاً» ولا مكان
+  يُعدّل فيه — الرفع من لوحة التحكم فقط اليوم.
+- **الدعم**: `org.suspended` كان يَعِد بـ`sinaaty://support`.
