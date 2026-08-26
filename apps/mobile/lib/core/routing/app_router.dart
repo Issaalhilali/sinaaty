@@ -14,6 +14,7 @@ import '../../features/work_orders/presentation/approve_screen.dart';
 import '../../features/work_orders/presentation/accident_report_screen.dart';
 import '../../features/work_orders/presentation/inspection_diff_screen.dart';
 import '../../features/work_orders/presentation/work_order_screen.dart';
+import '../../features/billing/presentation/wallet_screen.dart';
 import '../../features/workshop/presentation/org_wallet_screen.dart';
 import '../../features/workshop/presentation/inspection_screen.dart';
 import '../../features/workshop/presentation/new_order_screen.dart';
@@ -55,6 +56,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
       GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
+      // المحفظة كانت تبويباً؛ صارت داخل «حسابي» بعد تقليص التبويبات إلى ثلاثة — فتحتاج عنواناً.
+      GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
       GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
       GoRoute(path: '/disputes/:id', builder: (_, s) => DisputeScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/service-requests/:id', builder: (_, s) => ServiceRequestScreen(id: s.pathParameters['id']!)),

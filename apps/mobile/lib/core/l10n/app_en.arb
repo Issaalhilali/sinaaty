@@ -1068,5 +1068,15 @@
   "reqNearby": "Workshops near you",
   "reqNearbySpecialised": "Specialises in your car",
   "reqNearbyNew": "New",
-  "reqNearbyAsk": "Ask them"
+  "reqNearbyAsk": "Ask them",
+  "tabHome": "Home",
+  "tabMyOrders": "My requests",
+  "homeGreeting": "What does your car need?",
+  "homeNothingLive": "Nothing in progress",
+  "myOrdersEmpty": "No active requests",
+  "myOrdersEmptyBody": "Everything you ask for — a repair, a part, a tow — stays here until it is done.",
+  "moRepairs": "Repairs",
+  "moParts": "Parts",
+  "moTow": "Tow",
+  "moDue": "Due from you"
 }

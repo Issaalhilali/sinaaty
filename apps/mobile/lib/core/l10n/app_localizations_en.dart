@@ -2304,4 +2304,35 @@ class L10nEn extends L10n {
 
   @override
   String get reqNearbyAsk => 'Ask them';
+
+  @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabMyOrders => 'My requests';
+
+  @override
+  String get homeGreeting => 'What does your car need?';
+
+  @override
+  String get homeNothingLive => 'Nothing in progress';
+
+  @override
+  String get myOrdersEmpty => 'No active requests';
+
+  @override
+  String get myOrdersEmptyBody =>
+      'Everything you ask for — a repair, a part, a tow — stays here until it is done.';
+
+  @override
+  String get moRepairs => 'Repairs';
+
+  @override
+  String get moParts => 'Parts';
+
+  @override
+  String get moTow => 'Tow';
+
+  @override
+  String get moDue => 'Due from you';
 }

@@ -25,7 +25,8 @@ import '../../transport/presentation/providers.dart';
 import '../../workshop/presentation/incoming_banner.dart';
 import '../../workshop/presentation/today_screen.dart';
 import '../../parts/presentation/supplier_screens.dart';
-import 'request_hub_screen.dart';
+import 'home_screen.dart';
+import 'my_orders_screen.dart';
 import '../../fleet/presentation/fleet_today_screen.dart';
 import '../../parts/presentation/workshop_parts_screen.dart';
 /// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
@@ -69,10 +70,12 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       (l.spSales, Icons.storefront_outlined, const SupplierSalesScreen()),
       (l.tabWallet, Icons.account_balance_wallet_outlined, const OrgWalletScreen()),
     ] : switch (flavor) {
+      // ثلاثة لا أربعة (قرار المالك ٢٦ أغسطس ٢٠٢٦): «سياراتي» كانت تحمل «ماذا تحتاج؟» و«اطلب»
+      // تبويبٌ كامل لنفس الشيء — تبويبان لوظيفة واحدة. و«محفظتي» و«حسابي» كلاهما «أنا». ومنتجٌ
+      // مهمّته واحدة (سيارتي معطّلة) لا يُطلب من صاحبها أن يختار تبويباً قبل أن يقولها.
       AppFlavor.customer => <(String, IconData, Widget)>[
-        (l.tabMyCars, Icons.directions_car_outlined, const VehiclesScreen()),
-        (l.tabRequest, Icons.add_circle_outline, const RequestHubScreen()),
-        (l.tabWallet, Icons.account_balance_wallet_outlined, const WalletScreen()),
+        (l.tabHome, Icons.home_outlined, const HomeScreen()),
+        (l.tabMyOrders, Icons.receipt_long_outlined, const MyOrdersScreen()),
         (l.tabAccount, Icons.person_outline, const AccountScreen()),
       ],
       // السائق يُعرف بملفّه لا بنوع منشأته: قد يعمل تحت شركة نقل أو ورشة لها سطحة، والحقيقة

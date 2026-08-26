@@ -27,6 +27,9 @@ class AccountScreen extends ConsumerWidget {
       ])),
       const SizedBox(height: SinaatySpace.lg),
       SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+        // المحفظة والضمانات دخلتا هنا بعد تقليص التبويبات: «أنا» شيءٌ واحد لا تبويبان.
+        AppListRow(icon: Icons.account_balance_wallet_outlined, title: l.tabWallet, onTap: () => context.push('/wallet')),
+        AppListRow(icon: Icons.verified_outlined, title: l.ptWarranties, onTap: () => context.push('/warranties')),
         AppListRow(icon: Icons.notifications_none, title: l.notifications, trailing: unread > 0 ? StatusBadge('$unread', tone: BadgeTone.brass) : null, onTap: () => context.push('/notifications')),
         AppListRow(icon: Icons.language, title: l.language, trailing: SegmentedButton<String>(segments: [ButtonSegment(value: 'ar', label: Text(l.arabic)), ButtonSegment(value: 'en', label: Text(l.english))], selected: {locale}, onSelectionChanged: (s) => ref.read(localeProvider.notifier).set(s.first), showSelectedIcon: false)),
       ])),

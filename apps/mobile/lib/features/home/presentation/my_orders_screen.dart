@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/format/format.dart';
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/labels.dart';
+import '../../../core/theme/tokens.dart';
+import '../../../core/ui/ui.dart';
+import '../../billing/presentation/due_row.dart';
+import '../../parts/domain/parts.dart';
+import '../../parts/presentation/providers.dart';
+import '../../service_market/domain/service_request.dart';
+import '../../service_market/presentation/providers.dart' as sm;
+import '../../transport/domain/transport.dart';
+import '../../transport/presentation/providers.dart';
+import '../../vehicles/domain/vehicle.dart';
+import '../../vehicles/presentation/providers.dart';
+import '../../vehicles/presentation/vehicles_screen.dart' show WorkOrderCard;
+import '../../work_orders/domain/work_order.dart';
+import '../../work_orders/presentation/providers.dart';
+
+/// «طلباتي»: كل ما هو جارٍ في مكان واحد.
+///
+/// كان مبعثراً — أمر الإصلاح في «سياراتي»، وطلب القطعة والسطحة في «اطلب»، والفاتورة في «محفظتي».
+/// فمن سأل «أين وصل طلبي؟» طاف على ثلاثة تبويبات. وهنا يجدها كلّها مرتّبةً بالأعجل.
+class MyOrdersScreen extends ConsumerWidget {
+  const MyOrdersScreen({super.key});
+
+  @override Widget build(BuildContext context, WidgetRef ref) {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
+    final orders = (ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[]).where((w) => w.isActive).toList();
+    final fixes = (ref.watch(sm.myServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]).where((r) => r.open).toList();
+    final parts = (ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[]).where((r) => r.open).toList();
+    final tows = (ref.watch(myTowJobsProvider).value?.valueOrNull ?? const <TransportJob>[]).where((j) => j.isLive).toList();
+
+    Future<void> refresh() async {
+      ref.invalidate(workOrdersProvider); ref.invalidate(sm.myServiceRequestsProvider);
+      ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider);
+    }
+
+    final empty = orders.isEmpty && fixes.isEmpty && parts.isEmpty && tows.isEmpty;
+    return RefreshIndicator(onRefresh: refresh, child: ListView(
+      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)),
+      children: [
+        const DueRow(),
+        if (empty)
+          EmptyState(icon: Icons.receipt_long_outlined, title: l.myOrdersEmpty, body: l.myOrdersEmptyBody)
+        else ...[
+          // أمر الإصلاح أولاً: هو الوحيد الذي قد يطلب توقيعاً أو دفعاً الآن.
+          if (orders.isNotEmpty) ...[
+            SectionTitle(l.moRepairs),
+            for (final w in orders)
+              Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md),
+                child: WorkOrderCard(order: w, vehicle: vehicles.where((v) => v.id == w.vehicleId).firstOrNull,
+                    onTap: () => context.push('/work-orders/${w.id}'))),
+          ],
+          if (fixes.isNotEmpty) ...[
+            SectionTitle(l.srMine),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+              for (final r in fixes) AppListRow(
+                icon: Icons.build_outlined, title: r.titleAr,
+                subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
+                trailing: StatusBadge('${r.offersCount}', tone: r.offersCount > 0 ? BadgeTone.brass : BadgeTone.plain, icon: Icons.local_offer_outlined),
+                onTap: () => context.push('/service-requests/${r.id}')),
+            ])),
+            const SizedBox(height: SinaatySpace.lg),
+          ],
+          if (parts.isNotEmpty) ...[
+            SectionTitle(l.moParts),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+              for (final r in parts) AppListRow(
+                icon: Icons.settings_input_component_outlined, title: r.partNameAr,
+                subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
+                trailing: StatusBadge('${r.bidsCount}', tone: r.bidsCount > 0 ? BadgeTone.brass : BadgeTone.plain, icon: Icons.gavel_outlined),
+                onTap: () => context.push('/parts/requests/${r.id}')),
+            ])),
+            const SizedBox(height: SinaatySpace.lg),
+          ],
+          if (tows.isNotEmpty) ...[
+            SectionTitle(l.moTow),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+              for (final j in tows) AppListRow(
+                icon: Icons.local_shipping_outlined, title: j.number,
+                subtitle: Labels.transportStatus(l, j.status),
+                onTap: () => context.push('/tow/${j.id}')),
+            ])),
+          ],
+        ],
+      ],
+    ));
+  }
+}

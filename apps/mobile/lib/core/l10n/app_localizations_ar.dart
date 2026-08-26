@@ -2275,4 +2275,35 @@ class L10nAr extends L10n {
 
   @override
   String get reqNearbyAsk => 'اطلب منها';
+
+  @override
+  String get tabHome => 'الرئيسية';
+
+  @override
+  String get tabMyOrders => 'طلباتي';
+
+  @override
+  String get homeGreeting => 'ما الذي تحتاجه لسيارتك؟';
+
+  @override
+  String get homeNothingLive => 'لا يوجد شيء جارٍ الآن';
+
+  @override
+  String get myOrdersEmpty => 'لا طلبات جارية';
+
+  @override
+  String get myOrdersEmptyBody =>
+      'كل ما تطلبه — إصلاح أو قطعة أو سطحة — يظهر هنا حتى ينتهي.';
+
+  @override
+  String get moRepairs => 'الإصلاح';
+
+  @override
+  String get moParts => 'القطع';
+
+  @override
+  String get moTow => 'السطحة';
+
+  @override
+  String get moDue => 'مستحقّ عليك';
 }

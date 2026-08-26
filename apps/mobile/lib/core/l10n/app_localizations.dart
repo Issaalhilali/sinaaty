@@ -4326,6 +4326,66 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'اطلب منها'**
   String get reqNearbyAsk;
+
+  /// No description provided for @tabHome.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرئيسية'**
+  String get tabHome;
+
+  /// No description provided for @tabMyOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلباتي'**
+  String get tabMyOrders;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما الذي تحتاجه لسيارتك؟'**
+  String get homeGreeting;
+
+  /// No description provided for @homeNothingLive.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يوجد شيء جارٍ الآن'**
+  String get homeNothingLive;
+
+  /// No description provided for @myOrdersEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا طلبات جارية'**
+  String get myOrdersEmpty;
+
+  /// No description provided for @myOrdersEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل ما تطلبه — إصلاح أو قطعة أو سطحة — يظهر هنا حتى ينتهي.'**
+  String get myOrdersEmptyBody;
+
+  /// No description provided for @moRepairs.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصلاح'**
+  String get moRepairs;
+
+  /// No description provided for @moParts.
+  ///
+  /// In ar, this message translates to:
+  /// **'القطع'**
+  String get moParts;
+
+  /// No description provided for @moTow.
+  ///
+  /// In ar, this message translates to:
+  /// **'السطحة'**
+  String get moTow;
+
+  /// No description provided for @moDue.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستحقّ عليك'**
+  String get moDue;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

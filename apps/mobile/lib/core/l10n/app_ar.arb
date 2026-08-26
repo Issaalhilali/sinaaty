@@ -1068,5 +1068,15 @@
   "reqNearby": "ورش قريبة منك",
   "reqNearbySpecialised": "متخصّصة بسيارتك",
   "reqNearbyNew": "جديدة",
-  "reqNearbyAsk": "اطلب منها"
+  "reqNearbyAsk": "اطلب منها",
+  "tabHome": "الرئيسية",
+  "tabMyOrders": "طلباتي",
+  "homeGreeting": "ما الذي تحتاجه لسيارتك؟",
+  "homeNothingLive": "لا يوجد شيء جارٍ الآن",
+  "myOrdersEmpty": "لا طلبات جارية",
+  "myOrdersEmptyBody": "كل ما تطلبه — إصلاح أو قطعة أو سطحة — يظهر هنا حتى ينتهي.",
+  "moRepairs": "الإصلاح",
+  "moParts": "القطع",
+  "moTow": "السطحة",
+  "moDue": "مستحقّ عليك"
 }
