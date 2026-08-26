@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sinaaty/core/location/here.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sinaaty/core/auth/token_store.dart';
 import 'package:sinaaty/core/config/app_config.dart';
@@ -50,6 +51,11 @@ class FakeRecorder implements VoiceRecorder {
   @override Future<Uint8List?> finish() async => works ? fakeJpeg : null;
 }
 
+/// موقع ثابت: ورقة «أصلح سيارتي» تقرأ الموقع فور فتحها، واستدعاء GPS في اختبارٍ لا يستقرّ أبداً.
+class FixedHere implements Here {
+  @override Future<({double lat, double lng})?> now() async => (lat: 24.7136, lng: 46.6753);
+}
+
 void main() {
   setUpAll(loadArabicFont);
   late FakeBackend be; late MemoryTokenStore ts;
@@ -63,7 +69,7 @@ void main() {
       ]);
   });
 
-  Widget partnerApp(String initial, {Map<String, bool> flags = const {'voice_to_invoice': true}, VoiceInput? voice, VoiceRecorder? recorder}) => ProviderScope(key: UniqueKey(), overrides: [
+  Widget partnerApp(String initial, {Map<String, bool> flags = const {'voice_to_invoice': true}, VoiceInput? voice, VoiceRecorder? recorder}) => ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), 
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts),
     authRepositoryProvider.overrideWithValue(FakeAuth()), workshopRepositoryProvider.overrideWithValue(be), workOrdersRepositoryProvider.overrideWithValue(be), workOrderRealtimeProvider.overrideWithValue(be), billingRepositoryProvider.overrideWithValue(FakeBilling()), pendingActionsProvider.overrideWithValue(be),
     flagsRepositoryProvider.overrideWithValue(FakeFlags(Result.ok(FeatureFlags(flags)))),
@@ -79,7 +85,7 @@ void main() {
   testWidgets('dictation fills the fix-car description through the mic on the field', (tester) async {
     size(tester);
     final market = FakeServiceMarket();
-    await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: [
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), 
       appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts),
       authRepositoryProvider.overrideWithValue(FakeAuth()),
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),
@@ -131,7 +137,7 @@ void main() {
   testWidgets('a session that dies instantly in dev flips the sheet to typing — never a dead end', (tester) async {
     size(tester);
     final market = FakeServiceMarket();
-    await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: [
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), 
       appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'dev', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts),
       authRepositoryProvider.overrideWithValue(FakeAuth()),
       flagsRepositoryProvider.overrideWithValue(FakeFlags(const Result.ok(FeatureFlags({'service_marketplace': true})))),

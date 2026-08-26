@@ -1,5 +1,5 @@
 name: sinaaty
-description: "صناعتي — Sinaaty mobile (customer | partner | fleet flavors)"
+description: " صناعية — Sinaaty mobile (customer | partner | fleet flavors)"
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -39,6 +39,7 @@ dependencies:
   record: ^7.1.1
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

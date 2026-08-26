@@ -1051,5 +1051,16 @@
         "type": "int"
       }
     }
-  }
+  },
+  "srWhatYouNotice": "What are you noticing?",
+  "srPickMore": "Pick everything that applies — the clearer it is, the better the offers.",
+  "srNoteOptional": "Details that help the workshop (optional)",
+  "srNoteHint": "When does it happen? Since when?",
+  "srHere": "Your current location",
+  "srLocating": "Finding your location…",
+  "srLocateFailed": "Could not get your location",
+  "srLocateManual": "Enter it manually",
+  "srUseMyLocation": "Use my location",
+  "srWhenAsk": "When suits you?",
+  "srOffersComing": "Nearby workshops will send offers within minutes — compare and choose."
 }

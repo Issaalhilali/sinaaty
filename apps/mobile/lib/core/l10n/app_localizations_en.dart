@@ -2250,4 +2250,39 @@ class L10nEn extends L10n {
 
   @override
   String get inIgnore => 'Ignore';
+
+  @override
+  String get srWhatYouNotice => 'What are you noticing?';
+
+  @override
+  String get srPickMore =>
+      'Pick everything that applies — the clearer it is, the better the offers.';
+
+  @override
+  String get srNoteOptional => 'Details that help the workshop (optional)';
+
+  @override
+  String get srNoteHint => 'When does it happen? Since when?';
+
+  @override
+  String get srHere => 'Your current location';
+
+  @override
+  String get srLocating => 'Finding your location…';
+
+  @override
+  String get srLocateFailed => 'Could not get your location';
+
+  @override
+  String get srLocateManual => 'Enter it manually';
+
+  @override
+  String get srUseMyLocation => 'Use my location';
+
+  @override
+  String get srWhenAsk => 'When suits you?';
+
+  @override
+  String get srOffersComing =>
+      'Nearby workshops will send offers within minutes — compare and choose.';
 }

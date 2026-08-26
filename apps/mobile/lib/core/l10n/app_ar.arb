@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appName": "صناعتي",
+  "appName": " صناعية",
   "tabMyCars": "سياراتي",
   "tabRequest": "اطلب",
   "tabWallet": "محفظتي",
@@ -588,7 +588,7 @@
   "ptFastest": "الأسرع",
   "ptLongestWarranty": "أطول ضمان",
   "ptWarrantiesEmptyTitle": "لا توجد ضمانات بعد",
-  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.",
+  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.",
   "ptWarrantyActive": "ساري",
   "ptWarrantyIssuer": "الجهة الضامنة",
   "ptWarrantyFrom": "يبدأ",
@@ -1051,5 +1051,16 @@
         "type": "int"
       }
     }
-  }
+  },
+  "srWhatYouNotice": "ما الذي تلاحظه؟",
+  "srPickMore": "اختر كل ما ينطبق — كلما وضّحت، جاء العرض أدقّ.",
+  "srNoteOptional": "تفاصيل تساعد الورشة (اختياري)",
+  "srNoteHint": "متى يحدث؟ ومنذ متى؟",
+  "srHere": "موقعك الحالي",
+  "srLocating": "نحدّد موقعك…",
+  "srLocateFailed": "تعذّر تحديد موقعك",
+  "srLocateManual": "أدخله يدوياً",
+  "srUseMyLocation": "استعمل موقعي",
+  "srWhenAsk": "متى يناسبك؟",
+  "srOffersComing": "ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار."
 }

@@ -19,7 +19,8 @@ import 'fleet_flow_test.dart' show loadArabicFont;
 class FakeAuthRepo implements AuthRepository {
   String? requested;
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async { requested = phone; return Result.ok((phone: phone, expiresIn: 300, debugCode: '123456')); }
-  @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async => const Result.ok(AuthSession(accessToken: 'a', refreshToken: 'r', userId: 'u'));
+  @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.ok(AuthSession(accessToken: 'a', refreshToken: 'r', userId: 'u'));
+  @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', platformRole: 'none', nafathVerified: false, orgs: []));
   @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);

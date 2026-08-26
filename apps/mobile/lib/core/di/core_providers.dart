@@ -1,3 +1,4 @@
+import '../location/here.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/api_client.dart';
 import '../auth/token_store.dart';
@@ -14,3 +15,5 @@ final sessionExpiredProvider = NotifierProvider<SessionExpiredNotifier, int>(Ses
 
 final tokenStoreProvider = Provider<TokenStore>((_) => TokenStore());
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient(config: ref.watch(appConfigProvider), tokens: ref.watch(tokenStoreProvider), locale: () => ref.read(localeProvider), onSessionExpired: () => ref.read(sessionExpiredProvider.notifier).bump()));
+/// موقع الجهاز — يُستبدل في الاختبارات بموقع ثابت، فلا اختبارٌ يطلب GPS.
+final hereProvider = Provider<Here>((_) => const Here());

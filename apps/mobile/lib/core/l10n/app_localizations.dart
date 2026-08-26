@@ -100,7 +100,7 @@ abstract class L10n {
   /// No description provided for @appName.
   ///
   /// In ar, this message translates to:
-  /// **'صناعتي'**
+  /// **' صناعية'**
   String get appName;
 
   /// No description provided for @tabMyCars.
@@ -2482,7 +2482,7 @@ abstract class L10n {
   /// No description provided for @ptWarrantiesEmptyBody.
   ///
   /// In ar, this message translates to:
-  /// **'كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.'**
+  /// **'كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.'**
   String get ptWarrantiesEmptyBody;
 
   /// No description provided for @ptWarrantyActive.
@@ -4224,6 +4224,72 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تجاهل'**
   String get inIgnore;
+
+  /// No description provided for @srWhatYouNotice.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما الذي تلاحظه؟'**
+  String get srWhatYouNotice;
+
+  /// No description provided for @srPickMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر كل ما ينطبق — كلما وضّحت، جاء العرض أدقّ.'**
+  String get srPickMore;
+
+  /// No description provided for @srNoteOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'تفاصيل تساعد الورشة (اختياري)'**
+  String get srNoteOptional;
+
+  /// No description provided for @srNoteHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'متى يحدث؟ ومنذ متى؟'**
+  String get srNoteHint;
+
+  /// No description provided for @srHere.
+  ///
+  /// In ar, this message translates to:
+  /// **'موقعك الحالي'**
+  String get srHere;
+
+  /// No description provided for @srLocating.
+  ///
+  /// In ar, this message translates to:
+  /// **'نحدّد موقعك…'**
+  String get srLocating;
+
+  /// No description provided for @srLocateFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تحديد موقعك'**
+  String get srLocateFailed;
+
+  /// No description provided for @srLocateManual.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخله يدوياً'**
+  String get srLocateManual;
+
+  /// No description provided for @srUseMyLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'استعمل موقعي'**
+  String get srUseMyLocation;
+
+  /// No description provided for @srWhenAsk.
+  ///
+  /// In ar, this message translates to:
+  /// **'متى يناسبك؟'**
+  String get srWhenAsk;
+
+  /// No description provided for @srOffersComing.
+  ///
+  /// In ar, this message translates to:
+  /// **'ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار.'**
+  String get srOffersComing;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

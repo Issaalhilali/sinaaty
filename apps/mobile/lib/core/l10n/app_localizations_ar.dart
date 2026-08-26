@@ -10,7 +10,7 @@ class L10nAr extends L10n {
   L10nAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appName => 'صناعتي';
+  String get appName => ' صناعية';
 
   @override
   String get tabMyCars => 'سياراتي';
@@ -1276,7 +1276,7 @@ class L10nAr extends L10n {
 
   @override
   String get ptWarrantiesEmptyBody =>
-      'كل قطعة تُركّب لك عبر صناعتي تصلك بضمان رقمي هنا.';
+      'كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.';
 
   @override
   String get ptWarrantyActive => 'ساري';
@@ -2222,4 +2222,38 @@ class L10nAr extends L10n {
 
   @override
   String get inIgnore => 'تجاهل';
+
+  @override
+  String get srWhatYouNotice => 'ما الذي تلاحظه؟';
+
+  @override
+  String get srPickMore => 'اختر كل ما ينطبق — كلما وضّحت، جاء العرض أدقّ.';
+
+  @override
+  String get srNoteOptional => 'تفاصيل تساعد الورشة (اختياري)';
+
+  @override
+  String get srNoteHint => 'متى يحدث؟ ومنذ متى؟';
+
+  @override
+  String get srHere => 'موقعك الحالي';
+
+  @override
+  String get srLocating => 'نحدّد موقعك…';
+
+  @override
+  String get srLocateFailed => 'تعذّر تحديد موقعك';
+
+  @override
+  String get srLocateManual => 'أدخله يدوياً';
+
+  @override
+  String get srUseMyLocation => 'استعمل موقعي';
+
+  @override
+  String get srWhenAsk => 'متى يناسبك؟';
+
+  @override
+  String get srOffersComing =>
+      'ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار.';
 }

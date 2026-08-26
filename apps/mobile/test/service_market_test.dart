@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sinaaty/core/location/here.dart';
+import 'package:sinaaty/core/di/core_providers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sinaaty/core/auth/token_store.dart';
 import 'package:sinaaty/core/config/app_config.dart';
@@ -78,12 +80,17 @@ class FakeServiceMarket implements ServiceMarketRepository {
   }
 }
 
+/// موقع ثابت بدل GPS: الاختبار يصف السلوك لا يستدعي عتاداً.
+class FixedHere implements Here {
+  @override Future<({double lat, double lng})?> now() async => (lat: 24.7136, lng: 46.6753);
+}
+
 void main() {
   setUpAll(loadArabicFont);
   late FakeServiceMarket market; late FakeSrRealtime live; late MemoryTokenStore ts;
   setUp(() async { market = FakeServiceMarket(); live = FakeSrRealtime(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
 
-  Widget app(String initial, {Map<String, bool> flags = const {'service_marketplace': true}, bool withVehicle = true}) => ProviderScope(key: UniqueKey(), overrides: [
+  Widget app(String initial, {Map<String, bool> flags = const {'service_marketplace': true}, bool withVehicle = true}) => ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), 
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     flagsRepositoryProvider.overrideWithValue(FakeFlags(Result.ok(FeatureFlags(flags)))),
@@ -110,12 +117,14 @@ void main() {
     size(tester);
     await tester.pumpWidget(app('/')); await tester.pumpAndSettle();
     await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).first, 'صوت طقطقة من الأمام عند المطبات');
-    await tester.enterText(find.byType(TextField).last, '24.7136, 46.6753');
+    // العميل **ينقر** ما يلاحظه ولا يكتب مقالاً: أكثر الناس لا يصف عطلاً بالكتابة.
+    await tester.tap(find.text('صوت غريب')); await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'يزيد مع المطبات');
+    await tester.pumpAndSettle();
     await tester.tap(find.text('أرسل الطلب')); await tester.pumpAndSettle();
-    expect(market.lastCreate!.title, 'صوت طقطقة من الأمام عند المطبات');
-    expect(market.lastCreate!.radius, 25);
-    expect(market.lastCreate!.lat, closeTo(24.7136, 0.0001));               // parsed from the pasted link — no maps SDK
+    expect(market.lastCreate!.title, 'صوت غريب — يزيد مع المطبات');         // ما تقرؤه الورشة في سطر البطاقة
+    expect(market.lastCreate!.radius, 25);                                   // النطاق قرارنا، لا يُسأل عنه
+    expect(market.lastCreate!.lat, closeTo(24.7136, 0.0001));                // من منفذ الموقع لا من رابط ملصوق
 
     market.seedWithOffers();
     await tester.pumpWidget(app('/service-requests/sr1')); await tester.pumpAndSettle();

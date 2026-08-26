@@ -27,7 +27,7 @@ void main() {
     final full = <String>{};
     for (final p in paths) {
       if (p.startsWith('/')) { full.add(p); continue; }
-      for (final parent in paths.where((x) => x.startsWith('/'))) full.add('$parent/$p');
+      for (final parent in paths.where((x) => x.startsWith('/'))) { full.add('$parent/$p'); }
     }
 
     // روابط `admin/` تخصّ لوحة التحكم على الويب: موظّف المنصة يعمل هناك لا في التطبيق،
