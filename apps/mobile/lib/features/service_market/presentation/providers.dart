@@ -31,7 +31,8 @@ final serviceRequestLiveProvider = StreamProvider.autoDispose.family<void, Strin
 /// «ورش قريبة» ليس عطلاً يستحق رسالة.
 final nearbyShopsProvider = FutureProvider.autoDispose<List<NearbyShop>>((ref) async {
   ref.keepAlive();
-  final where = await ref.watch(hereProvider).now();
+  // بلا طلب إذن: من لم يمنحه لا يرى الشريط، ولا تعترضه نافذة لم يطلبها.
+  final where = await ref.watch(hereProvider).ifGranted();
   if (where == null) return const [];
   final cars = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
   final makeId = cars.map((v) => v.makeId).whereType<int>().firstOrNull;

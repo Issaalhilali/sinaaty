@@ -83,6 +83,7 @@ class FakeServiceMarket implements ServiceMarketRepository {
 /// موقع ثابت بدل GPS: الاختبار يصف السلوك لا يستدعي عتاداً.
 class FixedHere implements Here {
   @override Future<({double lat, double lng})?> now() async => (lat: 24.7136, lng: 46.6753);
+  @override Future<({double lat, double lng})?> ifGranted() async => (lat: 24.7136, lng: 46.6753);
 }
 
 void main() {

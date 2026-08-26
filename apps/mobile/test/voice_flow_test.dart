@@ -54,6 +54,7 @@ class FakeRecorder implements VoiceRecorder {
 /// موقع ثابت: ورقة «أصلح سيارتي» تقرأ الموقع فور فتحها، واستدعاء GPS في اختبارٍ لا يستقرّ أبداً.
 class FixedHere implements Here {
   @override Future<({double lat, double lng})?> now() async => (lat: 24.7136, lng: 46.6753);
+  @override Future<({double lat, double lng})?> ifGranted() async => (lat: 24.7136, lng: 46.6753);
 }
 
 void main() {
