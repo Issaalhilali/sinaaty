@@ -4290,6 +4290,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار.'**
   String get srOffersComing;
+
+  /// No description provided for @reqFixHero.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك فيها مشكلة؟'**
+  String get reqFixHero;
+
+  /// No description provided for @reqFixHeroBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف ما تلاحظه، وتصلك عروض الورش القريبة — تقارنها وتختار بلا أن تدور عليها.'**
+  String get reqFixHeroBody;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

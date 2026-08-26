@@ -60,8 +60,16 @@ class RequestHubScreen extends ConsumerWidget {
           Text(l.reqHubBody, style: t.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           const SizedBox(height: SinaatySpace.lg),
         ],
+        // ثلاث بطاقات متساوية تعني ألّا شيءَ مهمّ. والمهمّة الأولى — سيارةٌ معطّلة — تستحق حجمها:
+        // سطح الختم، وسؤالٌ بلسان صاحبها، وزرٌّ واحد. والباقيان صفّان هادئان تحته.
         if (fixOn) ...[
-          _Choice(icon: Icons.build_outlined, title: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
+          SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(l.reqFixHero, style: t.headlineSmall?.copyWith(color: Colors.white)),
+            const SizedBox(height: 6),
+            Text(l.reqFixHeroBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
+            const SizedBox(height: SinaatySpace.lg),
+            SealButton(label: l.srFix, icon: Icons.build_outlined, onPressed: () => openFixCarSheet(context, ref, vehicles)),
+          ])),
           if (partsOn || towOn) const SizedBox(height: SinaatySpace.md),
         ],
         if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),

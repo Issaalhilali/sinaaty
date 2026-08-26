@@ -2285,4 +2285,11 @@ class L10nEn extends L10n {
   @override
   String get srOffersComing =>
       'Nearby workshops will send offers within minutes — compare and choose.';
+
+  @override
+  String get reqFixHero => 'Something wrong with your car?';
+
+  @override
+  String get reqFixHeroBody =>
+      'Describe what you notice and nearby workshops send you offers — compare and choose without driving around.';
 }

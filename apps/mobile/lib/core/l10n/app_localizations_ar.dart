@@ -2256,4 +2256,11 @@ class L10nAr extends L10n {
   @override
   String get srOffersComing =>
       'ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار.';
+
+  @override
+  String get reqFixHero => 'سيارتك فيها مشكلة؟';
+
+  @override
+  String get reqFixHeroBody =>
+      'صف ما تلاحظه، وتصلك عروض الورش القريبة — تقارنها وتختار بلا أن تدور عليها.';
 }
