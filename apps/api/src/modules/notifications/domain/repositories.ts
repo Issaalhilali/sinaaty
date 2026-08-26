@@ -12,6 +12,8 @@ export interface NotificationRepository {
   exists(userId: string, templateCode: string, dedupeKey: string): Promise<boolean>;
   upsertTemplates(templates: Array<{ code: string; channel: NotificationChannel; titleAr: string; titleEn: string; bodyAr: string; bodyEn: string }>): Promise<number>;
   pushTokens(userId: string): Promise<Array<{ deviceId: string; token: string; platform: string }>>;
+  /** رمز رفضه المزوّد نهائياً (التطبيق حُذف أو أُعيد تنصيبه) — يُنزع فلا يُحاوَل إليه ثانيةً. */
+  clearPushToken(deviceId: string): Promise<void>;
   userContact(userId: string): Promise<{ phone: string | null; locale: 'ar' | 'en' } | null>;
 }
 export const NOTIFICATION_REPOSITORY = Symbol('NOTIFICATION_REPOSITORY');

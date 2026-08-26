@@ -12,6 +12,7 @@ import { NotificationService } from './application/notification.service';
 import { NotificationOutboxHandlers } from './application/handlers/notification.handlers';
 import { NotificationPrismaRepository } from './infrastructure/prisma/notification.prisma-repository';
 import { PushMockAdapter, SmsMockAdapter, WhatsAppMockAdapter } from './infrastructure/channels/mock-channels';
+import { FcmAdapter } from './infrastructure/channels/fcm.adapter';
 import { AdminNotificationsController, NotificationsController } from './interface/http/notifications.controller';
 
 const live = (name: string) => () => { throw new Error(`${name} live adapter not implemented — set INTEGRATION_SMS=mock`); };
@@ -19,7 +20,7 @@ const live = (name: string) => () => { throw new Error(`${name} live adapter not
   imports: [IdentityModule, OrganizationsModule, WorkOrdersModule, AccidentsModule, ServiceRequestsModule],
   controllers: [NotificationsController, AdminNotificationsController],
   providers: [NotificationService, NotificationOutboxHandlers, PushMockAdapter, SmsMockAdapter, WhatsAppMockAdapter, { provide: NOTIFICATION_REPOSITORY, useClass: NotificationPrismaRepository },
-    { provide: PUSH_PORT, inject: [AppConfig, PushMockAdapter], useFactory: (c: AppConfig, m: PushMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('FCM')()) },
+    { provide: PUSH_PORT, inject: [AppConfig, PushMockAdapter], useFactory: (c: AppConfig, m: PushMockAdapter) => (c.get('INTEGRATION_PUSH') === 'live' ? new FcmAdapter(c) : m) },
     { provide: SMS_PORT, inject: [AppConfig, SmsMockAdapter], useFactory: (c: AppConfig, m: SmsMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('SMS')()) },
     { provide: WHATSAPP_PORT, inject: [AppConfig, WhatsAppMockAdapter], useFactory: (c: AppConfig, m: WhatsAppMockAdapter) => (c.get('INTEGRATION_SMS') === 'mock' ? m : live('WhatsApp')()) }],
   exports: [NotificationService, PUSH_PORT, SMS_PORT],

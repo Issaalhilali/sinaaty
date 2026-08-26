@@ -38,7 +38,7 @@ export class MarketplaceUseCases {
     });
     // Matching runs right after (PostGIS); recipients get the outbox event → notification. Idempotent on re-run.
     const matched = await this.repo.matchSuppliers(req.id, req.searchRadiusKm, 200);
-    await this.uow.run(async (tx) => { await this.repo.addRecipients(req.id, matched, tx); await this.outbox.publish(tx, { eventType: 'PartRequestCreated', aggregateType: 'part_request', aggregateId: req.id, payload: { number: req.number, partNameAr: req.partNameAr, recipientOrgIds: matched.map((m) => m.orgId), requesterUserId: req.requesterUserId, requesterOrgId: req.requesterOrgId, endsAt: endsAt.toISOString() } }); });
+    await this.uow.run(async (tx) => { await this.repo.addRecipients(req.id, matched, tx); await this.outbox.publish(tx, { eventType: 'PartRequestCreated', aggregateType: 'part_request', aggregateId: req.id, payload: { number: req.number, partNameAr: req.partNameAr, recipientOrgIds: matched.map((m) => m.orgId), recipients: matched.map((m) => ({ orgId: m.orgId, distanceKm: m.distanceKm })), vin: req.vin, requesterUserId: req.requesterUserId, requesterOrgId: req.requesterOrgId, endsAt: endsAt.toISOString() } }); });
     // ويسمعه التشليح والوكيل لحظتَه على قناة منشأتهم، لا حين يفتحون التطبيق. القطعة تُباع لمن
     // يردّ أولاً — ودقيقةُ تأخير هنا تعني بيعاً ذهب لغيرك.
     for (const m of matched) {

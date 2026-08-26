@@ -40,6 +40,17 @@ export class NotificationOutboxHandlers implements OnModuleInit {
         await this.notify.notifyMany(await this.orgStaff(orgId, ['owner', 'manager', 'service_advisor']), { template: 'service.request.nearby', data: { id: ev.aggregateId, title: str(p.titleAr), distance }, dedupeKey: `service.request.nearby:${ev.aggregateId}:${orgId}` });
       }
     });
+    // التشليح والوكيل: نفس الحلقة التي للورشة. المسافة والمهلة تصلان مع الحدث نفسه — لا نداء
+    // لكل مورّد، ولا مستودعَ قطعٍ مُقحَماً في وحدة الإشعارات.
+    on('PartRequestCreated', 'part-request-nearby', async (ev) => {
+      const p = ev.payload as { partNameAr?: string; vin?: string | null; endsAt?: string; recipients?: Array<{ orgId: string; distanceKm: number | null }> };
+      const ends = p.endsAt ? new Date(p.endsAt).toLocaleString('ar-u-nu-latn-ca-gregory', { timeZone: 'Asia/Riyadh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) : 'انتهاء المزاد';
+      const car = p.vin ? ` (هيكل ${String(p.vin).slice(-6)})` : '';
+      for (const rec of p.recipients ?? []) {
+        const distance = rec.distanceKm == null ? 'مسافة قريبة' : `${Number(rec.distanceKm).toFixed(1)} كم`;
+        await this.notify.notifyMany(await this.orgStaff(rec.orgId, ['owner', 'manager', 'service_advisor']), { template: 'part.request.nearby', data: { id: ev.aggregateId, part: str(p.partNameAr), car, distance, ends }, dedupeKey: `part.request.nearby:${ev.aggregateId}:${rec.orgId}` });
+      }
+    });
     on('ServiceOfferSubmitted', 'service-offer-customer', async (ev) => {
       const p = ev.payload as { customerUserId?: string; orgId?: string; titleAr?: string; priceMin?: string | null; offerId?: string };
       if (typeof p.customerUserId !== 'string' || typeof p.orgId !== 'string') return;

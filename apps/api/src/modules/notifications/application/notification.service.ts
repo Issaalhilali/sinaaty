@@ -23,7 +23,9 @@ export class NotificationService {
     if (channels.includes('push')) {
       const tokens = await this.repo.pushTokens(i.userId);
       const row = await this.repo.create({ userId: i.userId, channel: 'push', templateCode: t.code, titleAr: r.title, bodyAr: r.body, data, status: tokens.length ? 'queued' : 'failed' });
-      if (tokens.length) { let ok = false; let ref: string | undefined; for (const tk of tokens) { const res = await this.push.send({ token: tk.token, title: r.title, body: r.body, data: { deep_link: r.deepLink ?? '', template: t.code } }); ok = ok || res.ok; ref = res.providerRef ?? ref; } await this.repo.markSent(row.id, ref, ok); if (ok) sent.push('push'); }
+      if (tokens.length) { let ok = false; let ref: string | undefined; for (const tk of tokens) { const res = await this.push.send({ token: tk.token, title: r.title, body: r.body, data: { deep_link: r.deepLink ?? '', template: t.code } }); ok = ok || res.ok; ref = res.providerRef ?? ref; // الرمز الميت يُنزع فوراً: من أعاد تنصيب التطبيق يترك خلفه رمزاً يفشل إلى الأبد، فتتراكم
+        // الأجهزة المهجورة وتُبطئ كل إشعار لاحق بمحاولات محكوم عليها بالفشل.
+        if (res.invalidToken) await this.repo.clearPushToken(tk.deviceId); } await this.repo.markSent(row.id, ref, ok); if (ok) sent.push('push'); }
     }
     if (channels.includes('sms') && contact?.phone) {
       const row = await this.repo.create({ userId: i.userId, channel: 'sms', templateCode: t.code, titleAr: r.title, bodyAr: r.body, data, status: 'queued' });

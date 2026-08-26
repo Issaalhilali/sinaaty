@@ -84,6 +84,11 @@ export const envSchema = z.object({
   INTEGRATION_PSP: integrationMode,
   INTEGRATION_ESCROW: integrationMode,
   INTEGRATION_SMS: integrationMode,
+  /** الإشعار والتطبيق مغلق (FCM HTTP v1). منفصل عن الرسائل النصية: قد نملك مشروع Firebase قبل
+   *  أن نوقّع عقد مزوّد الرسائل، والعكس — وربطهما بمفتاح واحد كان يعطّل أحدهما بالآخر. */
+  INTEGRATION_PUSH: integrationMode,
+  /** ملف حساب الخدمة: JSON مباشرة أو base64 له. مطلوب حين INTEGRATION_PUSH=live. */
+  FCM_SERVICE_ACCOUNT_JSON: z.string().optional(),
   INTEGRATION_AI: integrationMode,
   /** Voice-to-invoice (Step 27). The key is optional: without it the offline Arabic rules are used. */
   ANTHROPIC_API_KEY: z.string().optional(),
