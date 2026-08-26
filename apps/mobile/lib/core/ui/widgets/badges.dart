@@ -11,7 +11,7 @@ class StatusBadge extends StatelessWidget {
     final (bg, fg) = switch (tone) {
       BadgeTone.seal => (s.primaryContainer, s.onPrimaryContainer),
       BadgeTone.brass => (s.secondaryContainer, s.onSecondaryContainer),
-      BadgeTone.warn => (dark ? const Color(0xFF3A2A10) : SinaatyColors.warnSoft, dark ? const Color(0xFFE5A03A) : SinaatyColors.warn),
+      BadgeTone.warn => (dark ? SinaatyColors.dWarnSoft : SinaatyColors.warnSoft, dark ? SinaatyColors.dWarn : SinaatyColors.warn),
       BadgeTone.bad => (dark ? const Color(0xFF3E1B18) : SinaatyColors.badSoft, dark ? const Color(0xFFE5716A) : SinaatyColors.bad),
       BadgeTone.plain => (s.surfaceContainerHighest, s.onSurfaceVariant),
     };

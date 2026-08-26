@@ -4302,6 +4302,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'صف ما تلاحظه، وتصلك عروض الورش القريبة — تقارنها وتختار بلا أن تدور عليها.'**
   String get reqFixHeroBody;
+
+  /// No description provided for @reqNearby.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورش قريبة منك'**
+  String get reqNearby;
+
+  /// No description provided for @reqNearbySpecialised.
+  ///
+  /// In ar, this message translates to:
+  /// **'متخصّصة بسيارتك'**
+  String get reqNearbySpecialised;
+
+  /// No description provided for @reqNearbyNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'جديدة'**
+  String get reqNearbyNew;
+
+  /// No description provided for @reqNearbyAsk.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب منها'**
+  String get reqNearbyAsk;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

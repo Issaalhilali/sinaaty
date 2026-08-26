@@ -3,7 +3,7 @@ import '../../../core/api/api_error_mapper.dart';
 import '../../../core/result/result.dart';
 import '../domain/vehicle.dart';
 import '../domain/vehicles_repository.dart';
-Vehicle vehicleFromJson(Map<String, dynamic> j) => Vehicle(id: j['id'] as String, vin: j['vin'] as String?, plate: j['plateNumber'] as String?, makeAr: j['makeNameAr'] as String?, modelAr: j['modelNameAr'] as String?, year: (j['modelYear'] as num?)?.toInt(), colorAr: j['colorAr'] as String?, odometerKm: (j['odometerKm'] as num?)?.toInt());
+Vehicle vehicleFromJson(Map<String, dynamic> j) => Vehicle(id: j['id'] as String, vin: j['vin'] as String?, plate: j['plateNumber'] as String?, makeAr: j['makeNameAr'] as String?, modelAr: j['modelNameAr'] as String?, year: (j['modelYear'] as num?)?.toInt(), colorAr: j['colorAr'] as String?, odometerKm: (j['odometerKm'] as num?)?.toInt(), makeId: (j['makeId'] as num?)?.toInt());
 class VehiclesRepositoryImpl implements VehiclesRepository {
   final ApiClient api; VehiclesRepositoryImpl(this.api);
   @override Future<Result<List<Vehicle>>> list() async { try { final r = await api.dio.get<List<dynamic>>('/vehicles'); return Result.ok(r.data!.map((e) => vehicleFromJson(e as Map<String, dynamic>)).toList()); } catch (e) { return Result.err(mapDioError(e)); } }

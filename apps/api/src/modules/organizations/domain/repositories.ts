@@ -5,7 +5,7 @@ import type { TxHandle } from '../../../common/ports/unit-of-work.port';
 export interface OrgMember { userId: string; role: OrgMemberRole; isActive: boolean; joinedAt: Date; phone: string | null; fullNameAr: string | null }
 export interface OrgLocation { id: string; nameAr: string | null; isPrimary: boolean; city: string; district: string | null; industrialZone: string | null; addressLine: string | null; lat: number; lng: number; serviceRadiusKm: number }
 export interface KybDoc { id: string; type: KybDocType; mediaId: string; status: KybDocStatus; rejectionReason: string | null; createdAt: Date }
-export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null }
+export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null; /** تخصّصها يشمل صنع سيارة الباحث — الترتيب يقدّمها. */ specialised: boolean }
 
 export interface OrganizationRepository {
   create(input: { type: OrgType; legalNameAr: string; legalNameEn?: string; tradeNameAr?: string; slug?: string; crNumber?: string; vatNumber?: string; phone?: string; email?: string; descriptionAr?: string; createdBy: string }): Promise<Organization>;
@@ -14,7 +14,7 @@ export interface OrganizationRepository {
   update(id: string, patch: Partial<Pick<Organization, 'legalNameAr' | 'legalNameEn' | 'tradeNameAr' | 'phone' | 'email' | 'descriptionAr' | 'vatNumber' | 'vatRegistered'>>): Promise<Organization>;
   setStatus(id: string, status: OrgStatus, extra?: { verifiedAt?: Date | null }, tx?: TxHandle): Promise<Organization>;
   setCommission(id: string, bps: number): Promise<void>;
-  search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; limit: number }): Promise<OrgSearchHit[]>;
+  search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; makeId?: number; limit: number }): Promise<OrgSearchHit[]>;
   listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }): Promise<Organization[]>;
   listByIds(ids: string[]): Promise<Organization[]>;
   // members

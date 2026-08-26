@@ -2263,4 +2263,16 @@ class L10nAr extends L10n {
   @override
   String get reqFixHeroBody =>
       'صف ما تلاحظه، وتصلك عروض الورش القريبة — تقارنها وتختار بلا أن تدور عليها.';
+
+  @override
+  String get reqNearby => 'ورش قريبة منك';
+
+  @override
+  String get reqNearbySpecialised => 'متخصّصة بسيارتك';
+
+  @override
+  String get reqNearbyNew => 'جديدة';
+
+  @override
+  String get reqNearbyAsk => 'اطلب منها';
 }

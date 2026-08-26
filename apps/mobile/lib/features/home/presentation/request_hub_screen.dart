@@ -12,6 +12,7 @@ import '../../parts/presentation/part_request_sheet.dart';
 import '../../parts/presentation/providers.dart';
 import '../../service_market/domain/service_request.dart';
 import '../../service_market/presentation/fix_car_sheet.dart';
+import '../../service_market/presentation/nearby_shops_strip.dart';
 import '../../service_market/presentation/providers.dart' as sm;
 import '../../transport/domain/transport.dart';
 import '../../transport/presentation/providers.dart';
@@ -35,6 +36,7 @@ class RequestHubScreen extends ConsumerWidget {
     final fixOn = flags.enabled(Flags.serviceMarketplace);
     final fixes = fixOn ? (ref.watch(sm.myServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]) : const <ServiceRequest>[];
     final liveTow = towOn ? tows.where((j) => j.isLive).firstOrNull : null;
+    final shops = fixOn ? (ref.watch(sm.nearbyShopsProvider).value ?? const <NearbyShop>[]) : const <NearbyShop>[];
 
     return RefreshIndicator(
       onRefresh: () async { ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider); },
@@ -75,6 +77,11 @@ class RequestHubScreen extends ConsumerWidget {
         if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
         if (partsOn && towOn) const SizedBox(height: SinaatySpace.md),
         if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        // يرى من حوله قبل أن يسأل: هذا جوهر شكواه — «أمرّ على الورش واحدة واحدة».
+        if (fixOn && shops.isNotEmpty) ...[
+          const SizedBox(height: SinaatySpace.xl),
+          NearbyShopsStrip(shops: shops, onAsk: (_) => openFixCarSheet(context, ref, vehicles)),
+        ],
         if (fixes.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.srMine),
           SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [

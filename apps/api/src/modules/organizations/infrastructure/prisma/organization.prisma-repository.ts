@@ -30,11 +30,16 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
   async setStatus(id: string, status: OrgStatus, extra?: { verifiedAt?: Date | null }, tx?: TxHandle) { const db = tx ? asTx(tx) : this.prisma; const r = await db.organization.update({ where: { id }, data: { status, verifiedAt: extra?.verifiedAt }, select: orgSelect }); return toOrg(r); }
   async setCommission(id: string, bps: number) { await this.prisma.organization.update({ where: { id }, data: { commissionRateBps: bps } }); }
 
-  async search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; limit: number }): Promise<OrgSearchHit[]> {
+  async search(q: { type?: OrgType; city?: string; lat?: number; lng?: number; radiusKm?: number; text?: string; ids?: string[]; makeId?: number; limit: number }): Promise<OrgSearchHit[]> {
     const hasGeo = q.lat !== undefined && q.lng !== undefined;
     const point = hasGeo ? Prisma.sql`ST_SetSRID(ST_MakePoint(${q.lng}, ${q.lat}), 4326)::geography` : null;
-    const rows = await this.prisma.$queryRaw<Array<{ id: string; type: OrgType; trade_name_ar: string | null; legal_name_ar: string; rating_avg: Prisma.Decimal; rating_count: number; city: string | null; distance_km: number | null; lat: number | null; lng: number | null }>>`
-      SELECT o.id, o.type, o.trade_name_ar, o.legal_name_ar, o.rating_avg, o.rating_count, l.city,
+    // «متخصّصة بسيارتك» أقوى من «قريبة منك»: صاحب التويوتا يريد من يعرف التويوتا. تُحسب هنا ولا
+    // تُصفّي — الترتيب يقدّمها، والبقية تبقى ظاهرة كي لا يخلو الحيّ من نتائج.
+    const spec = q.makeId !== undefined
+      ? Prisma.sql`EXISTS (SELECT 1 FROM organization_specialties sp WHERE sp.org_id = o.id AND sp.make_id = ${q.makeId})`
+      : Prisma.sql`false`;
+    const rows = await this.prisma.$queryRaw<Array<{ id: string; type: OrgType; trade_name_ar: string | null; legal_name_ar: string; rating_avg: Prisma.Decimal; rating_count: number; city: string | null; distance_km: number | null; lat: number | null; lng: number | null; specialised: boolean }>>`
+      SELECT o.id, o.type, o.trade_name_ar, o.legal_name_ar, o.rating_avg, o.rating_count, l.city, ${spec} AS specialised,
              ${point ? Prisma.sql`ST_Distance(l.geo, ${point}) / 1000.0` : Prisma.sql`NULL::float8`} AS distance_km,
              ST_Y(l.geo::geometry) AS lat, ST_X(l.geo::geometry) AS lng
       FROM organizations o
@@ -45,9 +50,9 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
         ${q.city ? Prisma.sql`AND l.city = ${q.city}` : Prisma.empty}
         ${q.text ? Prisma.sql`AND (o.trade_name_ar ILIKE ${'%' + q.text + '%'} OR o.legal_name_ar ILIKE ${'%' + q.text + '%'} OR similarity(o.trade_name_ar, ${q.text}) > 0.3)` : Prisma.empty}
         ${point ? Prisma.sql`AND l.geo IS NOT NULL AND ST_DWithin(l.geo, ${point}, ${(q.radiusKm ?? 25) * 1000})` : Prisma.empty}
-      ORDER BY ${point ? Prisma.sql`distance_km ASC NULLS LAST,` : Prisma.empty} o.rating_avg DESC, o.rating_count DESC
+      ORDER BY ${q.makeId !== undefined ? Prisma.sql`specialised DESC,` : Prisma.empty} ${point ? Prisma.sql`distance_km ASC NULLS LAST,` : Prisma.empty} o.rating_avg DESC, o.rating_count DESC
       LIMIT ${q.limit}`;
-    return rows.map((r) => ({ id: r.id, type: r.type, tradeNameAr: r.trade_name_ar, legalNameAr: r.legal_name_ar, ratingAvg: r.rating_avg.toFixed(2), ratingCount: r.rating_count, city: r.city, distanceKm: r.distance_km === null ? null : Number(Number(r.distance_km).toFixed(2)), lat: r.lat === null ? null : Number(r.lat), lng: r.lng === null ? null : Number(r.lng) }));
+    return rows.map((r) => ({ id: r.id, type: r.type, tradeNameAr: r.trade_name_ar, legalNameAr: r.legal_name_ar, ratingAvg: r.rating_avg.toFixed(2), ratingCount: r.rating_count, city: r.city, distanceKm: r.distance_km === null ? null : Number(Number(r.distance_km).toFixed(2)), lat: r.lat === null ? null : Number(r.lat), lng: r.lng === null ? null : Number(r.lng), specialised: r.specialised }));
   }
   async listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }) { const rows = await this.prisma.organization.findMany({ where: { status: q.status, type: q.type, deletedAt: null }, orderBy: { createdAt: 'asc' }, take: q.limit, select: orgSelect }); return rows.map(toOrg); }
 

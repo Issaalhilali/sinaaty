@@ -35,14 +35,14 @@ export class OrganizationsUseCases {
    *  from the database; anything else — and any search failure — is answered by SQL+PostGIS directly.
    *  Finding a workshop slightly worse always beats finding nothing. */
   async search(q: SearchOrgsDto) {
-    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, limit: q.limit });
+    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, makeId: q.make_id, limit: q.limit });
     if (!q.q?.trim() || !this.searchPort) return sql();
     try {
       const hits = await this.searchPort.searchOrgs({ text: q.q.trim(), type: q.type, city: q.city, limit: q.limit ?? 20 });
       if (!hits.length) return sql();
       // Hydrate BY ID — intersecting with a windowed listing silently dropped hits once active orgs
       // outgrew the window (a search that "finds" a workshop the response then omits).
-      const rows = await this.orgs.search({ ids: hits.map((h) => h.id), type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, limit: hits.length });
+      const rows = await this.orgs.search({ ids: hits.map((h) => h.id), type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, makeId: q.make_id, limit: hits.length });
       const rank = new Map(hits.map((h, i) => [h.id, i]));
       const ranked = rows.sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
       return ranked.length ? ranked.slice(0, q.limit ?? 20) : sql();

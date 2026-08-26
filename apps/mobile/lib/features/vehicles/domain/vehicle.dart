@@ -1,6 +1,8 @@
 class Vehicle {
   final String id; final String? vin; final String? plate; final String? makeAr; final String? modelAr; final int? year; final String? colorAr; final int? odometerKm;
-  const Vehicle({required this.id, this.vin, this.plate, this.makeAr, this.modelAr, this.year, this.colorAr, this.odometerKm});
+  /// معرّف الصنع — به نُقدّم الورش المتخصّصة بسيارته على غيرها.
+  final int? makeId;
+  const Vehicle({required this.id, this.vin, this.plate, this.makeAr, this.modelAr, this.year, this.colorAr, this.odometerKm, this.makeId});
   /// «تويوتا كامري 2019» إن عرفنا نوعها، وإلا اللوحة.
   String get name => [makeAr, modelAr, year?.toString()].whereType<String>().join(' ').trim();
   bool get isNamed => name.isNotEmpty;

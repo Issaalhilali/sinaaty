@@ -25,5 +25,5 @@ export const SubscribeDto = z.object({ plan_code: z.string().min(2).max(40), cyc
 export type SubscribeDto = z.infer<typeof SubscribeDto>;
 export const AdminDecisionDto = z.object({ reason: z.string().min(3).max(1000) });
 export type AdminDecisionDto = z.infer<typeof AdminDecisionDto>;
-export const SearchOrgsDto = z.object({ type: z.enum(OrgTypeValues as [string, ...string[]]).optional(), city: z.string().max(80).optional(), lat: z.coerce.number().optional(), lng: z.coerce.number().optional(), radius_km: z.coerce.number().min(1).max(500).default(25), q: z.string().max(80).optional(), limit: z.coerce.number().int().min(1).max(50).default(20) });
+export const SearchOrgsDto = z.object({ type: z.enum(OrgTypeValues as [string, ...string[]]).optional(), city: z.string().max(80).optional(), lat: z.coerce.number().optional(), lng: z.coerce.number().optional(), radius_km: z.coerce.number().min(1).max(500).default(25), q: z.string().max(80).optional(), /** صنع سيارة الباحث — يُقدّم المتخصّصين به في الترتيب. */ make_id: z.coerce.number().int().optional(), limit: z.coerce.number().int().min(1).max(50).default(20) });
 export type SearchOrgsDto = z.infer<typeof SearchOrgsDto>;

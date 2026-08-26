@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sinaaty/core/location/here.dart';
-import 'package:sinaaty/core/di/core_providers.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sinaaty/core/auth/token_store.dart';
 import 'package:sinaaty/core/config/app_config.dart';
@@ -53,6 +52,7 @@ class FakeServiceMarket implements ServiceMarketRepository {
     final r = _seed(); store[r.id] = r; return Result.ok(r);
   }
   @override Future<Result<List<ServiceRequest>>> mine() async => Result.ok(store.values.toList());
+  @override Future<Result<List<NearbyShop>>> nearbyShops({required double lat, required double lng, int? makeId, int limit = 8}) async => const Result.ok([]);
   String? nearbyOrg; String? offerOrg;
   @override Future<Result<List<ServiceRequest>>> nearby({String? orgId}) async { nearbyOrg = orgId; return Result.ok(store.values.toList()); }
   @override Future<Result<ServiceRequest>> byId(String id) async => Result.ok(store[id]!);

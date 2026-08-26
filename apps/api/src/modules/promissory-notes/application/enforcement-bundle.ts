@@ -12,7 +12,7 @@ import type { NoteEvent, PromissoryNote } from '../domain/note';
 export interface BundleInput { note: PromissoryNote; parties: { creditorNameAr: string; debtorNameAr: string | null }; events: NoteEvent[]; dunning: Array<{ step: number; channel: string; isFormal: boolean; sentAt: Date }>; workOrder: WorkOrder | null; signedVersion: { version: number; snapshot: Snapshot; sha256: string } | null; versions: Array<{ version: number; sha256: string; signed: boolean; createdAt: Date }>; inspections: unknown[]; media: Array<{ mediaId: string; entityType: string; label: string | null; bucket: string; objectKey: string; mimeType: string }>; invoice: Invoice | null }
 export function buildBundle(i: BundleInput) {
   const files: Array<{ name: string; content: string }> = [
-    { name: 'README.txt', content: `حزمة تنفيذ السند لأمر ${i.note.number}\nالدائن: ${i.parties.creditorNameAr}\nالمدين: ${i.parties.debtorNameAr ?? '—'}\nالمبلغ المطالب به: ${i.note.outstandingAmount} ر.س\nمرجع نافذ: ${i.note.nafezReference ?? '—'}\nأُنشئت بواسطة صناعتي — كل ملف JSON يحمل بصمة SHA-256 في manifest.json\n` },
+    { name: 'README.txt', content: `حزمة تنفيذ السند لأمر ${i.note.number}\nالدائن: ${i.parties.creditorNameAr}\nالمدين: ${i.parties.debtorNameAr ?? '—'}\nالمبلغ المطالب به: ${i.note.outstandingAmount} ر.س\nمرجع نافذ: ${i.note.nafezReference ?? '—'}\nأُنشئت بواسطة  صناعية — كل ملف JSON يحمل بصمة SHA-256 في manifest.json\n` },
     { name: 'note.json', content: JSON.stringify(i.note, null, 2) },
     { name: 'note-events.json', content: JSON.stringify(i.events, null, 2) },
     { name: 'dunning.json', content: JSON.stringify(i.dunning, null, 2) },

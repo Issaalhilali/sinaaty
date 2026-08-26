@@ -2292,4 +2292,16 @@ class L10nEn extends L10n {
   @override
   String get reqFixHeroBody =>
       'Describe what you notice and nearby workshops send you offers — compare and choose without driving around.';
+
+  @override
+  String get reqNearby => 'Workshops near you';
+
+  @override
+  String get reqNearbySpecialised => 'Specialises in your car';
+
+  @override
+  String get reqNearbyNew => 'New';
+
+  @override
+  String get reqNearbyAsk => 'Ask them';
 }

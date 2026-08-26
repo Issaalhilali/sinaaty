@@ -42,3 +42,17 @@ class ServiceRequest {
   bool get open => status == 'open';
   int get offersCount => offersCountRaw ?? offers.length;
 }
+
+
+/// ورشة قريبة كما تظهر على الصفحة الرئيسية — من نقطة الاكتشاف نفسها التي يستعملها البحث.
+class NearbyShop {
+  final String id, nameAr;
+  final String? city;
+  final double? distanceKm;
+  final double rating;
+  final int ratingCount;
+  /// تخصّصها يشمل صنع سيارة صاحب الحساب — تُقدَّم في الترتيب وتُوسَم على البطاقة.
+  final bool specialised;
+  const NearbyShop({required this.id, required this.nameAr, this.city, this.distanceKm, required this.rating, required this.ratingCount, required this.specialised});
+  bool get isRated => ratingCount > 0;
+}

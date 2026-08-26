@@ -5,7 +5,15 @@ abstract final class SinaatyColors {
   static const brass = Color(0xFFA97A22); static const brassSoft = Color(0xFFF4EAD3);
   static const ink = Color(0xFF12201C); static const ink2 = Color(0xFF3B4A45); static const muted = Color(0xFF66756F);
   static const ground = Color(0xFFEEF2EF); static const paper = Color(0xFFFFFFFF); static const paper2 = Color(0xFFF7F9F7); static const line = Color(0xFFD3DCD7);
-  static const ok = Color(0xFF1F8A5B); static const warn = Color(0xFFC27A12); static const warnSoft = Color(0xFFFBEFD9); static const bad = Color(0xFFB4382F); static const badSoft = Color(0xFFF9E1DE);
+  // **لون الهوية لا يحمل حالة، ولون الحالة لا يحمل هوية.**
+  //
+  // كان «النجاح» أخضرَ ثانياً على بعد ١١° من أخضر الختم، و«التحذير» كهرمانياً على بعد **٤°** من
+  // النحاسي — أربع درجات لا تراها عين، فشارةٌ نحاسية تعني «انظر هنا» تبدو إنذاراً. حُذف النجاح:
+  // في منتجٍ أخضر يُقال «تمّ» بأخضر الختم نفسه، فـ«مختوم» و«ناجح» فكرة واحدة عندنا. وأُبعد
+  // التحذير إلى برتقاليّ صريح. والنحاسي صار للهوية والوثائق وحدها، لا يحمل حالة أبداً.
+  // `test/palette_test.dart` يقيس الفواصل فلا يعود أحد يُقارب بينها.
+  static const warn = Color(0xFFC7650F); static const warnSoft = Color(0xFFF9EADC); static const bad = Color(0xFFB4382F); static const badSoft = Color(0xFFF9E1DE);
+  static const dWarn = Color(0xFFEF8E39); static const dWarnSoft = Color(0xFF33200F);
   // dark
   // الوضع الداكن مُعايَر بالقياس لا بالذوق: كانت البطاقة على الخلفية 1.09:1 — لونٌ واحد عملياً،
   // فتختفي الحدود ويبدو كل شيء مسطّحاً. الأهداف: بطاقة/خلفية ≥1.30 (حدّ الإدراك)، حدّ/بطاقة ≥1.40،

@@ -1064,5 +1064,9 @@
   "srWhenAsk": "When suits you?",
   "srOffersComing": "Nearby workshops will send offers within minutes — compare and choose.",
   "reqFixHero": "Something wrong with your car?",
-  "reqFixHeroBody": "Describe what you notice and nearby workshops send you offers — compare and choose without driving around."
+  "reqFixHeroBody": "Describe what you notice and nearby workshops send you offers — compare and choose without driving around.",
+  "reqNearby": "Workshops near you",
+  "reqNearbySpecialised": "Specialises in your car",
+  "reqNearbyNew": "New",
+  "reqNearbyAsk": "Ask them"
 }

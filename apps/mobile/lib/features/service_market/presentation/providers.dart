@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/result/result.dart';
+import '../../vehicles/domain/vehicle.dart';
+import '../../vehicles/presentation/providers.dart';
 import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
 import '../data/service_market_repository_impl.dart';
 import '../data/service_request_realtime_impl.dart';
@@ -20,4 +22,18 @@ final serviceRequestRealtimeProvider = Provider<ServiceRequestRealtime>((ref) =>
 final serviceRequestLiveProvider = StreamProvider.autoDispose.family<void, String>((ref, id) {
   final s = ref.watch(serviceRequestRealtimeProvider).changes(id);
   return s.map((e) { ref.invalidate(serviceRequestProvider(id)); ref.invalidate(myServiceRequestsProvider); return e; });
+});
+
+/// ورش قريبة من العميل، المتخصّصون بصنع سيارته أولاً.
+///
+/// يقرأ الموقع مرّةً ويحتفظ به للجلسة (`keepAlive`): الصفحة الرئيسية تُبنى كثيراً، وطلب موقعٍ
+/// جديد في كل بناء يستنزف البطارية ويومض الشريط. وبلا موقع لا شريط — ولا خطأ يُعرض: غياب
+/// «ورش قريبة» ليس عطلاً يستحق رسالة.
+final nearbyShopsProvider = FutureProvider.autoDispose<List<NearbyShop>>((ref) async {
+  ref.keepAlive();
+  final where = await ref.watch(hereProvider).now();
+  if (where == null) return const [];
+  final cars = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
+  final makeId = cars.map((v) => v.makeId).whereType<int>().firstOrNull;
+  return (await ref.watch(serviceMarketRepositoryProvider).nearbyShops(lat: where.lat, lng: where.lng, makeId: makeId, limit: 8)).valueOrNull ?? const [];
 });

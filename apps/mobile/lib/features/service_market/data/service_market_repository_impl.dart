@@ -48,6 +48,21 @@ class ServiceMarketRepositoryImpl implements ServiceMarketRepository {
         'lat': lat, 'lng': lng, 'address_hint': ?addressHint, 'radius_km': radiusKm,
         'preferred_time': ?preferredTime, 'media_ids': mediaIds,
       })).data!));
+  @override Future<Result<List<NearbyShop>>> nearbyShops({required double lat, required double lng, int? makeId, int limit = 8}) => _run(() async {
+        final rows = (await api.dio.get<List<dynamic>>('/organizations', queryParameters: {
+          'type': 'workshop', 'lat': lat, 'lng': lng, 'radius_km': 25, 'limit': limit, 'make_id': ?makeId,
+        })).data ?? const [];
+        return rows.cast<Map<String, dynamic>>().map((d) => NearbyShop(
+              id: d['id'] as String,
+              nameAr: (d['tradeNameAr'] ?? d['legalNameAr'] ?? '') as String,
+              city: d['city'] as String?,
+              distanceKm: (d['distanceKm'] as num?)?.toDouble(),
+              rating: double.tryParse('${d['ratingAvg']}') ?? 0,
+              ratingCount: (d['ratingCount'] as num?)?.toInt() ?? 0,
+              specialised: d['specialised'] as bool? ?? false,
+            )).toList();
+      });
+
   @override Future<Result<List<ServiceRequest>>> mine() => _run(() async => (await api.dio.get<List<dynamic>>('/service-requests', queryParameters: {'mine': 'true'})).data!.cast<Map<String, dynamic>>().map(requestFromJson).toList());
   @override Future<Result<List<ServiceRequest>>> nearby({String? orgId}) => _run(() async => (await api.dio.get<List<dynamic>>('/service-requests', queryParameters: {'org_id': ?orgId})).data!.cast<Map<String, dynamic>>().map(requestFromJson).toList());
   @override Future<Result<ServiceRequest>> byId(String id) => _run(() async => requestFromJson((await api.dio.get<Map<String, dynamic>>('/service-requests/$id')).data!));
