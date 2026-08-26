@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +16,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override void dispose() { _code.dispose(); super.dispose(); }
   Future<void> _verify() async {
     if (_code.text.length != 6) return; setState(() { _loading = true; _error = null; });
-    final r = await ref.read(authRepositoryProvider).verifyOtp(phone: widget.phone, code: _code.text, platform: platformName());
+    final flavor = ref.read(appConfigProvider).flavor.name;
+    final r = await ref.read(authRepositoryProvider).verifyOtp(phone: widget.phone, code: _code.text, platform: platformName(), flavor: flavor);
     if (!mounted) return;
-    await r.when(ok: (_) async { await ref.read(authControllerProvider.notifier).signedIn(); if (mounted) context.go('/'); }, err: (f) async { setState(() { _loading = false; _error = f.message(ref.read(localeProvider)); }); });
+    await r.when(ok: (_) async { await ref.read(authControllerProvider.notifier).signedIn(); unawaited(_registerPush(flavor)); if (mounted) context.go('/'); }, err: (f) async { setState(() { _loading = false; _error = f.message(ref.read(localeProvider)); }); });
   }
+  /// بعد الدخول لا أثناءه: الحصول على الرمز يطلب إذن الإشعارات على iOS. ولا يُعطّل الدخول أبداً —
+  /// من رفض الإذن يدخل كما هو، ويفقد التنبيه وحده.
+  Future<void> _registerPush(String flavor) async {
+    final token = await ref.read(pushTokensProvider).token();
+    if (token == null) return;
+    await ref.read(authRepositoryProvider).registerPushToken(token, platform: platformName(), flavor: flavor);
+  }
+
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final t = Theme.of(context);
     return SealScaffold(

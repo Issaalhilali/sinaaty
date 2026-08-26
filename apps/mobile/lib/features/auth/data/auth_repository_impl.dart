@@ -11,8 +11,15 @@ class AuthRepositoryImpl implements AuthRepository {
     try { final r = await api.dio.post<Map<String, dynamic>>('/auth/otp/request', data: {'phone': phone}); final d = r.data!; return Result.ok((phone: d['phone'] as String, expiresIn: (d['expires_in'] as num).toInt(), debugCode: d['debug_code'] as String?)); }
     catch (e) { return Result.err(mapDioError(e)); }
   }
-  @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform}) async {
-    try { final r = await api.dio.post<Map<String, dynamic>>('/auth/otp/verify', data: {'phone': phone, 'code': code, 'device': {'platform': platform, 'app_flavor': 'customer'}}); final d = r.data!; final s = AuthSession(accessToken: d['accessToken'] as String, refreshToken: d['refreshToken'] as String, userId: d['user_id'] as String); await tokens.save(access: s.accessToken, refresh: s.refreshToken); return Result.ok(s); }
+  @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async {
+    // النكهة الحقيقية لا 'customer' دائماً: كانت الثلاث تُسجَّل أجهزةَ عملاء، فيستحيل على العمليات
+    // معرفة من يحمل تطبيق الشركاء — ولا يُوجَّه إشعارٌ إلى نكهة بعينها.
+    try { final r = await api.dio.post<Map<String, dynamic>>('/auth/otp/verify', data: {'phone': phone, 'code': code, 'device': {'platform': platform, 'app_flavor': flavor}}); final d = r.data!; final s = AuthSession(accessToken: d['accessToken'] as String, refreshToken: d['refreshToken'] as String, userId: d['user_id'] as String); await tokens.save(access: s.accessToken, refresh: s.refreshToken); return Result.ok(s); }
+    catch (e) { return Result.err(mapDioError(e)); }
+  }
+  /// بعد الدخول لا قبله: الحصول على الرمز يطلب الإذن على iOS، والإذن يُطلب حين يفيد صاحبه.
+  @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async {
+    try { await api.dio.post<void>('/me/devices', data: {'platform': platform, 'app_flavor': flavor, 'push_token': token}); return const Result.ok(null); }
     catch (e) { return Result.err(mapDioError(e)); }
   }
   @override Future<Result<Me>> me() async {

@@ -95,3 +95,7 @@ apps/admin-web/playwright-report/
 
 # عنوان شبكة الجهاز — يولّده tool/api-host.sh ويختلف بكل شبكة
 apps/mobile/lib/core/config/dev_host.dart
+
+# أسرار Firebase لكل نكهة — تُنزَّل بـ tool/firebase-setup.sh، ولا تُثبَّت في المستودع.
+apps/mobile/android/app/google-services.json
+apps/mobile/ios/config/*/GoogleService-Info.plist

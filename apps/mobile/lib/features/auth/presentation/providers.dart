@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/di/core_providers.dart';
 import '../data/auth_repository_impl.dart';
 import '../domain/auth_entities.dart';
+import '../../../core/push/push_tokens.dart';
 import '../domain/auth_repository.dart';
 import '../../../core/result/result.dart';
 /// Composition root for the auth feature (the only file in presentation/ allowed to import data/).
+final pushTokensProvider = Provider<PushTokens>((_) => FcmPushTokens());
 final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepositoryImpl(ref.watch(apiClientProvider), ref.watch(tokenStoreProvider)));
 enum AuthStatus { unknown, signedOut, signedIn }
 class AuthState { final AuthStatus status; final Me? me; const AuthState(this.status, [this.me]); }
