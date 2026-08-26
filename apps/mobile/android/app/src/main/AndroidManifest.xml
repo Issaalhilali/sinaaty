@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- موقع العميل يُقرأ من الجهاز: من انكسرت سيارته لا ينسخ رابط خرائط. -->
+    <!-- أندرويد ١٣ فما فوق: الإشعار لا يظهر بلا إذن صريح، ويُطلب من التطبيق لا من الإعدادات. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application

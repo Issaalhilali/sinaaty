@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/config/platform_info.dart';
 import '../../../core/di/core_providers.dart';
+import '../../../core/push/push_tokens.dart';
+import '../../../core/result/result.dart';
 import '../data/auth_repository_impl.dart';
 import '../domain/auth_entities.dart';
-import '../../../core/push/push_tokens.dart';
 import '../domain/auth_repository.dart';
-import '../../../core/result/result.dart';
 /// Composition root for the auth feature (the only file in presentation/ allowed to import data/).
 final pushTokensProvider = Provider<PushTokens>((_) => FcmPushTokens());
 final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepositoryImpl(ref.watch(apiClientProvider), ref.watch(tokenStoreProvider)));
@@ -16,8 +18,30 @@ class AuthController extends Notifier<AuthState> {
     final t = await ref.read(tokenStoreProvider).access(); if (t == null) { state = const AuthState(AuthStatus.signedOut); return; }
     final me = await ref.read(authRepositoryProvider).me();
     state = me.when(ok: (m) => AuthState(AuthStatus.signedIn, m), err: (_) => const AuthState(AuthStatus.signedOut));
+    if (state.status == AuthStatus.signedIn) unawaited(_syncPushToken());
   }
-  Future<void> signedIn() async { final me = await ref.read(authRepositoryProvider).me(); state = me.when(ok: (m) => AuthState(AuthStatus.signedIn, m), err: (_) => const AuthState(AuthStatus.signedOut)); }
+  Future<void> signedIn() async {
+    final me = await ref.read(authRepositoryProvider).me();
+    state = me.when(ok: (m) => AuthState(AuthStatus.signedIn, m), err: (_) => const AuthState(AuthStatus.signedOut));
+    if (state.status == AuthStatus.signedIn) unawaited(_syncPushToken());
+  }
+
+  /// رمز الإشعار يُسجَّل عند **كل** إقلاع لا عند تسجيل الدخول وحده.
+  ///
+  /// كان يُرسَل داخل شاشة الرمز فقط: فمن كان داخلاً أصلاً وحدّث التطبيق لا يمرّ بها أبداً، ويبقى
+  /// الخادم بلا عنوانٍ لجهازه — يُرسل الإشعار إلى لا أحد ولا يظهر خطأ في أي مكان. وهذا بالضبط ما
+  /// حدث. ويُتابَع تبدّل الرمز أيضاً: يتبدّل بعد إعادة التنصيب أو تنظيف البيانات، ومن لا يتابعه
+  /// تتوقّف إشعاراته إلى الأبد بصمت.
+  Future<void> _syncPushToken() async {
+    final push = ref.read(pushTokensProvider);
+    Future<void> send(String t) => ref.read(authRepositoryProvider).registerPushToken(t, platform: platformName(), flavor: ref.read(appConfigProvider).flavor.name).then((_) {});
+    final t = await push.token();
+    if (t != null) await send(t);
+    unawaited(_refreshSub?.cancel() ?? Future<void>.value());
+    _refreshSub = push.refreshed.listen(send);
+    ref.onDispose(() => _refreshSub?.cancel());
+  }
+  StreamSubscription<String>? _refreshSub;
   Future<Result<Me>> setName(String fullNameAr) async {
     final r = await ref.read(authRepositoryProvider).setName(fullNameAr);
     r.when(ok: (m) => state = AuthState(AuthStatus.signedIn, m), err: (_) {});
