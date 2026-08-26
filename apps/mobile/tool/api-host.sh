@@ -12,12 +12,24 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 ENV_FILE="env/dev.json"
 PORT="${API_PORT:-3000}"
 
-if [ "${1:-lan}" = "localhost" ]; then
-  HOST="localhost"
-else
-  HOST="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)"
-  [ -n "$HOST" ] || { echo "تعذّر معرفة عنوان الماك في الشبكة — تحقق من اتصال الواي فاي"; exit 1; }
-fi
+# العنوان الرقمي هو الافتراضي لأنه الوحيد الذي يعمل في كل مكان. جرّبتُ اسم Bonjour
+# (`<mac>.local`) لأنه لا يشيخ، فوجدتُ **أندرويد لا يحلّه إطلاقاً** — قِسته على جوال حقيقي:
+# الاسم 000 والرقم 200. يعمل على iOS وحده، فلا يصلح افتراضاً.
+# وشيخوخة الرقم يعالجها `ApiHostProbe` في التطبيق: يمسح شبكة الجهاز ويجد الخادم بنفسه.
+#   tool/api-host.sh name        # اسم Bonjour (iOS فقط)
+#   tool/api-host.sh localhost   # محاكي فقط، أو عمل بلا شبكة
+case "${1:-ip}" in
+  localhost) HOST="localhost" ;;
+  ip|lan)    HOST="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)"
+             [ -n "$HOST" ] || { echo "تعذّر معرفة عنوان الماك في الشبكة — تحقق من اتصال الواي فاي"; exit 1; } ;;
+  name)      HOST="$(scutil --get LocalHostName 2>/dev/null).local"
+             # نتحقّق أن الاسم يُحلّ فعلاً؛ بعض الشبكات تحجب mDNS، فنسقط إلى الرقم بدل أن نكسر البناء.
+             if ! curl -s -m 3 -o /dev/null "http://$HOST:$PORT/v1/health" 2>/dev/null; then
+               ALT="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || true)"
+               [ -n "$ALT" ] && { echo "  ⚠ الاسم $HOST لا يُحلّ هنا — نسقط إلى $ALT"; HOST="$ALT"; }
+             fi ;;
+  *)         HOST="$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null)" ;;
+esac
 
 python3 - "$ENV_FILE" "http://$HOST:$PORT" <<'PY'
 import json, sys

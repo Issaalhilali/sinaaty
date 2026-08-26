@@ -15,6 +15,7 @@ class AppConfig {
         appEnv: const String.fromEnvironment('APP_ENV', defaultValue: 'dev'),
         sentryDsn: const String.fromEnvironment('SENTRY_DSN', defaultValue: ''),
       );
+  AppConfig copyWith({String? apiBaseUrl}) => AppConfig(flavor: flavor, apiBaseUrl: apiBaseUrl ?? this.apiBaseUrl, appEnv: appEnv, sentryDsn: sentryDsn);
   bool get isDev => appEnv == 'dev';
   String get apiV1 => '$apiBaseUrl/v1';
 }
