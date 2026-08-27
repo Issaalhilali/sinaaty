@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/format/format.dart';
+import '../../../core/l10n/labels.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
@@ -32,6 +34,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final t = Theme.of(context).textTheme;
+    final locale = Localizations.localeOf(context).languageCode;
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
     final orders = ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[];
     final shops = ref.watch(sm.nearbyShopsProvider).value ?? const <NearbyShop>[];
@@ -48,11 +51,25 @@ class HomeScreen extends ConsumerWidget {
 
         if (live.isNotEmpty) ...[
           SectionTitle(l.activeOrders),
-          for (final w in live)
-            Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md),
-              child: WorkOrderCard(order: w, vehicle: vehicles.where((v) => v.id == w.vehicleId).firstOrNull,
-                  onTap: () => context.push('/work-orders/${w.id}'))),
-          const SizedBox(height: SinaatySpace.sm),
+          // **بطلٌ واحد فقط.** بطاقتان خضراوان ضخمتان فوق بعضهما تأكلان نصف الشاشة، وحين يكون كل
+          // شيء بطلاً لا بطل — والعين لا تجد مكاناً تستريح فيه. الأعجل يأخذ سطح الختم، والبقية
+          // صفوفٌ هادئة تُقرأ في سطر ويُنقر عليها.
+          WorkOrderCard(order: live.first, vehicle: vehicles.where((v) => v.id == live.first.vehicleId).firstOrNull,
+              onTap: () => context.push('/work-orders/${live.first.id}')),
+          if (live.length > 1) ...[
+            const SizedBox(height: SinaatySpace.md),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.xs),
+              child: Column(children: [
+                for (final w in live.skip(1))
+                  AppListRow(
+                    icon: Icons.build_circle_outlined,
+                    title: w.titleAr ?? l.workOrder,
+                    subtitle: Fmt.meta([vehicles.where((v) => v.id == w.vehicleId).firstOrNull?.title, Fmt.money(w.total, locale: locale)]),
+                    trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : BadgeTone.plain),
+                    onTap: () => context.push('/work-orders/${w.id}')),
+              ])),
+          ],
+          const SizedBox(height: SinaatySpace.lg),
           const ServicesRow(),
         ] else
           // لا شيء جارٍ: السؤال نفسه يتصدّر بحجمه الكامل بدل صفٍّ صغير فوق فراغ.
