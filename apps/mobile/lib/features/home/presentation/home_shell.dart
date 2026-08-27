@@ -19,6 +19,7 @@ import '../../vehicles/presentation/vehicles_screen.dart';
 import '../../work_orders/presentation/providers.dart' show workOrdersProvider;
 import '../../workshop/presentation/orders_screen.dart';
 import '../../workshop/presentation/org_wallet_screen.dart';
+import '../../workshop/presentation/onboard_screen.dart';
 import '../../workshop/presentation/providers.dart';
 import '../../transport/presentation/driver_home_screen.dart';
 import '../../transport/presentation/providers.dart';
@@ -65,6 +66,13 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     final isDriver = flavor == AppFlavor.partner && (ref.watch(driverProfileProvider).value?.isOk ?? false);
     // Feature flags decide which entry points exist at all (charter §5.0 #3); a failed load hides nothing.
     final flags = ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible;
+    // صاحب ورشة بلا منشأة كان يفتح تطبيقاً فارغاً لا يستطيع فعل شيء فيه: لا مسار تسجيل إطلاقاً،
+    // والمنشآت تُنشأ من لوحة التحكم وحدها. وسوقٌ لا ينضمّ إليه المزوّدون بأنفسهم لا ينمو.
+    // ننتظر وصول القائمة قبل الحكم: `myOrgsProvider` قيد التحميل ليس «بلا منشأة».
+    final myOrgs = ref.watch(myOrgsProvider);
+    if (flavor == AppFlavor.partner && myOrgs.hasValue && myOrgs.value!.isEmpty) {
+      return const OnboardScreen();
+    }
     final tabs = isSupplier ? <(String, IconData, Widget)>[
       (l.spRequests, Icons.gavel_outlined, const SupplierRequestsScreen()),
       (l.spSales, Icons.storefront_outlined, const SupplierSalesScreen()),

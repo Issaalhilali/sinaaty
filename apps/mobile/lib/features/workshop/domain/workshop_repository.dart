@@ -4,6 +4,14 @@ import '../../work_orders/domain/work_order.dart';
 import 'workshop.dart';
 abstract interface class WorkshopRepository {
   Future<Result<List<OrgBrief>>> myOrgs();
+  /// تسجيل المنشأة الذاتي: صاحب ورشة يُنزّل التطبيق فيسجّلها بنفسه ولا ينتظر أحداً.
+  Future<Result<String>> registerOrg({required String type, required String legalNameAr, String? tradeNameAr, String? crNumber, String? phone});
+  Future<Result<void>> setOrgLocation(String orgId, {required String city, String? district, String? addressLine, required double lat, required double lng});
+  /// وثيقة تحقّق مرفوعة (`commercial_registration` أو `owner_id`).
+  Future<Result<void>> addKybDoc(String orgId, {required String type, required String mediaId});
+  Future<Result<List<({String type, String status})>>> kybDocs(String orgId);
+  /// إرسالٌ للمراجعة — يرفضه الخادم حتى تكتمل الوثائق والموقع، ورسالته تقول ما ينقص.
+  Future<Result<void>> submitForReview(String orgId);
   Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status});
   Future<Result<WorkOrder>> create(NewWorkOrder wo);
   Future<Result<WorkOrder>> addItem(String woId, NewItem item);

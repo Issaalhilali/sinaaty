@@ -4386,6 +4386,210 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'مستحقّ عليك'**
   String get moDue;
+
+  /// No description provided for @obTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل ورشتك'**
+  String get obTitle;
+
+  /// No description provided for @obBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقائق، ثم تصلك طلبات العملاء حولك.'**
+  String get obBody;
+
+  /// No description provided for @obName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الورشة'**
+  String get obName;
+
+  /// No description provided for @obNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'كما في السجل التجاري'**
+  String get obNameHint;
+
+  /// No description provided for @obCr.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم السجل التجاري'**
+  String get obCr;
+
+  /// No description provided for @obCrHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'10 أرقام'**
+  String get obCrHint;
+
+  /// No description provided for @obCrOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'تستطيع إضافته لاحقاً'**
+  String get obCrOptional;
+
+  /// No description provided for @obType.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع النشاط'**
+  String get obType;
+
+  /// No description provided for @obTypeWorkshop.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورشة'**
+  String get obTypeWorkshop;
+
+  /// No description provided for @obTypeBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'سمكرة ودهان'**
+  String get obTypeBody;
+
+  /// No description provided for @obTypeService.
+  ///
+  /// In ar, this message translates to:
+  /// **'مركز خدمة'**
+  String get obTypeService;
+
+  /// No description provided for @obTypeScrap.
+  ///
+  /// In ar, this message translates to:
+  /// **'تشليح'**
+  String get obTypeScrap;
+
+  /// No description provided for @obTypeParts.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطع غيار'**
+  String get obTypeParts;
+
+  /// No description provided for @obLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'أين ورشتك؟'**
+  String get obLocation;
+
+  /// No description provided for @obLocationBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'موقعك يحدّد من يصله طلبك — العملاء حولك يرونك أولاً.'**
+  String get obLocationBody;
+
+  /// No description provided for @obUseMyLocation.
+  ///
+  /// In ar, this message translates to:
+  /// **'استعمل موقعي الحالي'**
+  String get obUseMyLocation;
+
+  /// No description provided for @obCity.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدينة'**
+  String get obCity;
+
+  /// No description provided for @obDistrict.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحي'**
+  String get obDistrict;
+
+  /// No description provided for @obDocs.
+  ///
+  /// In ar, this message translates to:
+  /// **'وثيقتان للتحقّق'**
+  String get obDocs;
+
+  /// No description provided for @obDocsBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'السجل التجاري وهوية المالك. لا يراهما إلا فريق المراجعة.'**
+  String get obDocsBody;
+
+  /// No description provided for @obDocCr.
+  ///
+  /// In ar, this message translates to:
+  /// **'السجل التجاري'**
+  String get obDocCr;
+
+  /// No description provided for @obDocId.
+  ///
+  /// In ar, this message translates to:
+  /// **'هوية المالك'**
+  String get obDocId;
+
+  /// No description provided for @obUpload.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرفق'**
+  String get obUpload;
+
+  /// No description provided for @obUploaded.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُرفقت'**
+  String get obUploaded;
+
+  /// No description provided for @obSubmit.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل للمراجعة'**
+  String get obSubmit;
+
+  /// No description provided for @obNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get obNext;
+
+  /// No description provided for @obCreate.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ الورشة'**
+  String get obCreate;
+
+  /// No description provided for @obPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورشتك قيد المراجعة'**
+  String get obPending;
+
+  /// No description provided for @obPendingBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'يراجعها فريق المنصة عادةً خلال يوم عمل، ونُشعرك فور اعتمادها — عندها تبدأ طلبات العملاء بالوصول.'**
+  String get obPendingBody;
+
+  /// No description provided for @obDraft.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكمل تسجيل ورشتك'**
+  String get obDraft;
+
+  /// No description provided for @obRejected.
+  ///
+  /// In ar, this message translates to:
+  /// **'المراجعة تحتاج تعديلاً'**
+  String get obRejected;
+
+  /// No description provided for @obStepInfo.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات الورشة'**
+  String get obStepInfo;
+
+  /// No description provided for @obStepPlace.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموقع'**
+  String get obStepPlace;
+
+  /// No description provided for @obStepDocs.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوثائق'**
+  String get obStepDocs;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

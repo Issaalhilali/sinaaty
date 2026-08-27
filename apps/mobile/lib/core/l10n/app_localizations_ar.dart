@@ -2306,4 +2306,109 @@ class L10nAr extends L10n {
 
   @override
   String get moDue => 'مستحقّ عليك';
+
+  @override
+  String get obTitle => 'سجّل ورشتك';
+
+  @override
+  String get obBody => 'دقائق، ثم تصلك طلبات العملاء حولك.';
+
+  @override
+  String get obName => 'اسم الورشة';
+
+  @override
+  String get obNameHint => 'كما في السجل التجاري';
+
+  @override
+  String get obCr => 'رقم السجل التجاري';
+
+  @override
+  String get obCrHint => '10 أرقام';
+
+  @override
+  String get obCrOptional => 'تستطيع إضافته لاحقاً';
+
+  @override
+  String get obType => 'نوع النشاط';
+
+  @override
+  String get obTypeWorkshop => 'ورشة';
+
+  @override
+  String get obTypeBody => 'سمكرة ودهان';
+
+  @override
+  String get obTypeService => 'مركز خدمة';
+
+  @override
+  String get obTypeScrap => 'تشليح';
+
+  @override
+  String get obTypeParts => 'قطع غيار';
+
+  @override
+  String get obLocation => 'أين ورشتك؟';
+
+  @override
+  String get obLocationBody =>
+      'موقعك يحدّد من يصله طلبك — العملاء حولك يرونك أولاً.';
+
+  @override
+  String get obUseMyLocation => 'استعمل موقعي الحالي';
+
+  @override
+  String get obCity => 'المدينة';
+
+  @override
+  String get obDistrict => 'الحي';
+
+  @override
+  String get obDocs => 'وثيقتان للتحقّق';
+
+  @override
+  String get obDocsBody =>
+      'السجل التجاري وهوية المالك. لا يراهما إلا فريق المراجعة.';
+
+  @override
+  String get obDocCr => 'السجل التجاري';
+
+  @override
+  String get obDocId => 'هوية المالك';
+
+  @override
+  String get obUpload => 'أرفق';
+
+  @override
+  String get obUploaded => 'أُرفقت';
+
+  @override
+  String get obSubmit => 'أرسل للمراجعة';
+
+  @override
+  String get obNext => 'التالي';
+
+  @override
+  String get obCreate => 'أنشئ الورشة';
+
+  @override
+  String get obPending => 'ورشتك قيد المراجعة';
+
+  @override
+  String get obPendingBody =>
+      'يراجعها فريق المنصة عادةً خلال يوم عمل، ونُشعرك فور اعتمادها — عندها تبدأ طلبات العملاء بالوصول.';
+
+  @override
+  String get obDraft => 'أكمل تسجيل ورشتك';
+
+  @override
+  String get obRejected => 'المراجعة تحتاج تعديلاً';
+
+  @override
+  String get obStepInfo => 'بيانات الورشة';
+
+  @override
+  String get obStepPlace => 'الموقع';
+
+  @override
+  String get obStepDocs => 'الوثائق';
 }

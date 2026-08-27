@@ -60,6 +60,12 @@ class FakeParts implements PartsRepository, QrScanner {
 }
 class FakeWorkshop implements WorkshopRepository {
   final String type; final String Function() org; FakeWorkshop(this.type, this.org);
+  String? registeredType, registeredName; bool submitted = false; final kyb = <String>[];
+  @override Future<Result<String>> registerOrg({required String type, required String legalNameAr, String? tradeNameAr, String? crNumber, String? phone}) async { registeredType = type; registeredName = legalNameAr; return const Result.ok('new-org'); }
+  @override Future<Result<void>> setOrgLocation(String orgId, {required String city, String? district, String? addressLine, required double lat, required double lng}) async => const Result.ok(null);
+  @override Future<Result<void>> addKybDoc(String orgId, {required String type, required String mediaId}) async { kyb.add(type); return const Result.ok(null); }
+  @override Future<Result<List<({String type, String status})>>> kybDocs(String orgId) async => const Result.ok([]);
+  @override Future<Result<void>> submitForReview(String orgId) async { submitted = true; return const Result.ok(null); }
   @override Future<Result<List<OrgBrief>>> myOrgs() async => Result.ok([OrgBrief(id: org(), nameAr: 'x', type: type, status: 'active')]);
   @override Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId) async => const Result.ok(<String>{});
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) async => Result.ok([WorkOrder(id: 'wo1', number: 'WO-2026-000042', status: 'in_progress', paymentTerms: 'on_delivery', currentVersion: 1, titleAr: 'تغيير دسكات', vehicleId: 'v1', orgId: 'ws1', subtotal: '720', vatAmount: '108', total: '828', depositRequired: '0', createdAt: DateTime(2026, 8, 19), items: const [WoItem(id: 'it1', type: 'part', descriptionAr: 'دسكات أمامية أصلي', quantity: '1', unitPrice: '600', lineTotal: '600', warrantyDays: 365)])]);

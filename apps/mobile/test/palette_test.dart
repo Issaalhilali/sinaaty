@@ -48,7 +48,7 @@ void main() {
     // كانت ثمانية أنماط من أحد عشر بوزن w700 — كل شيء عريض فلا شيء يبرز.
     test('العرض محجوزٌ لما يقرّر: المبلغ وحده', () {
       final bold = [light.headlineMedium, light.headlineSmall, light.titleLarge, light.titleMedium, light.titleSmall]
-          .where((s) => (s?.fontWeight?.index ?? 0) >= FontWeight.w700.index).length;
+          .where((s) => (s?.fontWeight?.value ?? 0) >= FontWeight.w700.value).length;
       expect(bold, lessThanOrEqualTo(1));
     });
     test('ارتفاع السطر يكفي العربية — الضيق أول ما يُتعب العين', () {

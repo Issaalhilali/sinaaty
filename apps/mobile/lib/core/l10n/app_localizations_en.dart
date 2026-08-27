@@ -2335,4 +2335,110 @@ class L10nEn extends L10n {
 
   @override
   String get moDue => 'Due from you';
+
+  @override
+  String get obTitle => 'Register your workshop';
+
+  @override
+  String get obBody =>
+      'A few minutes, then customer requests start reaching you.';
+
+  @override
+  String get obName => 'Workshop name';
+
+  @override
+  String get obNameHint => 'As on the commercial registration';
+
+  @override
+  String get obCr => 'Commercial registration';
+
+  @override
+  String get obCrHint => '10 digits';
+
+  @override
+  String get obCrOptional => 'You can add it later';
+
+  @override
+  String get obType => 'Business type';
+
+  @override
+  String get obTypeWorkshop => 'Workshop';
+
+  @override
+  String get obTypeBody => 'Body shop';
+
+  @override
+  String get obTypeService => 'Service centre';
+
+  @override
+  String get obTypeScrap => 'Scrapyard';
+
+  @override
+  String get obTypeParts => 'Parts';
+
+  @override
+  String get obLocation => 'Where is your workshop?';
+
+  @override
+  String get obLocationBody =>
+      'Your location decides who reaches you — customers nearby see you first.';
+
+  @override
+  String get obUseMyLocation => 'Use my current location';
+
+  @override
+  String get obCity => 'City';
+
+  @override
+  String get obDistrict => 'District';
+
+  @override
+  String get obDocs => 'Two documents';
+
+  @override
+  String get obDocsBody =>
+      'Commercial registration and owner ID. Only the review team sees them.';
+
+  @override
+  String get obDocCr => 'Commercial registration';
+
+  @override
+  String get obDocId => 'Owner ID';
+
+  @override
+  String get obUpload => 'Attach';
+
+  @override
+  String get obUploaded => 'Attached';
+
+  @override
+  String get obSubmit => 'Submit for review';
+
+  @override
+  String get obNext => 'Next';
+
+  @override
+  String get obCreate => 'Create workshop';
+
+  @override
+  String get obPending => 'Your workshop is under review';
+
+  @override
+  String get obPendingBody =>
+      'The team usually reviews within one business day, and we notify you the moment it is approved — then customer requests start arriving.';
+
+  @override
+  String get obDraft => 'Finish registering your workshop';
+
+  @override
+  String get obRejected => 'The review needs a change';
+
+  @override
+  String get obStepInfo => 'Details';
+
+  @override
+  String get obStepPlace => 'Location';
+
+  @override
+  String get obStepDocs => 'Documents';
 }
