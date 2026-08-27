@@ -123,6 +123,19 @@ export class PartsPrismaRepository implements PartsRepository {
   async createOrder(o: Parameters<PartsRepository['createOrder']>[0], tx?: TxHandle) { const r = await this.db(tx).partOrder.create({ data: { number: o.number, source: o.source, requestId: o.requestId ?? undefined, bidId: o.bidId ?? undefined, tradeAccountId: o.tradeAccountId ?? undefined, buyerUserId: o.buyerUserId ?? undefined, buyerOrgId: o.buyerOrgId ?? undefined, supplierOrgId: o.supplierOrgId, workOrderId: o.workOrderId ?? undefined, paymentTerms: o.paymentTerms, status: o.status, subtotal: D(o.subtotal), deliveryFee: D(o.deliveryFee), vatAmount: D(o.vatAmount), total: D(o.total), autoConfirmAt: o.autoConfirmAt ?? undefined, partOrderItems: { create: o.items.map((i) => ({ inventoryId: i.inventoryId ?? undefined, catalogId: i.catalogId ?? undefined, descriptionAr: i.descriptionAr, condition: i.condition, quantity: i.quantity, unitPrice: D(i.unitPrice), vatRate: D(i.vatRate), lineTotal: D(i.lineTotal), warrantyDays: i.warrantyDays })) } }, include: { partOrderItems: true } }); return toOrder(r); }
   async findOrder(id: string, tx?: TxHandle) { const r = await this.db(tx).partOrder.findUnique({ where: { id }, include: { partOrderItems: true } }); return r ? toOrder(r) : null; }
   async findOrderByInvoice(invoiceId: string) { const inv = await this.prisma.invoice.findUnique({ where: { id: invoiceId }, select: { partOrderId: true } }); if (!inv?.partOrderId) return null; return this.findOrder(inv.partOrderId); }
+  async bidSummaryByRequests(requestIds: string[], orgId?: string) {
+    const out = new Map<string, { count: number; lowest: string | null; myStatus: string | null }>();
+    if (!requestIds.length) return out;
+    const rows = await this.prisma.partBid.findMany({ where: { requestId: { in: requestIds } }, select: { requestId: true, supplierOrgId: true, unitPrice: true, status: true } });
+    for (const r of rows) {
+      const e = out.get(r.requestId) ?? { count: 0, lowest: null, myStatus: null };
+      e.count++;
+      if (r.status === 'submitted' || r.status === 'accepted') { const p = r.unitPrice.toFixed(2); if (e.lowest == null || Number(p) < Number(e.lowest)) e.lowest = p; }
+      if (orgId && r.supplierOrgId === orgId) e.myStatus = r.status;
+      out.set(r.requestId, e);
+    }
+    return out;
+  }
   async invoiceBriefByOrders(orderIds: string[]) {
     if (!orderIds.length) return new Map<string, { id: string; number: string; status: string }>();
     const rows = await this.prisma.invoice.findMany({ where: { partOrderId: { in: orderIds } }, select: { id: true, number: true, status: true, partOrderId: true } });

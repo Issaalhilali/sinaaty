@@ -206,4 +206,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('القطعة مع السائق'), findsWidgets);                       // the journey moved with no user action
   });
+
+  testWidgets('the awarded chip tells the winner he won — my_bid_status from the list, not a guess', (t) async {
+    // شارة «لم يُقبل» ظهرت لمورّدٍ فاز وسلّم وقبض (مشي 2026-08-28): الشاشة خمّنت من قائمة
+    // عروضٍ لا يحملها المسار، والخادم صار يحمل الجواب نفسه في القائمة.
+    parts.requests['won'] = PartRequest(id: 'won', number: 'PR-2026-000901', partNameAr: 'سلف تشغيل', acceptedConditions: const ['oem_new'], quantity: 1, biddingEndsAt: DateTime.now().subtract(const Duration(hours: 1)), status: 'awarded', createdAt: DateTime.now(), myBidStatus: 'accepted');
+    parts.requests['lost'] = PartRequest(id: 'lost', number: 'PR-2026-000902', partNameAr: 'مساعد أمامي', acceptedConditions: const ['oem_new'], quantity: 1, biddingEndsAt: DateTime.now().subtract(const Duration(hours: 1)), status: 'awarded', createdAt: DateTime.now(), myBidStatus: 'rejected');
+    await t.pumpWidget(app(router('/supplier'), orgType: 'scrapyard'));
+    await t.pumpAndSettle();
+    expect(find.text('قُبل عرضك'), findsOneWidget);
+    expect(find.text('لم يُقبل'), findsOneWidget);
+  });
 }

@@ -59,6 +59,13 @@ describe('Parts marketplace — reverse auction (e2e)', () => {
     expect(og.body.invoice_id).toBe(invoiceId); expect(og.body.invoice_number).toMatch(/^INV-/);
     const ol = await http().get(`/v1/parts/orders?org_id=${wsOrg}`).set(auth(wsTok)).expect(200);
     expect(ol.body.find((o: { id: string }) => o.id === orderId).invoice_id).toBe(invoiceId);
+    // قائمة المورّد تحمل جواب «هل فزت؟» — الشاشة كانت تخمّنه من قائمة عروضٍ لا تصلها،
+    // فقالت «لم يُقبل» لمن فاز وسلّم وقبض.
+    const dl = await http().get(`/v1/parts/requests?org_id=${dealerOrg}&as=supplier`).set(auth(dealerTok)).expect(200);
+    const mineRow = dl.body.find((x: { id: string }) => x.id === reqId);
+    expect(mineRow.my_bid_status).toBe('accepted'); expect(mineRow.bids_count).toBeGreaterThanOrEqual(3);
+    const sl = await http().get(`/v1/parts/requests?org_id=${scrapOrg}&as=supplier`).set(auth(scrapTok)).expect(200);
+    expect(sl.body.find((x: { id: string }) => x.id === reqId).my_bid_status).toBe('rejected');
   });
   it('workshop pays the invoice (mock PSP) → escrow held for the dealer → order paid (outbox); dealer ships → delivered', async () => {
     const p = await http().post('/v1/payments').set(auth(wsTok)).send({ invoice_id: invoiceId, method: 'mada' }).expect(201);

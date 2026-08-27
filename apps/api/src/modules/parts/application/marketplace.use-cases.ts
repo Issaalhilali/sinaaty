@@ -68,8 +68,14 @@ export class MarketplaceUseCases {
   }
   async list(u: AuthUser, q: { org_id?: string; as?: 'requester' | 'supplier'; status?: string[]; limit?: number }) {
     if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
-    if (q.as === 'supplier') { if (!q.org_id) throw new AppError('VALIDATION', { messageEn: 'org_id required for supplier view' }); return this.repo.listRequests({ recipientOrgId: q.org_id, status: q.status as never, limit: q.limit ?? 50 }); }
-    return this.repo.listRequests({ requesterUserId: q.org_id ? undefined : u.id, requesterOrgId: q.org_id, status: q.status as never, limit: q.limit ?? 50 });
+    if (q.as === 'supplier' && !q.org_id) throw new AppError('VALIDATION', { messageEn: 'org_id required for supplier view' });
+    const rows = q.as === 'supplier'
+      ? await this.repo.listRequests({ recipientOrgId: q.org_id, status: q.status as never, limit: q.limit ?? 50 })
+      : await this.repo.listRequests({ requesterUserId: q.org_id ? undefined : u.id, requesterOrgId: q.org_id, status: q.status as never, limit: q.limit ?? 50 });
+    // القائمة تحمل ما تعرضه الشاشة: عدّاد العروض وأدناها، و«عرضي» للمورّد — كانت تعود عاريةً
+    // فتخترع الشاشة الجواب: شارة «لم يُقبل» ظهرت لمورِّدٍ فاز وسلّم وقبض (مشي 2026-08-28).
+    const sums = await this.repo.bidSummaryByRequests(rows.map((r) => r.id), q.as === 'supplier' ? q.org_id : undefined);
+    return rows.map((r) => { const s = sums.get(r.id); return { ...r, bids_count: s?.count ?? 0, lowest_bid: s?.lowest ?? null, my_bid_status: s?.myStatus ?? null }; });
   }
   /** Supplier bid — one live bid per supplier per request; re-submitting updates it in place. */
   async bid(u: AuthUser, requestId: string, dto: BidDto): Promise<PartBid> {

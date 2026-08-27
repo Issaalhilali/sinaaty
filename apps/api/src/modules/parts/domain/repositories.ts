@@ -48,6 +48,9 @@ export interface PartsRepository {
   createOrder(o: Omit<PartOrder, 'id' | 'shippedAt' | 'deliveredAt' | 'installedAt' | 'confirmedAt' | 'createdAt' | 'items' | 'transportJobId'> & { items: Array<Omit<PartOrderItem, 'id'>> }, tx?: TxHandle): Promise<PartOrder>;
   findOrder(id: string, tx?: TxHandle): Promise<PartOrder | null>;
   findOrderByInvoice(invoiceId: string): Promise<PartOrder | null>;
+  /** ملخص عروض كل طلبٍ في القائمة — العدّاد وأدنى سعرٍ حيّ، وعرضُ منشأةٍ بعينها إن سُئل عنه:
+   *  شارة «فزت/لم يُقبل» عند المورّد كانت تقرأ قائمةَ عروضٍ لا تصلها فتقول للفائز خسرت. */
+  bidSummaryByRequests(requestIds: string[], orgId?: string): Promise<Map<string, { count: number; lowest: string | null; myStatus: string | null }>>;
   /** فاتورة كل أمرٍ في المجموعة — الزرّ «ادفع الآن» في التطبيق مشروطٌ بوجودها في القراءة. */
   invoiceBriefByOrders(orderIds: string[]): Promise<Map<string, { id: string; number: string; status: string }>>;
   listOrders(q: { buyerUserId?: string; buyerOrgId?: string; supplierOrgId?: string; tradeAccountId?: string; status?: PartOrderStatus[]; autoConfirmBefore?: Date; limit: number }): Promise<PartOrder[]>;
