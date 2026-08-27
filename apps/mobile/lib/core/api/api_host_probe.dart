@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
+import 'subnets_stub.dart' if (dart.library.io) 'subnets_io.dart';
 
 /// يجد الخادم حين يشيخ العنوان المخبوز — في بناء التطوير وحده.
 ///
@@ -45,7 +45,7 @@ class ApiHostProbe {
   /// يمسح /24 الخاصة بالجهاز على دفعات: ٢٥٤ اتصالاً متزامناً يُنهك مقابس النظام، والدفعات
   /// تُبقيه ضمن حدوده وتنتهي في ثانيتين تقريباً.
   Future<String?> _scanSubnet() async {
-    for (final prefix in await _subnets()) {
+    for (final prefix in await localSubnets()) {
       for (var start = 1; start <= 254; start += 48) {
         final end = (start + 47).clamp(1, 254);
         final batch = [for (var i = start; i <= end; i++) '$prefix$i'];
@@ -56,17 +56,4 @@ class ApiHostProbe {
     return null;
   }
 
-  /// «10.108.181.» من عنوان الجهاز نفسه — الخادم على نفس الشبكة الفرعية.
-  static Future<List<String>> _subnets() async {
-    final out = <String>[];
-    try {
-      for (final ni in await NetworkInterface.list(type: InternetAddressType.IPv4, includeLoopback: false)) {
-        for (final a in ni.addresses) {
-          final parts = a.address.split('.');
-          if (parts.length == 4) out.add('${parts[0]}.${parts[1]}.${parts[2]}.');
-        }
-      }
-    } catch (_) { /* منصة بلا صلاحية جرد الشبكات — نكتفي بالمعروفين */ }
-    return out.toSet().toList();
-  }
 }

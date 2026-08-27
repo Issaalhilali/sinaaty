@@ -5,6 +5,7 @@ import 'core/di/core_providers.dart';
 import 'core/l10n/app_localizations.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/ui/widgets/wide_shell.dart';
 /// Root widget: Arabic default + RTL, light/dark themes, router with auth guard.
 class SinaatyApp extends ConsumerWidget {
   const SinaatyApp({super.key});
@@ -15,6 +16,8 @@ class SinaatyApp extends ConsumerWidget {
       theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: ThemeMode.system,
       locale: Locale(locale), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: ref.watch(routerProvider),
+      // الوِب يُفتح من حاسوب: بلا هذا تُدفع الورقة خارج الشاشة فلا يُرى إلا خلفية خضراء.
+      builder: (_, child) => WideShell(child: child ?? const SizedBox.shrink()),
     );
   }
 }

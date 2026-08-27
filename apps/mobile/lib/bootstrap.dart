@@ -16,7 +16,10 @@ Future<void> bootstrap(AppFlavor flavor) async {
     var config = AppConfig.fromEnvironment(flavor);
     // شبكة أمان التطوير: إن كان العنوان المخبوز قد شاخ (تبدّلت شبكة الماك) نبحث عن الخادم
     // بدل أن نقف عند «تعذّر الوصول». الإنتاج لا يمرّ من هنا: عنوانه واحد ثابت.
-    if (!kReleaseMode && config.appEnv != 'prod') {
+    // البيئة هي المعيار لا وضع البناء: `flutter build web` بناءُ **إصدار** حتى في التطوير، فكان
+    // `kReleaseMode` يُلغي شبكة الأمان في الوِب كلّه — وهو أكثر ما يحتاجها، إذ لا يُعاد تنصيبه
+    // بل يُفتح برابط. والإنتاج يمرّ بـAPP_ENV=prod فيبقى معزولاً كما يجب.
+    if (config.appEnv != 'prod') {
       final found = await ApiHostProbe().resolve(config.apiBaseUrl);
       if (found != config.apiBaseUrl) { debugPrint('الخادم على $found لا ${config.apiBaseUrl}'); config = config.copyWith(apiBaseUrl: found); }
     }
