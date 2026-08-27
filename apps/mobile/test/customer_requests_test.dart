@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sinaaty/core/auth/token_store.dart';
+import 'package:sinaaty/core/location/here.dart';
 import 'package:sinaaty/core/config/app_config.dart';
 import 'package:sinaaty/core/di/core_providers.dart';
 import 'package:sinaaty/core/l10n/app_localizations.dart';
@@ -49,7 +50,7 @@ class FakeCustomerParts implements PartsRepository {
     ],
   );
 
-  @override Future<Result<PartRequest>> createRequest({String? orgId, String? workOrderId, String? vin, required String partNameAr, String? descriptionAr, List<String>? acceptedConditions, int quantity = 1, int? biddingMinutes}) async {
+  @override Future<Result<PartRequest>> createRequest({String? orgId, String? workOrderId, String? vin, required String partNameAr, String? descriptionAr, List<String>? acceptedConditions, int quantity = 1, int? biddingMinutes, double? lat, double? lng}) async {
     lastCreate = (vin: vin, name: partNameAr, conds: acceptedConditions ?? const [], minutes: biddingMinutes);
     final r = _seed('pr1');
     requests[r.id] = r;
@@ -164,12 +165,17 @@ Future<void> loadArabicFont() async {
   await loader.load();
 }
 
+class FixedHere implements Here {
+  @override Future<({double lat, double lng})?> now() async => (lat: 24.7136, lng: 46.6753);
+  @override Future<({double lat, double lng})?> ifGranted() async => (lat: 24.7136, lng: 46.6753);
+}
+
 void main() {
   setUpAll(loadArabicFont);
   late FakeCustomerParts parts;
   late FakeTransport transport;
 
-  Widget app(GoRouter r) => ProviderScope(key: UniqueKey(), overrides: [
+  Widget app(GoRouter r) => ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), 
     appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(MemoryTokenStore()),
     partsRepositoryProvider.overrideWithValue(parts), transportRepositoryProvider.overrideWithValue(transport),

@@ -48,6 +48,8 @@ export interface PartsRepository {
   createOrder(o: Omit<PartOrder, 'id' | 'shippedAt' | 'deliveredAt' | 'installedAt' | 'confirmedAt' | 'createdAt' | 'items' | 'transportJobId'> & { items: Array<Omit<PartOrderItem, 'id'>> }, tx?: TxHandle): Promise<PartOrder>;
   findOrder(id: string, tx?: TxHandle): Promise<PartOrder | null>;
   findOrderByInvoice(invoiceId: string): Promise<PartOrder | null>;
+  /** فاتورة كل أمرٍ في المجموعة — الزرّ «ادفع الآن» في التطبيق مشروطٌ بوجودها في القراءة. */
+  invoiceBriefByOrders(orderIds: string[]): Promise<Map<string, { id: string; number: string; status: string }>>;
   listOrders(q: { buyerUserId?: string; buyerOrgId?: string; supplierOrgId?: string; tradeAccountId?: string; status?: PartOrderStatus[]; autoConfirmBefore?: Date; limit: number }): Promise<PartOrder[]>;
   updateOrder(id: string, p: { status?: PartOrderStatus; shippedAt?: Date; deliveredAt?: Date; installedAt?: Date; confirmedAt?: Date; autoConfirmAt?: Date | null; cancelledAt?: Date; transportJobId?: string }, tx?: TxHandle): Promise<void>;
   linkInvoice(orderId: string, invoiceId: string, tx?: TxHandle): Promise<void>;

@@ -46,14 +46,16 @@ export class OrdersUseCases {
     return inv;
   }
   /** Called inside the marketplace accept() transaction. */
-  async createFromBid(tx: TxHandle, u: AuthUser, r: PartRequest, bid: PartBid, paymentTerms: 'prepaid' | 'deferred'): Promise<PartOrder> {
+  async createFromBid(tx: TxHandle, u: AuthUser, r: PartRequest, bid: PartBid, paymentTerms: 'prepaid' | 'deferred'): Promise<PartOrder & { invoice_id: string; invoice_number: string }> {
     const t = this.totals([{ quantity: bid.quantity, unitPrice: bid.unitPrice, vatRate: bid.vatRate }], bid.deliveryFee);
     const ta = paymentTerms === 'deferred' ? await this.tradeCheck(tx, r.requesterOrgId, bid.supplierOrgId, t.total.toString()) : null;
     const number = await this.repo.nextNumber('PO', tx);
     const o = await this.repo.createOrder({ number, source: 'reverse_auction', requestId: r.id, bidId: bid.id, tradeAccountId: ta?.id ?? null, buyerUserId: r.requesterUserId, buyerOrgId: r.requesterOrgId, supplierOrgId: bid.supplierOrgId, workOrderId: r.workOrderId, paymentTerms, status: paymentTerms === 'deferred' ? 'paid' : 'pending_payment', subtotal: t.subtotal.toString(), deliveryFee: bid.deliveryFee, vatAmount: t.vat.toString(), total: t.total.toString(), autoConfirmAt: null, items: [{ inventoryId: bid.inventoryId, catalogId: null, descriptionAr: r.partNameAr, condition: bid.condition, quantity: bid.quantity, unitPrice: bid.unitPrice, vatRate: bid.vatRate, lineTotal: t.lines[0]!.net.toString(), warrantyDays: bid.warrantyDays }] }, tx);
     if (bid.inventoryId) await this.repo.adjustInventory(bid.inventoryId, { reserved: bid.quantity }, tx);
-    await this.afterCreate(tx, u, o, ta);
-    return o;
+    const inv = await this.afterCreate(tx, u, o, ta);
+    // زرّ «ادفع الآن» مشروطٌ بفاتورةٍ في اليد: أمرُ مزادٍ رجع بلا فاتورته حبس مشتريه في
+    // «بانتظار الدفع» بلا زرّ (مشي حلقة القطع 2026-08-28، PO-2026-000135).
+    return { ...o, invoice_id: inv.id, invoice_number: inv.number };
   }
   /** Buy Now from live inventory (distributor hub). All items must belong to one supplier. */
   async buyNow(u: AuthUser, dto: BuyNowDto) {
@@ -82,8 +84,23 @@ export class OrdersUseCases {
   /** Note closed on payment → trade account outstanding decreases. */
   async onNoteClosed(partOrderId: string, amount: string) { const o = await this.repo.findOrder(partOrderId); if (!o?.tradeAccountId) return; await this.uow.run((tx) => this.repo.updateTradeAccount(o.tradeAccountId!, { outstandingDelta: `-${amount}` }, tx)); }
 
-  async get(u: AuthUser, id: string) { const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (!this.isBuyer(o, u) && !this.isSupplier(o, u)) throw new AppError('FORBIDDEN'); const dj = o.transportJobId && this.transport ? await this.transport.jobSummary(o.transportJobId) : null; return { ...o, delivery: dj, warranties: await this.repo.listWarranties({ limit: 20, ...(o.buyerUserId ? { beneficiaryUserId: o.buyerUserId } : { beneficiaryOrgId: o.buyerOrgId! }) }).then((w) => w.filter((x) => x.partOrderId === o.id)) }; }
-  async list(u: AuthUser, q: { org_id?: string; as?: 'buyer' | 'supplier'; status?: PartOrderStatus[]; limit?: number }) { if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN'); if (q.as === 'supplier') { if (!q.org_id) throw new AppError('VALIDATION'); return this.repo.listOrders({ supplierOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); } return this.repo.listOrders({ buyerUserId: q.org_id ? undefined : u.id, buyerOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); }
+  async get(u: AuthUser, id: string) {
+    const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND');
+    if (!this.isBuyer(o, u) && !this.isSupplier(o, u)) throw new AppError('FORBIDDEN');
+    const dj = o.transportJobId && this.transport ? await this.transport.jobSummary(o.transportJobId) : null;
+    // الفاتورة تركب كل قراءة — لحظة الإنشاء وحدها كانت تحملها، فأول تحديثٍ للشاشة يقتل زرّ الدفع.
+    const inv = (await this.repo.invoiceBriefByOrders([o.id])).get(o.id) ?? null;
+    return { ...o, invoice_id: inv?.id ?? null, invoice_number: inv?.number ?? null, delivery: dj, warranties: await this.repo.listWarranties({ limit: 20, ...(o.buyerUserId ? { beneficiaryUserId: o.buyerUserId } : { beneficiaryOrgId: o.buyerOrgId! }) }).then((w) => w.filter((x) => x.partOrderId === o.id)) };
+  }
+  async list(u: AuthUser, q: { org_id?: string; as?: 'buyer' | 'supplier'; status?: PartOrderStatus[]; limit?: number }) {
+    if (q.org_id && !membership(u, q.org_id) && !isPlatformStaff(u)) throw new AppError('FORBIDDEN');
+    if (q.as === 'supplier' && !q.org_id) throw new AppError('VALIDATION');
+    const rows = q.as === 'supplier'
+      ? await this.repo.listOrders({ supplierOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 })
+      : await this.repo.listOrders({ buyerUserId: q.org_id ? undefined : u.id, buyerOrgId: q.org_id, status: q.status, limit: q.limit ?? 50 });
+    const invs = await this.repo.invoiceBriefByOrders(rows.map((r) => r.id));
+    return rows.map((r) => ({ ...r, invoice_id: invs.get(r.id)?.id ?? null, invoice_number: invs.get(r.id)?.number ?? null }));
+  }
   /** Supplier: preparing → shipped → delivered (delivered starts the auto-confirm clock). Cancel only before shipping. */
   async transition(u: AuthUser, id: string, dto: OrderTransitionDto) {
     const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND'); if (!this.isSupplier(o, u) && !(dto.to === 'cancelled' && this.isBuyer(o, u))) throw new AppError('FORBIDDEN');

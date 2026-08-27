@@ -4,7 +4,7 @@ abstract interface class PartsRepository {
   // buyer (workshop / customer)
   Future<Result<FitResult>> fit({String? vin, String? vehicleId, String? categoryCode, String? text, String? buyerOrgId});
   Future<Result<PartOrder>> buyNow({String? orgId, String? workOrderId, required String paymentTerms, required List<({String inventoryId, int quantity})> items});
-  Future<Result<PartRequest>> createRequest({String? orgId, String? workOrderId, String? vin, required String partNameAr, String? descriptionAr, List<String>? acceptedConditions, int quantity = 1, int? biddingMinutes});
+  Future<Result<PartRequest>> createRequest({String? orgId, String? workOrderId, String? vin, required String partNameAr, String? descriptionAr, List<String>? acceptedConditions, int quantity = 1, int? biddingMinutes, double? lat, double? lng});
   Future<Result<List<PartRequest>>> myRequests({String? orgId, bool asSupplier = false});
   Future<Result<PartRequest>> request(String id);
   Future<Result<PartOrder>> accept(String requestId, String bidId, {String paymentTerms = 'prepaid'});

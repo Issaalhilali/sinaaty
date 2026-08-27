@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
@@ -51,7 +52,9 @@ Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehi
   );
   if (ok != true || !context.mounted) return;
   final vin = vehicles.where((v) => v.id == vehicleId).firstOrNull?.vin;
-  final res = await ref.read(partsRepositoryProvider).createRequest(vin: vin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes);
+  // موقع الجهاز يرافق الطلب حين يكون ممنوحاً — فيصل المزاد تشاليح حيّه لا تشاليح مدينة أخرى.
+  final here = await ref.read(hereProvider).ifGranted(); if (!context.mounted) return;
+  final res = await ref.read(partsRepositoryProvider).createRequest(vin: vin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes, lat: here?.lat, lng: here?.lng);
   if (!context.mounted) return;
   res.when(
     ok: (r) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${r.id}'); },

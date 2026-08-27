@@ -51,6 +51,14 @@ describe('Parts marketplace — reverse auction (e2e)', () => {
     // second accept blocked
     await http().post(`/v1/parts/requests/${reqId}/accept`).set(auth(wsTok)).send({ bid_id: bids['scrap'] }).expect(409);
     const inv = await http().get(`/v1/invoices?org_id=${dealerOrg}`).set(auth(dealerTok)).expect(200); const mine = inv.body.find((i: { partOrderId: string | null }) => i.partOrderId === orderId); expect(mine).toBeDefined(); invoiceId = mine.id; expect(mine.total).toBe('304.75');
+    // زرّ «ادفع الآن» عند المشتري مشروطٌ بفاتورةٍ في قراءته هو — لا في قائمة فواتير البائع.
+    // عاش المشتري محبوساً في «بانتظار الدفع» بلا زرّ تحت هذا الاختبار وهو أخضر، لأن الاختبار
+    // وجد الفاتورة بطريقٍ لا يسلكه التطبيق (PO-2026-000135، مشي 2026-08-28).
+    expect(r.body.order.invoice_id).toBe(invoiceId);
+    const og = await http().get(`/v1/parts/orders/${orderId}`).set(auth(wsTok)).expect(200);
+    expect(og.body.invoice_id).toBe(invoiceId); expect(og.body.invoice_number).toMatch(/^INV-/);
+    const ol = await http().get(`/v1/parts/orders?org_id=${wsOrg}`).set(auth(wsTok)).expect(200);
+    expect(ol.body.find((o: { id: string }) => o.id === orderId).invoice_id).toBe(invoiceId);
   });
   it('workshop pays the invoice (mock PSP) → escrow held for the dealer → order paid (outbox); dealer ships → delivered', async () => {
     const p = await http().post('/v1/payments').set(auth(wsTok)).send({ invoice_id: invoiceId, method: 'mada' }).expect(201);

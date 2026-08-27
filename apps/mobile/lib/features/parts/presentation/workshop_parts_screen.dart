@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/flags/feature_flags.dart';
+import '../../../core/di/core_providers.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -47,7 +48,12 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
       const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.ptSend, icon: Icons.gavel_outlined, onPressed: () { if (name.text.trim().length < 2 || conds.isEmpty) return; Navigator.pop(ctx, true); }),
     ]))));
     if (ok != true || !mounted) return;
-    final r = await ref.read(partsRepositoryProvider).createRequest(orgId: ref.read(currentOrgIdProvider), vin: _lastVin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes); if (!mounted) return;
+    // موقع الجهاز هو عنوان التوصيل: الجوال واقف في الفرع الذي يُصلح السيارة. بدونه يسقط الخادم
+    // إلى الفرع «الرئيسي» — وورشةٌ بفرعين رأينا طلبها يدور حول الفرع الخطأ فلا يسمع به جيرانه
+    // (PR-2026-001348: وصل تاجراً واحداً على بعد 63 كم وجارُ الورشة لم يُطابَق). ولا نافذة إذن:
+    // من لم يمنح الموقع يبقى على السلوك القديم.
+    final here = await ref.read(hereProvider).ifGranted(); if (!mounted) return;
+    final r = await ref.read(partsRepositoryProvider).createRequest(orgId: ref.read(currentOrgIdProvider), vin: _lastVin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes, lat: here?.lat, lng: here?.lng); if (!mounted) return;
     r.when(ok: (req) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${req.id}'); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
   }
   @override Widget build(BuildContext context) {
