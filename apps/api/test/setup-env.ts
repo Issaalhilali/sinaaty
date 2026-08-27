@@ -20,6 +20,19 @@ proto.assert = function (resError: unknown, res: unknown, fn?: (err: unknown, re
   });
 };
 
+// **No test talks to a real provider** (CLAUDE.md §5.3: CI must pass with all mocks).
+//
+// Naming two of them left the rest to whatever `.env` held. A dev machine with `INTEGRATION_PUSH=live`
+// (set to prove FCM end to end) made the whole suite refuse to boot — and had the key been exported it
+// would have been far worse than a failure: the suite would have pushed test notifications to real
+// phones. Every flag in `env.schema.ts` is listed, and the list is asserted against the schema below,
+// so an integration added tomorrow cannot quietly default to live.
+//
+// Listed, not looped over `process.env`: at this point the `.env` file has not been read yet, so the
+// flags are not in the environment to be rewritten — which is exactly why the first fix did nothing.
+const MOCKED = ['ACCIDENTS', 'AI', 'ESCROW', 'MAPS', 'NAFATH', 'NAFEZ', 'PSP', 'PUSH', 'SEARCH', 'SMS', 'SPEECH', 'STORAGE', 'VIN', 'ZATCA'];
+for (const k of MOCKED) process.env[`INTEGRATION_${k}`] = 'mock';
+
 Object.assign(process.env, {
   NODE_ENV: 'test',
   APP_ENV: 'test',

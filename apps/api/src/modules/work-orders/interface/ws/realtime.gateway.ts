@@ -24,11 +24,15 @@ export class RealtimeGateway implements OnGatewayInit, RealtimePublisher {
    * صلاحية» على قناة يملكها صاحبها. الوسيط يمنع قيام الاتصال أصلاً قبل أن يُعرف صاحبه.
    */
   afterInit(server: Server) {
-    server.use(async (socket, next) => {
-      const token = (socket.handshake.auth as { token?: string })?.token ?? (socket.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
-      try { (socket.data as { user?: AuthUser }).user = await this.tokens.verifyAccess(token); next(); }
-      catch { next(new Error('UNAUTHORIZED')); }
-    });
+    // الوسيط نفسه متزامن و`verify` هي التي تنتظر: تمرير `async` حيث يُنتظر `void` يجعل أي رفضٍ
+    // غير مُمسَك وعداً طليقاً — و`verify` لا ترفع أصلاً، فـ`void` هنا وعدٌ لا يُهمَل بل لا يُخيب.
+    server.use((socket, next) => void this.verify(socket, next));
+  }
+
+  private async verify(socket: Socket, next: (err?: Error) => void) {
+    const token = (socket.handshake.auth as { token?: string })?.token ?? (socket.handshake.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
+    try { (socket.data as { user?: AuthUser }).user = await this.tokens.verifyAccess(token); next(); }
+    catch { next(new Error('UNAUTHORIZED')); }
   }
   @SubscribeMessage('subscribe')
   async subscribe(@ConnectedSocket() client: Socket, @MessageBody() body: { channel?: string }) {
