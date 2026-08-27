@@ -69,16 +69,16 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     // النكهات الثلاث موجودة لأن المتاجر تطلب تطبيقات منفصلة. أما على الوِب فلا معنى لثلاثة
     // روابط: من يفتح الرابط ويدخل بحسابه، عضويّته في منشأة هي التي تقول من هو. رابطٌ واحد
     // يخدم العميل وصاحب الورشة والتاجر — وهذا ما يجعله منتجاً واحداً لا ثلاثة تتشابه.
-    final flavor = effectiveFlavor(built: ref.watch(appConfigProvider).flavor, hasOrg: (me?.orgs.isNotEmpty ?? false));
+    final hasOrg = me?.orgs.isNotEmpty ?? false;
+    final flavor = effectiveFlavor(built: ref.watch(appConfigProvider).flavor, hasOrg: hasOrg);
     final isSupplier = flavor == AppFlavor.partner && supplierOrgTypes.contains(orgType);
     final isDriver = flavor == AppFlavor.partner && (ref.watch(driverProfileProvider).value?.isOk ?? false);
     // Feature flags decide which entry points exist at all (charter §5.0 #3); a failed load hides nothing.
     final flags = ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible;
     // صاحب ورشة بلا منشأة كان يفتح تطبيقاً فارغاً لا يستطيع فعل شيء فيه: لا مسار تسجيل إطلاقاً،
     // والمنشآت تُنشأ من لوحة التحكم وحدها. وسوقٌ لا ينضمّ إليه المزوّدون بأنفسهم لا ينمو.
-    // ننتظر وصول القائمة قبل الحكم: `myOrgsProvider` قيد التحميل ليس «بلا منشأة».
-    final myOrgs = ref.watch(myOrgsProvider);
-    if (flavor == AppFlavor.partner && myOrgs.hasValue && myOrgs.value!.isEmpty) {
+    // والحكم من `me` وحده: هي المجلوبة لهذا الحساب الآن، والقائمة المحفوظة قد تكون لحسابٍ سبقه.
+    if (shouldOnboard(flavor: flavor, signedIn: me != null, hasOrg: hasOrg)) {
       return const OnboardScreen();
     }
     final tabs = isSupplier ? <(String, IconData, Widget)>[

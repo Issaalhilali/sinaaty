@@ -23,4 +23,22 @@ void main() {
       expect(effectiveFlavor(built: AppFlavor.customer, hasOrg: true, isWeb: false), AppFlavor.customer);
     });
   });
+
+  group('«سجّل ورشتك» لا تُعرض على من ورشته قائمة', () {
+    // العطل الحيّ (٢٧ أغسطس): خروجُ عميلٍ ثم دخولُ صاحب ورشة النور — قائمة المنشآت المحفوظة
+    // من الحساب السابق كانت فارغة، فاستقبلته شاشة التسجيل ثوانيَ يُقال له فيها أنشئ ما أنشأتَه.
+    test('صاحب منشأة لا يُساق إلى التسجيل مهما كانت القائمة المحفوظة', () {
+      expect(shouldOnboard(flavor: AppFlavor.partner, signedIn: true, hasOrg: true), isFalse);
+    });
+    test('من لا منشأة له يُساق إليه — وهذا سبب وجود الشاشة', () {
+      expect(shouldOnboard(flavor: AppFlavor.partner, signedIn: true, hasOrg: false), isTrue);
+    });
+    test('«لم يصل الحساب بعد» ليس «بلا منشأة»', () {
+      expect(shouldOnboard(flavor: AppFlavor.partner, signedIn: false, hasOrg: false), isFalse);
+    });
+    test('العميل والأسطول لا يريان الشاشة أصلاً', () {
+      expect(shouldOnboard(flavor: AppFlavor.customer, signedIn: true, hasOrg: false), isFalse);
+      expect(shouldOnboard(flavor: AppFlavor.fleet, signedIn: true, hasOrg: false), isFalse);
+    });
+  });
 }

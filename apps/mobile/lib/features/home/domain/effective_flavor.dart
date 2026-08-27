@@ -14,3 +14,13 @@ AppFlavor effectiveFlavor({required AppFlavor built, required bool hasOrg, bool 
   if (!isWeb || built == AppFlavor.fleet) return built;
   return hasOrg ? AppFlavor.partner : AppFlavor.customer;
 }
+
+/// هل يُساق هذا المستخدم إلى تسجيل منشأته؟
+///
+/// «بلا منشأة» حقيقةٌ تُقرأ من حساب **هذا** المستخدم لا من قائمةٍ محفوظة: قائمة المنشآت كانت
+/// تبقى في الذاكرة بعد تسجيل الخروج، فيدخل صاحب ورشة النور فتستقبله شاشة «سجّل ورشتك» ثوانيَ
+/// قبل أن تصل قائمته — يُقال لمن ورشته قائمة منذ سنة أن يُنشئها (مشي حيّ على الوِب ٢٧ أغسطس).
+///
+/// و`me` قيد التحميل ليس «بلا منشأة»: من لا حساب له بعدُ لا يُساق إلى تسجيل شيء.
+bool shouldOnboard({required AppFlavor flavor, required bool signedIn, required bool hasOrg}) =>
+    flavor == AppFlavor.partner && signedIn && !hasOrg;
