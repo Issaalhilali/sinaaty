@@ -135,7 +135,9 @@ describe('Service marketplace (e2e)', () => {
     await uc.nudgeQuiet(60); await outbox.drain(500);
     const again = await http().get('/v1/me/notifications?limit=20').set(auth(custTok)).expect(200);
     expect(again.body.filter((n: { templateCode: string; data: { id?: string } }) => n.templateCode === 'service.request.quiet' && n.data.id === q.body.id)).toHaveLength(1);
-    await http().post(`/v1/service-requests/${q.body.id}/cancel`).set(auth(custTok)).send({}).expect(200);
+    // بلا `.send({})`: التطبيق يرسل الإلغاء بلا جسدٍ أصلاً — والاختبار الذي يرسل جسداً لا يحرس
+    // زرّ العميل الحقيقي (عاش زرّ الإلغاء ميتاً تحت اختبارٍ أخضر لهذا بالضبط).
+    await http().post(`/v1/service-requests/${q.body.id}/cancel`).set(auth(custTok)).expect(200);
   });
 
   it('acceptance becomes a DRAFT work order at the winner; the other offer is lost; notifications flowed', async () => {
@@ -246,5 +248,10 @@ describe('Service marketplace (e2e)', () => {
     expect(ev.number).toMatch(/^SR-\d{4}-\d{6}$/);
     expect(ev.title_ar).toContain('طقطقة');        // البطاقة تُرسم من الحمولة بلا نداء ثانٍ
     sock.close();
+  });
+
+  it('«nearby» في خانة المعرّف يرجع 404 لا 500 — معرّف مشوّه ليس عطل خادم', async () => {
+    await http().get('/v1/service-requests/nearby').set(auth(nearTok)).expect(404);
+    await http().get('/v1/service-requests/not-a-uuid').set(auth(custTok)).expect(404);
   });
 });

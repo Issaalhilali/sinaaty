@@ -59,6 +59,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         return { status: env.status, body: { ...env.body, details: target ? { fields: target } : undefined } };
       }
     }
+    // استعلام خام رُمي بمعرّف ليس UUID (`P2010` يغلّف 22P02): «nearby» في خانة `:id` كان يرجع
+    // 500 INTERNAL — ومعرّفٌ مشوّه ليس عطل خادم بل طلبٌ لشيء لا وجود له. شوهد حياً في المشي.
+    if (exception instanceof Prisma.PrismaClientKnownRequestError && exception.code === 'P2010'
+        && String((exception.meta as { code?: unknown } | undefined)?.code) === '22P02') {
+      return this.fromCode('NOT_FOUND');
+    }
     if (exception instanceof ThrottlerException) {
       return this.fromCode('RATE_LIMITED');
     }

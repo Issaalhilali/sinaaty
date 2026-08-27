@@ -128,7 +128,14 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
       FROM service_offers o
       JOIN service_requests r ON r.id = o.request_id
       JOIN organizations org ON org.id = o.org_id
-      LEFT JOIN organization_locations l ON l.org_id = o.org_id AND l.is_primary = true
+      -- أقرب فرعٍ إلى سيارة العميل، لا الفرع «الرئيسي»: المطابقة أوصلت الطلب لأقرب فرع، وعرضُ
+      -- مسافة الفرع الرئيسي يقول للعميل «٦٣ كم» عن ورشةٍ فرعُها على بعد ١٥ (شوهد حياً في
+      -- SR-2026-000145 — ورشتان بموقعين). المسافة والحيّ يصفان الفرع الذي سيخدمه فعلاً.
+      LEFT JOIN LATERAL (
+        SELECT ol.city, ol.district, ol.geo FROM organization_locations ol
+        WHERE ol.org_id = o.org_id AND ol.geo IS NOT NULL
+        ORDER BY ST_Distance(ol.geo, r.geo) ASC LIMIT 1
+      ) l ON true
       WHERE o.request_id = ${requestId}::uuid
       ORDER BY o.created_at ASC`;
     return rows.map((x) => ({

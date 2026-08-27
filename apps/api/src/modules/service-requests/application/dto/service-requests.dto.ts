@@ -36,5 +36,7 @@ export type AcceptOfferDto = z.infer<typeof AcceptOfferDto>;
 export const WidenDto = z.object({ radius_km: z.number().int().min(2).max(150) });
 export type WidenDto = z.infer<typeof WidenDto>;
 
-export const CancelDto = z.object({ reason_ar: z.string().max(500).optional() });
+// السبب اختياري — فالجسد كله اختياري: التطبيق يرسل الإلغاء بلا جسد أصلاً، وبلا `default` كان
+// Zod يرفض `undefined` فيموت زرّ «إلغاء الطلب» عند العميل بصمت (شوهد حياً في المشي).
+export const CancelDto = z.object({ reason_ar: z.string().max(500).optional() }).default({});
 export type CancelDto = z.infer<typeof CancelDto>;

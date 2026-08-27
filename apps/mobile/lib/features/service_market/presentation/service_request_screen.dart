@@ -108,7 +108,8 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       title: r?.number == null ? l.srFix : r!.number,
       primaryAction: widget.workshop && r != null && r.open ? PrimaryButton(label: l.srRespond, icon: Icons.local_offer_outlined, loading: _busy, onPressed: _busy ? null : () => _respond(r)) : null,
       moreItems: !widget.workshop && r != null && r.open ? [PopupMenuItem(value: 'cancel', child: Text(l.srCancelRequest))] : null,
-      onMore: (val) async { if (val == 'cancel' && !_busy) { final res = await ref.read(serviceMarketRepositoryProvider).cancel(widget.id); if (mounted) res.when(ok: (_) => _refresh(), err: (_) {}); } },
+      // الخطأ يُقال لا يُبتلع: زرّ إلغاءٍ فشل بصمت تركه العميل مقتنعاً أن طلبه أُلغي وهو حيّ يجمع العروض.
+      onMore: (val) async { if (val == 'cancel' && !_busy) { final res = await ref.read(serviceMarketRepositoryProvider).cancel(widget.id); if (mounted) res.when(ok: (_) => _refresh(), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode))))); } },
       body: AsyncResultView<ServiceRequest>(value: v, onRetry: _refresh, builder: (r) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
