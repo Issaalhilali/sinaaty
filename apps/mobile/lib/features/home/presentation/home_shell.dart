@@ -10,6 +10,7 @@ import '../../../core/voice/assistant.dart';
 import '../../../core/voice/voice_input.dart';
 import '../../../core/voice/voice_sheet.dart';
 import 'package:go_router/go_router.dart';
+import '../domain/effective_flavor.dart';
 import '../../account/presentation/account_screen.dart';
 import '../../auth/presentation/providers.dart';
 import '../../billing/presentation/providers.dart' show invoicesProvider;
@@ -61,8 +62,15 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
 
   int _index = 0;
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final flavor = ref.watch(appConfigProvider).flavor; final me = ref.watch(authControllerProvider).me;
-    final orgType = ref.watch(currentOrgInfoProvider).value?.type; final isSupplier = flavor == AppFlavor.partner && supplierOrgTypes.contains(orgType);
+    final l = L10n.of(context); final me = ref.watch(authControllerProvider).me;
+    final orgType = ref.watch(currentOrgInfoProvider).value?.type;
+    // **الدور من الحساب لا من البناء.**
+    //
+    // النكهات الثلاث موجودة لأن المتاجر تطلب تطبيقات منفصلة. أما على الوِب فلا معنى لثلاثة
+    // روابط: من يفتح الرابط ويدخل بحسابه، عضويّته في منشأة هي التي تقول من هو. رابطٌ واحد
+    // يخدم العميل وصاحب الورشة والتاجر — وهذا ما يجعله منتجاً واحداً لا ثلاثة تتشابه.
+    final flavor = effectiveFlavor(built: ref.watch(appConfigProvider).flavor, hasOrg: (me?.orgs.isNotEmpty ?? false));
+    final isSupplier = flavor == AppFlavor.partner && supplierOrgTypes.contains(orgType);
     final isDriver = flavor == AppFlavor.partner && (ref.watch(driverProfileProvider).value?.isOk ?? false);
     // Feature flags decide which entry points exist at all (charter §5.0 #3); a failed load hides nothing.
     final flags = ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible;
