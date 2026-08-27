@@ -1,4 +1,4 @@
-import { buildMessage, isDeadToken } from '../infrastructure/channels/fcm.adapter';
+import { FcmAdapter, buildMessage, isDeadToken } from '../infrastructure/channels/fcm.adapter';
 
 describe('FCM — تمييز الرمز الميت', () => {
   it('الميت يُحذف: التطبيق حُذف أو الرمز مشوّه', () => {
@@ -34,5 +34,24 @@ describe('FCM — شكل الرسالة', () => {
     const out = buildMessage({ ...m, data: { deep_link: '', template: 'x' } });
     expect(out.data).not.toHaveProperty('deep_link');
     expect(out.data['template']).toBe('x');
+  });
+});
+
+describe('FCM — المفتاح لا يتسرّب إلى السجلّ', () => {
+  // `JSON.parse` يضع مقطعاً من مُدخَله في نصّ خطئه، ومُدخَلُنا مفتاحٌ خاص: مفتاحٌ مشوّه كان
+  // يطبع مادّته في سجلّ الإقلاع — وهو أسوأ مكان، لأنه يُجمَع ويُرسَل ويبقى.
+  const SECRET = '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhk1TOP5ECRET\n-----END PRIVATE KEY-----';
+  const make = (raw: string) => new FcmAdapter({ get: () => raw } as never);
+
+  it('المفتاح المشوّه يُرفض بلا ذكرٍ لمادّته', () => {
+    const broken = `{"project_id":"p","client_email":"e","private_key":"${SECRET}"`;   // قوسٌ ناقص
+    expect(() => make(broken)).toThrow(/غير صالح/);
+    try { make(broken); } catch (e) { expect(String((e as Error).message)).not.toContain('PRIVATE KEY'); }
+  });
+
+  it('والناقص كذلك: يُسمّى الحقل الغائب لا القيمة الحاضرة', () => {
+    const noEmail = JSON.stringify({ project_id: 'p', private_key: SECRET });
+    expect(() => make(noEmail)).toThrow(/ناقص/);
+    try { make(noEmail); } catch (e) { expect(String((e as Error).message)).not.toContain('PRIVATE KEY'); }
   });
 });

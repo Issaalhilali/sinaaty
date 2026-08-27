@@ -32,7 +32,14 @@ export class FcmAdapter implements PushPort {
     if (!raw) throw new Error('FCM_SERVICE_ACCOUNT_JSON مفقود — لا يمكن تشغيل الإشعارات الحقيقية بدونه.');
     // يُقبل الشكلان: JSON مباشرة، أو base64 لملف الحساب (أسهل في متغيّرات البيئة والأسرار).
     const text = raw.trim().startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf8');
-    const sa = JSON.parse(text) as ServiceAccount;
+    // `JSON.parse` يضع مقطعاً من مُدخَله في نصّ خطئه — ومُدخَلُنا هنا مفتاحٌ خاص. فمفتاحٌ مشوّه
+    // (سطرٌ ضاع في نسخٍ، أو base64 ناقص) كان يطبع مادّة المفتاح في سجلّ الإقلاع. لا نُمرّر السبب.
+    let sa: ServiceAccount;
+    try {
+      sa = JSON.parse(text) as ServiceAccount;
+    } catch {
+      throw new Error('FCM_SERVICE_ACCOUNT_JSON غير صالح: ليس JSON سليماً (ولا base64 له).');
+    }
     if (!sa.project_id || !sa.client_email || !sa.private_key) throw new Error('FCM_SERVICE_ACCOUNT_JSON ناقص: نحتاج project_id و client_email و private_key.');
     this.sa = sa;
   }
