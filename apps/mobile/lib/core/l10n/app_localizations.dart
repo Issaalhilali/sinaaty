@@ -604,7 +604,7 @@ abstract class L10n {
   /// No description provided for @amountHeld.
   ///
   /// In ar, this message translates to:
-  /// **'المبلغ محفوظ حتى تستلم سيارتك'**
+  /// **'المبلغ محفوظ'**
   String get amountHeld;
 
   /// No description provided for @payWithMada.
@@ -3262,7 +3262,7 @@ abstract class L10n {
   /// No description provided for @srFixBody.
   ///
   /// In ar, this message translates to:
-  /// **'صف المشكلة وستصلك عروض الورش القريبة بتحليل وسعر أو معاينة مجانية.'**
+  /// **'صف المشكلة ويوصل طلبك للورش القريبة — تقارن عروض من ردّ وتختار.'**
   String get srFixBody;
 
   /// No description provided for @srDescribe.
@@ -3862,13 +3862,13 @@ abstract class L10n {
   /// No description provided for @loginPromise.
   ///
   /// In ar, this message translates to:
-  /// **'المكان الأسهل والأسرع لكل ما تحتاجه سيارتك.'**
+  /// **'سيارتك من العطل إلى الطريق — في مكان واحد.'**
   String get loginPromise;
 
   /// No description provided for @loginTrustSign.
   ///
   /// In ar, this message translates to:
-  /// **'توقيع نفاذ'**
+  /// **'اعتماد موقّع'**
   String get loginTrustSign;
 
   /// No description provided for @loginTrustEscrow.
@@ -3886,7 +3886,7 @@ abstract class L10n {
   /// No description provided for @loginNafathNote.
   ///
   /// In ar, this message translates to:
-  /// **'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.'**
+  /// **'تدخل برقم جوالك، وتعتمد الأعمال بتوقيعك الإلكتروني.'**
   String get loginNafathNote;
 
   /// No description provided for @drvOnline.
@@ -4618,19 +4618,19 @@ abstract class L10n {
   /// No description provided for @welcome1Body.
   ///
   /// In ar, this message translates to:
-  /// **'وصّف اللي تلاحظه بكم نقرة، والورش القريبة يوصلها طلبك وترد عليك بعروضها. بدون ما تلف الورش وحدة وحدة.'**
+  /// **'وصّف اللي تلاحظه بكم نقرة، ويوصل طلبك لأقرب الورش — تقارن عروض اللي ردّوا وتختار براحتك.'**
   String get welcome1Body;
 
   /// No description provided for @welcome2Title.
   ///
   /// In ar, this message translates to:
-  /// **'فلوسك محفوظة لين تستلم'**
+  /// **'فلوسك محفوظة بضمان'**
   String get welcome2Title;
 
   /// No description provided for @welcome2Body.
   ///
   /// In ar, this message translates to:
-  /// **'تدفع والمبلغ يبقى أمانة عندنا. ما يوصل الورشة إلا يوم تستلم سيارتك وأنت راضي.'**
+  /// **'تدفع والمبلغ يُحفظ في حساب ضامن لدى مزوّد دفع مرخّص — وما يتحوّل للورشة إلا بعد استلامك، أو انقضاء مهلة التأكيد.'**
   String get welcome2Body;
 
   /// No description provided for @welcome3Title.
@@ -4642,7 +4642,7 @@ abstract class L10n {
   /// No description provided for @welcome3Body.
   ///
   /// In ar, this message translates to:
-  /// **'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة رسمية. حقك ما يضيع.'**
+  /// **'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة إلكترونية نظامية — توثيق كامل يشهد لك إذا صار خلاف.'**
   String get welcome3Body;
 
   /// No description provided for @setupTitle.

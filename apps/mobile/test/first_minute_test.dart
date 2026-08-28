@@ -99,7 +99,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('قول وش فيها.. والعروض تجيك'), findsOneWidget);
     await t.tap(find.text('التالي')); await t.pumpAndSettle();
-    expect(find.text('فلوسك محفوظة لين تستلم'), findsOneWidget);
+    expect(find.text('فلوسك محفوظة بضمان'), findsOneWidget);
     await t.tap(find.text('التالي')); await t.pumpAndSettle();
     expect(find.text('كل شي موثّق باسمك'), findsOneWidget);
     await t.tap(find.text('ابدأ')); await t.pumpAndSettle();

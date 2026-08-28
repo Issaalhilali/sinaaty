@@ -280,7 +280,7 @@ class L10nAr extends L10n {
   }
 
   @override
-  String get amountHeld => 'المبلغ محفوظ حتى تستلم سيارتك';
+  String get amountHeld => 'المبلغ محفوظ';
 
   @override
   String get payWithMada => 'مدى';
@@ -1700,7 +1700,7 @@ class L10nAr extends L10n {
 
   @override
   String get srFixBody =>
-      'صف المشكلة وستصلك عروض الورش القريبة بتحليل وسعر أو معاينة مجانية.';
+      'صف المشكلة ويوصل طلبك للورش القريبة — تقارن عروض من ردّ وتختار.';
 
   @override
   String get srDescribe => 'صف المشكلة';
@@ -2029,10 +2029,10 @@ class L10nAr extends L10n {
   }
 
   @override
-  String get loginPromise => 'المكان الأسهل والأسرع لكل ما تحتاجه سيارتك.';
+  String get loginPromise => 'سيارتك من العطل إلى الطريق — في مكان واحد.';
 
   @override
-  String get loginTrustSign => 'توقيع نفاذ';
+  String get loginTrustSign => 'اعتماد موقّع';
 
   @override
   String get loginTrustEscrow => 'المبلغ محفوظ';
@@ -2042,7 +2042,7 @@ class L10nAr extends L10n {
 
   @override
   String get loginNafathNote =>
-      'تدخل برقم جوالك، وتوقّع بنفاذ عند اعتماد أي عمل.';
+      'تدخل برقم جوالك، وتعتمد الأعمال بتوقيعك الإلكتروني.';
 
   @override
   String get drvOnline => 'متصل — تصلك المهام';
@@ -2426,21 +2426,21 @@ class L10nAr extends L10n {
 
   @override
   String get welcome1Body =>
-      'وصّف اللي تلاحظه بكم نقرة، والورش القريبة يوصلها طلبك وترد عليك بعروضها. بدون ما تلف الورش وحدة وحدة.';
+      'وصّف اللي تلاحظه بكم نقرة، ويوصل طلبك لأقرب الورش — تقارن عروض اللي ردّوا وتختار براحتك.';
 
   @override
-  String get welcome2Title => 'فلوسك محفوظة لين تستلم';
+  String get welcome2Title => 'فلوسك محفوظة بضمان';
 
   @override
   String get welcome2Body =>
-      'تدفع والمبلغ يبقى أمانة عندنا. ما يوصل الورشة إلا يوم تستلم سيارتك وأنت راضي.';
+      'تدفع والمبلغ يُحفظ في حساب ضامن لدى مزوّد دفع مرخّص — وما يتحوّل للورشة إلا بعد استلامك، أو انقضاء مهلة التأكيد.';
 
   @override
   String get welcome3Title => 'كل شي موثّق باسمك';
 
   @override
   String get welcome3Body =>
-      'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة رسمية. حقك ما يضيع.';
+      'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة إلكترونية نظامية — توثيق كامل يشهد لك إذا صار خلاف.';
 
   @override
   String get setupTitle => 'جهّز حسابك';

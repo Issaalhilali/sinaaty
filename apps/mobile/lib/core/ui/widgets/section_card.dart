@@ -29,41 +29,55 @@ class MoneyText extends StatelessWidget {
     return Text.rich(TextSpan(children: [TextSpan(text: amount, style: base.copyWith(fontFeatures: const [FontFeature.tabularFigures()])), if (cur.isNotEmpty) TextSpan(text: ' $cur', style: base.copyWith(fontSize: (base.fontSize ?? 16) * .6, fontWeight: FontWeight.w500, color: style?.color != null ? style!.color!.withValues(alpha: .7) : Theme.of(context).colorScheme.onSurfaceVariant))]), textDirection: TextDirection.ltr, textAlign: TextAlign.start);
   }
 }
-/// شعار صناعية: **ختمٌ مسنّن يحمل «ص»** — من فكرة المنتج نفسها: كل شيءٍ فيه يُختم ويوثَّق،
-/// والحرف حرفُ الاسم. الأسنان تعطيه ملمس الختم الرسمي والترس الصناعي معاً، وتقرأ جيداً من
-/// 30px حتى الشاشات الكبيرة. (الشكل السابق — مربعٌ بحلقة — قال المالك عنه كلمته فذهب.)
+/// شعار صناعية v3: **صامولة سداسية مستديرة الزوايا تحمل «ص»**.
+///
+/// السداسي هو أيقونة الصناعة الأصدق — رأس البرغي الذي تدور عليه كل ورشة — واستدارة زواياه
+/// تمنحه ودّاً بدل صلابة الحديد. الحرف حرف الاسم في القلب، وحلقةٌ داخلية خافتة تلمّح للختم
+/// بلا أسنانٍ تُشبه طابع البريد (v2 المسنّن لم يرضِ المالك، وv1 «المربع بالحلقة» قبله).
+/// يُقرأ من 24px، وبمكوّنٍ واحد يتبدّل في كل الشاشات معاً.
 class BrandMark extends StatelessWidget {
   final double size; const BrandMark({super.key, this.size = 36});
   @override Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme.primary;
     return SizedBox(width: size, height: size, child: Stack(alignment: Alignment.center, children: [
-      CustomPaint(size: Size.square(size), painter: _SealMarkPainter(c)),
+      CustomPaint(size: Size.square(size), painter: _HexMarkPainter(c)),
       Padding(
-        padding: EdgeInsets.only(bottom: size * .1),
-        child: Text('ص', style: TextStyle(fontFamily: 'Almarai', fontSize: size * .5, height: 1, fontWeight: FontWeight.w800, color: Colors.white)),
+        padding: EdgeInsets.only(bottom: size * .12),
+        child: Text('ص', style: TextStyle(fontFamily: 'Almarai', fontSize: size * .52, height: 1, fontWeight: FontWeight.w800, color: Colors.white)),
       ),
     ]));
   }
 }
 
-class _SealMarkPainter extends CustomPainter {
+class _HexMarkPainter extends CustomPainter {
   final Color seal;
-  _SealMarkPainter(this.seal);
-  @override void paint(Canvas c, Size s) {
-    final center = Offset(s.width / 2, s.height / 2); final r = s.width / 2;
-    // القرص المسنّن: 22 سناً — يُرسم مضلعاً متعرجاً بين نصفَي قطر
-    final teeth = 22; final outer = r; final inner = r * .9;
+  _HexMarkPainter(this.seal);
+
+  /// سداسي مسطّح القمة بزوايا مستديرة — يُبنى بخطوطٍ إلى نقاطٍ قبل كل رأس وبعده وقوسٍ بينهما.
+  Path _hex(Offset c, double r, double corner) {
+    final pts = [for (var i = 0; i < 6; i++) c + Offset(math.cos(i * math.pi / 3 - math.pi / 6) * r, math.sin(i * math.pi / 3 - math.pi / 6) * r)];
     final path = Path();
-    for (var i = 0; i < teeth * 2; i++) {
-      final a = i * math.pi / teeth - math.pi / 2;
-      final rr = i.isEven ? outer : inner;
-      final p = center + Offset(math.cos(a) * rr, math.sin(a) * rr);
-      i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    for (var i = 0; i < 6; i++) {
+      final prev = pts[(i + 5) % 6]; final cur = pts[i]; final next = pts[(i + 1) % 6];
+      Offset lerp(Offset a, Offset b, double t) => Offset(a.dx + (b.dx - a.dx) * t, a.dy + (b.dy - a.dy) * t);
+      final inA = lerp(cur, prev, corner); final outA = lerp(cur, next, corner);
+      if (i == 0) { path.moveTo(inA.dx, inA.dy); } else { path.lineTo(inA.dx, inA.dy); }
+      path.quadraticBezierTo(cur.dx, cur.dy, outA.dx, outA.dy);
     }
     path.close();
-    c.drawPath(path, Paint()..color = seal);
-    // حلقة داخلية رفيعة تفصل الحرف عن الأسنان — لمسة الختم الرسمي
-    c.drawCircle(center, r * .74, Paint()..color = Colors.white.withValues(alpha: .55)..style = PaintingStyle.stroke..strokeWidth = math.max(1, s.width * .035));
+    return path;
   }
-  @override bool shouldRepaint(covariant _SealMarkPainter old) => old.seal != seal;
+
+  @override void paint(Canvas c, Size s) {
+    final center = Offset(s.width / 2, s.height / 2); final r = s.width / 2;
+    final hex = _hex(center, r, .22);
+    // تعبئة متدرجة كسطح الختم — لا ظلال مرسومة: drawShadow يجمّد canvaskit على الوِب
+    c.drawPath(hex, Paint()..shader = LinearGradient(begin: Alignment.topRight, end: Alignment.bottomLeft,
+        colors: [Color.lerp(seal, Colors.white, .18)!, seal, Color.lerp(seal, Colors.black, .25)!], stops: const [0, .45, 1]).createShader(Offset.zero & s));
+    // حافة علوية مضيئة تعطي سُمكاً معدنياً خفيفاً
+    c.drawPath(_hex(center, r * .995, .22), Paint()..style = PaintingStyle.stroke..strokeWidth = math.max(1, s.width * .03)..color = Colors.white.withValues(alpha: .18));
+    // حلقة الختم الداخلية — خافتة، تلمّح للتوثيق بلا أسنان
+    c.drawCircle(center, r * .68, Paint()..style = PaintingStyle.stroke..strokeWidth = math.max(1, s.width * .04)..color = Colors.white.withValues(alpha: .28));
+  }
+  @override bool shouldRepaint(covariant _HexMarkPainter old) => old.seal != seal;
 }

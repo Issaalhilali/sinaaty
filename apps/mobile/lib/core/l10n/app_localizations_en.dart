@@ -281,7 +281,7 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get amountHeld => 'Amount is held until you receive your car';
+  String get amountHeld => 'Amount held';
 
   @override
   String get payWithMada => 'mada';
@@ -1715,7 +1715,7 @@ class L10nEn extends L10n {
 
   @override
   String get srFixBody =>
-      'Describe the problem and nearby workshops reply with a diagnosis and a price or a free inspection.';
+      'Describe the problem and your request reaches nearby workshops — compare the offers that arrive and choose.';
 
   @override
   String get srDescribe => 'Describe the problem';
@@ -2054,10 +2054,10 @@ class L10nEn extends L10n {
 
   @override
   String get loginPromise =>
-      'The easiest, fastest place for everything your car needs.';
+      'Your car, from breakdown to back on the road — in one place.';
 
   @override
-  String get loginTrustSign => 'Nafath signature';
+  String get loginTrustSign => 'Signed approvals';
 
   @override
   String get loginTrustEscrow => 'Money held';
@@ -2067,7 +2067,7 @@ class L10nEn extends L10n {
 
   @override
   String get loginNafathNote =>
-      'Sign in with your phone; you sign with Nafath when approving any work.';
+      'Sign in with your phone number, and approve work with your electronic signature.';
 
   @override
   String get drvOnline => 'Online — jobs reach you';
@@ -2456,21 +2456,21 @@ class L10nEn extends L10n {
 
   @override
   String get welcome1Body =>
-      'Describe what you notice in taps — nearby workshops get your card instantly and compete with offers. No more door-to-door.';
+      'Describe what you notice in a few taps and your request reaches nearby workshops — compare the offers that come in and choose at your pace.';
 
   @override
-  String get welcome2Title => 'Your money is held until you receive';
+  String get welcome2Title => 'Your money, safely held';
 
   @override
   String get welcome2Body =>
-      'You pay and the amount stays safely with the platform — the workshop gets it only after you take your car back, satisfied.';
+      'You pay and the amount is held in an escrow account with a licensed payment provider — transferred to the workshop only after you receive your car, or when the confirmation window ends.';
 
   @override
   String get welcome3Title => 'Everything signed and documented';
 
   @override
   String get welcome3Body =>
-      'You approve prices with your signature, your car is photographed in and out, and your invoice is official — your rights on paper, not promises.';
+      'You approve prices with your signature, your car is photographed before and after, and your invoice is official — full documentation that speaks for you if a dispute arises.';
 
   @override
   String get setupTitle => 'Set up your account';
