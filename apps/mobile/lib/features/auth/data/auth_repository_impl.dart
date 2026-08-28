@@ -26,12 +26,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try { final r = await api.dio.get<Map<String, dynamic>>('/me'); return Result.ok(_me(r.data!)); }
     catch (e) { return Result.err(mapDioError(e)); }
   }
-  Me _me(Map<String, dynamic> d) => Me(id: d['id'] as String, phone: d['phone'] as String?, fullNameAr: d['full_name_ar'] as String?, email: d['email'] as String?, platformRole: d['platform_role'] as String, nafathVerified: d['nafath_verified'] as bool, orgs: ((d['orgs'] as List?) ?? []).map((o) => OrgMembership((o as Map)['org_id'] as String, o['role'] as String)).toList());
+  Me _me(Map<String, dynamic> d) => Me(id: d['id'] as String, phone: d['phone'] as String?, fullNameAr: d['full_name_ar'] as String?, email: d['email'] as String?, nameLockedUntil: d['name_locked_until'] == null ? null : DateTime.parse(d['name_locked_until'] as String), platformRole: d['platform_role'] as String, nafathVerified: d['nafath_verified'] as bool, orgs: ((d['orgs'] as List?) ?? []).map((o) => OrgMembership((o as Map)['org_id'] as String, o['role'] as String)).toList());
   @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) async {
     try {
       final r = await api.dio.patch<Map<String, dynamic>>('/me', data: {
-        if (fullNameAr != null) 'full_name_ar': fullNameAr,
-        if (clearEmail) 'email': null else if (email != null) 'email': email,
+        'full_name_ar': ?fullNameAr,
+        if (clearEmail) 'email': null else 'email': ?email,
       });
       return Result.ok(_me(r.data!));
     } catch (e) { return Result.err(mapDioError(e)); }

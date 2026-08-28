@@ -2507,4 +2507,9 @@ class L10nAr extends L10n {
 
   @override
   String get nameFromNafath => 'الاسم موثّق عبر نفاذ';
+
+  @override
+  String nameLockedUntil(Object date) {
+    return 'الاسم يوقّع اعتماداتك — يمكن تغييره بعد $date';
+  }
 }

@@ -1153,5 +1153,11 @@
   "editProfile": "Edit profile",
   "emailLabel": "Email (optional)",
   "emailWhy": "For your invoices and receipts — nothing else.",
-  "nameFromNafath": "Name verified via Nafath"
+  "nameFromNafath": "Name verified via Nafath",
+  "nameLockedUntil": "Your name signs your approvals — changeable after {date}",
+  "@nameLockedUntil": {
+    "placeholders": {
+      "date": {}
+    }
+  }
 }

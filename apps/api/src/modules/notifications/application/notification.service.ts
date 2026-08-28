@@ -2,14 +2,14 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { NotificationChannel } from '@sinaaty/shared-types';
 import { render, TEMPLATES } from '../domain/templates';
 import { NOTIFICATION_REPOSITORY, type NotificationRepository } from '../domain/repositories';
-import { PUSH_PORT, type PushPort, SMS_PORT, type SmsPort } from './ports/channels.port';
+import { EMAIL_PORT, type EmailPort, PUSH_PORT, type PushPort, SMS_PORT, type SmsPort } from './ports/channels.port';
 
 export interface NotifyInput { userId: string; template: string; data: Record<string, unknown>; dedupeKey?: string; channels?: NotificationChannel[] }
 /** Renders a template for the user's locale, stores in-app copy, and fans out to push/SMS ports. Idempotent by dedupeKey. */
 @Injectable()
 export class NotificationService {
   private readonly log = new Logger(NotificationService.name);
-  constructor(@Inject(NOTIFICATION_REPOSITORY) private readonly repo: NotificationRepository, @Inject(PUSH_PORT) private readonly push: PushPort, @Inject(SMS_PORT) private readonly sms: SmsPort) {}
+  constructor(@Inject(NOTIFICATION_REPOSITORY) private readonly repo: NotificationRepository, @Inject(PUSH_PORT) private readonly push: PushPort, @Inject(SMS_PORT) private readonly sms: SmsPort, @Inject(EMAIL_PORT) private readonly email: EmailPort) {}
 
   async notify(i: NotifyInput): Promise<{ sent: NotificationChannel[]; skipped?: string }> {
     const t = TEMPLATES[i.template]; if (!t) { this.log.warn(`unknown template ${i.template}`); return { sent: [], skipped: 'unknown_template' }; }
@@ -30,6 +30,11 @@ export class NotificationService {
     if (channels.includes('sms') && contact?.phone) {
       const row = await this.repo.create({ userId: i.userId, channel: 'sms', templateCode: t.code, titleAr: r.title, bodyAr: r.body, data, status: 'queued' });
       const res = await this.sms.send(contact.phone, `${r.title}\n${r.body}`); await this.repo.markSent(row.id, res.providerRef, res.ok); if (res.ok) sent.push('sms');
+    }
+    // الفواتير والإيصالات تصل بريدَ من تركه — الغرض الذي وُعد به تحت حقل البريد حرفياً
+    if (channels.includes('email') && contact?.email) {
+      const row = await this.repo.create({ userId: i.userId, channel: 'email', templateCode: t.code, titleAr: r.title, bodyAr: r.body, data, status: 'queued' });
+      const res = await this.email.send(contact.email, r.title, r.body); await this.repo.markSent(row.id, res.providerRef, res.ok); if (res.ok) sent.push('email');
     }
     return { sent };
   }

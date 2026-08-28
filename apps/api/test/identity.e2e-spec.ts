@@ -48,6 +48,23 @@ describe('Identity (e2e)', () => {
       expect(again.body.full_name_ar).toBe('مشعل العتيبي');
       await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ full_name_ar: 'م' }).expect(400);
     });
+    it('الاسم يوقّع الاعتمادات: أول كتابةٍ بداية، وتغييره بعدها مقفول 90 يوماً بموعدٍ مسمّى', async () => {
+      // مستخدم جديد كلياً كي لا يرث اسم اختبارٍ سابق
+      const ph = '+966533000333';
+      const q = await http().post('/v1/auth/otp/request').send({ phone: ph }).expect(200);
+      const t = (await http().post('/v1/auth/otp/verify').send({ phone: ph, code: q.body.debug_code }).expect(200)).body.accessToken as string;
+      // أول كتابة تمرّ — بدايةٌ لا تقلّب
+      const first = await http().patch('/v1/me').set('authorization', `Bearer ${t}`).send({ full_name_ar: 'بدر القحطاني' }).expect(200);
+      expect(first.body.name_locked_until).toBeTruthy();                                 // القفل بدأ
+      // التغيير الفوري يُرفض برسالةٍ تحمل الموعد
+      const refused = await http().patch('/v1/me').set('authorization', `Bearer ${t}`).send({ full_name_ar: 'بدر آخر' }).expect(400);
+      expect(refused.body.message_ar).toContain('يمكنك تغييره بعد');
+      // نفس الاسم حرفياً ليس تغييراً — يمرّ بلا اعتراض
+      await http().patch('/v1/me').set('authorization', `Bearer ${t}`).send({ full_name_ar: 'بدر القحطاني' }).expect(200);
+      // والبريد حرٌّ رغم قفل الاسم — القفل على ما يوقّع، لا على وسيلة التواصل
+      const em = await http().patch('/v1/me').set('authorization', `Bearer ${t}`).send({ email: `badr.${Date.now()}@x.sa` }).expect(200);
+      expect(em.body.email).toContain('badr.');
+    });
     it('البريد للفواتير: يُخزَّن صغيراً، يُمسح بـnull، والمكرر يُرفض بلسانٍ مفهوم', async () => {
       const em = `Meshal.${Date.now()}@Example.COM`;
       const me = await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ email: em }).expect(200);

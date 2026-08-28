@@ -1561,6 +1561,7 @@ model User {
   phoneE164                      String?                  @unique @map("phone_e164") @db.VarChar(20)
   email                          String?                  @unique @db.Citext
   fullNameAr                     String?                  @map("full_name_ar") @db.VarChar(150)
+  nameChangedAt                  DateTime?                @map("name_changed_at") @db.Timestamptz(6)
   fullNameEn                     String?                  @map("full_name_en") @db.VarChar(150)
   nationalIdHash                 String?                  @unique @map("national_id_hash") @db.Char(64)
   nationalIdEnc                  Bytes?                   @map("national_id_enc")

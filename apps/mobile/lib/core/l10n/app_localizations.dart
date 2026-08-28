@@ -4776,6 +4776,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'الاسم موثّق عبر نفاذ'**
   String get nameFromNafath;
+
+  /// No description provided for @nameLockedUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم يوقّع اعتماداتك — يمكن تغييره بعد {date}'**
+  String nameLockedUntil(Object date);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

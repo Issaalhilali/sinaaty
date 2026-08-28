@@ -2541,4 +2541,9 @@ class L10nEn extends L10n {
 
   @override
   String get nameFromNafath => 'Name verified via Nafath';
+
+  @override
+  String nameLockedUntil(Object date) {
+    return 'Your name signs your approvals — changeable after $date';
+  }
 }

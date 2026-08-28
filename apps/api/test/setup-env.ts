@@ -30,7 +30,7 @@ proto.assert = function (resError: unknown, res: unknown, fn?: (err: unknown, re
 //
 // Listed, not looped over `process.env`: at this point the `.env` file has not been read yet, so the
 // flags are not in the environment to be rewritten — which is exactly why the first fix did nothing.
-const MOCKED = ['ACCIDENTS', 'AI', 'ESCROW', 'MAPS', 'NAFATH', 'NAFEZ', 'PSP', 'PUSH', 'SEARCH', 'SMS', 'SPEECH', 'STORAGE', 'VIN', 'ZATCA'];
+const MOCKED = ['ACCIDENTS', 'AI', 'EMAIL', 'ESCROW', 'MAPS', 'NAFATH', 'NAFEZ', 'PSP', 'PUSH', 'SEARCH', 'SMS', 'SPEECH', 'STORAGE', 'VIN', 'ZATCA'];
 for (const k of MOCKED) process.env[`INTEGRATION_${k}`] = 'mock';
 
 Object.assign(process.env, {

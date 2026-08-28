@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { PushMessage, PushPort, SmsPort, WhatsAppPort } from '../../application/ports/channels.port';
+import type { EmailPort, PushMessage, PushPort, SmsPort, WhatsAppPort } from '../../application/ports/channels.port';
 /** Dev/test channels: log + keep an in-memory outbox (inspectable in tests via `sent`). */
 @Injectable()
 export class PushMockAdapter implements PushPort {
@@ -15,4 +15,9 @@ export class SmsMockAdapter implements SmsPort {
 export class WhatsAppMockAdapter implements WhatsAppPort {
   readonly sent: Array<{ to: string; templateId: string; params: string[] }> = [];
   sendTemplate(to: string, templateId: string, params: string[]) { this.sent.push({ to, templateId, params }); return Promise.resolve({ ok: true, providerRef: `wa_${this.sent.length}` }); }
+}
+@Injectable()
+export class EmailMockAdapter implements EmailPort {
+  private readonly log = new Logger('mock-email'); readonly sent: Array<{ to: string; subject: string; body: string }> = [];
+  send(to: string, subject: string, body: string) { this.sent.push({ to, subject, body }); this.log.log({ to: to.replace(/(.{2}).*(@.*)/, '$1***$2'), subject }, '[mock email]'); return Promise.resolve({ ok: true, providerRef: `em_${this.sent.length}` }); }
 }

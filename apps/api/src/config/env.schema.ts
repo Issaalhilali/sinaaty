@@ -33,6 +33,8 @@ export const envSchema = z.object({
   OTP_TTL_SECONDS: z.coerce.number().int().positive().default(300),
   OTP_MAX_ATTEMPTS: z.coerce.number().int().positive().default(5),
   OTP_MAX_REQUESTS_PER_10MIN: z.coerce.number().int().positive().default(3),
+  // الاسم يوقّع الاعتمادات — لا يتغيّر إلا بعد هذه المهلة من آخر تغيير (قرار المالك: 90 يوماً)
+  NAME_CHANGE_COOLDOWN_DAYS: z.coerce.number().int().min(0).default(90),
   NAFATH_MOCK_AUTO_APPROVE_MS: z.coerce.number().int().nonnegative().default(1500),
   NAFATH_CALLBACK_SECRET: z.string().min(8).default('dev-nafath-callback-secret'),
 
@@ -84,6 +86,7 @@ export const envSchema = z.object({
   INTEGRATION_PSP: integrationMode,
   INTEGRATION_ESCROW: integrationMode,
   INTEGRATION_SMS: integrationMode,
+  INTEGRATION_EMAIL: z.enum(['mock', 'live']).default('mock'),
   /** الإشعار والتطبيق مغلق (FCM HTTP v1). منفصل عن الرسائل النصية: قد نملك مشروع Firebase قبل
    *  أن نوقّع عقد مزوّد الرسائل، والعكس — وربطهما بمفتاح واحد كان يعطّل أحدهما بالآخر. */
   INTEGRATION_PUSH: integrationMode,

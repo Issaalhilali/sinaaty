@@ -1,5 +1,5 @@
 -- =============================================================================
---  صناعتي (Sinaaty) — PostgreSQL 16 Schema  v1.0  (2026-08-17)
+--   صناعية (Sinaaty) — PostgreSQL 16 Schema  v1.0  (2026-08-17)
 --  Conventions:
 --    * snake_case, plural table names, UUID PKs (app generates UUIDv7; DB default gen_random_uuid()).
 --    * All money = NUMERIC(14,2) SAR. All timestamps = timestamptz (UTC).
@@ -81,6 +81,9 @@ CREATE TABLE users (
     CHECK (phone_e164 ~ '^\+9665[0-9]{8}$'),                    -- هوية الدخول وقناة رمز التوقيع: رقم مشوّه = حساب لا يُدخل إليه
   email              citext UNIQUE,
   full_name_ar       varchar(150),
+  -- آخر تغييرٍ للاسم: الاسم يوقّع الاعتمادات، فتقلّبه يهدم حجيتها — التطبيق يمنع تغييره
+  -- قبل مضي مهلة (NAME_CHANGE_COOLDOWN_DAYS، افتراضياً 90 يوماً)
+  name_changed_at    timestamptz,
   full_name_en       varchar(150),
   national_id_hash   char(64) UNIQUE,                          -- sha256(salt+id) for lookup
   national_id_enc    bytea,                                    -- AES-256-GCM encrypted, key in KMS

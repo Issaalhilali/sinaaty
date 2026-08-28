@@ -1153,5 +1153,11 @@
   "editProfile": "تعديل الملف",
   "emailLabel": "البريد الإلكتروني (اختياري)",
   "emailWhy": "لإرسال فواتيرك وإيصالاتك — لا نستخدمه لغير ذلك.",
-  "nameFromNafath": "الاسم موثّق عبر نفاذ"
+  "nameFromNafath": "الاسم موثّق عبر نفاذ",
+  "nameLockedUntil": "الاسم يوقّع اعتماداتك — يمكن تغييره بعد {date}",
+  "@nameLockedUntil": {
+    "placeholders": {
+      "date": {}
+    }
+  }
 }

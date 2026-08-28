@@ -7,6 +7,7 @@ export interface User {
   phone: string | null;
   fullNameAr: string | null;
   email: string | null;
+  nameChangedAt: Date | null;
   status: UserStatus;
   platformRole: PlatformRole;
   nafathVerifiedAt: Date | null;

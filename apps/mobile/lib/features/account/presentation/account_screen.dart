@@ -5,6 +5,7 @@ import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../../core/format/format.dart';
 import '../../auth/domain/auth_entities.dart';
 import '../../auth/presentation/providers.dart';
 import '../../notifications/presentation/providers.dart';
@@ -42,13 +43,18 @@ class AccountScreen extends ConsumerWidget {
   Future<void> _editProfile(BuildContext context, WidgetRef ref, Me? me) async {
     final l = L10n.of(context);
     final nafath = me?.nafathVerified ?? false;
+    final locked = me?.nameLockedUntil;
+    final nameFrozen = nafath || locked != null;
     final name = TextEditingController(text: me?.fullNameAr ?? '');
     final email = TextEditingController(text: me?.email ?? '');
     final ok = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
       title: Text(l.editProfile),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: name, enabled: !nafath, autofocus: !nafath,
-            decoration: InputDecoration(labelText: l.yourName, helperText: nafath ? l.nameFromNafath : null)),
+        // الاسم يوقّع الاعتمادات: موثّق نفاذ لا يعدّله، ومن غيّره حديثاً ينتظر موعده المسمّى
+        TextField(controller: name, enabled: !nameFrozen, autofocus: !nameFrozen,
+            decoration: InputDecoration(labelText: l.yourName,
+                helperText: nafath ? l.nameFromNafath : locked != null ? l.nameLockedUntil(Fmt.date(locked, locale: Localizations.localeOf(context).languageCode)) : null,
+                helperMaxLines: 2)),
         const SizedBox(height: SinaatySpace.md),
         TextField(controller: email, keyboardType: TextInputType.emailAddress, textDirection: TextDirection.ltr,
             decoration: InputDecoration(labelText: l.emailLabel, helperText: l.emailWhy, helperMaxLines: 2)),
@@ -58,7 +64,7 @@ class AccountScreen extends ConsumerWidget {
     if (ok != true || !context.mounted) return;
     final n = name.text.trim(); final e = email.text.trim();
     final r = await ref.read(authControllerProvider.notifier).updateProfile(
-      fullNameAr: !nafath && n.length >= 2 && n != (me?.fullNameAr ?? '') ? n : null,
+      fullNameAr: !nameFrozen && n.length >= 2 && n != (me?.fullNameAr ?? '') ? n : null,
       email: e.isNotEmpty && e != (me?.email ?? '') ? e : null,
       clearEmail: e.isEmpty && me?.email != null,          // مسح الحقل = سحب البريد من الحساب
     );

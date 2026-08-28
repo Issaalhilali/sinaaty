@@ -4,12 +4,13 @@ import { PrismaService } from '../../../../prisma';
 import type { User } from '../../domain/user';
 import type { UserRepository } from '../../domain/repositories';
 
-const select = { id: true, phoneE164: true, fullNameAr: true, email: true, status: true, platformRole: true, nafathVerifiedAt: true, organizationMembersAsUser: { where: { isActive: true }, orderBy: { joinedAt: 'asc' }, select: { orgId: true, role: true } } } satisfies Prisma.UserSelect;
+const select = { id: true, phoneE164: true, fullNameAr: true, email: true, nameChangedAt: true, status: true, platformRole: true, nafathVerifiedAt: true, organizationMembersAsUser: { where: { isActive: true }, orderBy: { joinedAt: 'asc' }, select: { orgId: true, role: true } } } satisfies Prisma.UserSelect;
 type Row = Prisma.UserGetPayload<{ select: typeof select }>;
 
 const toUser = (r: Row): User => ({
   id: r.id, phone: r.phoneE164, fullNameAr: r.fullNameAr,
-  email: r.email, status: r.status, platformRole: r.platformRole,
+  email: r.email,
+  nameChangedAt: r.nameChangedAt, status: r.status, platformRole: r.platformRole,
   nafathVerifiedAt: r.nafathVerifiedAt, orgs: r.organizationMembersAsUser.map((m) => ({ orgId: m.orgId, role: m.role })),
 });
 
@@ -37,5 +38,5 @@ export class UserPrismaRepository implements UserRepository {
     return toUser(r);
   }
   async touchLogin(userId: string) { await this.prisma.user.update({ where: { id: userId }, data: { lastLoginAt: new Date() } }); }
-  async updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null }) { const r = await this.prisma.user.update({ where: { id: userId }, data: { fullNameAr: p.fullNameAr, email: p.email }, select }); return toUser(r); }
+  async updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null; nameChangedAt?: Date }) { const r = await this.prisma.user.update({ where: { id: userId }, data: { fullNameAr: p.fullNameAr, email: p.email, nameChangedAt: p.nameChangedAt }, select }); return toUser(r); }
 }

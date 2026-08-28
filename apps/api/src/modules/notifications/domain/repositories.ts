@@ -14,6 +14,6 @@ export interface NotificationRepository {
   pushTokens(userId: string): Promise<Array<{ deviceId: string; token: string; platform: string }>>;
   /** رمز رفضه المزوّد نهائياً (التطبيق حُذف أو أُعيد تنصيبه) — يُنزع فلا يُحاوَل إليه ثانيةً. */
   clearPushToken(deviceId: string): Promise<void>;
-  userContact(userId: string): Promise<{ phone: string | null; locale: 'ar' | 'en' } | null>;
+  userContact(userId: string): Promise<{ phone: string | null; email: string | null; locale: 'ar' | 'en' } | null>;
 }
 export const NOTIFICATION_REPOSITORY = Symbol('NOTIFICATION_REPOSITORY');
