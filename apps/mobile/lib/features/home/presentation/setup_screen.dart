@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../auth/presentation/providers.dart';
@@ -53,11 +54,14 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   @override void dispose() { _name.dispose(); super.dispose(); }
 
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final t = Theme.of(context);
+    final l = L10n.of(context);
     final me = ref.watch(authControllerProvider).me;
     // من له اسمٌ أصلاً (عاد بعد إضافة الاسم وخرج قبل السيارة) يبدأ من خطوة السيارة.
     final step = (me?.fullNameAr?.isNotEmpty ?? false) ? 1 : _step;
-    return SealScaffold(
+    // الثيم من تحت غلاف الفاتح — لا من فوقه (نفس علّة «ادخل بجوالك» الباهتة)
+    return Theme(data: AppTheme.light(), child: Builder(builder: (context) {
+      final t = Theme.of(context);
+      return SealScaffold(
       top: Column(mainAxisSize: MainAxisSize.min, children: [
         const BrandMark(size: 40),
         const SizedBox(height: SinaatySpace.lg),
@@ -92,5 +96,6 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
               TextButton(onPressed: _dismiss, child: Text(l.setupLater)),
             ]),
     );
+    }));
   }
 }

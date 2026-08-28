@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../../core/config/platform_info.dart';
@@ -30,8 +31,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   }
 
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final t = Theme.of(context);
-    return SealScaffold(
+    final l = L10n.of(context);
+    // الثيم من تحت غلاف الفاتح — لا من فوقه (نفس علّة «ادخل بجوالك» الباهتة)
+    return Theme(data: AppTheme.light(), child: Builder(builder: (context) {
+      final t = Theme.of(context);
+      return SealScaffold(
       onBack: () => context.pop(),
       // نفس أخضر الشاشة السابقة: الرقم الذي أدخله للتوّ مكتوب أمامه، فلا يشكّ أنه أخطأ فيه.
       top: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -52,5 +56,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         TextButton(onPressed: () => context.pop(), child: Text(l.resendCode)),
       ]),
     );
+    }));
   }
 }

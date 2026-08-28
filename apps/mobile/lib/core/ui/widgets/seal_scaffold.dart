@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 import 'seal_card.dart';
 
@@ -18,7 +19,13 @@ class SealScaffold extends StatelessWidget {
 
   const SealScaffold({super.key, required this.top, required this.sheet, this.onBack});
 
-  @override Widget build(BuildContext context) => Scaffold(
+  @override Widget build(BuildContext context) => Theme(
+      // شاشات ما قبل الدخول تلتزم المظهر الفاتح مهما كان وضع الجهاز: هويةٌ تُعرض لا تفضيلٌ
+      // يُتبع — لوحٌ داكن استقبل المالك على جهازه الداكن فقال كلمته. داخل التطبيق يبقى التفضيل له.
+      data: AppTheme.light(),
+      child: Builder(builder: (context) => _body(context)));
+
+  Widget _body(BuildContext context) => Scaffold(
         backgroundColor: SinaatyColors.sealDeep,
         // السقالة تُقلّص الجسم فوق لوحة المفاتيح؛ فلا نضيف ارتفاعها مرة ثانية داخل اللوح (كان حشواً
         // مزدوجاً)، والتمرير يستوعب ما تبقّى بدل أن يفيض التخطيط على جهاز قصير.

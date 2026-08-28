@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../domain/normalize_phone.dart';
@@ -31,8 +32,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final t = Theme.of(context);
-    return SealScaffold(
+    final l = L10n.of(context);
+    // الثيم يُلتقط من تحت غلاف الفاتح: التقاطه فوق الغلاف أعطى «ادخل بجوالك» لونَ
+    // الداكن على لوحٍ أبيض — باهتةً بالكاد تُقرأ (لقطة المالك على جهازه الداكن).
+    return Theme(data: AppTheme.light(), child: Builder(builder: (context) {
+      final t = Theme.of(context);
+      return SealScaffold(
       top: _Hero(l: l),
       sheet: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.loginTitle, style: t.textTheme.titleLarge),
@@ -67,26 +72,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ],
       ]),
     );
+    }));
   }
 }
 
 /// سطح الختم: الاسم، الجملة التي تختصر المنصة، وثلاث ضمانات هي فرقها عن أي تطبيق ورش.
 class _Hero extends StatelessWidget {
   final L10n l; const _Hero({required this.l});
-  @override Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [
-      // الشعار من مكوّنه الواحد — نسخةٌ محلية قديمة بقيت هنا بعد تبدّل الهوية (جولة الصفحات)
-      const BrandMark(size: 44),
-      const SizedBox(width: 12),
-      Text(l.appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
-    ]),
-    const SizedBox(height: SinaatySpace.xl),
-    Text(l.loginPromise, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.35)),
-    const SizedBox(height: SinaatySpace.md),
-    Wrap(spacing: 8, runSpacing: 8, children: [
-      SealPill(l.loginTrustSign, icon: Icons.draw_outlined),
-      SealPill(l.loginTrustEscrow, icon: Icons.lock_outline),
-      SealPill(l.loginTrustInvoice, icon: Icons.receipt_long_outlined),
-    ]),
-  ]);
+  @override Widget build(BuildContext context) {
+    // «النصوص كبيرة لحجم الشاشة» — كلمة المالك على جهازه: المقاس يُشتق من عرض الشاشة
+    // ويُحصر بين حدّين، فيتنفس على الكبيرة ولا يزاحم على الصغيرة. والارتفاع القصير
+    // (جوالات قديمة، لوحة مفاتيح مفتوحة) يطوي الشعار ويُبقي الجوهر.
+    final size = MediaQuery.sizeOf(context);
+    final titleSize = (size.width * .058).clamp(19.0, 25.0).toDouble();
+    final compact = size.height < 640;
+    return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (!compact) ...[
+        Row(children: [
+          const BrandMark(size: 38),
+          const SizedBox(width: 10),
+          Text(l.appName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+        const SizedBox(height: SinaatySpace.lg),
+      ],
+      Text(l.loginPromise, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.white, height: 1.45)),
+      const SizedBox(height: SinaatySpace.md),
+      Wrap(spacing: 6, runSpacing: 6, children: [
+        SealPill(l.loginTrustSign, icon: Icons.draw_outlined),
+        SealPill(l.loginTrustEscrow, icon: Icons.lock_outline),
+        SealPill(l.loginTrustInvoice, icon: Icons.receipt_long_outlined),
+      ]),
+    ]);
+  }
 }
