@@ -75,8 +75,8 @@ class _Hero extends StatelessWidget {
   final L10n l; const _Hero({required this.l});
   @override Widget build(BuildContext context) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
-      Container(width: 44, height: 44, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .14), borderRadius: BorderRadius.circular(13)),
-        child: Center(child: Container(width: 18, height: 18, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3))))),
+      // الشعار من مكوّنه الواحد — نسخةٌ محلية قديمة بقيت هنا بعد تبدّل الهوية (جولة الصفحات)
+      const BrandMark(size: 44),
       const SizedBox(width: 12),
       Text(l.appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
     ]),
