@@ -1699,8 +1699,7 @@ class L10nAr extends L10n {
   String get srFix => 'أصلح سيارتي';
 
   @override
-  String get srFixBody =>
-      'صف المشكلة ويوصل طلبك للورش القريبة — تقارن عروض من ردّ وتختار.';
+  String get srFixBody => 'صف المشكلة، وقارن عروض الورش القريبة.';
 
   @override
   String get srDescribe => 'صف المشكلة';
@@ -2041,8 +2040,7 @@ class L10nAr extends L10n {
   String get loginTrustInvoice => 'فاتورة نظامية';
 
   @override
-  String get loginNafathNote =>
-      'تدخل برقم جوالك، وتعتمد الأعمال بتوقيعك الإلكتروني.';
+  String get loginNafathNote => 'برقم جوالك تدخل، وبتوقيعك تعتمد.';
 
   @override
   String get drvOnline => 'متصل — تصلك المهام';
@@ -2425,28 +2423,26 @@ class L10nAr extends L10n {
   String get welcome1Title => 'قول وش فيها.. والعروض تجيك';
 
   @override
-  String get welcome1Body =>
-      'وصّف اللي تلاحظه بكم نقرة، ويوصل طلبك لأقرب الورش — تقارن عروض اللي ردّوا وتختار براحتك.';
+  String get welcome1Body => 'وصّف العطل بكم نقرة، والعروض توصلك — قارن واختر.';
 
   @override
   String get welcome2Title => 'فلوسك محفوظة بضمان';
 
   @override
   String get welcome2Body =>
-      'تدفع والمبلغ يُحفظ في حساب ضامن لدى مزوّد دفع مرخّص — وما يتحوّل للورشة إلا بعد استلامك، أو انقضاء مهلة التأكيد.';
+      'فلوسك في حساب ضامن، وما تنصرف إلا بعد الاستلام أو نهاية المهلة.';
 
   @override
   String get welcome3Title => 'كل شي موثّق باسمك';
 
   @override
-  String get welcome3Body =>
-      'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة إلكترونية نظامية — توثيق كامل يشهد لك إذا صار خلاف.';
+  String get welcome3Body => 'سعر باعتمادك، وصور قبل وبعد، وفاتورة نظامية.';
 
   @override
   String get setupTitle => 'جهّز حسابك';
 
   @override
-  String get setupSubtitle => 'دقيقة وحدة: اسمك وسيارتك، ويصير كل شي جاهز';
+  String get setupSubtitle => 'دقيقة وحدة: اسمك وسيارتك';
 
   @override
   String get setupStepName => 'اسمك';
@@ -2458,8 +2454,7 @@ class L10nAr extends L10n {
   String get setupNameTitle => 'وش نناديك؟';
 
   @override
-  String get setupNameBody =>
-      'اسمك يطلع في اعتماداتك وفواتيرك، ومحفوظ في حسابك تلقاه من أي جهاز.';
+  String get setupNameBody => 'يطلع في اعتماداتك وفواتيرك.';
 
   @override
   String get setupNameLabel => 'الاسم';
@@ -2477,8 +2472,7 @@ class L10nAr extends L10n {
   String get setupCarTitle => 'أضف سيارتك';
 
   @override
-  String get setupCarBody =>
-      'برقم الهيكل أو اللوحة. نفتح لها سجل يمشي معها: صيانتها وضماناتها، وينفعك يوم تبيعها.';
+  String get setupCarBody => 'برقم الهيكل أو اللوحة — وسجلّها يمشي معها.';
 
   @override
   String get setupAddCar => 'أضف سيارتي';

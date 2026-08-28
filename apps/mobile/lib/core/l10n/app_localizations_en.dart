@@ -1715,7 +1715,7 @@ class L10nEn extends L10n {
 
   @override
   String get srFixBody =>
-      'Describe the problem and your request reaches nearby workshops — compare the offers that arrive and choose.';
+      'Describe the problem, compare offers from nearby workshops.';
 
   @override
   String get srDescribe => 'Describe the problem';
@@ -2067,7 +2067,7 @@ class L10nEn extends L10n {
 
   @override
   String get loginNafathNote =>
-      'Sign in with your phone number, and approve work with your electronic signature.';
+      'Sign in with your number, approve with your signature.';
 
   @override
   String get drvOnline => 'Online — jobs reach you';
@@ -2456,28 +2456,27 @@ class L10nEn extends L10n {
 
   @override
   String get welcome1Body =>
-      'Describe what you notice in a few taps and your request reaches nearby workshops — compare the offers that come in and choose at your pace.';
+      'Describe the fault in a few taps — offers come to you. Compare and choose.';
 
   @override
   String get welcome2Title => 'Your money, safely held';
 
   @override
   String get welcome2Body =>
-      'You pay and the amount is held in an escrow account with a licensed payment provider — transferred to the workshop only after you receive your car, or when the confirmation window ends.';
+      'Your money sits in escrow, released only after receipt or when the window ends.';
 
   @override
   String get welcome3Title => 'Everything signed and documented';
 
   @override
   String get welcome3Body =>
-      'You approve prices with your signature, your car is photographed before and after, and your invoice is official — full documentation that speaks for you if a dispute arises.';
+      'Prices you approve, photos before and after, an official invoice.';
 
   @override
   String get setupTitle => 'Set up your account';
 
   @override
-  String get setupSubtitle =>
-      'One minute — your name, then your car. Everything is saved to your account';
+  String get setupSubtitle => 'One minute: your name and your car';
 
   @override
   String get setupStepName => 'Your name';
@@ -2489,8 +2488,7 @@ class L10nEn extends L10n {
   String get setupNameTitle => 'What\'s your name?';
 
   @override
-  String get setupNameBody =>
-      'We greet you by it and it signs your approvals — saved to your account on any device.';
+  String get setupNameBody => 'Shown on your approvals and invoices.';
 
   @override
   String get setupNameLabel => 'Name';
@@ -2508,8 +2506,7 @@ class L10nEn extends L10n {
   String get setupCarTitle => 'Add your car';
 
   @override
-  String get setupCarBody =>
-      'By VIN or plate — it gets a permanent record of services and warranties, worth real money when you sell.';
+  String get setupCarBody => 'By VIN or plate — its record travels with it.';
 
   @override
   String get setupAddCar => 'Add my car';

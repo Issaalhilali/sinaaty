@@ -3262,7 +3262,7 @@ abstract class L10n {
   /// No description provided for @srFixBody.
   ///
   /// In ar, this message translates to:
-  /// **'صف المشكلة ويوصل طلبك للورش القريبة — تقارن عروض من ردّ وتختار.'**
+  /// **'صف المشكلة، وقارن عروض الورش القريبة.'**
   String get srFixBody;
 
   /// No description provided for @srDescribe.
@@ -3886,7 +3886,7 @@ abstract class L10n {
   /// No description provided for @loginNafathNote.
   ///
   /// In ar, this message translates to:
-  /// **'تدخل برقم جوالك، وتعتمد الأعمال بتوقيعك الإلكتروني.'**
+  /// **'برقم جوالك تدخل، وبتوقيعك تعتمد.'**
   String get loginNafathNote;
 
   /// No description provided for @drvOnline.
@@ -4618,7 +4618,7 @@ abstract class L10n {
   /// No description provided for @welcome1Body.
   ///
   /// In ar, this message translates to:
-  /// **'وصّف اللي تلاحظه بكم نقرة، ويوصل طلبك لأقرب الورش — تقارن عروض اللي ردّوا وتختار براحتك.'**
+  /// **'وصّف العطل بكم نقرة، والعروض توصلك — قارن واختر.'**
   String get welcome1Body;
 
   /// No description provided for @welcome2Title.
@@ -4630,7 +4630,7 @@ abstract class L10n {
   /// No description provided for @welcome2Body.
   ///
   /// In ar, this message translates to:
-  /// **'تدفع والمبلغ يُحفظ في حساب ضامن لدى مزوّد دفع مرخّص — وما يتحوّل للورشة إلا بعد استلامك، أو انقضاء مهلة التأكيد.'**
+  /// **'فلوسك في حساب ضامن، وما تنصرف إلا بعد الاستلام أو نهاية المهلة.'**
   String get welcome2Body;
 
   /// No description provided for @welcome3Title.
@@ -4642,7 +4642,7 @@ abstract class L10n {
   /// No description provided for @welcome3Body.
   ///
   /// In ar, this message translates to:
-  /// **'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة إلكترونية نظامية — توثيق كامل يشهد لك إذا صار خلاف.'**
+  /// **'سعر باعتمادك، وصور قبل وبعد، وفاتورة نظامية.'**
   String get welcome3Body;
 
   /// No description provided for @setupTitle.
@@ -4654,7 +4654,7 @@ abstract class L10n {
   /// No description provided for @setupSubtitle.
   ///
   /// In ar, this message translates to:
-  /// **'دقيقة وحدة: اسمك وسيارتك، ويصير كل شي جاهز'**
+  /// **'دقيقة وحدة: اسمك وسيارتك'**
   String get setupSubtitle;
 
   /// No description provided for @setupStepName.
@@ -4678,7 +4678,7 @@ abstract class L10n {
   /// No description provided for @setupNameBody.
   ///
   /// In ar, this message translates to:
-  /// **'اسمك يطلع في اعتماداتك وفواتيرك، ومحفوظ في حسابك تلقاه من أي جهاز.'**
+  /// **'يطلع في اعتماداتك وفواتيرك.'**
   String get setupNameBody;
 
   /// No description provided for @setupNameLabel.
@@ -4714,7 +4714,7 @@ abstract class L10n {
   /// No description provided for @setupCarBody.
   ///
   /// In ar, this message translates to:
-  /// **'برقم الهيكل أو اللوحة. نفتح لها سجل يمشي معها: صيانتها وضماناتها، وينفعك يوم تبيعها.'**
+  /// **'برقم الهيكل أو اللوحة — وسجلّها يمشي معها.'**
   String get setupCarBody;
 
   /// No description provided for @setupAddCar.
