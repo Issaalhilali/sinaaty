@@ -7,12 +7,12 @@ import type { NotificationRepository } from '../domain/repositories';
 describe('قناة البريد', () => {
   const rows: Array<{ channel: string; status: string }> = [];
   const repo = (email: string | null): NotificationRepository => ({
-    exists: async () => false,
-    userContact: async () => ({ phone: '+966500000000', email, locale: 'ar' as const }),
-    pushTokens: async () => [],
-    clearPushToken: async () => {},
-    create: async (r: { channel: string; status: string }) => { rows.push({ channel: r.channel, status: r.status }); return { id: `${rows.length}` } as never; },
-    markSent: async () => {},
+    exists: () => Promise.resolve(false),
+    userContact: () => Promise.resolve({ phone: '+966500000000', email, locale: 'ar' as const }),
+    pushTokens: () => Promise.resolve([]),
+    clearPushToken: () => Promise.resolve(),
+    create: (r: { channel: string; status: string }) => { rows.push({ channel: r.channel, status: r.status }); return Promise.resolve({ id: `${rows.length}` } as never); },
+    markSent: () => Promise.resolve(),
   }) as unknown as NotificationRepository;
 
   const build = (email: string | null) => {
