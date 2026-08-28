@@ -91,33 +91,33 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         dismissed: ref.watch(setupDismissedProvider))) {
       return const SetupScreen();
     }
-    final tabs = isSupplier ? <(String, IconData, Widget)>[
-      (l.spRequests, Icons.gavel_outlined, const SupplierRequestsScreen()),
-      (l.spSales, Icons.storefront_outlined, const SupplierSalesScreen()),
-      (l.tabWallet, Icons.account_balance_wallet_outlined, const OrgWalletScreen()),
+    final tabs = isSupplier ? <(String, BrandGlyph, Widget)>[
+      (l.spRequests, BrandGlyph.auction, const SupplierRequestsScreen()),
+      (l.spSales, BrandGlyph.store, const SupplierSalesScreen()),
+      (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
     ] : switch (flavor) {
       // ثلاثة لا أربعة (قرار المالك ٢٦ أغسطس ٢٠٢٦): «سياراتي» كانت تحمل «ماذا تحتاج؟» و«اطلب»
       // تبويبٌ كامل لنفس الشيء — تبويبان لوظيفة واحدة. و«محفظتي» و«حسابي» كلاهما «أنا». ومنتجٌ
       // مهمّته واحدة (سيارتي معطّلة) لا يُطلب من صاحبها أن يختار تبويباً قبل أن يقولها.
-      AppFlavor.customer => <(String, IconData, Widget)>[
-        (l.tabHome, Icons.home_outlined, const HomeScreen()),
-        (l.tabMyOrders, Icons.receipt_long_outlined, const MyOrdersScreen()),
-        (l.tabAccount, Icons.person_outline, const AccountScreen()),
+      AppFlavor.customer => <(String, BrandGlyph, Widget)>[
+        (l.tabHome, BrandGlyph.home, const HomeScreen()),
+        (l.tabMyOrders, BrandGlyph.orders, const MyOrdersScreen()),
+        (l.tabAccount, BrandGlyph.person, const AccountScreen()),
       ],
       // السائق يُعرف بملفّه لا بنوع منشأته: قد يعمل تحت شركة نقل أو ورشة لها سطحة، والحقيقة
       // الوحيدة أنه يقود. تبويبٌ واحد يسبق الباقي لأنه كل عمله.
-      AppFlavor.partner => <(String, IconData, Widget)>[
-        if (isDriver) (l.tabDriverJobs, Icons.local_shipping_outlined, const DriverHomeScreen()),
-        (l.tabToday, Icons.today_outlined, const TodayScreen()),
-        (l.tabOrders, Icons.receipt_long_outlined, const OrdersScreen()),
-        if (flags.enabled(Flags.partsMarketplace)) (l.tabParts, Icons.settings_input_component_outlined, const WorkshopPartsScreen()),
-        (l.tabWallet, Icons.account_balance_wallet_outlined, const OrgWalletScreen()),
+      AppFlavor.partner => <(String, BrandGlyph, Widget)>[
+        if (isDriver) (l.tabDriverJobs, BrandGlyph.towTruck, const DriverHomeScreen()),
+        (l.tabToday, BrandGlyph.today, const TodayScreen()),
+        (l.tabOrders, BrandGlyph.orders, const OrdersScreen()),
+        if (flags.enabled(Flags.partsMarketplace)) (l.tabParts, BrandGlyph.gear, const WorkshopPartsScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
       ],
-      AppFlavor.fleet => <(String, IconData, Widget)>[
-        (l.tabToday, Icons.dashboard_outlined, const FleetTodayScreen()),
-        (l.tabMyCars, Icons.directions_car_outlined, const VehiclesScreen()),
-        (l.tabWallet, Icons.account_balance_wallet_outlined, const WalletScreen()),
-        (l.tabAccount, Icons.person_outline, const AccountScreen()),
+      AppFlavor.fleet => <(String, BrandGlyph, Widget)>[
+        (l.tabToday, BrandGlyph.today, const FleetTodayScreen()),
+        (l.tabMyCars, BrandGlyph.car, const VehiclesScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const WalletScreen()),
+        (l.tabAccount, BrandGlyph.person, const AccountScreen()),
       ],
     };
     if (_index >= tabs.length) _index = 0; final title = tabs[_index].$1; final name = me?.fullNameAr ?? '';
@@ -140,7 +140,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
 
   /// One sentence in → the right screen out. Money and legal actions are never voice-executed;
   /// the assistant delivers the user to the action, the action keeps its own explicit tap.
-  Future<void> _assistant(L10n l, List<(String, IconData, Widget)> tabs, {required bool partner}) async {
+  Future<void> _assistant(L10n l, List<(String, BrandGlyph, Widget)> tabs, {required bool partner}) async {
     final said = await showVoiceSheet(context, ref, title: l.assistantTitle);
     if (said == null || said.trim().isEmpty || !mounted) return;
     final cmd = parseAssistant(said, partner: partner);
@@ -159,7 +159,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     }
   }
 
-  void _goTab(AssistantTarget t, L10n l, List<(String, IconData, Widget)> tabs) {
+  void _goTab(AssistantTarget t, L10n l, List<(String, BrandGlyph, Widget)> tabs) {
     final label = switch (t) {
       AssistantTarget.wallet => l.tabWallet,
       AssistantTarget.vehicles => l.tabMyCars,

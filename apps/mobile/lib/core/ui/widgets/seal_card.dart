@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
+import 'brand_icons.dart';
 /// The signature surface (UI v2): deep seal gradient, faint geometric hatch, soft glow — carries "the most important thing now",
 /// one number and one button. Text on it is white; use [SealPill] for chips and [SealButton] for the action.
 class SealCard extends StatelessWidget {
@@ -67,7 +68,7 @@ class SealMeter extends StatelessWidget {
 }
 /// Floating pill navigation (UI v2): translucent surface, rounded, 3–4 items, selected item gets a soft seal fill.
 class FloatingNav extends StatelessWidget {
-  final int index; final ValueChanged<int> onChanged; final List<({IconData icon, String label})> items;
+  final int index; final ValueChanged<int> onChanged; final List<({BrandGlyph icon, String label})> items;
   const FloatingNav({super.key, required this.index, required this.onChanged, required this.items});
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme; final dark = Theme.of(context).brightness == Brightness.dark;
@@ -76,7 +77,7 @@ class FloatingNav extends StatelessWidget {
   }
 }
 class _NavItem extends StatelessWidget {
-  final ({IconData icon, String label}) item; final bool selected; final VoidCallback onTap; const _NavItem({required this.item, required this.selected, required this.onTap});
+  final ({BrandGlyph icon, String label}) item; final bool selected; final VoidCallback onTap; const _NavItem({required this.item, required this.selected, required this.onTap});
   @override Widget build(BuildContext context) { final s = Theme.of(context).colorScheme; final fg = selected ? s.onPrimaryContainer : s.onSurfaceVariant;
-    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(20), child: AnimatedContainer(duration: const Duration(milliseconds: 180), decoration: BoxDecoration(color: selected ? s.primaryContainer : Colors.transparent, borderRadius: BorderRadius.circular(20)), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(item.icon, size: 22, color: fg), const SizedBox(height: 2), Text(item.label, style: TextStyle(fontSize: 11, fontWeight: selected ? FontWeight.w700 : FontWeight.w600, color: fg))]))); }
+    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(20), child: AnimatedContainer(duration: const Duration(milliseconds: 180), decoration: BoxDecoration(color: selected ? s.primaryContainer : Colors.transparent, borderRadius: BorderRadius.circular(20)), child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [BrandIcon(item.icon, size: 23, color: fg), const SizedBox(height: 2), Text(item.label, style: TextStyle(fontSize: 11, fontWeight: selected ? FontWeight.w700 : FontWeight.w600, color: fg))]))); }
 }
