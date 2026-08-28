@@ -29,7 +29,8 @@ class MyOrdersScreen extends ConsumerWidget {
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
-    final orders = (ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[]).where((w) => w.isActive).toList();
+    final orders = (ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[]).where((w) => w.isActive).toList()
+      ..sort((a, b) => a.customerPriority.compareTo(b.customerPriority));
     final fixes = (ref.watch(sm.myServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]).where((r) => r.open).toList();
     final parts = (ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[]).where((r) => r.open).toList();
     final tows = (ref.watch(myTowJobsProvider).value?.valueOrNull ?? const <TransportJob>[]).where((j) => j.isLive).toList();

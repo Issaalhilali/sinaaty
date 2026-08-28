@@ -15,6 +15,17 @@ class WorkOrder {
   const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, this.orgNameAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
   bool get awaitingApproval => status == 'awaiting_approval';
   bool get isActive => !const {'closed', 'cancelled', 'abandoned'}.contains(status);
+
+  /// أولوية العرض للعميل: ما ينتظر **فعله هو** يتصدر، وما يتقدّم تحت أيدي الورشة يليه،
+  /// والمسودة آخر الصف — مسودةُ صفرٍ كانت تتصدر فوق «بانتظار اعتمادك» لمجرد أنها الأحدث،
+  /// فيفتح العميل التطبيق على بطاقةٍ لا فعل له فيها بينما أمرٌ يوقف الورشةَ ينتظر توقيعه.
+  int get customerPriority => switch (status) {
+        'awaiting_approval' => 0,          // توقيعه يفكّ الورشة
+        'ready_for_pickup' => 1,           // سيارته تنتظره
+        'delivered' => 2,                  // تأكيده يحرّر المبلغ
+        'draft' => 9,                      // لا فعل له فيها بعد
+        _ => 5,                            // قيد العمل — اطمئنانٌ لا فعل
+      };
 }
 class WoHistory { final String? from; final String to; final DateTime at; final String? noteAr; const WoHistory({this.from, required this.to, required this.at, this.noteAr}); }
 class WoVersionSummary {

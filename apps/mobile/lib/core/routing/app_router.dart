@@ -33,6 +33,8 @@ import '../../features/transport/presentation/driver_proof_screen.dart';
 import '../../features/transport/presentation/tow_job_screen.dart';
 import '../../features/transport/presentation/tow_request_screen.dart';
 import '../di/core_providers.dart';
+import '../l10n/app_localizations.dart';
+import '../ui/ui.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
 import '../config/app_config.dart';
 /// go_router with an auth guard: unknown → splash, signedOut → /login, signedIn → /.
@@ -67,7 +69,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
       GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
       // المحفظة كانت تبويباً؛ صارت داخل «حسابي» بعد تقليص التبويبات إلى ثلاثة — فتحتاج عنواناً.
-      GoRoute(path: '/wallet', builder: (_, _) => const WalletScreen()),
+      GoRoute(path: '/wallet', builder: (_, _) => const _WalletRoute()),
       GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
       GoRoute(path: '/disputes/:id', builder: (_, s) => DisputeScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/service-requests/:id', builder: (_, s) => ServiceRequestScreen(id: s.pathParameters['id']!)),
@@ -84,7 +86,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
       // إشعار «حُرّر المبلغ لك» كان يحمل مساراً لا وجود له، فالنقر لا يفعل شيئاً. المحفظة تبويبٌ
       // في الأصل، ولها الآن عنوانٌ يُفتح من الإشعار مباشرةً.
-      GoRoute(path: '/ws/wallet', builder: (_, _) => const OrgWalletScreen()),
+      GoRoute(path: '/ws/wallet', builder: (_, _) => const _OrgWalletRoute()),
       // «تم اعتماد منشأتك 🎉» تفتح يوم المنشأة. الجذر وحده لا يصلح وجهةً لرابط: `routeFor` يترجم
       // المضيف مساراً، فـ«sinaaty://» بلا مضيفٍ لا يُترجم إلى شيء.
       GoRoute(path: '/today', redirect: (_, _) => '/'),
@@ -93,3 +95,17 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 class _AuthListenable extends ChangeNotifier { _AuthListenable(Ref ref) { ref.listen(authControllerProvider, (_, _) => notifyListeners()); ref.listen(sessionExpiredProvider, (_, _) { ref.read(authControllerProvider.notifier).signOut(); }); } }
+
+/// «محفظتي» كانت تبويباً يستعير سقالة الهيكل؛ مستقلةً عبر `/wallet` ظهر نصّها بخطوط فلاتر
+/// الصفراء (نصٌّ بلا Material) — شاشةٌ تُفتح من مسارٍ تحتاج سقالتها معها.
+class _WalletRoute extends StatelessWidget {
+  const _WalletRoute();
+  @override Widget build(BuildContext context) =>
+      AppScaffold(title: L10n.of(context).tabWallet, body: const WalletScreen());
+}
+
+class _OrgWalletRoute extends StatelessWidget {
+  const _OrgWalletRoute();
+  @override Widget build(BuildContext context) =>
+      AppScaffold(title: L10n.of(context).tabWallet, body: const OrgWalletScreen());
+}

@@ -14,6 +14,7 @@ import 'package:sinaaty/features/auth/presentation/welcome_screen.dart';
 import 'package:sinaaty/features/home/domain/effective_flavor.dart';
 import 'package:sinaaty/features/home/presentation/home_shell.dart';
 import 'package:sinaaty/features/vehicles/domain/vehicle.dart';
+import 'package:sinaaty/features/work_orders/domain/work_order.dart';
 import 'package:sinaaty/features/vehicles/domain/vehicles_repository.dart';
 import 'package:sinaaty/features/vehicles/presentation/providers.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -137,5 +138,15 @@ void main() {
     await t.ensureVisible(find.text('هوندا أكورد 2021'));                   // البطاقات أسفل الصفحة
     await t.tap(find.text('هوندا أكورد 2021')); await t.pumpAndSettle();
     expect(find.text('أمر wo9'), findsOneWidget);            // البطاقة تقود إلى الإصلاح الجاري
+  });
+
+  group('أولوية العميل — صرف', () {
+    WorkOrder wo(String id, String st) => WorkOrder(id: id, number: 'WO-$id', status: st, paymentTerms: 'immediate', currentVersion: 1, titleAr: 'x', vehicleId: 'v', orgId: 'o', subtotal: '0', vatAmount: '0', total: '0', depositRequired: '0', items: const [], createdAt: DateTime(2026));
+    test('ما ينتظر فعل العميل يتصدر، والمسودة آخر الصف', () {
+      // مسودةُ صفرٍ تصدّرت فوق «بانتظار اعتمادك» لمجرد أنها الأحدث (جولة الصفحات 2026-08-28)
+      final l = [wo('d', 'draft'), wo('p', 'in_progress'), wo('a', 'awaiting_approval'), wo('r', 'ready_for_pickup')]
+        ..sort((a, b) => a.customerPriority.compareTo(b.customerPriority));
+      expect(l.map((w) => w.status).toList(), ['awaiting_approval', 'ready_for_pickup', 'in_progress', 'draft']);
+    });
   });
 }

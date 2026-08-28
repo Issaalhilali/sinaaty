@@ -38,7 +38,8 @@ class HomeScreen extends ConsumerWidget {
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
     final orders = ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[];
     final shops = ref.watch(sm.nearbyShopsProvider).value ?? const <NearbyShop>[];
-    final live = orders.where((w) => w.isActive).toList();
+    final live = orders.where((w) => w.isActive).toList()
+      ..sort((a, b) => a.customerPriority.compareTo(b.customerPriority));
 
     Future<void> refresh() async {
       ref.invalidate(vehiclesProvider); ref.invalidate(workOrdersProvider); ref.invalidate(sm.nearbyShopsProvider);
