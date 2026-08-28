@@ -26,6 +26,7 @@ export const NAV: NavGroup[] = [
     title: 'المتابعة',
     items: [
       { href: '/', label: 'نظرة عامة', hint: 'مؤشرات المنصة اليوم', icon: s('M3 13h4l3 7 4-16 3 9h4') },
+      { href: '/ops', label: 'غرفة العمليات', hint: 'ما ينتظر تدخّلاً الآن', icon: s('M12 8v4l3 3', <circle cx="12" cy="12" r="9" />) },
     ],
   },
   {

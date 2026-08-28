@@ -10,6 +10,10 @@ const ReasonDto = z.object({ reason_ar: z.string().min(3).max(500) }); type Reas
 export class AdminController {
   constructor(private readonly uc: AdminUseCases) {}
   @Get('overview') @ApiOperation({ summary: 'Back-office KPIs (orgs, work orders, money, notes, parts, integrations health)' }) overview(@CurrentUser() u: AuthUser) { return this.uc.overview(u); }
+  @Get('ops') @ApiOperation({ summary: 'غرفة عمليات اليوم: طلبات بلا عروض، مزادات تنتهي صفراً، أوامر عالقة، أموال مجمّدة/فائتة، سندات متأخرة، تكاملات' })
+  ops(@CurrentUser() u: AuthUser, @Query('stale_minutes') sm?: string, @Query('ending_minutes') em?: string, @Query('stuck_hours') sh?: string) {
+    return this.uc.ops(u, { stale_minutes: sm ? Number(sm) : undefined, ending_minutes: em ? Number(em) : undefined, stuck_hours: sh ? Number(sh) : undefined });
+  }
   @Get('audit') audit(@CurrentUser() u: AuthUser, @Query('action') action?: string, @Query('entity_type') et?: string, @Query('entity_id') eid?: string, @Query('org_id') org?: string, @Query('actor_user_id') actor?: string, @Query('from') from?: string, @Query('to') to?: string, @Query('limit') limit?: string, @Query('before_id') before?: string) { return this.uc.audit(u, { action, entity_type: et, entity_id: eid, org_id: org, actor_user_id: actor, from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined, limit: Math.min(Number(limit ?? 100), 500), before_id: before ? BigInt(before) : undefined }); }
   @Get('audit.csv') @Header('Content-Type', 'text/csv; charset=utf-8') @Header('Content-Disposition', 'attachment; filename="audit.csv"') async auditCsv(@CurrentUser() u: AuthUser, @Res() res: Response, @Query('action') action?: string, @Query('entity_type') et?: string, @Query('org_id') org?: string, @Query('from') from?: string, @Query('to') to?: string) { res.send(await this.uc.auditCsv(u, { action, entity_type: et, org_id: org, from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined })); }
   @Get('settings') settings(@CurrentUser() u: AuthUser) { return this.uc.settings(u); }

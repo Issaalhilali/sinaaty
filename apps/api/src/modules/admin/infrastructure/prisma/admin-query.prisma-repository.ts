@@ -32,4 +32,57 @@ export class AdminQueryPrismaRepository implements AdminQueryRepository {
   async payouts(q: { status?: string; limit: number }) { const rows = await this.prisma.payout.findMany({ where: { status: q.status as never }, orderBy: { createdAt: 'desc' }, take: q.limit, include: { org: { select: { tradeNameAr: true, legalNameAr: true } } } }); return rows.map((r) => ({ id: r.id, orgId: r.orgId, orgNameAr: r.org.tradeNameAr ?? r.org.legalNameAr, amount: d(r.amount), status: r.status, scheduledFor: r.scheduledFor, processedAt: r.processedAt, failureReason: r.failureReason })); }
   async users(q: { q?: string; platform_role?: string; limit: number }) { const rows = await this.prisma.user.findMany({ where: { platformRole: q.platform_role as never, OR: q.q ? [{ phoneE164: { contains: q.q } }, { fullNameAr: { contains: q.q } }] : undefined }, orderBy: { createdAt: 'desc' }, take: q.limit }); return rows.map((r) => ({ id: r.id, phone: r.phoneE164, fullNameAr: r.fullNameAr, status: r.status, platformRole: r.platformRole, nafathVerifiedAt: r.nafathVerifiedAt, createdAt: r.createdAt })); }
   async setPlatformRole(userId: string, role: string) { await this.prisma.user.update({ where: { id: userId }, data: { platformRole: role as never } }); }
+
+  async ops(q: { staleMinutes: number; endingMinutes: number; stuckHours: number; limit: number }) {
+    const p = this.prisma; const now = new Date();
+    const staleBefore = new Date(now.getTime() - q.staleMinutes * 60_000);
+    const endingBy = new Date(now.getTime() + q.endingMinutes * 60_000);
+    const stuckBefore = new Date(now.getTime() - q.stuckHours * 3_600_000);
+    const [repair, partsEnding, unpaid, awaiting, frozen, pastRelease, notes, dlq, stalled, outboxPending, imb] = await Promise.all([
+      // طلبات إصلاح مفتوحة بلا أي عرض — عميلٌ ينتظر ولا أحد يرد: أول ما يُتَّصل بشأنه
+      p.$queryRaw<Array<{ id: string; number: string; title_ar: string; created_at: Date }>>`
+        SELECT r.id, r.number, r.title_ar, r.created_at FROM service_requests r
+        WHERE r.status = 'open' AND (r.expires_at IS NULL OR r.expires_at > ${now}) AND r.created_at <= ${staleBefore}
+          AND NOT EXISTS (SELECT 1 FROM service_offers o WHERE o.request_id = r.id AND o.status <> 'withdrawn')
+        ORDER BY r.created_at ASC LIMIT ${q.limit}`,
+      // مزادات قطع على وشك الانتهاء صفراً — تُنقذ بتوسيع أو باتصال بمورّد
+      p.$queryRaw<Array<{ id: string; number: string; part_name_ar: string; ends_at: Date }>>`
+        SELECT r.id, r.number, r.part_name_ar, r.bidding_ends_at AS ends_at FROM part_requests r
+        WHERE r.status IN ('open', 'bidding') AND r.bidding_ends_at BETWEEN ${now} AND ${endingBy}
+          AND NOT EXISTS (SELECT 1 FROM part_bids b WHERE b.request_id = r.id AND b.status = 'submitted')
+        ORDER BY r.bidding_ends_at ASC LIMIT ${q.limit}`,
+      // أوامر شراء معلقة على الدفع طويلاً — بائعٌ حجز بضاعةً لمشترٍ صامت
+      p.$queryRaw<Array<{ id: string; number: string; total: Prisma.Decimal; buyer_name_ar: string | null; created_at: Date }>>`
+        SELECT o.id, o.number, o.total, COALESCE(b.trade_name_ar, b.legal_name_ar) AS buyer_name_ar, o.created_at
+        FROM part_orders o LEFT JOIN organizations b ON b.id = o.buyer_org_id
+        WHERE o.status = 'pending_payment' AND o.created_at <= ${stuckBefore}
+        ORDER BY o.created_at ASC LIMIT ${q.limit}`,
+      // أوامر عمل تنتظر اعتماد العميل طويلاً — الورشة واقفة والعميل غافل: تذكيرٌ يحرّكها
+      p.$queryRaw<Array<{ id: string; number: string; title_ar: string | null; org_name_ar: string | null; since: Date }>>`
+        SELECT w.id, w.number, w.title_ar, COALESCE(g.trade_name_ar, g.legal_name_ar) AS org_name_ar, w.updated_at AS since
+        FROM work_orders w JOIN organizations g ON g.id = w.org_id
+        WHERE w.status = 'awaiting_approval' AND w.updated_at <= ${stuckBefore}
+        ORDER BY w.updated_at ASC LIMIT ${q.limit}`,
+      p.escrowHold.aggregate({ _count: true, _sum: { amount: true }, where: { status: 'frozen' } }),
+      // محجوزٌ فات موعدُ تحرره التلقائي ولم يتحرر — الموقِف إما نزاع أو عطل: كلاهما يستحق نظرة
+      p.escrowHold.aggregate({ _count: true, _sum: { amount: true }, where: { status: 'held', autoReleaseAt: { lt: now } } }),
+      p.promissoryNote.aggregate({ _count: true, _sum: { outstandingAmount: true }, where: { status: { in: ['issued', 'partially_settled', 'in_enforcement'] }, dueDate: { lt: now } } }),
+      p.integrationRequest.count({ where: { status: 'dead_letter' } }),
+      p.integrationRequest.count({ where: { status: 'failed', attempts: { gte: 3 } } }),
+      p.outbox.count({ where: { publishedAt: null } }),
+      p.$queryRaw<Array<{ b: Prisma.Decimal | null }>>`SELECT COALESCE(SUM(debit) - SUM(credit), 0) AS b FROM ledger_lines`,
+    ]);
+    return {
+      repair_no_offers: { count: repair.length, rows: repair.map((r) => ({ id: r.id, number: r.number, titleAr: r.title_ar, createdAt: r.created_at })) },
+      parts_ending_no_bids: { count: partsEnding.length, rows: partsEnding.map((r) => ({ id: r.id, number: r.number, partNameAr: r.part_name_ar, endsAt: r.ends_at })) },
+      part_orders_unpaid: { count: unpaid.length, rows: unpaid.map((r) => ({ id: r.id, number: r.number, total: r.total.toFixed(2), buyerNameAr: r.buyer_name_ar, createdAt: r.created_at })) },
+      wo_awaiting_approval: { count: awaiting.length, rows: awaiting.map((r) => ({ id: r.id, number: r.number, titleAr: r.title_ar, orgNameAr: r.org_name_ar, since: r.since })) },
+      escrow_frozen: { count: frozen._count, total: d(frozen._sum.amount) },
+      escrow_past_release: { count: pastRelease._count, total: d(pastRelease._sum.amount) },
+      notes_overdue: { count: notes._count, outstanding: d(notes._sum.outstandingAmount) },
+      integrations: { dead_letters: dlq, stalled },
+      outbox_pending: outboxPending,
+      ledger_imbalance: d(imb[0]?.b ?? null),
+    };
+  }
 }

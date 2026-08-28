@@ -16,6 +16,11 @@ export class AdminUseCases {
   private staff(u: AuthUser) { if (!isPlatformStaff(u)) throw new AppError('FORBIDDEN'); }
   private superOnly(u: AuthUser) { if (u.platformRole !== 'super_admin') throw new AppError('FORBIDDEN', { messageAr: 'هذا الإجراء لمشرف المنصة فقط.', messageEn: 'Super admin only.' }); }
   overview(u: AuthUser) { this.staff(u); return this.q.overview(); }
+  /** غرفة عمليات اليوم — كل طابورٍ فيه شيءٌ ينتظر إنساناً. العتبات تُمرَّر كي تضبطها الإدارة. */
+  ops(u: AuthUser, q: { stale_minutes?: number; ending_minutes?: number; stuck_hours?: number }) {
+    this.staff(u);
+    return this.q.ops({ staleMinutes: q.stale_minutes ?? 30, endingMinutes: q.ending_minutes ?? 120, stuckHours: q.stuck_hours ?? 24, limit: 10 });
+  }
   audit(u: AuthUser, q: Parameters<AdminQueryRepository['audit']>[0]) { this.staff(u); return this.q.audit(q); }
   /** CSV export (UTF-8 BOM for Excel), same filters, max 5000 rows. */
   async auditCsv(u: AuthUser, q: Omit<Parameters<AdminQueryRepository['audit']>[0], 'limit'>) { this.staff(u); const rows = await this.q.audit({ ...q, limit: 5000 }); const esc = (v: unknown) => { const s = v == null ? '' : typeof v === 'object' ? JSON.stringify(v) : typeof v === 'string' ? v : JSON.stringify(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }; const head = ['id', 'occurred_at', 'actor_user_id', 'actor_type', 'org_id', 'action', 'entity_type', 'entity_id', 'before', 'after', 'request_id', 'hash', 'prev_hash']; return '﻿' + [head.join(','), ...rows.map((r) => [r.id, r.occurredAt.toISOString(), r.actorUserId, r.actorType, r.orgId, r.action, r.entityType, r.entityId, r.before, r.after, r.requestId, r.hash, r.prevHash].map(esc).join(','))].join('\n'); }

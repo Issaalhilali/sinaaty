@@ -12,5 +12,19 @@ export interface AdminQueryRepository {
   payouts(q: { status?: string; limit: number }): Promise<Array<{ id: string; orgId: string; orgNameAr: string | null; amount: string; status: string; scheduledFor: Date; processedAt: Date | null; failureReason: string | null }>>;
   users(q: { q?: string; platform_role?: string; limit: number }): Promise<Array<{ id: string; phone: string | null; fullNameAr: string | null; status: string; platformRole: string; nafathVerifiedAt: Date | null; createdAt: Date }>>;
   setPlatformRole(userId: string, role: string): Promise<void>;
+  /** غرفة عمليات اليوم: طوابير أشياء تنتظر إنساناً — لا مؤشرات عرض. العتبات تأتي من المستدعي
+   *  كي تضبطها الإدارة (وتصفّرها الاختبارات). */
+  ops(q: { staleMinutes: number; endingMinutes: number; stuckHours: number; limit: number }): Promise<{
+    repair_no_offers: { count: number; rows: Array<{ id: string; number: string; titleAr: string; createdAt: Date }> };
+    parts_ending_no_bids: { count: number; rows: Array<{ id: string; number: string; partNameAr: string; endsAt: Date }> };
+    part_orders_unpaid: { count: number; rows: Array<{ id: string; number: string; total: string; buyerNameAr: string | null; createdAt: Date }> };
+    wo_awaiting_approval: { count: number; rows: Array<{ id: string; number: string; titleAr: string | null; orgNameAr: string | null; since: Date }> };
+    escrow_frozen: { count: number; total: string };
+    escrow_past_release: { count: number; total: string };
+    notes_overdue: { count: number; outstanding: string };
+    integrations: { dead_letters: number; stalled: number };
+    outbox_pending: number;
+    ledger_imbalance: string;
+  }>;
 }
 export const ADMIN_QUERY_REPOSITORY = Symbol('ADMIN_QUERY_REPOSITORY');
