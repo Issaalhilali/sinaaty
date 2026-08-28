@@ -17,3 +17,14 @@ final tokenStoreProvider = Provider<TokenStore>((_) => TokenStore());
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient(config: ref.watch(appConfigProvider), tokens: ref.watch(tokenStoreProvider), locale: () => ref.read(localeProvider), onSessionExpired: () => ref.read(sessionExpiredProvider.notifier).bump()));
 /// موقع الجهاز — يُستبدل في الاختبارات بموقع ثابت، فلا اختبارٌ يطلب GPS.
 final hereProvider = Provider<Here>((_) => const Here());
+
+/// هل رأى هذا الجهاز شاشات الترحيب؟ تُقرأ متزامنةً في حارس المسارات، فتُحمَّل مرةً عند الإقلاع
+/// (بديل bootstrap) ويقلبها «ابدأ» فوراً — الكتابة إلى القرص تجري في الخلفية داخل الشاشة.
+final welcomeSeenInitialProvider = Provider<bool>((_) => true);   // يستبدله bootstrap بقيمة القرص
+class WelcomeSeen extends Notifier<bool> { @override bool build() => ref.read(welcomeSeenInitialProvider); void mark() => state = true; }
+final welcomeSeenProvider = NotifierProvider<WelcomeSeen, bool>(WelcomeSeen.new);
+
+/// «جهّز حسابك» صُرف عنه بيده — لا يُلحّ على من قال لاحقاً.
+final setupDismissedInitialProvider = Provider<bool>((_) => false);
+class SetupDismissed extends Notifier<bool> { @override bool build() => ref.read(setupDismissedInitialProvider); void mark() => state = true; }
+final setupDismissedProvider = NotifierProvider<SetupDismissed, bool>(SetupDismissed.new);

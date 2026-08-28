@@ -9,6 +9,9 @@ export interface VehicleRepository {
   /** نفس اللوحة عند نفس المالك — من لا يرى سيارته يُضيفها ثانيةً، فتتكرّر بصمت. */
   findByPlateForOwner(plateAr: string, owner: { userId?: string; orgId?: string }): Promise<Vehicle | null>;
   listByOwner(owner: { userId?: string; orgId?: string }): Promise<Vehicle[]>;
+  /** نبض كل سيارةٍ في المجموعة: آخر صيانة مُسلَّمة، وكم ضماناً سارياً، وهل فيها إصلاح مفتوح —
+   *  ما تحتاجه بطاقة «سيارتي» الحيّة على الشاشة الرئيسية، دفعةً واحدة لا سؤالاً لكل سيارة. */
+  vitalsByVehicles(vehicleIds: string[]): Promise<Map<string, { lastServiceAt: Date | null; lastServiceTitleAr: string | null; activeWarranties: number; openWorkOrderId: string | null }>>;
   updateOdometer(id: string, km: number, tx?: TxHandle): Promise<void>;
   setPassportToken(id: string, token: string | null): Promise<void>;
   findByPassportToken(token: string): Promise<Vehicle | null>;

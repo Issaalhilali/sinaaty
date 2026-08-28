@@ -24,3 +24,13 @@ AppFlavor effectiveFlavor({required AppFlavor built, required bool hasOrg, bool 
 /// و`me` قيد التحميل ليس «بلا منشأة»: من لا حساب له بعدُ لا يُساق إلى تسجيل شيء.
 bool shouldOnboard({required AppFlavor flavor, required bool signedIn, required bool hasOrg}) =>
     flavor == AppFlavor.partner && signedIn && !hasOrg;
+
+/// هل يُقاد هذا العميل خطوةً بخطوة لتجهيز حسابه؟
+///
+/// **غياب السيارة هو السائق** — منتجٌ مهمّته «سيارتي معطّلة» بلا سيارةٍ مسجّلة فارغُ اليدين،
+/// والاسم خطوةٌ تُدرج قبلها عند غيابه. (كان الشرط «بلا اسمٍ وبلا سيارة» معاً — فحفظُ الاسم
+/// أخرج المستخدم من البوابة قبل خطوة السيارة: اختبار المسار كشفها قبل أن يعيشها أحد.)
+/// ومن صرفها بيده («لاحقاً») لا تعود تلحّ عليه. و«القائمة لم تصل بعد» ليس «بلا سيارة» —
+/// درس «سجّل ورشتك» نفسه.
+bool shouldGuideSetup({required AppFlavor flavor, required bool signedIn, required bool carsLoaded, required bool hasCars, required bool dismissed}) =>
+    flavor == AppFlavor.customer && signedIn && !dismissed && carsLoaded && !hasCars;

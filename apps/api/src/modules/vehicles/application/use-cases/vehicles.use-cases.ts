@@ -62,9 +62,13 @@ export class VehiclesUseCases {
     });
     return v;
   }
-  listMine(user: AuthUser, orgId?: string) {
-    if (orgId) { if (!user.orgs.some((o) => o.orgId === orgId) && !isPlatformStaff(user)) throw new AppError('FORBIDDEN'); return this.vehicles.listByOwner({ orgId }); }
-    return this.vehicles.listByOwner({ userId: user.id });
+  async listMine(user: AuthUser, orgId?: string) {
+    if (orgId && !user.orgs.some((o) => o.orgId === orgId) && !isPlatformStaff(user)) throw new AppError('FORBIDDEN');
+    const rows = await this.vehicles.listByOwner(orgId ? { orgId } : { userId: user.id });
+    // البطاقة الحيّة: سجل السيارة يعرف آخر صيانةٍ وضماناتها منذ شهور، والشاشة كانت تعرض صفاً
+    // بارداً باسمها فقط — القيمة المخزونة تُعرض حيث يُنظر، لا حيث تُخزن.
+    const vitals = await this.vehicles.vitalsByVehicles(rows.map((v) => v.id));
+    return rows.map((v) => { const x = vitals.get(v.id); return { ...v, last_service_at: x?.lastServiceAt ?? null, last_service_title_ar: x?.lastServiceTitleAr ?? null, active_warranties: x?.activeWarranties ?? 0, open_work_order_id: x?.openWorkOrderId ?? null }; });
   }
   async get(user: AuthUser, id: string) { const v = await this.mustOwn(user, id); return { ...v, events: await this.events.list(id, { limit: 50 }) }; }
   async setOdometer(user: AuthUser, id: string, dto: OdometerDto) {

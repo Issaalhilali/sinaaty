@@ -87,12 +87,14 @@ class HomeScreen extends ConsumerWidget {
           EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody,
               actionLabel: l.addCar, onAction: () => context.push('/vehicles/add'))
         else
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.xs),
-            child: Column(children: [
-              for (final v in vehicles)
-                AppListRow(icon: Icons.directions_car_outlined, title: v.title, subtitle: v.subtitle,
-                    onTap: () => context.push('/vehicles/${v.id}')),
-            ])),
+          // البطاقة الحيّة لا الصفّ البارد: سجل السيارة يعرف آخر صيانتها وضماناتها منذ شهور،
+          // وكانت الشاشة تعرض اسمها فقط. القيمة المخزونة تُعرض حيث يُنظر — من قاعدة البيانات.
+          Column(children: [
+            for (final v in vehicles) Padding(
+              padding: const EdgeInsets.only(bottom: SinaatySpace.sm),
+              child: _VehicleCard(v: v),
+            ),
+          ]),
         SizedBox(height: t.bodySmall == null ? 0 : SinaatySpace.lg),
       ],
     ));
@@ -117,5 +119,42 @@ class _AskHero extends ConsumerWidget {
       const SizedBox(height: SinaatySpace.lg),
       const ServicesRow(),
     ]);
+  }
+}
+
+/// بطاقة سيارةٍ تعرف صاحبها: آخر صيانة، الضمانات السارية، أو الإصلاح الجاري الآن.
+class _VehicleCard extends StatelessWidget {
+  final Vehicle v;
+  const _VehicleCard({required this.v});
+
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final t = Theme.of(context).textTheme; final cs = Theme.of(context).colorScheme;
+    final vitals = <Widget>[
+      if (v.openWorkOrderId != null)
+        StatusBadge(l.vcInService, tone: BadgeTone.brass, icon: Icons.build_outlined)
+      else if (v.lastServiceAt != null)
+        StatusBadge(l.vcLastService(Fmt.date(v.lastServiceAt!, locale: locale)), tone: BadgeTone.plain, icon: Icons.history)
+      else
+        StatusBadge(l.vcNoHistory, tone: BadgeTone.plain, icon: Icons.auto_stories_outlined),
+      if (v.activeWarranties > 0) StatusBadge(l.vcWarranties(v.activeWarranties), tone: BadgeTone.seal, icon: Icons.workspace_premium_outlined),
+    ];
+    return SectionCard(child: InkWell(
+      borderRadius: BorderRadius.circular(SinaatySpace.radius),
+      onTap: () => context.push(v.openWorkOrderId != null ? '/work-orders/${v.openWorkOrderId}' : '/vehicles/${v.id}'),
+      child: Row(children: [
+        Container(width: 46, height: 46,
+          decoration: BoxDecoration(color: cs.primary.withValues(alpha: .1), borderRadius: BorderRadius.circular(12)),
+          child: Icon(Icons.directions_car_outlined, color: cs.primary)),
+        const SizedBox(width: SinaatySpace.md),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(v.title, style: t.titleSmall),
+          if (v.openWorkOrderId != null && v.lastServiceTitleAr == null) const SizedBox(height: 2),
+          const SizedBox(height: 6),
+          Wrap(spacing: 6, runSpacing: 4, children: vitals),
+        ])),
+        Icon(Icons.chevron_left, color: cs.onSurfaceVariant),
+      ]),
+    ));
   }
 }

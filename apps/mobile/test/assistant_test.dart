@@ -69,6 +69,7 @@ void main() {
     authRepositoryProvider.overrideWithValue(FakeAuth()), tokenStoreProvider.overrideWithValue(ts),
     voiceInputProvider.overrideWithValue(voice),
     vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
+    setupDismissedInitialProvider.overrideWithValue(true),   // موضوع الاختبار المساعدُ لا بوابة «جهّز حسابك»
     myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
     myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
     unreadCountProvider.overrideWith((ref) async => 0),

@@ -33,6 +33,8 @@ import '../../features/transport/presentation/driver_proof_screen.dart';
 import '../../features/transport/presentation/tow_job_screen.dart';
 import '../../features/transport/presentation/tow_request_screen.dart';
 import '../di/core_providers.dart';
+import '../../features/auth/presentation/welcome_screen.dart';
+import '../config/app_config.dart';
 /// go_router with an auth guard: unknown → splash, signedOut → /login, signedIn → /.
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthListenable(ref);
@@ -41,12 +43,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (ctx, state) {
       final auth = ref.read(authControllerProvider); final loggingIn = state.matchedLocation.startsWith('/login');
       if (auth.status == AuthStatus.unknown) return state.matchedLocation == '/splash' ? null : '/splash';
-      if (auth.status == AuthStatus.signedOut) return loggingIn ? null : '/login';
-      if (loggingIn || state.matchedLocation == '/splash') return '/';
+      if (auth.status == AuthStatus.signedOut) {
+        // أول فتحٍ على الإطلاق: الوعد قبل طلب الرقم — للعميل وحده، ومرةً واحدة في عمر الجهاز.
+        // القراءة متزامنة (تُحمَّل في main قبل runApp عبر welcomeSeenProvider) فلا وميض شاشة.
+        final isCustomer = ref.read(appConfigProvider).flavor == AppFlavor.customer;
+        if (isCustomer && !ref.read(welcomeSeenProvider) && state.matchedLocation != '/welcome') return '/welcome';
+        if (state.matchedLocation == '/welcome') return isCustomer && !ref.read(welcomeSeenProvider) ? null : '/login';
+        return loggingIn ? null : '/login';
+      }
+      if (loggingIn || state.matchedLocation == '/splash' || state.matchedLocation == '/welcome') return '/';
       return null;
     },
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
+      GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen(), routes: [GoRoute(path: 'otp', builder: (_, s) { final e = (s.extra as Map?) ?? {}; return OtpScreen(phone: e['phone'] as String? ?? '', debugCode: e['debug'] as String?); })]),
       GoRoute(path: '/', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vehicles/add', builder: (_, _) => const AddVehicleScreen()),

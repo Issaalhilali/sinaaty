@@ -23,6 +23,22 @@ export class VehiclePrismaRepository implements VehicleRepository {
     const r = await this.prisma.vehicle.findFirst({ where: { plateNumber: plateAr, deletedAt: null, ...(owner.orgId ? { ownerOrgId: owner.orgId } : { ownerUserId: owner.userId }) }, select });
     return r ? toVehicle(r) : null;
   }
+  async vitalsByVehicles(vehicleIds: string[]) {
+    const out = new Map<string, { lastServiceAt: Date | null; lastServiceTitleAr: string | null; activeWarranties: number; openWorkOrderId: string | null }>();
+    if (!vehicleIds.length) return out;
+    const now = new Date();
+    const [last, wars, open] = await Promise.all([
+      // آخر أمرٍ سُلّم فعلاً — لا مسودة ولا ملغى: «آخر صيانة» ادّعاءٌ لا يصح إلا بما اكتمل
+      this.prisma.workOrder.findMany({ where: { vehicleId: { in: vehicleIds }, status: { in: ['delivered', 'closed'] } }, orderBy: { updatedAt: 'desc' }, select: { vehicleId: true, updatedAt: true, titleAr: true } }),
+      this.prisma.warranty.groupBy({ by: ['vehicleId'], where: { vehicleId: { in: vehicleIds }, status: 'active', endsAt: { gt: now } }, _count: true }),
+      this.prisma.workOrder.findMany({ where: { vehicleId: { in: vehicleIds }, status: { notIn: ['delivered', 'closed', 'cancelled', 'draft'] } }, orderBy: { createdAt: 'desc' }, select: { vehicleId: true, id: true } }),
+    ]);
+    for (const id of vehicleIds) out.set(id, { lastServiceAt: null, lastServiceTitleAr: null, activeWarranties: 0, openWorkOrderId: null });
+    for (const r of last) { const e = out.get(r.vehicleId)!; if (!e.lastServiceAt) { e.lastServiceAt = r.updatedAt; e.lastServiceTitleAr = r.titleAr; } }
+    for (const w of wars) if (w.vehicleId) out.get(w.vehicleId)!.activeWarranties = w._count;
+    for (const o2 of open) { const e = out.get(o2.vehicleId)!; if (!e.openWorkOrderId) e.openWorkOrderId = o2.id; }
+    return out;
+  }
   async listByOwner(o: { userId?: string; orgId?: string }) { const rows = await this.prisma.vehicle.findMany({ where: { deletedAt: null, ...(o.orgId ? { ownerOrgId: o.orgId } : { ownerUserId: o.userId }) }, orderBy: { createdAt: 'desc' }, select }); return rows.map(toVehicle); }
   async updateOdometer(id: string, km: number, tx?: TxHandle) { const db = tx ? asTx(tx) : this.prisma; await db.vehicle.update({ where: { id }, data: { odometerKm: km } }); }
   async setPassportToken(id: string, token: string | null) { await this.prisma.vehicle.update({ where: { id }, data: { passportPublicToken: token } }); }

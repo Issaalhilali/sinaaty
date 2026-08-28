@@ -2411,4 +2411,94 @@ class L10nAr extends L10n {
 
   @override
   String get obStepDocs => 'الوثائق';
+
+  @override
+  String get welcomeSkip => 'تخطَّ';
+
+  @override
+  String get welcomeNext => 'التالي';
+
+  @override
+  String get welcomeStart => 'ابدأ';
+
+  @override
+  String get welcome1Title => 'قول وش فيها.. والعروض تجيك';
+
+  @override
+  String get welcome1Body =>
+      'وصّف اللي تلاحظه بكم نقرة، والورش القريبة يوصلها طلبك وترد عليك بعروضها. بدون ما تلف الورش وحدة وحدة.';
+
+  @override
+  String get welcome2Title => 'فلوسك محفوظة لين تستلم';
+
+  @override
+  String get welcome2Body =>
+      'تدفع والمبلغ يبقى أمانة عندنا. ما يوصل الورشة إلا يوم تستلم سيارتك وأنت راضي.';
+
+  @override
+  String get welcome3Title => 'كل شي موثّق باسمك';
+
+  @override
+  String get welcome3Body =>
+      'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة رسمية. حقك ما يضيع.';
+
+  @override
+  String get setupTitle => 'جهّز حسابك';
+
+  @override
+  String get setupSubtitle => 'دقيقة وحدة: اسمك وسيارتك، ويصير كل شي جاهز';
+
+  @override
+  String get setupStepName => 'اسمك';
+
+  @override
+  String get setupStepCar => 'سيارتك';
+
+  @override
+  String get setupNameTitle => 'وش نناديك؟';
+
+  @override
+  String get setupNameBody =>
+      'اسمك يطلع في اعتماداتك وفواتيرك، ومحفوظ في حسابك تلقاه من أي جهاز.';
+
+  @override
+  String get setupNameLabel => 'الاسم';
+
+  @override
+  String get setupNameHint => 'مثال: مشعل العتيبي';
+
+  @override
+  String get setupNameShort => 'اكتب اسماً من حرفين على الأقل';
+
+  @override
+  String get setupNext => 'التالي';
+
+  @override
+  String get setupCarTitle => 'أضف سيارتك';
+
+  @override
+  String get setupCarBody =>
+      'برقم الهيكل أو اللوحة. نفتح لها سجل يمشي معها: صيانتها وضماناتها، وينفعك يوم تبيعها.';
+
+  @override
+  String get setupAddCar => 'أضف سيارتي';
+
+  @override
+  String get setupLater => 'لاحقاً';
+
+  @override
+  String get vcInService => 'في الورشة الآن — تابعها';
+
+  @override
+  String get vcNoHistory => 'سجلها يبدأ من أول صيانة';
+
+  @override
+  String vcLastService(Object date) {
+    return 'آخر صيانة $date';
+  }
+
+  @override
+  String vcWarranties(Object n) {
+    return '$n ضمان ساري';
+  }
 }

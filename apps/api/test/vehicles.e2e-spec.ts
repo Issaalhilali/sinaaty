@@ -24,6 +24,18 @@ describe('Vehicles (e2e)', () => {
     const v = await http().get(`/v1/vehicles/${vehicleId}`).set(auth(tokA)).expect(200);
     expect(v.body.events).toHaveLength(1); expect(v.body.events[0].type).toBe('odometer');
   });
+  it('the list carries the vitals the live card shows — cold rows tell the customer nothing', async () => {
+    // البيانات كانت مخزونةً في سجل السيارة منذ شهور والشاشة تعرض صفاً بارداً باسمها فقط.
+    const r = await http().get('/v1/vehicles').set(auth(tokA)).expect(200);
+    expect(r.body.length).toBeGreaterThan(0);
+    for (const v of r.body) {
+      expect(v).toHaveProperty('last_service_at');
+      expect(v).toHaveProperty('active_warranties');
+      expect(v).toHaveProperty('open_work_order_id');
+      expect(typeof v.active_warranties).toBe('number');
+    }
+  });
+
   it('same owner re-adding same VIN returns the existing one; another user gets 409', async () => {
     const again = await http().post('/v1/vehicles').set(auth(tokA)).send({ vin }).expect(201);
     expect(again.body.already_exists).toBe(true);

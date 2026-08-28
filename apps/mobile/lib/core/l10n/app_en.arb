@@ -1112,5 +1112,42 @@
   "obRejected": "The review needs a change",
   "obStepInfo": "Details",
   "obStepPlace": "Location",
-  "obStepDocs": "Documents"
+  "obStepDocs": "Documents",
+  "welcomeSkip": "Skip",
+  "welcomeNext": "Next",
+  "welcomeStart": "Get started",
+  "welcome1Title": "One problem, one request",
+  "welcome1Body": "Describe what you notice in taps — nearby workshops get your card instantly and compete with offers. No more door-to-door.",
+  "welcome2Title": "Your money is held until you receive",
+  "welcome2Body": "You pay and the amount stays safely with the platform — the workshop gets it only after you take your car back, satisfied.",
+  "welcome3Title": "Everything signed and documented",
+  "welcome3Body": "You approve prices with your signature, your car is photographed in and out, and your invoice is official — your rights on paper, not promises.",
+  "setupTitle": "Set up your account",
+  "setupSubtitle": "One minute — your name, then your car. Everything is saved to your account",
+  "setupStepName": "Your name",
+  "setupStepCar": "Your car",
+  "setupNameTitle": "What's your name?",
+  "setupNameBody": "We greet you by it and it signs your approvals — saved to your account on any device.",
+  "setupNameLabel": "Name",
+  "setupNameHint": "e.g. Meshal Alotaibi",
+  "setupNameShort": "Enter at least two characters",
+  "setupNext": "Next",
+  "setupCarTitle": "Add your car",
+  "setupCarBody": "By VIN or plate — it gets a permanent record of services and warranties, worth real money when you sell.",
+  "setupAddCar": "Add my car",
+  "setupLater": "Later",
+  "vcInService": "In the workshop — track it",
+  "vcNoHistory": "Its record starts with the first service",
+  "vcLastService": "Last service {date}",
+  "@vcLastService": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "vcWarranties": "{n} active warranties",
+  "@vcWarranties": {
+    "placeholders": {
+      "n": {}
+    }
+  }
 }

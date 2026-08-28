@@ -4590,6 +4590,168 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'الوثائق'**
   String get obStepDocs;
+
+  /// No description provided for @welcomeSkip.
+  ///
+  /// In ar, this message translates to:
+  /// **'تخطَّ'**
+  String get welcomeSkip;
+
+  /// No description provided for @welcomeNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get welcomeNext;
+
+  /// No description provided for @welcomeStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابدأ'**
+  String get welcomeStart;
+
+  /// No description provided for @welcome1Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'قول وش فيها.. والعروض تجيك'**
+  String get welcome1Title;
+
+  /// No description provided for @welcome1Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصّف اللي تلاحظه بكم نقرة، والورش القريبة يوصلها طلبك وترد عليك بعروضها. بدون ما تلف الورش وحدة وحدة.'**
+  String get welcome1Body;
+
+  /// No description provided for @welcome2Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'فلوسك محفوظة لين تستلم'**
+  String get welcome2Title;
+
+  /// No description provided for @welcome2Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'تدفع والمبلغ يبقى أمانة عندنا. ما يوصل الورشة إلا يوم تستلم سيارتك وأنت راضي.'**
+  String get welcome2Body;
+
+  /// No description provided for @welcome3Title.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل شي موثّق باسمك'**
+  String get welcome3Title;
+
+  /// No description provided for @welcome3Body.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعتمد السعر بتوقيعك، وسيارتك تنصوّر قبل وبعد، والفاتورة رسمية. حقك ما يضيع.'**
+  String get welcome3Body;
+
+  /// No description provided for @setupTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'جهّز حسابك'**
+  String get setupTitle;
+
+  /// No description provided for @setupSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'دقيقة وحدة: اسمك وسيارتك، ويصير كل شي جاهز'**
+  String get setupSubtitle;
+
+  /// No description provided for @setupStepName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمك'**
+  String get setupStepName;
+
+  /// No description provided for @setupStepCar.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك'**
+  String get setupStepCar;
+
+  /// No description provided for @setupNameTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وش نناديك؟'**
+  String get setupNameTitle;
+
+  /// No description provided for @setupNameBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسمك يطلع في اعتماداتك وفواتيرك، ومحفوظ في حسابك تلقاه من أي جهاز.'**
+  String get setupNameBody;
+
+  /// No description provided for @setupNameLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم'**
+  String get setupNameLabel;
+
+  /// No description provided for @setupNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: مشعل العتيبي'**
+  String get setupNameHint;
+
+  /// No description provided for @setupNameShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب اسماً من حرفين على الأقل'**
+  String get setupNameShort;
+
+  /// No description provided for @setupNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get setupNext;
+
+  /// No description provided for @setupCarTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف سيارتك'**
+  String get setupCarTitle;
+
+  /// No description provided for @setupCarBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'برقم الهيكل أو اللوحة. نفتح لها سجل يمشي معها: صيانتها وضماناتها، وينفعك يوم تبيعها.'**
+  String get setupCarBody;
+
+  /// No description provided for @setupAddCar.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف سيارتي'**
+  String get setupAddCar;
+
+  /// No description provided for @setupLater.
+  ///
+  /// In ar, this message translates to:
+  /// **'لاحقاً'**
+  String get setupLater;
+
+  /// No description provided for @vcInService.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الورشة الآن — تابعها'**
+  String get vcInService;
+
+  /// No description provided for @vcNoHistory.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجلها يبدأ من أول صيانة'**
+  String get vcNoHistory;
+
+  /// No description provided for @vcLastService.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر صيانة {date}'**
+  String vcLastService(Object date);
+
+  /// No description provided for @vcWarranties.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} ضمان ساري'**
+  String vcWarranties(Object n);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -16,6 +16,7 @@ import '../../auth/presentation/providers.dart';
 import '../../billing/presentation/providers.dart' show invoicesProvider;
 import '../../billing/presentation/wallet_screen.dart';
 import '../../notifications/presentation/providers.dart';
+import '../../vehicles/presentation/providers.dart';
 import '../../vehicles/presentation/vehicles_screen.dart';
 import '../../work_orders/presentation/providers.dart' show workOrdersProvider;
 import '../../workshop/presentation/orders_screen.dart';
@@ -28,6 +29,7 @@ import '../../workshop/presentation/incoming_banner.dart';
 import '../../workshop/presentation/today_screen.dart';
 import '../../parts/presentation/supplier_screens.dart';
 import 'home_screen.dart';
+import 'setup_screen.dart';
 import 'my_orders_screen.dart';
 import '../../fleet/presentation/fleet_today_screen.dart';
 import '../../parts/presentation/workshop_parts_screen.dart';
@@ -80,6 +82,14 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     // والحكم من `me` وحده: هي المجلوبة لهذا الحساب الآن، والقائمة المحفوظة قد تكون لحسابٍ سبقه.
     if (shouldOnboard(flavor: flavor, signedIn: me != null, hasOrg: hasOrg)) {
       return const OnboardScreen();
+    }
+    // العميل الجديد تماماً — بلا اسمٍ وبلا سيارة — يُقاد دقيقةً واحدة: اسمه ثم سيارته،
+    // وكلاهما يُكتب في حسابه في قاعدة البيانات لا في ذاكرة الجهاز. و«لاحقاً» تُحترم.
+    final cars = ref.watch(vehiclesProvider);
+    if (shouldGuideSetup(flavor: flavor, signedIn: me != null,
+        carsLoaded: cars.hasValue, hasCars: (cars.value?.valueOrNull ?? const []).isNotEmpty,
+        dismissed: ref.watch(setupDismissedProvider))) {
+      return const SetupScreen();
     }
     final tabs = isSupplier ? <(String, IconData, Widget)>[
       (l.spRequests, Icons.gavel_outlined, const SupplierRequestsScreen()),

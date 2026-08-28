@@ -2441,4 +2441,95 @@ class L10nEn extends L10n {
 
   @override
   String get obStepDocs => 'Documents';
+
+  @override
+  String get welcomeSkip => 'Skip';
+
+  @override
+  String get welcomeNext => 'Next';
+
+  @override
+  String get welcomeStart => 'Get started';
+
+  @override
+  String get welcome1Title => 'One problem, one request';
+
+  @override
+  String get welcome1Body =>
+      'Describe what you notice in taps — nearby workshops get your card instantly and compete with offers. No more door-to-door.';
+
+  @override
+  String get welcome2Title => 'Your money is held until you receive';
+
+  @override
+  String get welcome2Body =>
+      'You pay and the amount stays safely with the platform — the workshop gets it only after you take your car back, satisfied.';
+
+  @override
+  String get welcome3Title => 'Everything signed and documented';
+
+  @override
+  String get welcome3Body =>
+      'You approve prices with your signature, your car is photographed in and out, and your invoice is official — your rights on paper, not promises.';
+
+  @override
+  String get setupTitle => 'Set up your account';
+
+  @override
+  String get setupSubtitle =>
+      'One minute — your name, then your car. Everything is saved to your account';
+
+  @override
+  String get setupStepName => 'Your name';
+
+  @override
+  String get setupStepCar => 'Your car';
+
+  @override
+  String get setupNameTitle => 'What\'s your name?';
+
+  @override
+  String get setupNameBody =>
+      'We greet you by it and it signs your approvals — saved to your account on any device.';
+
+  @override
+  String get setupNameLabel => 'Name';
+
+  @override
+  String get setupNameHint => 'e.g. Meshal Alotaibi';
+
+  @override
+  String get setupNameShort => 'Enter at least two characters';
+
+  @override
+  String get setupNext => 'Next';
+
+  @override
+  String get setupCarTitle => 'Add your car';
+
+  @override
+  String get setupCarBody =>
+      'By VIN or plate — it gets a permanent record of services and warranties, worth real money when you sell.';
+
+  @override
+  String get setupAddCar => 'Add my car';
+
+  @override
+  String get setupLater => 'Later';
+
+  @override
+  String get vcInService => 'In the workshop — track it';
+
+  @override
+  String get vcNoHistory => 'Its record starts with the first service';
+
+  @override
+  String vcLastService(Object date) {
+    return 'Last service $date';
+  }
+
+  @override
+  String vcWarranties(Object n) {
+    return '$n active warranties';
+  }
 }
