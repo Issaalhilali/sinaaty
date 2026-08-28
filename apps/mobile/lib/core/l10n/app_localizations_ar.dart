@@ -2495,4 +2495,16 @@ class L10nAr extends L10n {
   String vcWarranties(Object n) {
     return '$n ضمان ساري';
   }
+
+  @override
+  String get editProfile => 'تعديل الملف';
+
+  @override
+  String get emailLabel => 'البريد الإلكتروني (اختياري)';
+
+  @override
+  String get emailWhy => 'لإرسال فواتيرك وإيصالاتك — لا نستخدمه لغير ذلك.';
+
+  @override
+  String get nameFromNafath => 'الاسم موثّق عبر نفاذ';
 }

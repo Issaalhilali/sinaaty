@@ -8,6 +8,7 @@ abstract interface class AuthRepository {
   Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor});
   Future<Result<Me>> me();
   /// The name the user writes about himself (refused by the server when Nafath already verified one).
-  Future<Result<Me>> setName(String fullNameAr);
+  /// الاسم والبريد معاً — تمرير null للبريد يمسحه، وإغفاله يتركه.
+  Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false});
   Future<Result<void>> logout();
 }

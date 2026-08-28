@@ -15,8 +15,8 @@ export class MeController {
   @Get() @ApiOperation({ summary: 'Current user profile, roles and org memberships' })
   me(@CurrentUser() user: AuthUser) { return this.getMe.execute(user.id); }
 
-  @Patch() @ApiOperation({ summary: 'الاسم كما يكتبه صاحبه — يُرفض إن كان موثّقاً بنفاذ' })
-  updateMe(@CurrentUser() user: AuthUser, @Body(zod(UpdateMeDto)) dto: UpdateMeDto) { return this.getMe.setName(user.id, dto.full_name_ar); }
+  @Patch() @ApiOperation({ summary: 'الملف: الاسم (يُرفض إن كان موثّقاً بنفاذ) والبريد للفواتير — ولا نجمع ما لا نحتاج' })
+  updateMe(@CurrentUser() user: AuthUser, @Body(zod(UpdateMeDto)) dto: UpdateMeDto) { return this.getMe.updateProfile(user.id, { fullNameAr: dto.full_name_ar, email: dto.email }); }
 
   @Get('devices') listDevices(@CurrentUser() user: AuthUser) { return this.devices.list(user.id); }
 

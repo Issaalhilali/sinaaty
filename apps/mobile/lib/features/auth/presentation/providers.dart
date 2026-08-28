@@ -42,8 +42,9 @@ class AuthController extends Notifier<AuthState> {
     ref.onDispose(() => _refreshSub?.cancel());
   }
   StreamSubscription<String>? _refreshSub;
-  Future<Result<Me>> setName(String fullNameAr) async {
-    final r = await ref.read(authRepositoryProvider).setName(fullNameAr);
+  Future<Result<Me>> setName(String fullNameAr) => updateProfile(fullNameAr: fullNameAr);
+  Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) async {
+    final r = await ref.read(authRepositoryProvider).updateProfile(fullNameAr: fullNameAr, email: email, clearEmail: clearEmail);
     r.when(ok: (m) => state = AuthState(AuthStatus.signedIn, m), err: (_) {});
     return r;
   }

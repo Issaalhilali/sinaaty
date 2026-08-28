@@ -32,7 +32,7 @@ class _Auth implements AuthRepository {
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
   @override Future<Result<Me>> me() async => Result.ok(Me(id: 'u', phone: '+966512345678', fullNameAr: nameAr, platformRole: 'none', nafathVerified: false, orgs: const []));
-  @override Future<Result<Me>> setName(String v) { nameAr = v; saves++; return me(); }
+  @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) { if (fullNameAr != null) { nameAr = fullNameAr; saves++; } return me(); }
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 

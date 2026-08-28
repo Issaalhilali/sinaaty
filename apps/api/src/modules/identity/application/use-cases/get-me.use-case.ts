@@ -8,16 +8,22 @@ export class GetMeUseCase {
   async execute(userId: string) {
     const u = await this.users.findById(userId);
     if (!u) throw new AppError('NOT_FOUND');
-    return { id: u.id, phone: u.phone, full_name_ar: u.fullNameAr, status: u.status, platform_role: u.platformRole, nafath_verified: !!u.nafathVerifiedAt, orgs: u.orgs.map((o) => ({ org_id: o.orgId, role: o.role })) };
+    return { id: u.id, phone: u.phone, full_name_ar: u.fullNameAr, email: u.email, status: u.status, platform_role: u.platformRole, nafath_verified: !!u.nafathVerifiedAt, orgs: u.orgs.map((o) => ({ org_id: o.orgId, role: o.role })) };
   }
 
   /** من يدخل برمز الجوال يبقى بلا اسم إلى الأبد: الورشة ترى رقماً، و«حسابي» فارغة. يكتبه بنفسه هنا —
    *  إلا إن كان موثّقاً بنفاذ، فاسمه هناك اسم قانوني لا يُستبدل بما يُكتب باليد. */
-  async setName(userId: string, fullNameAr: string) {
+  async updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null }) {
     const u = await this.users.findById(userId);
     if (!u) throw new AppError('NOT_FOUND');
-    if (u.nafathVerifiedAt) throw new AppError('VALIDATION', { messageAr: 'اسمك موثّق عبر نفاذ ولا يُعدّل من التطبيق.', messageEn: 'Your name is Nafath-verified and cannot be edited here.' });
-    await this.users.setSelfDeclaredName(userId, fullNameAr);
+    if (p.fullNameAr !== undefined && u.nafathVerifiedAt) throw new AppError('VALIDATION', { messageAr: 'اسمك موثّق عبر نفاذ ولا يُعدّل من التطبيق.', messageEn: 'Your name is Nafath-verified and cannot be edited here.' });
+    try {
+      await this.users.updateProfile(userId, p);
+    } catch (e) {
+      // بريدٌ يملكه حسابٌ آخر: نقولها بلسانٍ مفهوم لا برسالة تعارضٍ عامة
+      if ((e as { code?: string }).code === 'P2002') throw new AppError('CONFLICT', { messageAr: 'هذا البريد مستخدم في حساب آخر.', messageEn: 'This email is used by another account.' });
+      throw e;
+    }
     return this.execute(userId);
   }
 }

@@ -2529,4 +2529,16 @@ class L10nEn extends L10n {
   String vcWarranties(Object n) {
     return '$n active warranties';
   }
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get emailLabel => 'Email (optional)';
+
+  @override
+  String get emailWhy => 'For your invoices and receipts — nothing else.';
+
+  @override
+  String get nameFromNafath => 'Name verified via Nafath';
 }

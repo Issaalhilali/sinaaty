@@ -73,7 +73,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966512345678', platformRole: 'none', nafathVerified: false, orgs: []));
-  @override Future<Result<Me>> setName(String fullNameAr) => me();
+  @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) { loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }

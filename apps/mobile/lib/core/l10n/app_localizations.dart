@@ -4752,6 +4752,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'{n} ضمان ساري'**
   String vcWarranties(Object n);
+
+  /// No description provided for @editProfile.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الملف'**
+  String get editProfile;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'البريد الإلكتروني (اختياري)'**
+  String get emailLabel;
+
+  /// No description provided for @emailWhy.
+  ///
+  /// In ar, this message translates to:
+  /// **'لإرسال فواتيرك وإيصالاتك — لا نستخدمه لغير ذلك.'**
+  String get emailWhy;
+
+  /// No description provided for @nameFromNafath.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم موثّق عبر نفاذ'**
+  String get nameFromNafath;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

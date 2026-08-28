@@ -5,6 +5,7 @@ import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
+import '../../auth/domain/auth_entities.dart';
 import '../../auth/presentation/providers.dart';
 import '../../notifications/presentation/providers.dart';
 /// Tab «حسابي»: who I am, notifications, language, sign out. Nothing else (charter §5.0).
@@ -19,10 +20,10 @@ class AccountScreen extends ConsumerWidget {
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(me?.fullNameAr ?? l.addYourName, style: Theme.of(context).textTheme.titleLarge),
           Text(me?.phone ?? '', textDirection: TextDirection.ltr, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          if (me?.email != null) Text(me!.email!, textDirection: TextDirection.ltr, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ])),
-        // من دخل برمز الجوال يصل بلا اسم — والورشة تراه رقماً. زر واحد هادئ يكفي.
-        if (!(me?.nafathVerified ?? false))
-          IconButton(icon: const Icon(Icons.edit_outlined), tooltip: l.editName, onPressed: () => _editName(context, ref, me?.fullNameAr)),
+        // الاسم والبريد في ورقةٍ واحدة — والقلم يظهر دائماً: موثّق نفاذٍ يعدّل بريده لا اسمه.
+        IconButton(icon: const Icon(Icons.edit_outlined), tooltip: l.editProfile, onPressed: () => _editProfile(context, ref, me)),
         StatusBadge(me?.nafathVerified ?? false ? l.nafathVerifiedLabel : l.notVerified, tone: me?.nafathVerified ?? false ? BadgeTone.seal : BadgeTone.plain, icon: Icons.verified_user_outlined),
       ])),
       const SizedBox(height: SinaatySpace.lg),
@@ -38,15 +39,29 @@ class AccountScreen extends ConsumerWidget {
     ]);
   }
 
-  Future<void> _editName(BuildContext context, WidgetRef ref, String? current) async {
-    final l = L10n.of(context); final c = TextEditingController(text: current ?? '');
-    final name = await showDialog<String>(context: context, builder: (d) => AlertDialog(
-      title: Text(l.editName),
-      content: TextField(controller: c, autofocus: true, textInputAction: TextInputAction.done, decoration: InputDecoration(labelText: l.yourName), onSubmitted: (v) => Navigator.pop(d, v)),
-      actions: [TextButton(onPressed: () => Navigator.pop(d), child: Text(l.cancel)), FilledButton(onPressed: () => Navigator.pop(d, c.text), child: Text(l.save))],
+  Future<void> _editProfile(BuildContext context, WidgetRef ref, Me? me) async {
+    final l = L10n.of(context);
+    final nafath = me?.nafathVerified ?? false;
+    final name = TextEditingController(text: me?.fullNameAr ?? '');
+    final email = TextEditingController(text: me?.email ?? '');
+    final ok = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
+      title: Text(l.editProfile),
+      content: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: name, enabled: !nafath, autofocus: !nafath,
+            decoration: InputDecoration(labelText: l.yourName, helperText: nafath ? l.nameFromNafath : null)),
+        const SizedBox(height: SinaatySpace.md),
+        TextField(controller: email, keyboardType: TextInputType.emailAddress, textDirection: TextDirection.ltr,
+            decoration: InputDecoration(labelText: l.emailLabel, helperText: l.emailWhy, helperMaxLines: 2)),
+      ]),
+      actions: [TextButton(onPressed: () => Navigator.pop(d, false), child: Text(l.cancel)), FilledButton(onPressed: () => Navigator.pop(d, true), child: Text(l.save))],
     ));
-    if (name == null || name.trim().length < 2 || !context.mounted) return;
-    final r = await ref.read(authControllerProvider.notifier).setName(name.trim());
+    if (ok != true || !context.mounted) return;
+    final n = name.text.trim(); final e = email.text.trim();
+    final r = await ref.read(authControllerProvider.notifier).updateProfile(
+      fullNameAr: !nafath && n.length >= 2 && n != (me?.fullNameAr ?? '') ? n : null,
+      email: e.isNotEmpty && e != (me?.email ?? '') ? e : null,
+      clearEmail: e.isEmpty && me?.email != null,          // مسح الحقل = سحب البريد من الحساب
+    );
     if (!context.mounted) return;
     r.when(ok: (_) {}, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
   }

@@ -15,7 +15,7 @@ export interface UserRepository {
   upsertByNafath(input: { nationalIdHash: string; nationalIdEnc: Buffer; nafathSub: string; fullNameAr?: string; phone?: string }): Promise<User>;
   touchLogin(userId: string): Promise<void>;
   /** The name the user types about himself. Never overwrites a Nafath-verified name — that one is legal. */
-  setSelfDeclaredName(userId: string, fullNameAr: string): Promise<User>;
+  updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null }): Promise<User>;
 }
 
 export interface OtpRepository {

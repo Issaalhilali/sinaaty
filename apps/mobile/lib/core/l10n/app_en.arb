@@ -1149,5 +1149,9 @@
     "placeholders": {
       "n": {}
     }
-  }
+  },
+  "editProfile": "Edit profile",
+  "emailLabel": "Email (optional)",
+  "emailWhy": "For your invoices and receipts — nothing else.",
+  "nameFromNafath": "Name verified via Nafath"
 }

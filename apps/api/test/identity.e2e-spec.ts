@@ -48,6 +48,20 @@ describe('Identity (e2e)', () => {
       expect(again.body.full_name_ar).toBe('مشعل العتيبي');
       await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ full_name_ar: 'م' }).expect(400);
     });
+    it('البريد للفواتير: يُخزَّن صغيراً، يُمسح بـnull، والمكرر يُرفض بلسانٍ مفهوم', async () => {
+      const em = `Meshal.${Date.now()}@Example.COM`;
+      const me = await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ email: em }).expect(200);
+      expect(me.body.email).toBe(em.toLowerCase());                                  // lowercase دائماً
+      await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ email: 'ليس-بريداً' }).expect(400);
+      // حسابٌ آخر يحاول نفس البريد (بأحرفٍ كبيرة — citext يمسكها) → تعارضٌ برسالةٍ عربية واضحة
+      const other = await http().post('/v1/auth/otp/request').send({ phone: '+966533000222' }).expect(200);
+      const ot = await http().post('/v1/auth/otp/verify').send({ phone: '+966533000222', code: other.body.debug_code }).expect(200);
+      const dup = await http().patch('/v1/me').set('authorization', `Bearer ${ot.body.accessToken}`).send({ email: em.toUpperCase() }).expect(409);
+      expect(dup.body.message_ar).toContain('مستخدم في حساب آخر');
+      // والمسح بـnull يعمل — من أراد سحب بريده يسحبه
+      const cleared = await http().patch('/v1/me').set('authorization', `Bearer ${tokens.accessToken}`).send({ email: null }).expect(200);
+      expect(cleared.body.email).toBeNull();
+    });
     it('refresh rotates; reusing the old token revokes the family', async () => {
       const r1 = await http().post('/v1/auth/refresh').send({ refresh_token: tokens.refreshToken }).expect(200);
       expect(r1.body.refreshToken).not.toBe(tokens.refreshToken);

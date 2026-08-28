@@ -19,7 +19,11 @@ export type OtpVerifyDto = z.infer<typeof OtpVerifyDto>;
 export const RefreshDto = z.object({ refresh_token: z.string().min(20) });
 export type RefreshDto = z.infer<typeof RefreshDto>;
 
-export const UpdateMeDto = z.object({ full_name_ar: z.string().trim().min(2).max(120) });
+export const UpdateMeDto = z.object({
+  full_name_ar: z.string().trim().min(2).max(120).optional(),
+  // للفواتير والإيصالات — يُخزَّن بحروف صغيرة، وcitext في القاعدة يمنع التكرار بأي حالة أحرف
+  email: z.string().trim().toLowerCase().email().max(150).nullable().optional(),
+}).refine((d) => d.full_name_ar !== undefined || d.email !== undefined, { message: 'لا شيء لتحديثه' });
 export type UpdateMeDto = z.infer<typeof UpdateMeDto>;
 
 export const RegisterDeviceDto = z.object({
