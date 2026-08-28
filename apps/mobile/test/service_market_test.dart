@@ -122,6 +122,7 @@ void main() {
     await tester.tap(find.text('صوت غريب')); await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'يزيد مع المطبات');
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('أرسل الطلب'));                    // الورقة طالت بالخط الجديد
     await tester.tap(find.text('أرسل الطلب')); await tester.pumpAndSettle();
     expect(market.lastCreate!.title, 'صوت غريب — يزيد مع المطبات');         // ما تقرؤه الورشة في سطر البطاقة
     expect(market.lastCreate!.radius, 25);                                   // النطاق قرارنا، لا يُسأل عنه

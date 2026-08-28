@@ -106,7 +106,9 @@ void main() {
     expect(find.textContaining('50,122.50'), findsOneWidget);                       // budget left
     expect(find.text('يحتاج اعتماد شخصين'), findsOneWidget);
     expect(find.text('اعتمده عيسى'), findsOneWidget);                               // who already decided
+    await tester.scrollUntilVisible(find.text('يحتاج اعتماداً واحداً'), 150, scrollable: find.byType(Scrollable).first);
     expect(find.text('يحتاج اعتماداً واحداً'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('تحت الحد — جاهز للتوقيع'), 150, scrollable: find.byType(Scrollable).first);
     expect(find.text('تحت الحد — جاهز للتوقيع'), findsOneWidget);
     expect(find.text('اكتمل الاعتماد — وقّع الآن'), findsOneWidget);                // the auto one goes straight to signing
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/fleet_today_light.png'));

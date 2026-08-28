@@ -73,10 +73,10 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
           ]),
         ],
         const SizedBox(height: SinaatySpace.md),
-        Row(children: [
-          Expanded(child: Text(l.srAvailability, style: Theme.of(ctx).textTheme.titleSmall)),
-          SegmentedButton<String>(segments: [ButtonSegment(value: 'now', label: Text(l.srNow)), ButtonSegment(value: 'today', label: Text(l.srToday)), ButtonSegment(value: 'this_week', label: Text(l.srThisWeek))], selected: {avail}, showSelectedIcon: false, onSelectionChanged: (s) => setS(() => avail = s.first)),
-        ]),
+        // المقسّم لا ينكمش وثلاث كلمات عربية أعرض من الورقة — سطرٌ كامل تحت عنوانه أرحب وأوضح
+        Text(l.srAvailability, style: Theme.of(ctx).textTheme.titleSmall),
+        const SizedBox(height: SinaatySpace.sm),
+        SegmentedButton<String>(segments: [ButtonSegment(value: 'now', label: Text(l.srNow)), ButtonSegment(value: 'today', label: Text(l.srToday)), ButtonSegment(value: 'this_week', label: Text(l.srThisWeek))], selected: {avail}, showSelectedIcon: false, onSelectionChanged: (s) => setS(() => avail = s.first)),
         const SizedBox(height: SinaatySpace.lg),
         PrimaryButton(label: l.srRespond, icon: Icons.local_offer_outlined, onPressed: () {
           if (diagnosis.text.trim().length < 5) return;                                   // the diagnosis is what sets an offer apart — mandatory
@@ -174,7 +174,7 @@ class _OfferCard extends StatelessWidget {
           Text(Fmt.meta([if (o.rating != null) '★ ${o.rating}', if (o.distanceText != null) o.distanceText, if (o.respondsInMinutes != null) l.srRespondsIn(o.respondsInMinutes!)]), style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
         ])),
         if (o.freeInspection) StatusBadge(l.srFreeInspection, tone: BadgeTone.seal, icon: Icons.search_outlined)
-        else if (o.priceMin != null && o.priceMax != null && o.priceMax != o.priceMin) Text(l.srPriceRange(Fmt.money(o.priceMin!, locale: locale), Fmt.money(o.priceMax!, locale: locale)), style: t.titleSmall, textAlign: TextAlign.start)
+        else if (o.priceMin != null && o.priceMax != null && o.priceMax != o.priceMin) Flexible(child: Text(l.srPriceRange(Fmt.money(o.priceMin!, locale: locale), Fmt.money(o.priceMax!, locale: locale)), style: t.titleSmall, textAlign: TextAlign.start))
         else if (o.priceMin != null) MoneyText(Fmt.money(o.priceMin!, locale: locale)),
       ]),
       if (o.diagnosisAr != null && o.diagnosisAr!.isNotEmpty) ...[

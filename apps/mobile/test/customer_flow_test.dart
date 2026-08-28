@@ -108,8 +108,11 @@ void main() {
     await tester.tap(find.text('راجع واعتمد')); await tester.pumpAndSettle();
     expect(find.text('ورشة النور للسمكرة والميكانيكا'), findsOneWidget); expect(find.text('النسخة 1'), findsOneWidget); expect(find.textContaining('1,368.50'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_approve_light.png'));
-    await tester.tap(find.text('اعتماد برمز التحقق')); await tester.pumpAndSettle();
-    expect(wos.lastMethod, 'otp'); expect(find.byType(TextField), findsOneWidget);
+    await tester.ensureVisible(find.text('اعتماد برمز التحقق')); await tester.tap(find.text('اعتماد برمز التحقق')); await tester.pumpAndSettle();
+    expect(wos.lastMethod, 'otp');
+    // ListView يبني كسولاً: حقل الرمز صار تحت النافذة بالخط الأعرض — نمرّر إليه كما يفعل المستخدم
+    await tester.scrollUntilVisible(find.byType(TextField), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.byType(TextField), findsOneWidget);
     await tester.enterText(find.byType(TextField), '000000'); await tester.tap(find.text('تأكيد الاعتماد')); await tester.pumpAndSettle();
     expect(find.text('رمز غير صحيح'), findsOneWidget);
     await tester.enterText(find.byType(TextField), '123456'); await tester.tap(find.text('تأكيد الاعتماد')); await tester.pumpAndSettle();

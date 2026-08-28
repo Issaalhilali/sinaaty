@@ -145,12 +145,12 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
             ],
 
             const SizedBox(height: SinaatySpace.md),
-            Row(children: [
-              Expanded(child: Text(l.srWhenAsk, style: t.textTheme.titleSmall)),
-              SegmentedButton<String>(
-                segments: [ButtonSegment(value: 'now', label: Text(l.srNow)), ButtonSegment(value: 'today', label: Text(l.srToday)), ButtonSegment(value: 'this_week', label: Text(l.srThisWeek))],
-                selected: {when}, showSelectedIcon: false, onSelectionChanged: (s) => setS(() => when = s.first)),
-            ]),
+            // المقسّم لا ينكمش وثلاث كلماتٍ عربية أعرض من الصف — سطرٌ كامل تحت عنوانه
+            Text(l.srWhenAsk, style: t.textTheme.titleSmall),
+            const SizedBox(height: SinaatySpace.sm),
+            SegmentedButton<String>(
+              segments: [ButtonSegment(value: 'now', label: Text(l.srNow)), ButtonSegment(value: 'today', label: Text(l.srToday)), ButtonSegment(value: 'this_week', label: Text(l.srThisWeek))],
+              selected: {when}, showSelectedIcon: false, onSelectionChanged: (s) => setS(() => when = s.first)),
 
             const SizedBox(height: SinaatySpace.lg),
             // لا زرّ ميت: إن نقص شيء قيل ما هو، ولا يُترك ينقر بلا أثر.

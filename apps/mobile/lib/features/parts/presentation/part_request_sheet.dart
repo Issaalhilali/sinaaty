@@ -42,7 +42,7 @@ Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehi
         Wrap(spacing: 8, children: [for (final c in ['oem_new', 'aftermarket_new', 'used_scrapyard', 'refurbished']) FilterChip(label: Text(Labels.condition(l, c)), selected: conds.contains(c), showCheckmark: false, onSelected: (sel) => setS(() => sel ? conds.add(c) : conds.remove(c)))]),
         const SizedBox(height: SinaatySpace.md),
         Row(children: [
-          Text(l.ptBiddingMinutes, style: Theme.of(ctx).textTheme.titleSmall), const Spacer(),
+          Expanded(child: Text(l.ptBiddingMinutes, style: Theme.of(ctx).textTheme.titleSmall)),
           SegmentedButton<int>(segments: const [ButtonSegment(value: 30, label: Text('30')), ButtonSegment(value: 60, label: Text('60')), ButtonSegment(value: 240, label: Text('240'))], selected: {minutes}, showSelectedIcon: false, onSelectionChanged: (sel) => setS(() => minutes = sel.first)),
         ]),
         const SizedBox(height: SinaatySpace.lg),

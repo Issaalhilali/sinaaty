@@ -17,7 +17,8 @@ class StatusBadge extends StatelessWidget {
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)), child: Row(mainAxisSize: MainAxisSize.min, children: [
       if (icon != null) ...[Icon(icon, size: 14, color: fg), const SizedBox(width: 5)] else if (dot || tone != BadgeTone.plain) ...[Container(width: 6, height: 6, decoration: BoxDecoration(shape: BoxShape.circle, color: fg)), const SizedBox(width: 6)],
-      Text(label, style: TextStyle(color: fg, fontSize: 12.5, fontWeight: FontWeight.w700, height: 1.2)),
+      // نصّ الشارة يلين حين يُحشر في مساحةٍ ضيقة — بدل فيضانٍ مخطط يفضح الشاشة كلها
+      Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: fg, fontSize: 12.5, fontWeight: FontWeight.w700, height: 1.2))),
     ]));
   }
 }

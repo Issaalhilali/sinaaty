@@ -95,7 +95,7 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<Me>> setName(String fullNameAr) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
-Future<void> loadArabicFont() async { final loader = FontLoader('PlexArabic'); for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) { loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }
+Future<void> loadArabicFont() async { final loader = FontLoader('Almarai'); for (final f in ['Regular', 'Bold', 'ExtraBold']) { loader.addFont(File('assets/fonts/Almarai-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer))); } await loader.load(); }
 // tiny valid 1x1 JPEG-ish bytes are not needed: Image.memory has an errorBuilder; use PNG header-less bytes.
 final fakeJpeg = Uint8List.fromList(List<int>.generate(64, (i) => i));
 

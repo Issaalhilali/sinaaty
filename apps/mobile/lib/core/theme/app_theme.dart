@@ -9,7 +9,9 @@ import 'tokens.dart';
 ///
 /// Calm, Arabic-first Material theme. Big tap targets (56dp), one accent, generous spacing.
 abstract final class AppTheme {
-  static const fontFamily = 'PlexArabic';
+  /// Almarai: عائلة واحدة دافئة تخدم العربية والإنجليزية معاً — التسلسل بالوزن (400/700/800)
+  /// لا بتعدد الخطوط. بدّلت Plex «التقني المحايد» بقرار المالك: الوجه الأول يحتاج شخصية.
+  static const fontFamily = 'Almarai';
   static ThemeData light() => _build(Brightness.light);
   static ThemeData dark() => _build(Brightness.dark);
   static ThemeData _build(Brightness b) {
@@ -32,8 +34,8 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: dark ? SinaatyColors.dGround : SinaatyColors.ground,
       appBarTheme: AppBarTheme(backgroundColor: dark ? SinaatyColors.dGround : SinaatyColors.ground, foregroundColor: scheme.onSurface, elevation: 0, scrolledUnderElevation: 0, centerTitle: false, titleSpacing: 20, toolbarHeight: 64, titleTextStyle: TextStyle(fontFamily: fontFamily, fontSize: 21, fontWeight: FontWeight.w600, color: scheme.onSurface, letterSpacing: -.2), iconTheme: IconThemeData(color: scheme.onSurface, size: 22)),
       cardTheme: CardThemeData(color: scheme.surface, elevation: 0, margin: EdgeInsets.zero, shape: RoundedRectangleBorder(borderRadius: rl, side: BorderSide(color: dark ? SinaatyColors.dLine : SinaatyColors.line.withValues(alpha: .7)))),
-      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(SinaatySpace.tapTarget), shape: RoundedRectangleBorder(borderRadius: r), elevation: 0, textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 16, fontWeight: FontWeight.w600))),
-      outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(SinaatySpace.tapTarget), shape: RoundedRectangleBorder(borderRadius: r), side: BorderSide(color: scheme.primary, width: 1.5), textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 15.5, fontWeight: FontWeight.w600))),
+      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(SinaatySpace.tapTarget), shape: RoundedRectangleBorder(borderRadius: r), elevation: 0, textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 15, fontWeight: FontWeight.w600))),
+      outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(SinaatySpace.tapTarget), shape: RoundedRectangleBorder(borderRadius: r), side: BorderSide(color: scheme.primary, width: 1.5), textStyle: const TextStyle(fontFamily: fontFamily, fontSize: 14.5, fontWeight: FontWeight.w600))),
       textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(minimumSize: const Size(48, 48), textStyle: const TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600))),
       inputDecorationTheme: InputDecorationTheme(filled: true, fillColor: scheme.surface, contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18), border: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.outline)), enabledBorder: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.outline)), focusedBorder: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.primary, width: 2)), errorBorder: OutlineInputBorder(borderRadius: r, borderSide: const BorderSide(color: SinaatyColors.bad)), hintStyle: TextStyle(color: scheme.onSurfaceVariant)),
       navigationBarTheme: NavigationBarThemeData(backgroundColor: scheme.surface, indicatorColor: scheme.primaryContainer, height: 72, elevation: 0, surfaceTintColor: Colors.transparent, iconTheme: WidgetStateProperty.resolveWith((st) => IconThemeData(size: 24, color: st.contains(WidgetState.selected) ? scheme.onPrimaryContainer : scheme.onSurfaceVariant)), labelTextStyle: WidgetStateProperty.resolveWith((st) => TextStyle(fontFamily: fontFamily, fontSize: 12, fontWeight: st.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500, color: st.contains(WidgetState.selected) ? scheme.onSurface : scheme.onSurfaceVariant))),

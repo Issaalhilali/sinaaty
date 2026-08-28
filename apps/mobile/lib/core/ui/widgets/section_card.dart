@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 /// The card: soft paper, hairline, and a gentle two-layer shadow (concept: --shadow). Optional seal glow corner.
@@ -28,8 +29,41 @@ class MoneyText extends StatelessWidget {
     return Text.rich(TextSpan(children: [TextSpan(text: amount, style: base.copyWith(fontFeatures: const [FontFeature.tabularFigures()])), if (cur.isNotEmpty) TextSpan(text: ' $cur', style: base.copyWith(fontSize: (base.fontSize ?? 16) * .6, fontWeight: FontWeight.w500, color: style?.color != null ? style!.color!.withValues(alpha: .7) : Theme.of(context).colorScheme.onSurfaceVariant))]), textDirection: TextDirection.ltr, textAlign: TextAlign.start);
   }
 }
-/// Brand mark: seal square with a soft inner circle — used on home header, login, empty states.
+/// شعار صناعية: **ختمٌ مسنّن يحمل «ص»** — من فكرة المنتج نفسها: كل شيءٍ فيه يُختم ويوثَّق،
+/// والحرف حرفُ الاسم. الأسنان تعطيه ملمس الختم الرسمي والترس الصناعي معاً، وتقرأ جيداً من
+/// 30px حتى الشاشات الكبيرة. (الشكل السابق — مربعٌ بحلقة — قال المالك عنه كلمته فذهب.)
 class BrandMark extends StatelessWidget {
   final double size; const BrandMark({super.key, this.size = 36});
-  @override Widget build(BuildContext context) { final s = Theme.of(context).colorScheme; return Container(width: size, height: size, decoration: BoxDecoration(color: s.primary, borderRadius: BorderRadius.circular(size * .3), boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .35), blurRadius: 16, offset: const Offset(0, 6))]), child: Center(child: Container(width: size * .42, height: size * .42, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: .9), width: size * .07))))); }
+  @override Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme.primary;
+    return SizedBox(width: size, height: size, child: Stack(alignment: Alignment.center, children: [
+      CustomPaint(size: Size.square(size), painter: _SealMarkPainter(c)),
+      Padding(
+        padding: EdgeInsets.only(bottom: size * .1),
+        child: Text('ص', style: TextStyle(fontFamily: 'Almarai', fontSize: size * .5, height: 1, fontWeight: FontWeight.w800, color: Colors.white)),
+      ),
+    ]));
+  }
+}
+
+class _SealMarkPainter extends CustomPainter {
+  final Color seal;
+  _SealMarkPainter(this.seal);
+  @override void paint(Canvas c, Size s) {
+    final center = Offset(s.width / 2, s.height / 2); final r = s.width / 2;
+    // القرص المسنّن: 22 سناً — يُرسم مضلعاً متعرجاً بين نصفَي قطر
+    final teeth = 22; final outer = r; final inner = r * .9;
+    final path = Path();
+    for (var i = 0; i < teeth * 2; i++) {
+      final a = i * math.pi / teeth - math.pi / 2;
+      final rr = i.isEven ? outer : inner;
+      final p = center + Offset(math.cos(a) * rr, math.sin(a) * rr);
+      i == 0 ? path.moveTo(p.dx, p.dy) : path.lineTo(p.dx, p.dy);
+    }
+    path.close();
+    c.drawPath(path, Paint()..color = seal);
+    // حلقة داخلية رفيعة تفصل الحرف عن الأسنان — لمسة الختم الرسمي
+    c.drawCircle(center, r * .74, Paint()..color = Colors.white.withValues(alpha: .55)..style = PaintingStyle.stroke..strokeWidth = math.max(1, s.width * .035));
+  }
+  @override bool shouldRepaint(covariant _SealMarkPainter old) => old.seal != seal;
 }

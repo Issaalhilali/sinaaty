@@ -57,6 +57,14 @@ flutter:
   assets:
     - assets/fonts/
   fonts:
+    - family: Almarai
+      fonts:
+        - asset: assets/fonts/Almarai-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Almarai-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Almarai-ExtraBold.ttf
+          weight: 800
     - family: PlexArabic
       fonts:
         - asset: assets/fonts/IBMPlexSansArabic-Regular.ttf
