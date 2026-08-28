@@ -65,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
                   AppListRow(
                     icon: Icons.build_circle_outlined,
                     title: w.titleAr ?? l.workOrder,
-                    subtitle: Fmt.meta([vehicles.where((v) => v.id == w.vehicleId).firstOrNull?.title, Fmt.money(w.total, locale: locale)]),
+                    subtitle: Fmt.meta([vehicles.where((v) => v.id == w.vehicleId).firstOrNull?.title, if (!(w.status == 'draft' && w.total == '0.00')) Fmt.money(w.total, locale: locale)]),
                     trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : BadgeTone.plain),
                     onTap: () => context.push('/work-orders/${w.id}')),
               ])),

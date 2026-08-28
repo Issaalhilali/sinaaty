@@ -23,7 +23,7 @@ class BrandIcon extends StatelessWidget {
   }
 }
 
-enum BrandGlyph { carRepair, gear, towTruck, car, home, orders, person, wallet, today, auction, store, shieldSeal, bell }
+enum BrandGlyph { carRepair, gear, towTruck, car, home, orders, person, wallet, today, auction, store, shieldSeal, bell, symNoStart, symNoise, symBrakes, symHeat, symShake, symPulls, symLeak, symWarning, symAc, symBolt, symCrash, symService }
 
 class _GlyphPainter extends CustomPainter {
   final BrandGlyph glyph; final Color ink; final Color accent;
@@ -61,7 +61,139 @@ class _GlyphPainter extends CustomPainter {
         _shield(c, u, w);
       case BrandGlyph.bell:
         _bell(c, u, w);
+      case BrandGlyph.symNoStart:
+        _symNoStart(c, u, w);
+      case BrandGlyph.symNoise:
+        _symNoise(c, u, w);
+      case BrandGlyph.symBrakes:
+        _symBrakes(c, u, w);
+      case BrandGlyph.symHeat:
+        _symHeat(c, u, w);
+      case BrandGlyph.symShake:
+        _symShake(c, u, w);
+      case BrandGlyph.symPulls:
+        _symPulls(c, u, w);
+      case BrandGlyph.symLeak:
+        _symLeak(c, u, w);
+      case BrandGlyph.symWarning:
+        _symWarning(c, u, w);
+      case BrandGlyph.symAc:
+        _symAc(c, u, w);
+      case BrandGlyph.symBolt:
+        _symBolt(c, u, w);
+      case BrandGlyph.symCrash:
+        _symCrash(c, u, w);
+      case BrandGlyph.symService:
+        _symService(c, u, w);
     }
+  }
+
+  // ─── أعراض «أصلح سيارتي» — رموزٌ مصغّرة تُقرأ من 18px، بلا نحاسٍ (شرائح كثيفة) ───
+
+  /// ما تشتغل: قوس تشغيلٍ مفتوح وخطّه — رمز الطاقة بخط البيت.
+  void _symNoStart(Canvas c, double u, double w) {
+    c.drawArc(Rect.fromCircle(center: Offset(12 * u, 13 * u), radius: 7.5 * u), -math.pi * .38, math.pi * 1.76, false, _s(ink, w));
+    c.drawLine(Offset(12 * u, 3.5 * u), Offset(12 * u, 11 * u), _s(ink, w));
+  }
+
+  /// صوت غريب: ثلاثة أقواس تتسع من نقطة.
+  void _symNoise(Canvas c, double u, double w) {
+    c.drawCircle(Offset(6.5 * u, 12 * u), 1.6 * u, Paint()..color = ink);
+    for (final r in [4.5, 8.0, 11.5]) {
+      c.drawArc(Rect.fromCircle(center: Offset(6.5 * u, 12 * u), radius: r * u), -math.pi * .3, math.pi * .6, false, _s(ink.withValues(alpha: r > 10 ? .45 : .8), w * .9));
+    }
+  }
+
+  /// المكابح: قرصٌ داخل قوسَي فرجار — شكل قرص المكابح نفسه.
+  void _symBrakes(Canvas c, double u, double w) {
+    c.drawCircle(Offset(12 * u, 12 * u), 5 * u, _s(ink, w));
+    c.drawCircle(Offset(12 * u, 12 * u), 1.6 * u, Paint()..color = ink);
+    c.drawArc(Rect.fromCircle(center: Offset(12 * u, 12 * u), radius: 8.2 * u), math.pi * .8, math.pi * .4, false, _s(ink, w));
+    c.drawArc(Rect.fromCircle(center: Offset(12 * u, 12 * u), radius: 8.2 * u), -math.pi * .2, math.pi * .4, false, _s(ink, w));
+  }
+
+  /// حرارة: ميزانٌ زئبقي ممتلئ حتى رأسه.
+  void _symHeat(Canvas c, double u, double w) {
+    c.drawLine(Offset(12 * u, 4.5 * u), Offset(12 * u, 14 * u), _s(ink, w));
+    c.drawCircle(Offset(12 * u, 17 * u), 3.4 * u, _s(ink, w));
+    c.drawCircle(Offset(12 * u, 17 * u), 1.7 * u, Paint()..color = ink);
+    c.drawLine(Offset(12 * u, 9 * u), Offset(12 * u, 14.5 * u), _s(ink, w * 1.4));
+  }
+
+  /// اهتزاز: سيارةُ خطٍّ مبسطة بين شرطتي رجّة.
+  void _symShake(Canvas c, double u, double w) {
+    final z1 = Path()..moveTo(4 * u, 8 * u)..lineTo(5.8 * u, 10 * u)..lineTo(4 * u, 12 * u)..lineTo(5.8 * u, 14 * u);
+    final z2 = Path()..moveTo(20 * u, 8 * u)..lineTo(18.2 * u, 10 * u)..lineTo(20 * u, 12 * u)..lineTo(18.2 * u, 14 * u);
+    c.drawPath(z1, _s(ink.withValues(alpha: .6), w * .85));
+    c.drawPath(z2, _s(ink.withValues(alpha: .6), w * .85));
+    c.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(8 * u, 9 * u, 8 * u, 5 * u), Radius.circular(1.6 * u)), _s(ink, w));
+    c.drawCircle(Offset(10 * u, 15.5 * u), 1.4 * u, _s(ink, w * .9));
+    c.drawCircle(Offset(14 * u, 15.5 * u), 1.4 * u, _s(ink, w * .9));
+  }
+
+  /// تسحب على جنب: سهمٌ يتقدّم وينحرف.
+  void _symPulls(Canvas c, double u, double w) {
+    final p = Path()..moveTo(12 * u, 19 * u)..lineTo(12 * u, 11 * u)..quadraticBezierTo(12 * u, 7 * u, 16.5 * u, 6.5 * u);
+    c.drawPath(p, _s(ink, w));
+    c.drawPath(Path()..moveTo(14 * u, 4 * u)..lineTo(17.5 * u, 6.3 * u)..lineTo(14.6 * u, 9.2 * u), _s(ink, w));
+  }
+
+  /// تسريب: قطرةٌ وخطُّ أرضٍ تحتها.
+  void _symLeak(Canvas c, double u, double w) {
+    final d = Path()
+      ..moveTo(12 * u, 4.5 * u)
+      ..quadraticBezierTo(16.8 * u, 10.5 * u, 16.8 * u, 13.5 * u)
+      ..arcToPoint(Offset(7.2 * u, 13.5 * u), radius: Radius.circular(4.8 * u), clockwise: true)
+      ..quadraticBezierTo(7.2 * u, 10.5 * u, 12 * u, 4.5 * u);
+    c.drawPath(d, _s(ink, w));
+    c.drawLine(Offset(6 * u, 20.5 * u), Offset(18 * u, 20.5 * u), _s(ink.withValues(alpha: .55), w * .85));
+  }
+
+  /// لمبة تحذير: مثلثٌ بعلامة.
+  void _symWarning(Canvas c, double u, double w) {
+    final t = Path()..moveTo(12 * u, 4.5 * u)..lineTo(20.5 * u, 19 * u)..lineTo(3.5 * u, 19 * u)..close();
+    c.drawPath(t, _s(ink, w));
+    c.drawLine(Offset(12 * u, 9.5 * u), Offset(12 * u, 13.5 * u), _s(ink, w));
+    c.drawCircle(Offset(12 * u, 16.2 * u), .9 * u, Paint()..color = ink);
+  }
+
+  /// المكيف: ندفة — محورٌ وثلاثُ أذرعٍ متقاطعة.
+  void _symAc(Canvas c, double u, double w) {
+    for (var i = 0; i < 3; i++) {
+      final a = i * math.pi / 3;
+      final d = Offset(math.cos(a), math.sin(a));
+      c.drawLine(Offset(12 * u, 12 * u) - d * 7.5 * u, Offset(12 * u, 12 * u) + d * 7.5 * u, _s(ink, w * .95));
+      for (final t in [-1.0, 1.0]) {
+        final tip = Offset(12 * u, 12 * u) + d * 5.2 * u * t;
+        final n = Offset(-d.dy, d.dx);
+        c.drawLine(tip, tip + (n - d * t) * 1.8 * u, _s(ink, w * .8));
+        c.drawLine(tip, tip + (-n - d * t) * 1.8 * u, _s(ink, w * .8));
+      }
+    }
+  }
+
+  /// كهرباء: صاعقة.
+  void _symBolt(Canvas c, double u, double w) {
+    final b = Path()..moveTo(13.5 * u, 3.5 * u)..lineTo(7 * u, 13.5 * u)..lineTo(11.2 * u, 13.5 * u)..lineTo(10 * u, 20.5 * u)..lineTo(17 * u, 10.5 * u)..lineTo(12.8 * u, 10.5 * u)..close();
+    c.drawPath(b, _s(ink, w));
+  }
+
+  /// صدمة: سيارة البيت وشرارةُ اصطدامٍ عند مقدّمتها.
+  void _symCrash(Canvas c, double u, double w) {
+    c.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(8.5 * u, 10 * u, 12 * u, 5.5 * u), Radius.circular(1.8 * u)), _s(ink, w));
+    c.drawCircle(Offset(11.5 * u, 17.5 * u), 1.5 * u, _s(ink, w * .9));
+    c.drawCircle(Offset(17.5 * u, 17.5 * u), 1.5 * u, _s(ink, w * .9));
+    final star = Path()..moveTo(5.5 * u, 7 * u)..lineTo(7 * u, 9.4 * u)..lineTo(4.2 * u, 9.2 * u)..lineTo(6.6 * u, 11 * u)..lineTo(4.8 * u, 12.8 * u);
+    c.drawPath(star, _s(ink, w * .9));
+  }
+
+  /// صيانة دورية: مفتاح ربطٍ وقوسُ دورةٍ بسهم.
+  void _symService(Canvas c, double u, double w) {
+    c.drawArc(Rect.fromCircle(center: Offset(12 * u, 12 * u), radius: 8 * u), -math.pi * .25, math.pi * 1.2, false, _s(ink.withValues(alpha: .6), w * .85));
+    c.drawPath(Path()..moveTo(17.5 * u, 3.6 * u)..lineTo(19.9 * u, 6.6 * u)..lineTo(16.4 * u, 7.4 * u), _s(ink.withValues(alpha: .6), w * .85));
+    final wc = Offset(12 * u, 12 * u);
+    c.drawArc(Rect.fromCircle(center: wc + Offset(2.2 * u, -2.2 * u), radius: 2.4 * u), math.pi * .45, math.pi * 1.15, false, _s(ink, w));
+    c.drawLine(wc + Offset(.6 * u, -.6 * u), wc + Offset(-3.4 * u, 3.4 * u), _s(ink, w));
   }
 
   /// بيت: سقفٌ وجداران وبابٌ نحاسي — «الرئيسية» بدفء المنزل لا برمز نظام.

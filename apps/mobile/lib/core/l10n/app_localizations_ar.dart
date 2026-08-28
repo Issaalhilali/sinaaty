@@ -2512,4 +2512,36 @@ class L10nAr extends L10n {
   String nameLockedUntil(Object date) {
     return 'الاسم يوقّع اعتماداتك — يمكن تغييره بعد $date';
   }
+
+  @override
+  String get awaitingPricing => 'بانتظار التسعير';
+
+  @override
+  String get aboutTitle => 'عن صناعية';
+
+  @override
+  String get supportTitle => 'الدعم';
+
+  @override
+  String get aboutPromise =>
+      'سيارتك من العطل إلى الطريق — في مكان واحد. كل اتفاق موقّع، وكل مبلغ محفوظ حتى تستلم، وكل شيء موثّق باسمك.';
+
+  @override
+  String aboutVersion(Object v) {
+    return 'النسخة $v';
+  }
+
+  @override
+  String get supportBody =>
+      'واجهتك مشكلة أو عندك اقتراح؟ كلمنا وبنرد عليك بأسرع ما نقدر.';
+
+  @override
+  String get supportWhatsApp => 'راسلنا على واتساب';
+
+  @override
+  String get supportCall => 'اتصل بنا';
+
+  @override
+  String get termsNote =>
+      'باستخدامك صناعية أنت توافق على شروط الاستخدام وسياسة الخصوصية — تُنشر نسختها الكاملة قبل الإطلاق العام.';
 }

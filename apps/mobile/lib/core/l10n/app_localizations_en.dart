@@ -2546,4 +2546,36 @@ class L10nEn extends L10n {
   String nameLockedUntil(Object date) {
     return 'Your name signs your approvals — changeable after $date';
   }
+
+  @override
+  String get awaitingPricing => 'Awaiting pricing';
+
+  @override
+  String get aboutTitle => 'About Sinaaty';
+
+  @override
+  String get supportTitle => 'Support';
+
+  @override
+  String get aboutPromise =>
+      'Your car, from breakdown to back on the road — in one place. Every agreement signed, every payment held until you receive, everything documented in your name.';
+
+  @override
+  String aboutVersion(Object v) {
+    return 'Version $v';
+  }
+
+  @override
+  String get supportBody =>
+      'Hit a problem or have a suggestion? Message us and we will get back to you fast.';
+
+  @override
+  String get supportWhatsApp => 'Message us on WhatsApp';
+
+  @override
+  String get supportCall => 'Call us';
+
+  @override
+  String get termsNote =>
+      'By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch.';
 }

@@ -4782,6 +4782,60 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'الاسم يوقّع اعتماداتك — يمكن تغييره بعد {date}'**
   String nameLockedUntil(Object date);
+
+  /// No description provided for @awaitingPricing.
+  ///
+  /// In ar, this message translates to:
+  /// **'بانتظار التسعير'**
+  String get awaitingPricing;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عن صناعية'**
+  String get aboutTitle;
+
+  /// No description provided for @supportTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدعم'**
+  String get supportTitle;
+
+  /// No description provided for @aboutPromise.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك من العطل إلى الطريق — في مكان واحد. كل اتفاق موقّع، وكل مبلغ محفوظ حتى تستلم، وكل شيء موثّق باسمك.'**
+  String get aboutPromise;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In ar, this message translates to:
+  /// **'النسخة {v}'**
+  String aboutVersion(Object v);
+
+  /// No description provided for @supportBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'واجهتك مشكلة أو عندك اقتراح؟ كلمنا وبنرد عليك بأسرع ما نقدر.'**
+  String get supportBody;
+
+  /// No description provided for @supportWhatsApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'راسلنا على واتساب'**
+  String get supportWhatsApp;
+
+  /// No description provided for @supportCall.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتصل بنا'**
+  String get supportCall;
+
+  /// No description provided for @termsNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'باستخدامك صناعية أنت توافق على شروط الاستخدام وسياسة الخصوصية — تُنشر نسختها الكاملة قبل الإطلاق العام.'**
+  String get termsNote;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

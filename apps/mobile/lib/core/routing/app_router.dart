@@ -33,6 +33,7 @@ import '../../features/transport/presentation/driver_proof_screen.dart';
 import '../../features/transport/presentation/tow_job_screen.dart';
 import '../../features/transport/presentation/tow_request_screen.dart';
 import '../di/core_providers.dart';
+import '../../features/account/presentation/about_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../ui/ui.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
@@ -71,6 +72,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // المحفظة كانت تبويباً؛ صارت داخل «حسابي» بعد تقليص التبويبات إلى ثلاثة — فتحتاج عنواناً.
       GoRoute(path: '/wallet', builder: (_, _) => const _WalletRoute()),
       GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
+      GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
+      GoRoute(path: '/support', builder: (_, _) => const SupportScreen()),
       GoRoute(path: '/disputes/:id', builder: (_, s) => DisputeScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/service-requests/:id', builder: (_, s) => ServiceRequestScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/ws/service-requests', builder: (_, _) => const NearbyRequestsScreen()),

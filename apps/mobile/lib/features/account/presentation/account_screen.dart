@@ -36,6 +36,12 @@ class AccountScreen extends ConsumerWidget {
         AppListRow(icon: Icons.language, title: l.language, trailing: SegmentedButton<String>(segments: [ButtonSegment(value: 'ar', label: Text(l.arabic)), ButtonSegment(value: 'en', label: Text(l.english))], selected: {locale}, onSelectionChanged: (s) => ref.read(localeProvider.notifier).set(s.first), showSelectedIcon: false)),
       ])),
       const SizedBox(height: SinaatySpace.lg),
+      // الدعم والتعريف — كان نصف الشاشة فراغاً أسود، والمتاجر تسألهما قبل النشر أصلاً
+      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+        AppListRow(icon: Icons.support_agent_outlined, title: l.supportTitle, onTap: () => context.push('/support')),
+        AppListRow(icon: Icons.info_outline, title: l.aboutTitle, onTap: () => context.push('/about')),
+      ])),
+      const SizedBox(height: SinaatySpace.lg),
       Center(child: TextButton(onPressed: () => ref.read(authControllerProvider.notifier).signOut(), child: Text(l.logout))),
     ]);
   }

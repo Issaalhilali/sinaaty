@@ -1159,5 +1159,19 @@
     "placeholders": {
       "date": {}
     }
-  }
+  },
+  "awaitingPricing": "Awaiting pricing",
+  "aboutTitle": "About Sinaaty",
+  "supportTitle": "Support",
+  "aboutPromise": "Your car, from breakdown to back on the road — in one place. Every agreement signed, every payment held until you receive, everything documented in your name.",
+  "aboutVersion": "Version {v}",
+  "@aboutVersion": {
+    "placeholders": {
+      "v": {}
+    }
+  },
+  "supportBody": "Hit a problem or have a suggestion? Message us and we will get back to you fast.",
+  "supportWhatsApp": "Message us on WhatsApp",
+  "supportCall": "Call us",
+  "termsNote": "By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch."
 }

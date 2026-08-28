@@ -64,7 +64,10 @@ class WorkOrderCard extends StatelessWidget {
     return SectionCard(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge, maxLines: 1, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: s.onSurfaceVariant))])), const SizedBox(width: 8), StatusBadge(Labels.woStatus(l, order.status), tone: tone)]),
       const SizedBox(height: SinaatySpace.lg),
-      Row(children: [Expanded(child: ProgressDots(total: woFlow.length, done: step < 0 ? 0 : step + 1)), const SizedBox(width: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: locale))]),
+      Row(children: [Expanded(child: ProgressDots(total: woFlow.length, done: step < 0 ? 0 : step + 1)), const SizedBox(width: SinaatySpace.md),
+        // مسودةُ صفرٍ كانت تصرخ «0.00 ر.س» — البنود لم تُسعَّر بعد، والصدق «بانتظار التسعير»
+        if (order.status == 'draft' && order.total == '0.00') Text(l.awaitingPricing, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant))
+        else MoneyText(Fmt.money(order.total, locale: locale))]),
     ]));
   }
 }

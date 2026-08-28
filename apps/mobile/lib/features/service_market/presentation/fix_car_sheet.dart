@@ -15,11 +15,12 @@ import '../../vehicles/presentation/providers.dart';
 import '../domain/symptoms.dart';
 import 'providers.dart';
 
-const _icons = <String, IconData>{
-  'power_settings_new': Icons.power_settings_new, 'graphic_eq': Icons.graphic_eq,
-  'do_not_step': Icons.do_not_step, 'thermostat': Icons.thermostat, 'vibration': Icons.vibration,
-  'call_split': Icons.call_split, 'water_drop': Icons.water_drop, 'warning_amber': Icons.warning_amber,
-  'ac_unit': Icons.ac_unit, 'bolt': Icons.bolt, 'car_crash': Icons.car_crash, 'build': Icons.build,
+// رموز البيت المرسومة — رموز Material العامة ذهبت مع بقية القالب
+const _icons = <String, BrandGlyph>{
+  'power_settings_new': BrandGlyph.symNoStart, 'graphic_eq': BrandGlyph.symNoise,
+  'do_not_step': BrandGlyph.symBrakes, 'thermostat': BrandGlyph.symHeat, 'vibration': BrandGlyph.symShake,
+  'call_split': BrandGlyph.symPulls, 'water_drop': BrandGlyph.symLeak, 'warning_amber': BrandGlyph.symWarning,
+  'ac_unit': BrandGlyph.symAc, 'bolt': BrandGlyph.symBolt, 'car_crash': BrandGlyph.symCrash, 'build': BrandGlyph.symService,
 };
 
 /// «أصلح سيارتي».
@@ -96,7 +97,7 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final s in kSymptoms)
                 FilterChip(
-                  avatar: Icon(_icons[s.icon] ?? Icons.help_outline, size: 18,
+                  avatar: BrandIcon(_icons[s.icon] ?? BrandGlyph.symService, size: 18,
                       color: picked.contains(s) ? cs.onSecondaryContainer : cs.onSurfaceVariant),
                   label: Text(s.labelAr), selected: picked.contains(s), showCheckmark: false,
                   onSelected: (v) => setS(() => v ? picked.add(s) : picked.remove(s)),
