@@ -42,7 +42,7 @@ class _FleetStatementsScreenState extends ConsumerState<FleetStatementsScreen> {
       title: l.flStatements, subtitle: l.flStatementsBody,
       primaryAction: PrimaryButton(label: l.flGenerateStatement, icon: Icons.receipt_long_outlined, loading: _busy, onPressed: _busy ? null : _generate),
       body: AsyncResultView<List<FleetStatement>>(value: v, onRetry: () => ref.invalidate(fleetStatementsProvider), builder: (list) => list.isEmpty
-          ? EmptyState(icon: Icons.receipt_long_outlined, title: l.flStatementsEmpty, body: l.flStatementsEmptyBody)
+          ? EmptyState(glyph: BrandGlyph.orders, title: l.flStatementsEmpty, body: l.flStatementsEmptyBody)
           : RefreshIndicator(onRefresh: () async => ref.invalidate(fleetStatementsProvider), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
               SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
                 for (final s in list) AppListRow(

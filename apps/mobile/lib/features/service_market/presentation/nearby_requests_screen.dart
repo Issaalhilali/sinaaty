@@ -18,7 +18,7 @@ class NearbyRequestsScreen extends ConsumerWidget {
     return AppScaffold(
       title: l.srNearby,
       body: AsyncResultView<List<ServiceRequest>>(value: v, onRetry: () => ref.invalidate(nearbyServiceRequestsProvider), builder: (list) => list.isEmpty
-          ? EmptyState(icon: Icons.build_circle_outlined, title: l.srNoOffers.split(' —').first, body: '')
+          ? EmptyState(glyph: BrandGlyph.carRepair, title: l.srNoOffers.split(' —').first, body: '')
           : RefreshIndicator(onRefresh: () async => ref.invalidate(nearbyServiceRequestsProvider), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
               SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
                 for (final r in list) AppListRow(

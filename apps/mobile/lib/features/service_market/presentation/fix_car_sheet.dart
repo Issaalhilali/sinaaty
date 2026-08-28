@@ -153,7 +153,20 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
               segments: [ButtonSegment(value: 'now', label: Text(l.srNow)), ButtonSegment(value: 'today', label: Text(l.srToday)), ButtonSegment(value: 'this_week', label: Text(l.srThisWeek))],
               selected: {when}, showSelectedIcon: false, onSelectionChanged: (s) => setS(() => when = s.first)),
 
-            const SizedBox(height: SinaatySpace.lg),
+            const SizedBox(height: SinaatySpace.md),
+            // دمجُ الأبواب: من سيارته لا تمشي لا يُترك يكتشف السطحة وحده — الرحلة عندنا واحدة،
+            // وهذا بالضبط ما يفصلنا عن تطبيقات «خدمة واحدة»: السطحة تُسلّم للورشة لا للرصيف.
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(Icons.info_outline, size: 15, color: t.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 6),
+              Flexible(child: Text(l.srCantMove, style: t.textTheme.bodySmall?.copyWith(color: t.colorScheme.onSurfaceVariant))),
+              TextButton(
+                style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: const Size(0, 32)),
+                onPressed: () { Navigator.pop(ctx, false); Future.microtask(() { if (context.mounted) context.push('/tow/new', extra: {'vehicle_id': vehicleId}); }); },
+                child: Text(l.srOrderTow),
+              ),
+            ]),
+            const SizedBox(height: SinaatySpace.sm),
             // لا زرّ ميت: إن نقص شيء قيل ما هو، ولا يُترك ينقر بلا أثر.
             if (gap != null) Padding(padding: const EdgeInsets.only(bottom: 8),
               child: Row(children: [

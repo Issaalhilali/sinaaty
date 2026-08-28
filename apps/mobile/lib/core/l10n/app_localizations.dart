@@ -4836,6 +4836,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'باستخدامك صناعية أنت توافق على شروط الاستخدام وسياسة الخصوصية — تُنشر نسختها الكاملة قبل الإطلاق العام.'**
   String get termsNote;
+
+  /// No description provided for @srCantMove.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك ما تتحرك؟'**
+  String get srCantMove;
+
+  /// No description provided for @srOrderTow.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب سطحة'**
+  String get srOrderTow;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

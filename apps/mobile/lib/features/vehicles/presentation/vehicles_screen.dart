@@ -23,7 +23,7 @@ class VehiclesScreen extends ConsumerWidget {
       if (list.isEmpty) {
         return RefreshIndicator(onRefresh: refresh, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
           const DueRow(),
-          EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () => context.push('/vehicles/add')),
+          EmptyState(glyph: BrandGlyph.car, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () => context.push('/vehicles/add')),
           const SizedBox(height: SinaatySpace.lg),
           const ServicesRow(expanded: true),
         ]));

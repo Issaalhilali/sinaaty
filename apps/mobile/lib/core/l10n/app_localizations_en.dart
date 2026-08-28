@@ -2578,4 +2578,10 @@ class L10nEn extends L10n {
   @override
   String get termsNote =>
       'By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch.';
+
+  @override
+  String get srCantMove => 'Car won\'t move?';
+
+  @override
+  String get srOrderTow => 'Request a tow';
 }

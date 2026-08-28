@@ -85,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
         SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'),
             icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
         if (vehicles.isEmpty)
-          EmptyState(icon: Icons.directions_car_outlined, title: l.emptyCarsTitle, body: l.emptyCarsBody,
+          EmptyState(glyph: BrandGlyph.car, title: l.emptyCarsTitle, body: l.emptyCarsBody,
               actionLabel: l.addCar, onAction: () => context.push('/vehicles/add'))
         else
           // البطاقة الحيّة لا الصفّ البارد: سجل السيارة يعرف آخر صيانتها وضماناتها منذ شهور،

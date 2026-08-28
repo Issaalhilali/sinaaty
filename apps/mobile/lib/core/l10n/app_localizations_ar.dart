@@ -2544,4 +2544,10 @@ class L10nAr extends L10n {
   @override
   String get termsNote =>
       'باستخدامك صناعية أنت توافق على شروط الاستخدام وسياسة الخصوصية — تُنشر نسختها الكاملة قبل الإطلاق العام.';
+
+  @override
+  String get srCantMove => 'سيارتك ما تتحرك؟';
+
+  @override
+  String get srOrderTow => 'اطلب سطحة';
 }

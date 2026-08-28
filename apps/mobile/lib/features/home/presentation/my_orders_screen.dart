@@ -46,7 +46,7 @@ class MyOrdersScreen extends ConsumerWidget {
       children: [
         const DueRow(),
         if (empty)
-          EmptyState(icon: Icons.receipt_long_outlined, title: l.myOrdersEmpty, body: l.myOrdersEmptyBody)
+          EmptyState(glyph: BrandGlyph.orders, title: l.myOrdersEmpty, body: l.myOrdersEmptyBody)
         else ...[
           // أمر الإصلاح أولاً: هو الوحيد الذي قد يطلب توقيعاً أو دفعاً الآن.
           if (orders.isNotEmpty) ...[
