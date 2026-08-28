@@ -28,13 +28,14 @@ class ServicesRow extends ConsumerWidget {
     final l = L10n.of(context);
     final flags = ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible;
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
-    final items = <({IconData icon, String label, String? body, VoidCallback onTap})>[
+    // أيقوناتُ البيت المرسومة لا Material الجاهزة — «السلايدرز» لقطعة الغيار كانت تقول قالباً
+    final items = <({BrandGlyph icon, String label, String? body, VoidCallback onTap})>[
       if (flags.enabled(Flags.serviceMarketplace))
-        (icon: Icons.build_outlined, label: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
+        (icon: BrandGlyph.carRepair, label: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
       if (flags.enabled(Flags.partsMarketplace))
-        (icon: Icons.settings_input_component_outlined, label: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
+        (icon: BrandGlyph.gear, label: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
       if (flags.enabled(Flags.tow))
-        (icon: Icons.local_shipping_outlined, label: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        (icon: BrandGlyph.towTruck, label: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
     ];
     if (items.isEmpty) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -50,7 +51,7 @@ class ServicesRow extends ConsumerWidget {
 }
 
 class _Tile extends StatelessWidget {
-  final IconData icon; final String label; final String? body; final VoidCallback onTap;
+  final BrandGlyph icon; final String label; final String? body; final VoidCallback onTap;
   const _Tile({required this.icon, required this.label, this.body, required this.onTap});
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme; final t = Theme.of(context).textTheme;
@@ -64,7 +65,7 @@ class _Tile extends StatelessWidget {
             Container(
               width: 40, height: 40, alignment: Alignment.center,
               decoration: BoxDecoration(color: s.primaryContainer, borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, size: 21, color: s.onPrimaryContainer),
+              child: BrandIcon(icon, size: 24, color: s.onPrimaryContainer),
             ),
             const SizedBox(height: SinaatySpace.sm),
             // سطران: «أطلب قطعة غيار» لا يسع ثلث العرض في سطر، وقصّه إلى «أطلب قطعة ...» يخفي الخدمة نفسها.

@@ -146,7 +146,7 @@ class _VehicleCard extends StatelessWidget {
       child: Row(children: [
         Container(width: 46, height: 46,
           decoration: BoxDecoration(color: cs.primary.withValues(alpha: .1), borderRadius: BorderRadius.circular(12)),
-          child: Icon(Icons.directions_car_outlined, color: cs.primary)),
+          child: Center(child: BrandIcon(BrandGlyph.car, size: 26, color: cs.primary))),
         const SizedBox(width: SinaatySpace.md),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(v.title, style: t.titleSmall),

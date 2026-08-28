@@ -60,7 +60,7 @@ class MyOrdersScreen extends ConsumerWidget {
             SectionTitle(l.srMine),
             SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
               for (final r in fixes) AppListRow(
-                icon: Icons.build_outlined, title: r.titleAr,
+                brandIcon: BrandGlyph.carRepair, title: r.titleAr,
                 subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
                 trailing: StatusBadge('${r.offersCount}', tone: r.offersCount > 0 ? BadgeTone.brass : BadgeTone.plain, icon: Icons.local_offer_outlined),
                 onTap: () => context.push('/service-requests/${r.id}')),
@@ -71,7 +71,7 @@ class MyOrdersScreen extends ConsumerWidget {
             SectionTitle(l.moParts),
             SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
               for (final r in parts) AppListRow(
-                icon: Icons.settings_input_component_outlined, title: r.partNameAr,
+                brandIcon: BrandGlyph.gear, title: r.partNameAr,
                 subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
                 trailing: StatusBadge('${r.bidsCount}', tone: r.bidsCount > 0 ? BadgeTone.brass : BadgeTone.plain, icon: Icons.gavel_outlined),
                 onTap: () => context.push('/parts/requests/${r.id}')),
@@ -82,7 +82,7 @@ class MyOrdersScreen extends ConsumerWidget {
             SectionTitle(l.moTow),
             SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
               for (final j in tows) AppListRow(
-                icon: Icons.local_shipping_outlined, title: j.number,
+                brandIcon: BrandGlyph.towTruck, title: j.number,
                 subtitle: Labels.transportStatus(l, j.status),
                 onTap: () => context.push('/tow/${j.id}')),
             ])),
