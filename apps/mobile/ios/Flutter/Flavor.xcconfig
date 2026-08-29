@@ -1,3 +1,3 @@
 // يُكتب آلياً من tool/flavor.sh — لا تُحرّره يدوياً.
-FLAVOR_SUFFIX = .partner
-FLAVOR_NAME = صناعتي للشركاء
+FLAVOR_SUFFIX = .customer
+FLAVOR_NAME = صناعية

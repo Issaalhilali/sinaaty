@@ -20,3 +20,12 @@ for d in mdpi:48:108 hdpi:72:162 xhdpi:96:216 xxhdpi:144:324 xxxhdpi:192:432; do
   sips -z "$fgpx" "$fgpx" "$FG" --out "$dir/ic_launcher_foreground.png" >/dev/null
   echo "✓ $dir (ic_launcher ${px}px · foreground ${fgpx}px)"
 done
+
+# iOS: نفس المصدر إلى AppIcon.appiconset — الأسماء والمقاسات كما في Contents.json القالبي
+IOSDIR=ios/Runner/Assets.xcassets/AppIcon.appiconset
+for e in 1024x1024@1x:1024 20x20@1x:20 20x20@2x:40 20x20@3x:60 29x29@1x:29 29x29@2x:58 29x29@3x:87 \
+         40x40@1x:40 40x40@2x:80 40x40@3x:120 60x60@2x:120 60x60@3x:180 76x76@1x:76 76x76@2x:152 83.5x83.5@2x:167; do
+  name="Icon-App-${e%%:*}.png"; px="${e##*:}"
+  sips -z "$px" "$px" "$SRC" --out "$IOSDIR/$name" >/dev/null
+done
+echo "✓ $IOSDIR (15 مقاساً)"
