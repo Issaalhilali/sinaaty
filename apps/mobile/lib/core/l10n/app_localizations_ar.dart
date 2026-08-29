@@ -2550,4 +2550,16 @@ class L10nAr extends L10n {
 
   @override
   String get srOrderTow => 'اطلب سطحة';
+
+  @override
+  String get poScheduled => 'مجدول';
+
+  @override
+  String get poProcessing => 'قيد التحويل';
+
+  @override
+  String get poPaid => 'تم التحويل';
+
+  @override
+  String get poFailed => 'تعذّر';
 }

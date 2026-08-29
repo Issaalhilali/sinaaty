@@ -4848,6 +4848,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'اطلب سطحة'**
   String get srOrderTow;
+
+  /// No description provided for @poScheduled.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجدول'**
+  String get poScheduled;
+
+  /// No description provided for @poProcessing.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيد التحويل'**
+  String get poProcessing;
+
+  /// No description provided for @poPaid.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التحويل'**
+  String get poPaid;
+
+  /// No description provided for @poFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر'**
+  String get poFailed;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

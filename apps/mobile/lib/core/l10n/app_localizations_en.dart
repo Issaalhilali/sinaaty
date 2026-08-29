@@ -2584,4 +2584,16 @@ class L10nEn extends L10n {
 
   @override
   String get srOrderTow => 'Request a tow';
+
+  @override
+  String get poScheduled => 'Scheduled';
+
+  @override
+  String get poProcessing => 'Processing';
+
+  @override
+  String get poPaid => 'Transferred';
+
+  @override
+  String get poFailed => 'Failed';
 }

@@ -1175,5 +1175,9 @@
   "supportCall": "Call us",
   "termsNote": "By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch.",
   "srCantMove": "Car won't move?",
-  "srOrderTow": "Request a tow"
+  "srOrderTow": "Request a tow",
+  "poScheduled": "Scheduled",
+  "poProcessing": "Processing",
+  "poPaid": "Transferred",
+  "poFailed": "Failed"
 }

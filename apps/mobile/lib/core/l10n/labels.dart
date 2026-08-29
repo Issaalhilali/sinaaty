@@ -34,4 +34,13 @@ abstract final class Labels {
       RemainingUnit.days => l.ptEndsInDays(r.value),
     };
   }
+
+  /// حالة التحويل البنكي — "scheduled" الخام ظهرت إنجليزيةً في محفظة الورشة (جولة الجهاز ٢٩ أغسطس).
+  static String payoutStatus(L10n l, String s) => switch (s) {
+        'scheduled' => l.poScheduled,
+        'processing' => l.poProcessing,
+        'paid' => l.poPaid,
+        'failed' => l.poFailed,
+        _ => s,
+      };
 }
