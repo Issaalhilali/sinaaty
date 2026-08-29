@@ -5148,6 +5148,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'فحص'**
   String get itemDiagnostic;
+
+  /// No description provided for @scanCameraFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر فتح الكاميرا. تأكد من السماح للتطبيق باستخدامها، أو اكتب الرقم يدوياً.'**
+  String get scanCameraFailed;
+
+  /// No description provided for @scanTypeInstead.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكتبه يدوياً'**
+  String get scanTypeInstead;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

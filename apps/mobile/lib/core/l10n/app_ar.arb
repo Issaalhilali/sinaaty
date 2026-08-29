@@ -1230,5 +1230,7 @@
   "svcEmptyBody": "احفظ خدماتك المتكررة — «غيار زيت 280» يُدرج في أي أمرٍ بنقرة.",
   "itemLabor": "عمل",
   "itemPart": "قطعة",
-  "itemDiagnostic": "فحص"
+  "itemDiagnostic": "فحص",
+  "scanCameraFailed": "تعذّر فتح الكاميرا. تأكد من السماح للتطبيق باستخدامها، أو اكتب الرقم يدوياً.",
+  "scanTypeInstead": "أكتبه يدوياً"
 }

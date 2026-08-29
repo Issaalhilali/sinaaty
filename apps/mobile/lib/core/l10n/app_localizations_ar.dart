@@ -2707,4 +2707,11 @@ class L10nAr extends L10n {
 
   @override
   String get itemDiagnostic => 'فحص';
+
+  @override
+  String get scanCameraFailed =>
+      'تعذّر فتح الكاميرا. تأكد من السماح للتطبيق باستخدامها، أو اكتب الرقم يدوياً.';
+
+  @override
+  String get scanTypeInstead => 'أكتبه يدوياً';
 }

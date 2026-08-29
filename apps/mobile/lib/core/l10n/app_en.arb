@@ -1230,5 +1230,7 @@
   "svcEmptyBody": "Save your recurring services — add them to any order with one tap.",
   "itemLabor": "Labor",
   "itemPart": "Part",
-  "itemDiagnostic": "Diagnostic"
+  "itemDiagnostic": "Diagnostic",
+  "scanCameraFailed": "Could not open the camera. Allow camera access, or type the number instead.",
+  "scanTypeInstead": "Type it instead"
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../l10n/app_localizations.dart';
 
 /// ماسح رموز عام في النواة — تستعمله أي ميزة بلا أن تستورد ميزة أخرى (قاعدة العزل بين الميزات).
 ///
@@ -33,7 +34,20 @@ class _ScanPageState extends State<_ScanPage> {
         backgroundColor: Colors.black,
         appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white),
         body: Stack(children: [
-          MobileScanner(onDetect: (c) {
+          MobileScanner(
+            // بلا هذا، فشلُ الكاميرا (إذن مرفوض، عدسة مشغولة) شاشةٌ سوداء صامتة — يقف صاحبها
+            // أمامها يظن التطبيق معطوباً. تقول ما حدث وتعطيه طريقاً للخروج والكتابة يدوياً.
+            errorBuilder: (context, error) => Center(child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.no_photography_outlined, color: Colors.white70, size: 40),
+                const SizedBox(height: 12),
+                Text(L10n.of(context).scanCameraFailed, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                const SizedBox(height: 16),
+                FilledButton(onPressed: () => Navigator.of(context).pop(), child: Text(L10n.of(context).scanTypeInstead)),
+              ]),
+            )),
+            onDetect: (c) {
             if (_done) return;
             final v = c.barcodes.firstOrNull?.rawValue;
             if (v == null) return;

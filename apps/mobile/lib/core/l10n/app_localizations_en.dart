@@ -2743,4 +2743,11 @@ class L10nEn extends L10n {
 
   @override
   String get itemDiagnostic => 'Diagnostic';
+
+  @override
+  String get scanCameraFailed =>
+      'Could not open the camera. Allow camera access, or type the number instead.';
+
+  @override
+  String get scanTypeInstead => 'Type it instead';
 }
