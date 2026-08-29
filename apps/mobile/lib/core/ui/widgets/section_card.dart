@@ -48,51 +48,68 @@ class BrandMark extends StatelessWidget {
       );
 }
 
-/// رسم البوابة وحدها (نحاس على شفاف) — تستعمله الأيقونات التكيفية أيضاً.
+/// رسم العلامة (نحاس على شفاف) — تستعمله الأيقونات التكيفية أيضاً.
+///
+/// بناء بالكتل والفراغ السالب لا بالخطوط (نقد المالك على نسخة الحدود: «خطوط وتصميم
+/// بدائي»): جسم الكراج كتلة مصمتة يُنحت منها فتحة الباب، الباب الملفوف ينزل ثلثها
+/// بحزّين منحوتين، والسيارة كتلة داخل الفراغ. كل الأشكال تُجمع في مسار واحد ثم تُصبغ
+/// بتدرج نحاسي واحد — فيقرأ الشعار جسماً واحداً لا خطوطاً مجموعة.
 class GateMarkPainter extends CustomPainter {
   const GateMarkPainter();
   @override void paint(Canvas c, Size s) {
     final w = s.width;
-    Paint stroke(double sw) => Paint()
-      ..style = PaintingStyle.stroke..strokeWidth = math.max(1.4, sw)..strokeCap = StrokeCap.round
-      ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-          colors: [Color(0xFFE2BC7A), Color(0xFFC49A52)]).createShader(Offset.zero & s);
-    Paint fill() => Paint()
-      ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-          colors: [Color(0xFFE2BC7A), Color(0xFFC49A52)]).createShader(Offset.zero & s);
-    // إطار الكراج: باب مستطيل بأكتاف شبه مستوية — لا قوساً نصف دائري (قرأه المالك غطاء صحن)
-    final frame = Path()
-      ..moveTo(w * .14, w * .775)
-      ..lineTo(w * .14, w * .335)
-      ..quadraticBezierTo(w * .14, w * .225, w * .25, w * .225)
-      ..lineTo(w * .75, w * .225)
-      ..quadraticBezierTo(w * .86, w * .225, w * .86, w * .335)
-      ..lineTo(w * .86, w * .775);
-    c.drawPath(frame, stroke(w * .05));
-    // شريحتا الباب الملفوف بعرض الفتحة كله — الباب مرفوع والورشة تستقبل
-    c.drawLine(Offset(w * .225, w * .325), Offset(w * .775, w * .325), stroke(w * .036));
-    c.drawLine(Offset(w * .225, w * .40), Offset(w * .775, w * .40), stroke(w * .036));
-    // السيارة داخل البوابة — جانبية مملوءة، بيتا العجلات مطروحان ثم العجلتان حلقتين
-    final body = Path()
-      ..moveTo(w * .255, w * .60)
-      ..quadraticBezierTo(w * .27, w * .545, w * .36, w * .535)
-      ..quadraticBezierTo(w * .41, w * .475, w * .50, w * .475)
-      ..quadraticBezierTo(w * .59, w * .475, w * .635, w * .53)
-      ..quadraticBezierTo(w * .72, w * .54, w * .74, w * .59)
-      ..quadraticBezierTo(w * .75, w * .625, w * .73, w * .655)
-      ..lineTo(w * .27, w * .655)
-      ..quadraticBezierTo(w * .25, w * .635, w * .255, w * .60)
+    RRect rr(double l, double t, double r, double b, double rad) =>
+        RRect.fromLTRBR(w * l, w * t, w * r, w * b, Radius.circular(w * rad));
+    Path add(Path a, Path b) => Path.combine(PathOperation.union, a, b);
+    Path cut(Path a, Path b) => Path.combine(PathOperation.difference, a, b);
+
+    Path topRounded(double l, double t, double r, double b, double rad) => Path()
+      ..moveTo(w * l, w * b)
+      ..lineTo(w * l, w * (t + rad))
+      ..quadraticBezierTo(w * l, w * t, w * (l + rad), w * t)
+      ..lineTo(w * (r - rad), w * t)
+      ..quadraticBezierTo(w * r, w * t, w * r, w * (t + rad))
+      ..lineTo(w * r, w * b)
       ..close();
-    Path wheelCut(double cx) => Path()..addOval(Rect.fromCircle(center: Offset(w * cx, w * .655), radius: w * .062));
-    c.drawPath(
-        Path.combine(PathOperation.difference,
-            Path.combine(PathOperation.difference, body, wheelCut(.355)), wheelCut(.645)),
-        fill());
-    for (final cx in [.355, .645]) {
-      c.drawCircle(Offset(w * cx, w * .655), w * .038, stroke(w * .028));
+    // جسم الكراج: كتلة بأكتاف علوية مشطوفة وقاعدة مستقيمة، تُنحت منها فتحة الباب
+    var mark = cut(
+      topRounded(.10, .245, .90, .775, .10),
+      topRounded(.185, .335, .815, .78, .05),
+    );
+    // الباب الملفوف نازلاً ثلثه — سطحه مستوٍ وحزّان منحوتان يوحيان بالشرائح
+    var door = topRounded(.185, .335, .815, .475, .05);
+    for (final gy in [.379, .425]) {
+      door = cut(door, Path()..addRect(Rect.fromLTRB(w * .185, w * gy, w * .815, w * (gy + .015))));
     }
-    // الأرض: الطريق يمتد أوسع من البوابة
-    c.drawLine(Offset(w * .08, w * .775), Offset(w * .92, w * .775), stroke(w * .05));
+    mark = add(mark, door);
+    // الطريق: بساط يمتد أوسع من الكراج
+    mark = add(mark, Path()..addRRect(rr(.045, .775, .955, .8255, .025)));
+    // السيارة داخل الفتحة: كتلة انسيابية واحدة، بيتا العجلات منحوتان
+    var body = Path()
+      ..moveTo(w * .235, w * .655)
+      ..quadraticBezierTo(w * .238, w * .607, w * .30, w * .5965)
+      ..quadraticBezierTo(w * .345, w * .537, w * .445, w * .537)
+      ..quadraticBezierTo(w * .545, w * .537, w * .60, w * .592)
+      ..quadraticBezierTo(w * .715, w * .60, w * .755, w * .638)
+      ..quadraticBezierTo(w * .768, w * .652, w * .765, w * .674)
+      ..quadraticBezierTo(w * .762, w * .706, w * .73, w * .706)
+      ..lineTo(w * .27, w * .706)
+      ..quadraticBezierTo(w * .232, w * .706, w * .235, w * .655)
+      ..close();
+    Path wheelBay(double cx) => Path()..addOval(Rect.fromCircle(center: Offset(w * cx, w * .706), radius: w * .062));
+    body = cut(cut(body, wheelBay(.345)), wheelBay(.655));
+    mark = add(mark, body);
+    // العجلتان: قرصان بمحورين منحوتين، قاعهما على الطريق
+    for (final cx in [.345, .655]) {
+      mark = add(mark, cut(
+        Path()..addOval(Rect.fromCircle(center: Offset(w * cx, w * .729), radius: w * .0465)),
+        Path()..addOval(Rect.fromCircle(center: Offset(w * cx, w * .729), radius: w * .0165)),
+      ));
+    }
+    c.drawPath(mark, Paint()
+      ..isAntiAlias = true
+      ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [Color(0xFFE6C384), Color(0xFFC49A52), Color(0xFFA97F38)], stops: [0, .55, 1]).createShader(Offset.zero & s));
   }
   @override bool shouldRepaint(covariant CustomPainter _) => false;
 }
