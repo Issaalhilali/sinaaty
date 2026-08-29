@@ -18,8 +18,18 @@ class SinaatyApp extends ConsumerWidget {
       theme: AppTheme.light(), darkTheme: AppTheme.light(), themeMode: ThemeMode.light,
       locale: Locale(locale), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: ref.watch(routerProvider),
-      // الوِب يُفتح من حاسوب: بلا هذا تُدفع الورقة خارج الشاشة فلا يُرى إلا خلفية خضراء.
-      builder: (_, child) => WideShell(child: child ?? const SizedBox.shrink()),
+      // الوِب يُفتح من حاسوب: بلا WideShell تُدفع الورقة خارج الشاشة فلا يُرى إلا خلفية خضراء.
+      // والنص يناسب كل شاشة (شكوى المالك): تكبير النظام له سقف كي لا ينفجر التخطيط،
+      // والشاشات الضيقة (<370dp) تنزل درجة خفيفة بدل أن تلتف الجمل وتزدحم.
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        final narrow = mq.size.shortestSide < 370 ? .94 : 1.0;
+        final capped = mq.textScaler.scale(14).clamp(14 * .85, 14 * 1.2) / 14;
+        return MediaQuery(
+          data: mq.copyWith(textScaler: TextScaler.linear(capped * narrow)),
+          child: WideShell(child: child ?? const SizedBox.shrink()),
+        );
+      },
     );
   }
 }

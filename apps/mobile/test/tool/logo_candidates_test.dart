@@ -13,29 +13,6 @@ BoxDecoration _tile() => BoxDecoration(
     borderRadius: BorderRadius.circular(110),
     gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [_g1, _g2]));
 
-/// أ — «الانطلاقة»: عجلة تنطلق وخلفها ذيل مسارٍ متلاشٍ — حركة خالصة
-class _CometPainter extends CustomPainter {
-  @override void paint(Canvas c, Size s) {
-    final w = s.width; final center = Offset(w * .5, w * .5);
-    // الذيل: قوس يتّسع نحو العجلة ويتلاشى خلفها — مبني نقاطاً ليكون مدبباً حقاً
-    final pts = <Offset>[]; final pts2 = <Offset>[];
-    const start = math.pi * .95, end = math.pi * 2.05;
-    for (var i = 0; i <= 40; i++) {
-      final t = i / 40; final a = start + (end - start) * t;
-      final r = w * .30; final th = w * (.012 + .075 * t * t);
-      pts.add(Offset(center.dx + (r + th / 2) * math.cos(a), center.dy + (r + th / 2) * math.sin(a)));
-      pts2.add(Offset(center.dx + (r - th / 2) * math.cos(a), center.dy + (r - th / 2) * math.sin(a)));
-    }
-    final tail = Path()..addPolygon([...pts, ...pts2.reversed], true);
-    c.drawPath(tail, Paint()..color = Colors.white..isAntiAlias = true);
-    // العجلة: قرص أبيض بمحور أخضر — رأس المذنّب
-    final head = Offset(center.dx + w * .30 * math.cos(end), center.dy + w * .30 * math.sin(end));
-    c.drawCircle(head, w * .105, Paint()..color = Colors.white);
-    c.drawCircle(head, w * .042, Paint()..color = _g1);
-  }
-  @override bool shouldRepaint(covariant CustomPainter _) => false;
-}
-
 /// ب — «الصامولة»: صامولة العجلة من الأعلى — سداسيةٌ بيضاء بقلب مفرّغ: أبسط رمز صنعةٍ ممكن
 class _LugNutPainter extends CustomPainter {
   @override void paint(Canvas c, Size s) {

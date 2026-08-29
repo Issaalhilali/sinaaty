@@ -137,7 +137,7 @@ class _SceneEscrow extends StatelessWidget {
     CustomPaint(size: const Size(250, 250), painter: _EscrowPainter()),
     // «ر.س» نصٌّ حقيقي بخط التطبيق — في قلب القطعة النقدية
     Padding(padding: const EdgeInsets.only(bottom: 34), child: Text('ر.س',
-        style: TextStyle(color: _ink.withValues(alpha: .95), fontSize: 32, fontWeight: FontWeight.w800, height: 1))),
+        style: TextStyle(color: _ink.withValues(alpha: .95), fontSize: 27, fontWeight: FontWeight.w800, height: 1.25))),
   ]);
 }
 

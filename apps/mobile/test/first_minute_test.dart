@@ -137,6 +137,8 @@ void main() {
     expect(find.textContaining('آخر صيانة'), findsOneWidget);
     expect(find.text('في الورشة الآن — تابعها'), findsOneWidget);
     await t.ensureVisible(find.text('هوندا أكورد 2021'));                   // البطاقات أسفل الصفحة
+    // ensureVisible يُدخل الحافة فقط — والشريط السفلي العائم يبتلع النقرة، فنمرر فوقه
+    await t.drag(find.byType(Scrollable).first, const Offset(0, -160)); await t.pumpAndSettle();
     await t.tap(find.text('هوندا أكورد 2021')); await t.pumpAndSettle();
     expect(find.text('أمر wo9'), findsOneWidget);            // البطاقة تقود إلى الإصلاح الجاري
   });
