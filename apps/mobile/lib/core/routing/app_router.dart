@@ -16,6 +16,8 @@ import '../../features/work_orders/presentation/inspection_diff_screen.dart';
 import '../../features/work_orders/presentation/work_order_screen.dart';
 import '../../features/billing/presentation/wallet_screen.dart';
 import '../../features/workshop/presentation/org_wallet_screen.dart';
+import '../../features/workshop/presentation/services_screen.dart';
+import '../../features/workshop/presentation/team_screen.dart';
 import '../../features/workshop/presentation/inspection_screen.dart';
 import '../../features/workshop/presentation/new_order_screen.dart';
 import '../../features/workshop/presentation/order_screen.dart';
@@ -89,6 +91,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ws/orders', builder: (_, _) => const OrdersScreen(standalone: true)),
       // إشعار «حُرّر المبلغ لك» كان يحمل مساراً لا وجود له، فالنقر لا يفعل شيئاً. المحفظة تبويبٌ
       // في الأصل، ولها الآن عنوانٌ يُفتح من الإشعار مباشرةً.
+      GoRoute(path: '/ws/team', builder: (_, _) => const TeamScreen()),
+      GoRoute(path: '/ws/services', builder: (_, _) => const ServicesScreen()),
       GoRoute(path: '/ws/wallet', builder: (_, _) => const _OrgWalletRoute()),
       // «تم اعتماد منشأتك 🎉» تفتح يوم المنشأة. الجذر وحده لا يصلح وجهةً لرابط: `routeFor` يترجم
       // المضيف مساراً، فـ«sinaaty://» بلا مضيفٍ لا يُترجم إلى شيء.

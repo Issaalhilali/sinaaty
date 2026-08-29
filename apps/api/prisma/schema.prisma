@@ -742,6 +742,7 @@ model Organization {
   @@index([tradeNameAr(ops: raw("gin_trgm_ops"))], map: "idx_orgs_trade_name_trgm", type: Gin)
   @@index([type, status], map: "idx_orgs_type_status")
   @@map("organizations")
+  serviceItems                   OrgServiceItem[]
 }
 
 model OtpChallenge {
@@ -2532,4 +2533,19 @@ enum accident_report_status {
   approved
   rejected
   closed
+}
+
+model OrgServiceItem {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId        String       @map("org_id") @db.Uuid
+  nameAr       String       @map("name_ar") @db.VarChar(200)
+  itemType     wo_item_type @default(labor) @map("item_type")
+  unitPrice    Decimal      @map("unit_price") @db.Decimal(12, 2)
+  warrantyDays Int          @default(0) @map("warranty_days")
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId], map: "idx_org_service_items_org")
+  @@map("org_service_items")
 }

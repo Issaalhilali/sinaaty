@@ -2618,4 +2618,93 @@ class L10nAr extends L10n {
   @override
   String get avOffBody =>
       'لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر';
+
+  @override
+  String get avResume => 'أعد التشغيل';
+
+  @override
+  String get wsTeam => 'فريق الورشة';
+
+  @override
+  String get wsServices => 'خدماتي';
+
+  @override
+  String get avMenuOn => 'استقبال الطلبات: يعمل — أوقفه';
+
+  @override
+  String get avMenuOff => 'استقبال الطلبات: موقوف — شغّله';
+
+  @override
+  String get teamAdd => 'أضف عضواً';
+
+  @override
+  String get teamAddBody => 'يدخل بجواله ويرى ما يخص دوره فقط.';
+
+  @override
+  String get teamAddConfirm => 'أضفه للفريق';
+
+  @override
+  String get teamEmpty => 'الفريق أنت وحدك بعد';
+
+  @override
+  String get teamEmptyBody =>
+      'أضف فنّييك ليستلموا السيارات ويحدّثوا الحالات من جوالاتهم.';
+
+  @override
+  String teamRemoveTitle(Object name) {
+    return 'إزالة $name؟';
+  }
+
+  @override
+  String get teamRemoveBody =>
+      'يفقد الدخول لهذه الورشة فوراً — سجلات أعماله السابقة تبقى.';
+
+  @override
+  String get teamRemoveConfirm => 'أزِله';
+
+  @override
+  String get roleOwner => 'المالك';
+
+  @override
+  String get roleManager => 'مدير';
+
+  @override
+  String get roleTechnician => 'فني';
+
+  @override
+  String get roleAccountant => 'محاسب';
+
+  @override
+  String get svcAdd => 'أضف خدمة';
+
+  @override
+  String get svcName => 'اسم الخدمة';
+
+  @override
+  String get svcNameHint => 'مثال: غيار زيت وفلتر';
+
+  @override
+  String get svcPrice => 'السعر';
+
+  @override
+  String get svcWarrantyDays => 'أيام الضمان';
+
+  @override
+  String get svcAddConfirm => 'احفظ الخدمة';
+
+  @override
+  String get svcEmpty => 'لا خدمات محفوظة بعد';
+
+  @override
+  String get svcEmptyBody =>
+      'احفظ خدماتك المتكررة — «غيار زيت 280» يُدرج في أي أمرٍ بنقرة.';
+
+  @override
+  String get itemLabor => 'عمل';
+
+  @override
+  String get itemPart => 'قطعة';
+
+  @override
+  String get itemDiagnostic => 'فحص';
 }

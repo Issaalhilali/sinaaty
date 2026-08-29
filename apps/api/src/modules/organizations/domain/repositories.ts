@@ -8,6 +8,10 @@ export interface KybDoc { id: string; type: KybDocType; mediaId: string; status:
 export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null; /** تخصّصها يشمل صنع سيارة الباحث — الترتيب يقدّمها. */ specialised: boolean }
 
 export interface OrganizationRepository {
+  // خدمات الورشة المحفوظة — «الأمر بنقرتين حقاً»
+  listServiceItems(orgId: string): Promise<Array<{ id: string; nameAr: string; itemType: string; unitPrice: string; warrantyDays: number }>>;
+  addServiceItem(orgId: string, p: { nameAr: string; itemType: string; unitPrice: string; warrantyDays: number }): Promise<{ id: string }>;
+  removeServiceItem(orgId: string, id: string): Promise<boolean>;
   /** «مشغولون الآن» — مفتاح استقبال طلبات السوق. */
   setAcceptingRequests(orgId: string, accepting: boolean): Promise<void>;
   create(input: { type: OrgType; legalNameAr: string; legalNameEn?: string; tradeNameAr?: string; slug?: string; crNumber?: string; vatNumber?: string; phone?: string; email?: string; descriptionAr?: string; createdBy: string }): Promise<Organization>;

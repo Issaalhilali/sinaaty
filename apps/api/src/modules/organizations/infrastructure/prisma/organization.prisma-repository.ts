@@ -15,6 +15,9 @@ const toLoc = (r: LocRow): OrgLocation => ({ id: r.id, nameAr: r.name_ar, isPrim
 
 @Injectable()
 export class OrganizationPrismaRepository implements OrganizationRepository {
+  async listServiceItems(orgId: string) { const rows = await this.prisma.orgServiceItem.findMany({ where: { orgId, isActive: true }, orderBy: { createdAt: 'asc' } }); return rows.map((r) => ({ id: r.id, nameAr: r.nameAr, itemType: r.itemType, unitPrice: r.unitPrice.toFixed(2), warrantyDays: r.warrantyDays })); }
+  async addServiceItem(orgId: string, p: { nameAr: string; itemType: string; unitPrice: string; warrantyDays: number }) { const r = await this.prisma.orgServiceItem.create({ data: { orgId, nameAr: p.nameAr, itemType: p.itemType as never, unitPrice: p.unitPrice, warrantyDays: p.warrantyDays }, select: { id: true } }); return r; }
+  async removeServiceItem(orgId: string, id: string) { const r = await this.prisma.orgServiceItem.updateMany({ where: { id, orgId }, data: { isActive: false } }); return r.count > 0; }
   async setAcceptingRequests(orgId: string, accepting: boolean) { await this.prisma.organization.update({ where: { id: orgId }, data: { acceptingRequests: accepting } }); }
   constructor(private readonly prisma: PrismaService) {}
 

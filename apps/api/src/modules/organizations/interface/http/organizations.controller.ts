@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import type { OrgType } from '@sinaaty/shared-types';
-import { AvailabilityDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../../application/dto/organizations.dto';
+import { AvailabilityDto, ServiceItemDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../../application/dto/organizations.dto';
 import { OrganizationsUseCases } from '../../application/use-cases/organizations.use-cases';
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { CurrentUser, Public, Roles, zod } from '../../../identity/interface/http';
@@ -44,6 +44,13 @@ export class OrganizationsController {
   @Post(':id/locations') @HttpCode(201) @ApiBearerAuth() @Roles(MANAGE) addLocation(@Param('id') id: string, @Body(zod(AddLocationDto)) dto: AddLocationDto) { return this.uc.addLocation(id, dto); }
   @Get(':id/locations') @ApiBearerAuth() @Roles(MANAGE) listLocations(@Param('id') id: string) { return this.uc.listLocations(id); }
   @Put(':id/specialties') @ApiBearerAuth() @Roles(MANAGE) setSpecialties(@Param('id') id: string, @Body(zod(SetSpecialtiesDto)) dto: SetSpecialtiesDto) { return this.uc.setSpecialties(id, dto); }
+
+  @Get(':id/services') @ApiBearerAuth() @Roles(MANAGE) @ApiOperation({ summary: 'خدمات الورشة المحفوظة — تُدرج في أمرٍ جديد بنقرة' })
+  listServices(@Param('id') id: string) { return this.uc.listServiceItems(id); }
+  @Post(':id/services') @HttpCode(201) @ApiBearerAuth() @Roles(MANAGE)
+  addService(@Param('id') id: string, @Body(zod(ServiceItemDto)) dto: ServiceItemDto) { return this.uc.addServiceItem(id, dto); }
+  @Delete(':id/services/:itemId') @ApiBearerAuth() @Roles(MANAGE)
+  removeService(@Param('id') id: string, @Param('itemId') itemId: string) { return this.uc.removeServiceItem(id, itemId); }
 
   @Get(':id/members') @ApiBearerAuth() @Roles(MANAGE) listMembers(@Param('id') id: string) { return this.uc.listMembers(id); }
   @Post(':id/members') @HttpCode(201) @ApiBearerAuth() @Roles(OWNER) @ApiOperation({ summary: 'Invite/attach a member by phone (user is created if needed)' })

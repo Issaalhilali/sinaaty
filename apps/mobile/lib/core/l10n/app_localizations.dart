@@ -4980,6 +4980,174 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر'**
   String get avOffBody;
+
+  /// No description provided for @avResume.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعد التشغيل'**
+  String get avResume;
+
+  /// No description provided for @wsTeam.
+  ///
+  /// In ar, this message translates to:
+  /// **'فريق الورشة'**
+  String get wsTeam;
+
+  /// No description provided for @wsServices.
+  ///
+  /// In ar, this message translates to:
+  /// **'خدماتي'**
+  String get wsServices;
+
+  /// No description provided for @avMenuOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'استقبال الطلبات: يعمل — أوقفه'**
+  String get avMenuOn;
+
+  /// No description provided for @avMenuOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'استقبال الطلبات: موقوف — شغّله'**
+  String get avMenuOff;
+
+  /// No description provided for @teamAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف عضواً'**
+  String get teamAdd;
+
+  /// No description provided for @teamAddBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'يدخل بجواله ويرى ما يخص دوره فقط.'**
+  String get teamAddBody;
+
+  /// No description provided for @teamAddConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضفه للفريق'**
+  String get teamAddConfirm;
+
+  /// No description provided for @teamEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفريق أنت وحدك بعد'**
+  String get teamEmpty;
+
+  /// No description provided for @teamEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف فنّييك ليستلموا السيارات ويحدّثوا الحالات من جوالاتهم.'**
+  String get teamEmptyBody;
+
+  /// No description provided for @teamRemoveTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة {name}؟'**
+  String teamRemoveTitle(Object name);
+
+  /// No description provided for @teamRemoveBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'يفقد الدخول لهذه الورشة فوراً — سجلات أعماله السابقة تبقى.'**
+  String get teamRemoveBody;
+
+  /// No description provided for @teamRemoveConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'أزِله'**
+  String get teamRemoveConfirm;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In ar, this message translates to:
+  /// **'المالك'**
+  String get roleOwner;
+
+  /// No description provided for @roleManager.
+  ///
+  /// In ar, this message translates to:
+  /// **'مدير'**
+  String get roleManager;
+
+  /// No description provided for @roleTechnician.
+  ///
+  /// In ar, this message translates to:
+  /// **'فني'**
+  String get roleTechnician;
+
+  /// No description provided for @roleAccountant.
+  ///
+  /// In ar, this message translates to:
+  /// **'محاسب'**
+  String get roleAccountant;
+
+  /// No description provided for @svcAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف خدمة'**
+  String get svcAdd;
+
+  /// No description provided for @svcName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الخدمة'**
+  String get svcName;
+
+  /// No description provided for @svcNameHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: غيار زيت وفلتر'**
+  String get svcNameHint;
+
+  /// No description provided for @svcPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر'**
+  String get svcPrice;
+
+  /// No description provided for @svcWarrantyDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'أيام الضمان'**
+  String get svcWarrantyDays;
+
+  /// No description provided for @svcAddConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ الخدمة'**
+  String get svcAddConfirm;
+
+  /// No description provided for @svcEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا خدمات محفوظة بعد'**
+  String get svcEmpty;
+
+  /// No description provided for @svcEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'احفظ خدماتك المتكررة — «غيار زيت 280» يُدرج في أي أمرٍ بنقرة.'**
+  String get svcEmptyBody;
+
+  /// No description provided for @itemLabor.
+  ///
+  /// In ar, this message translates to:
+  /// **'عمل'**
+  String get itemLabor;
+
+  /// No description provided for @itemPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة'**
+  String get itemPart;
+
+  /// No description provided for @itemDiagnostic.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص'**
+  String get itemDiagnostic;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

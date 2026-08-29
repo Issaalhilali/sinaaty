@@ -26,9 +26,9 @@ class TodayScreen extends ConsumerWidget {
       return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); await ref.read(orgOrdersProvider.future); }, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         // كل الأنظمة في صندوق واحد: ماذا ينتظرني؟ — وهو السؤال الذي يُفتح التطبيق من أجله.
         const ActionInboxCard(),
-        // «مشغولون الآن»: ورشة غارقة توقف استقبال طلبات السوق مؤقتاً بدل أن ترد متأخرة
-        // وتحرق سمعتها — مفتاحٌ ظاهر بلافتةٍ صادقة وهو مطفأ، ولا يمس الأوامر الجارية.
-        const _AvailabilitySwitch(),
+        // «الرهيبة تختصر»: المفتاح انتقل لقائمة ⋯ — ولا يظهر هنا إلا شريطُ الحالة التي
+        // تستحق النظر: الاستقبال موقوف. صفحةٌ هادئة لا معرض مفاتيح (كلمة المالك).
+        const AvailabilityBanner(),
         if (pending > 0) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: StatusBadge(l.wsPendingSync(pending), tone: BadgeTone.warn, icon: Icons.cloud_upload_outlined)),
         // Nearby repair requests (scope §1.ج) — the hot-request card pattern, behind its flag.
         if ((ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.serviceMarketplace))
@@ -74,44 +74,36 @@ class _HeroAction extends ConsumerWidget {
   }
 }
 
-/// مفتاح «مشغولون الآن» — حالته من `myOrgsProvider` (الخادم)، وقلبُه متفائلٌ ثم يتراجع عند الفشل.
-class _AvailabilitySwitch extends ConsumerStatefulWidget {
-  const _AvailabilitySwitch();
-  @override ConsumerState<_AvailabilitySwitch> createState() => _AvailabilitySwitchState();
+/// شريط «الاستقبال موقوف» — يظهر فقط حين يكون موقوفاً، بزرّ عودةٍ في مكانه.
+/// المفتاح نفسه في قائمة ⋯ (تشغيل/إيقاف) — الصفحة لا تحمل مفاتيح دائمة.
+class AvailabilityBanner extends ConsumerStatefulWidget {
+  const AvailabilityBanner({super.key});
+  @override ConsumerState<AvailabilityBanner> createState() => _AvailabilityBannerState();
 }
 
-class _AvailabilitySwitchState extends ConsumerState<_AvailabilitySwitch> {
-  bool? _local; bool _busy = false;
-
-  Future<void> _toggle(String orgId, bool next) async {
-    final locale = Localizations.localeOf(context).languageCode;
-    setState(() { _local = next; _busy = true; });
-    final r = await ref.read(workshopRepositoryProvider).setAvailability(orgId, accepting: next);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    r.when(
-      ok: (v) { ref.invalidate(myOrgsProvider); setState(() => _local = v); },
-      err: (f) { setState(() => _local = !next); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))); },
-    );
-  }
-
+class _AvailabilityBannerState extends ConsumerState<AvailabilityBanner> {
+  bool _busy = false;
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final t = Theme.of(context); final cs = t.colorScheme;
+    final l = L10n.of(context); final t = Theme.of(context);
     final org = ref.watch(myOrgsProvider).value?.firstOrNull;
-    if (org == null) return const SizedBox.shrink();
-    final accepting = _local ?? org.acceptingRequests;
-    return Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: SectionCard(
+    if (org == null || org.acceptingRequests) return const SizedBox.shrink();
+    return Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.md, vertical: SinaatySpace.sm),
+      decoration: BoxDecoration(color: SinaatyColors.warnSoft, borderRadius: BorderRadius.circular(SinaatySpace.radius)),
       child: Row(children: [
-        Icon(accepting ? Icons.notifications_active_outlined : Icons.notifications_paused_outlined,
-            color: accepting ? cs.primary : SinaatyColors.warn),
+        const Icon(Icons.notifications_paused_outlined, size: 20, color: SinaatyColors.warn),
         const SizedBox(width: SinaatySpace.sm),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(accepting ? l.avOn : l.avOff, style: t.textTheme.titleSmall),
-          Text(accepting ? l.avOnBody : l.avOffBody, style: t.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-        ])),
-        Switch(value: accepting, onChanged: _busy ? null : (v) => _toggle(org.id, v)),
+        Expanded(child: Text(l.avOff, style: t.textTheme.titleSmall?.copyWith(color: SinaatyColors.warn))),
+        TextButton(
+          onPressed: _busy ? null : () async {
+            setState(() => _busy = true);
+            final r = await ref.read(workshopRepositoryProvider).setAvailability(org.id, accepting: true);
+            if (!mounted) return; setState(() => _busy = false);
+            r.when(ok: (_) => ref.invalidate(myOrgsProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
+          },
+          child: Text(l.avResume),
+        ),
       ]),
     ));
   }
 }
-

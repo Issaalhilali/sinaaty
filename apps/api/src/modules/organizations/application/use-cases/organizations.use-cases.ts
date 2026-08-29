@@ -11,7 +11,7 @@ import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/r
 import { isValidSaudiIban, KYB_REQUIRED_DOCS, ROLES_BY_ORG_TYPE } from '../../domain/organization';
 import { ORGANIZATION_REPOSITORY, type OrganizationRepository, SUBSCRIPTION_REPOSITORY, type SubscriptionRepository } from '../../domain/repositories';
 import { OrgTransitionService } from '../org-transition.service';
-import type { AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../dto/organizations.dto';
+import type { ServiceItemDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../dto/organizations.dto';
 
 type Actor = { userId: string; requestId?: string | null };
 
@@ -72,6 +72,10 @@ export class OrganizationsUseCases {
       .map((o) => ({ id: o.id, role: roleOf.get(o.id) ?? null, name_ar: o.tradeNameAr ?? o.legalNameAr, type: o.type, status: o.status, accepting_requests: o.acceptingRequests }))
       .sort((a, b) => rank(a.status) - rank(b.status));
   }
+  listServiceItems(orgId: string) { return this.orgs.listServiceItems(orgId); }
+  addServiceItem(orgId: string, dto: ServiceItemDto) { return this.orgs.addServiceItem(orgId, { nameAr: dto.name_ar, itemType: dto.item_type, unitPrice: dto.unit_price, warrantyDays: dto.warranty_days }); }
+  async removeServiceItem(orgId: string, id: string) { const ok = await this.orgs.removeServiceItem(orgId, id); if (!ok) throw new AppError('NOT_FOUND'); return { removed: true }; }
+
   /** «مشغولون الآن» — قرارُ لحظةٍ يكتب أثره في التدقيق: من أطفأ الاستقبال ومتى. */
   async setAvailability(u: { id: string }, orgId: string, accepting: boolean) {
     await this.uow.run(async (tx) => {

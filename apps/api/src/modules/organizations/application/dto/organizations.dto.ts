@@ -11,6 +11,9 @@ export type CreateOrgDto = z.infer<typeof CreateOrgDto>;
 export const UpdateOrgDto = CreateOrgDto.omit({ type: true, cr_number: true }).partial();
 export type UpdateOrgDto = z.infer<typeof UpdateOrgDto>;
 
+export const ServiceItemDto = z.object({ name_ar: z.string().trim().min(2).max(200), item_type: z.enum(['labor', 'part', 'paint', 'towing', 'diagnostic', 'other']).default('labor'), unit_price: z.string().regex(/^\d{1,10}(\.\d{1,2})?$/), warranty_days: z.number().int().min(0).max(3650).default(0) });
+export type ServiceItemDto = z.infer<typeof ServiceItemDto>;
+
 export const AvailabilityDto = z.object({ accepting_requests: z.boolean() });
 export type AvailabilityDto = z.infer<typeof AvailabilityDto>;
 

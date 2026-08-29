@@ -15,6 +15,14 @@ abstract interface class WorkshopRepository {
   Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status});
   /// «مشغولون الآن» — إيقاف/استئناف استقبال طلبات السوق.
   Future<Result<bool>> setAvailability(String orgId, {required bool accepting});
+  // فريق الورشة — فوق API الأعضاء القائم
+  Future<Result<List<OrgMember>>> members(String orgId);
+  Future<Result<void>> addMember(String orgId, {required String phone, required String role});
+  Future<Result<void>> removeMember(String orgId, String userId);
+  // خدمات الورشة المحفوظة — «الأمر بنقرتين حقاً»
+  Future<Result<List<OrgServiceItem>>> serviceItems(String orgId);
+  Future<Result<void>> addServiceItem(String orgId, {required String nameAr, required String unitPrice, String itemType = 'labor', int warrantyDays = 0});
+  Future<Result<void>> removeServiceItem(String orgId, String id);
   Future<Result<WorkOrder>> create(NewWorkOrder wo);
   Future<Result<WorkOrder>> addItem(String woId, NewItem item);
   Future<Result<WorkOrder>> removeItem(String woId, String itemId);

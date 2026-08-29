@@ -29,3 +29,6 @@ const inspectionAngles = ['front', 'front_right', 'right', 'rear_right', 'rear',
 /// the review is the decision, never the model (Step 27).
 class VoiceProposal { final String type; final String descriptionAr; final String quantity; final String? unitPrice; final String? heardAr; final bool needsPrice; const VoiceProposal({required this.type, required this.descriptionAr, required this.quantity, this.unitPrice, this.heardAr, required this.needsPrice}); }
 class VoiceNote { final String id; final String? transcriptAr; final List<VoiceProposal> items; const VoiceNote({required this.id, this.transcriptAr, this.items = const []}); }
+
+class OrgMember { final String userId; final String? nameAr; final String phone; final String role; final bool isActive; const OrgMember({required this.userId, this.nameAr, required this.phone, required this.role, this.isActive = true}); }
+class OrgServiceItem { final String id; final String nameAr; final String itemType; final String unitPrice; final int warrantyDays; const OrgServiceItem({required this.id, required this.nameAr, required this.itemType, required this.unitPrice, required this.warrantyDays}); }

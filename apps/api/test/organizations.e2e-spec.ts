@@ -11,7 +11,7 @@ describe('Organizations (e2e)', () => {
   const ownerPhone = `+96655${suffix}`;
   const techPhone = `+96654${suffix}`;
   const adminPhone = '+966500000099'; // seeded super_admin
-  let ownerTok: string; let adminTok: string; let orgId: string;
+  let ownerTok: string; let adminTok: string; let strangerTok: string; let orgId: string;
 
   const login = async (phone: string) => {
     const r = await http().post('/v1/auth/otp/request').send({ phone }).expect(200);
@@ -23,7 +23,7 @@ describe('Organizations (e2e)', () => {
   beforeAll(async () => {
     const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = mod.createNestApplication(); app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); await app.init(); await app.listen(0, '127.0.0.1');
-    ownerTok = await login(ownerPhone); adminTok = await login(adminPhone);
+    ownerTok = await login(ownerPhone); adminTok = await login(adminPhone); strangerTok = await login(`+96659${suffix}`);
   });
   afterAll(async () => { await app.close(); });
 
@@ -104,5 +104,15 @@ describe('Organizations (e2e)', () => {
     expect(hit).toBeDefined(); expect(hit.distanceKm).toBeLessThan(5);
     const pub = await http().get(`/v1/organizations/${orgId}/public`).expect(200);
     expect(pub.body.locations).toHaveLength(1);
+  });
+
+  it('خدمات الورشة المحفوظة: تُضاف وتُقرأ وتُحذف — والغريب عن المنشأة مردود', async () => {
+    const a = await http().post(`/v1/organizations/${orgId}/services`).set(auth(ownerTok)).send({ name_ar: 'غيار زيت وفلتر', unit_price: '280.00', warranty_days: 30 }).expect(201);
+    const list = await http().get(`/v1/organizations/${orgId}/services`).set(auth(ownerTok)).expect(200);
+    expect(list.body.some((x: { id: string; nameAr: string }) => x.id === a.body.id && x.nameAr === 'غيار زيت وفلتر')).toBe(true);
+    await http().get(`/v1/organizations/${orgId}/services`).set(auth(strangerTok)).expect(403);
+    await http().delete(`/v1/organizations/${orgId}/services/${a.body.id}`).set(auth(ownerTok)).expect(200);
+    const after = await http().get(`/v1/organizations/${orgId}/services`).set(auth(ownerTok)).expect(200);
+    expect(after.body.some((x: { id: string }) => x.id === a.body.id)).toBe(false);
   });
 });

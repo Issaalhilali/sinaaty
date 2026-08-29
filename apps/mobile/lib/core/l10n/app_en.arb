@@ -1197,5 +1197,38 @@
   "avOn": "Accepting market requests",
   "avOnBody": "Nearby customer requests reach you as they come",
   "avOff": "Intake paused",
-  "avOffBody": "No new requests until you switch back on — ongoing orders are unaffected"
+  "avOffBody": "No new requests until you switch back on — ongoing orders are unaffected",
+  "avResume": "Resume",
+  "wsTeam": "Workshop team",
+  "wsServices": "My services",
+  "avMenuOn": "Request intake: on — pause it",
+  "avMenuOff": "Request intake: paused — resume",
+  "teamAdd": "Add member",
+  "teamAddBody": "Signs in with their phone; sees only what their role allows.",
+  "teamAddConfirm": "Add to team",
+  "teamEmpty": "It's just you so far",
+  "teamEmptyBody": "Add your technicians so they can receive cars and update statuses from their phones.",
+  "teamRemoveTitle": "Remove {name}?",
+  "@teamRemoveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "teamRemoveBody": "They lose access to this workshop immediately — their past work records remain.",
+  "teamRemoveConfirm": "Remove",
+  "roleOwner": "Owner",
+  "roleManager": "Manager",
+  "roleTechnician": "Technician",
+  "roleAccountant": "Accountant",
+  "svcAdd": "Add service",
+  "svcName": "Service name",
+  "svcNameHint": "e.g. Oil & filter change",
+  "svcPrice": "Price",
+  "svcWarrantyDays": "Warranty days",
+  "svcAddConfirm": "Save service",
+  "svcEmpty": "No saved services yet",
+  "svcEmptyBody": "Save your recurring services — add them to any order with one tap.",
+  "itemLabor": "Labor",
+  "itemPart": "Part",
+  "itemDiagnostic": "Diagnostic"
 }

@@ -129,13 +129,44 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         if (!ref.watch(voiceDeadProvider)) IconButton(tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none), onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier)),
         if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
       ]),
-      moreItems: [PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)), PopupMenuItem(value: 'logout', child: Text(l.logout))],
-      onMore: (v) { if (v == 'logout') ref.read(authControllerProvider.notifier).signOut(); if (v == 'inbox') unawaited(context.push('/notifications')); },
+      // «الرهيبة تختصر» (كلمة المالك): أدوات الورشة النادرة الاستعمال تسكن هنا لا في الصفحة —
+      // المفتاح والفريق والخدمات خلف ⋯، والصفحة لوجه اليوم وحده.
+      moreItems: [
+        PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)),
+        if (partner && !isSupplier) ...[
+          PopupMenuItem(value: 'availability', child: Text((ref.watch(myOrgsProvider).value?.firstOrNull?.acceptingRequests ?? true) ? l.avMenuOn : l.avMenuOff)),
+          PopupMenuItem(value: 'team', child: Text(l.wsTeam)),
+          PopupMenuItem(value: 'services', child: Text(l.wsServices)),
+        ],
+        PopupMenuItem(value: 'logout', child: Text(l.logout)),
+      ],
+      onMore: (v) {
+        if (v == 'logout') ref.read(authControllerProvider.notifier).signOut();
+        if (v == 'inbox') unawaited(context.push('/notifications'));
+        if (v == 'team') unawaited(context.push('/ws/team'));
+        if (v == 'services') unawaited(context.push('/ws/services'));
+        if (v == 'availability') unawaited(_toggleAvailability());
+      },
       // البطاقة تعلو أي تبويب لأن الطلب لا يعرف أين صاحب الورشة الآن — وأول من يردّ يأخذ العمل.
       bottom: Column(mainAxisSize: MainAxisSize.min, children: [
         if (partner) const IncomingBanner(),
         FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i), items: [for (final t in tabs) (icon: t.$2, label: t.$1)]),
       ]));
+  }
+
+
+
+  /// تبديل «مشغولون الآن» من قائمة ⋯ — الحالة تُقرأ من الخادم وتُرد الرسالة بأمانة عند الفشل.
+  Future<void> _toggleAvailability() async {
+    final org = ref.read(myOrgsProvider).value?.firstOrNull;
+    if (org == null) return;
+    final locale = Localizations.localeOf(context).languageCode;
+    final r = await ref.read(workshopRepositoryProvider).setAvailability(org.id, accepting: !org.acceptingRequests);
+    if (!mounted) return;
+    r.when(
+      ok: (accepting) { ref.invalidate(myOrgsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(accepting ? L10n.of(context).avOn : L10n.of(context).avOff))); },
+      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    );
   }
 
   /// One sentence in → the right screen out. Money and legal actions are never voice-executed;

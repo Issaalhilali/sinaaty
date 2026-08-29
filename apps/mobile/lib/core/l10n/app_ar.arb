@@ -1197,5 +1197,38 @@
   "avOn": "نستقبل طلبات السوق",
   "avOnBody": "طلبات العملاء القريبة تصلكم أولاً بأول",
   "avOff": "الاستقبال موقوف مؤقتاً",
-  "avOffBody": "لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر"
+  "avOffBody": "لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر",
+  "avResume": "أعد التشغيل",
+  "wsTeam": "فريق الورشة",
+  "wsServices": "خدماتي",
+  "avMenuOn": "استقبال الطلبات: يعمل — أوقفه",
+  "avMenuOff": "استقبال الطلبات: موقوف — شغّله",
+  "teamAdd": "أضف عضواً",
+  "teamAddBody": "يدخل بجواله ويرى ما يخص دوره فقط.",
+  "teamAddConfirm": "أضفه للفريق",
+  "teamEmpty": "الفريق أنت وحدك بعد",
+  "teamEmptyBody": "أضف فنّييك ليستلموا السيارات ويحدّثوا الحالات من جوالاتهم.",
+  "teamRemoveTitle": "إزالة {name}؟",
+  "@teamRemoveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "teamRemoveBody": "يفقد الدخول لهذه الورشة فوراً — سجلات أعماله السابقة تبقى.",
+  "teamRemoveConfirm": "أزِله",
+  "roleOwner": "المالك",
+  "roleManager": "مدير",
+  "roleTechnician": "فني",
+  "roleAccountant": "محاسب",
+  "svcAdd": "أضف خدمة",
+  "svcName": "اسم الخدمة",
+  "svcNameHint": "مثال: غيار زيت وفلتر",
+  "svcPrice": "السعر",
+  "svcWarrantyDays": "أيام الضمان",
+  "svcAddConfirm": "احفظ الخدمة",
+  "svcEmpty": "لا خدمات محفوظة بعد",
+  "svcEmptyBody": "احفظ خدماتك المتكررة — «غيار زيت 280» يُدرج في أي أمرٍ بنقرة.",
+  "itemLabor": "عمل",
+  "itemPart": "قطعة",
+  "itemDiagnostic": "فحص"
 }

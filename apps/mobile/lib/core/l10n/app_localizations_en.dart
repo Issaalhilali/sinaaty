@@ -2653,4 +2653,94 @@ class L10nEn extends L10n {
   @override
   String get avOffBody =>
       'No new requests until you switch back on — ongoing orders are unaffected';
+
+  @override
+  String get avResume => 'Resume';
+
+  @override
+  String get wsTeam => 'Workshop team';
+
+  @override
+  String get wsServices => 'My services';
+
+  @override
+  String get avMenuOn => 'Request intake: on — pause it';
+
+  @override
+  String get avMenuOff => 'Request intake: paused — resume';
+
+  @override
+  String get teamAdd => 'Add member';
+
+  @override
+  String get teamAddBody =>
+      'Signs in with their phone; sees only what their role allows.';
+
+  @override
+  String get teamAddConfirm => 'Add to team';
+
+  @override
+  String get teamEmpty => 'It\'s just you so far';
+
+  @override
+  String get teamEmptyBody =>
+      'Add your technicians so they can receive cars and update statuses from their phones.';
+
+  @override
+  String teamRemoveTitle(Object name) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get teamRemoveBody =>
+      'They lose access to this workshop immediately — their past work records remain.';
+
+  @override
+  String get teamRemoveConfirm => 'Remove';
+
+  @override
+  String get roleOwner => 'Owner';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleTechnician => 'Technician';
+
+  @override
+  String get roleAccountant => 'Accountant';
+
+  @override
+  String get svcAdd => 'Add service';
+
+  @override
+  String get svcName => 'Service name';
+
+  @override
+  String get svcNameHint => 'e.g. Oil & filter change';
+
+  @override
+  String get svcPrice => 'Price';
+
+  @override
+  String get svcWarrantyDays => 'Warranty days';
+
+  @override
+  String get svcAddConfirm => 'Save service';
+
+  @override
+  String get svcEmpty => 'No saved services yet';
+
+  @override
+  String get svcEmptyBody =>
+      'Save your recurring services — add them to any order with one tap.';
+
+  @override
+  String get itemLabor => 'Labor';
+
+  @override
+  String get itemPart => 'Part';
+
+  @override
+  String get itemDiagnostic => 'Diagnostic';
 }

@@ -14,6 +14,8 @@ import '../domain/order_title.dart';
 import '../domain/workshop.dart';
 import 'quick_item_field.dart';
 import 'providers.dart';
+import 'services_screen.dart' show serviceItemsProvider;
+import '../domain/workshop.dart' show OrgServiceItem;
 /// New repair order in one screen: who (phone), which car (VIN or plate), what (items with prices), how to pay → estimate updates live.
 class NewOrderScreen extends ConsumerStatefulWidget { const NewOrderScreen({super.key}); @override ConsumerState<NewOrderScreen> createState() => _NewOrderScreenState(); }
 class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
@@ -61,6 +63,25 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
           QuickItemField(onAdd: (it) => setState(() => _items.add(it)), onDetails: _addItem),
           if (_items.isNotEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider()),
         ])),
+        // «من خدماتي»: الكتالوج المحفوظ يدرج البند بنقرة — الأمر بنقرتين حقاً (تُدار من ⋯ > خدماتي)
+        ...(() {
+          final saved = ref.watch(serviceItemsProvider).value ?? const <OrgServiceItem>[];
+          if (saved.isEmpty) return const <Widget>[];
+          return <Widget>[
+            const SizedBox(height: SinaatySpace.sm),
+            SizedBox(height: 38, child: ListView.separated(
+              scrollDirection: Axis.horizontal, itemCount: saved.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (_, i) {
+                final it = saved[i];
+                return ActionChip(
+                  avatar: const BrandIcon(BrandGlyph.gear, size: 16),
+                  label: Text('${it.nameAr} · ${Fmt.money(it.unitPrice, locale: locale)}'),
+                  onPressed: () => setState(() => _items.add(NewItem(type: it.itemType == 'part' ? 'part' : it.itemType == 'diagnostic' ? 'diagnostic' : 'labor', descriptionAr: it.nameAr, quantity: '1', unitPrice: it.unitPrice, warrantyDays: it.warrantyDays))),
+                );
+              })),
+          ];
+        })(),
         if (_items.isNotEmpty) const SizedBox(height: SinaatySpace.md),
         if (_items.isNotEmpty) SectionCard(child: Column(children: [
           for (final (i, it) in _items.indexed) Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(it.descriptionAr, style: t.titleSmall), Text('${it.type == 'labor' ? l.wsLabor : l.wsPart} · ${it.quantity} × ${Fmt.money(it.unitPrice, locale: locale)}${it.warrantyDays > 0 ? ' · ${l.warrantyDays(it.warrantyDays)}' : ''}', style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))])), Text(Fmt.money(((double.tryParse(it.unitPrice) ?? 0) * (double.tryParse(it.quantity) ?? 1)).toStringAsFixed(2), locale: locale)), IconButton(icon: const Icon(Icons.close, size: 18), onPressed: () => setState(() => _items.removeAt(i)))])),
