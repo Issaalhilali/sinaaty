@@ -100,7 +100,7 @@ abstract class L10n {
   /// No description provided for @appName.
   ///
   /// In ar, this message translates to:
-  /// **' صناعية'**
+  /// **'صناعية'**
   String get appName;
 
   /// No description provided for @tabMyCars.
@@ -2482,7 +2482,7 @@ abstract class L10n {
   /// No description provided for @ptWarrantiesEmptyBody.
   ///
   /// In ar, this message translates to:
-  /// **'كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.'**
+  /// **'كل قطعة تُركّب لك عبر صناعية تصلك بضمان رقمي هنا.'**
   String get ptWarrantiesEmptyBody;
 
   /// No description provided for @ptWarrantyActive.

@@ -1,5 +1,5 @@
 -- =============================================================================
---   صناعية (Sinaaty) — PostgreSQL 16 Schema  v1.0  (2026-08-17)
+--  صناعية (Sinaaty) — PostgreSQL 16 Schema  v1.0  (2026-08-17)
 --  Conventions:
 --    * snake_case, plural table names, UUID PKs (app generates UUIDv7; DB default gen_random_uuid()).
 --    * All money = NUMERIC(14,2) SAR. All timestamps = timestamptz (UTC).

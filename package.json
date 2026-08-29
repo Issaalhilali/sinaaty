@@ -2,7 +2,7 @@
   "name": "sinaaty",
   "version": "0.0.1",
   "private": true,
-  "description": "صناعتي — Sinaaty: three-sided platform for the Saudi automotive service sector (monorepo root)",
+  "description": "صناعية — Sinaaty: three-sided platform for the Saudi automotive service sector (monorepo root)",
   "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": ">=22.0.0",

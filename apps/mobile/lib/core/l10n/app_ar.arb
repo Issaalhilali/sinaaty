@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appName": " صناعية",
+  "appName": "صناعية",
   "tabMyCars": "سياراتي",
   "tabRequest": "اطلب",
   "tabWallet": "محفظتي",
@@ -588,7 +588,7 @@
   "ptFastest": "الأسرع",
   "ptLongestWarranty": "أطول ضمان",
   "ptWarrantiesEmptyTitle": "لا توجد ضمانات بعد",
-  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.",
+  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر صناعية تصلك بضمان رقمي هنا.",
   "ptWarrantyActive": "ساري",
   "ptWarrantyIssuer": "الجهة الضامنة",
   "ptWarrantyFrom": "يبدأ",

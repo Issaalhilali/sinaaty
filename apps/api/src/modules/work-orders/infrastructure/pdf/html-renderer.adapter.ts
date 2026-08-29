@@ -23,7 +23,7 @@ ${s.reason_ar ? `<div class="box"><span class="muted">سبب التعديل:</sp
 <table class="num"><thead><tr><th>#</th><th>النوع</th><th>البند</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي (قبل الضريبة)</th></tr></thead><tbody>${rows}</tbody></table>
 <table class="tot num" style="width:45%;margin-inline-start:auto"><tr><td>المجموع</td><td>${money(s.totals.subtotal)}</td></tr>${Number(s.totals.discount) > 0 ? `<tr><td>الخصم</td><td>-${money(s.totals.discount)}</td></tr>` : ''}<tr><td>ضريبة القيمة المضافة 15%</td><td>${money(s.totals.vat)}</td></tr><tr class="g"><td>الإجمالي</td><td>${money(s.totals.total)}</td></tr></table>
 <div class="box"><span class="muted">شروط الدفع:</span> ${esc(TERMS_AR[s.payment_terms] ?? s.payment_terms)}${Number(s.deposit_required) > 0 ? ` · دفعة مقدّمة ${money(s.deposit_required)}` : ''}${s.due_date ? ` · الاستحقاق ${esc(s.due_date)}` : ''}<br><span class="muted">توقيعك يثبّت السعر — لا يمكن للورشة زيادته بدون موافقتك. أي تعديل يصدر كنسخة جديدة تحتاج اعتمادك.</span></div>
-<div class="foot">بصمة المستند (SHA-256): <code>${esc(o.signatureRef ?? '')}</code>${o.signed && o.signedAt ? `<br>وُقّع في ${esc(o.signedAt.toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' }))} · شروط العقد ${esc(s.contract_terms_version)}` : ''}<br> صناعية — منصة موثّقة لسوق إصلاح السيارات</div>
+<div class="foot">بصمة المستند (SHA-256): <code>${esc(o.signatureRef ?? '')}</code>${o.signed && o.signedAt ? `<br>وُقّع في ${esc(o.signedAt.toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' }))} · شروط العقد ${esc(s.contract_terms_version)}` : ''}<br>صناعية — منصة موثّقة لسوق إصلاح السيارات</div>
 </body></html>`;
     return Promise.resolve({ bytes: Buffer.from(html, 'utf8'), mimeType: 'text/html' });
   }

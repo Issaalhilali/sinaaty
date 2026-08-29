@@ -10,7 +10,7 @@ android {
     compileSdk = flutter.compileSdkVersion
 
     // AGP 9 turns resValues off by default; our three flavors name the app through it
-    // (صناعتي / للشركاء / للأساطيل), so it must be opted back in.
+    // (صناعية / للشركاء / للأساطيل), so it must be opted back in.
     buildFeatures { resValues = true }
     ndkVersion = flutter.ndkVersion
 
@@ -36,9 +36,9 @@ android {
 
     flavorDimensions += "app"
     productFlavors {
-        create("customer") { dimension = "app"; applicationIdSuffix = ".customer"; resValue("string", "app_name", "صناعتي") }
-        create("partner") { dimension = "app"; applicationIdSuffix = ".partner"; resValue("string", "app_name", "صناعتي للشركاء") }
-        create("fleet") { dimension = "app"; applicationIdSuffix = ".fleet"; resValue("string", "app_name", "صناعتي للأساطيل") }
+        create("customer") { dimension = "app"; applicationIdSuffix = ".customer"; resValue("string", "app_name", "صناعية") }
+        create("partner") { dimension = "app"; applicationIdSuffix = ".partner"; resValue("string", "app_name", "صناعية للشركاء") }
+        create("fleet") { dimension = "app"; applicationIdSuffix = ".fleet"; resValue("string", "app_name", "صناعية للأساطيل") }
     }
 
     buildTypes {

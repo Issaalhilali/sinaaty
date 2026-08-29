@@ -1,4 +1,4 @@
-# صناعتي — مواصفات بنية النظام (Systems Architecture Spec)
+# صناعية — مواصفات بنية النظام (Systems Architecture Spec)
 
 > الإصدار 1.0 — 2026-08-17. يُقرأ مع [01-PRD.md](./01-PRD.md) و [03-TECH-STACK.md](./03-TECH-STACK.md) و [04-DATABASE.md](./04-DATABASE.md).
 
@@ -30,7 +30,7 @@ flowchart LR
     A[مشرف المنصة]
   end
 
-  P((منصة صناعتي))
+  P((منصة صناعية))
 
   subgraph Gov[الجهات الحكومية]
     NAFATH[نفاذ - الهوية الرقمية]

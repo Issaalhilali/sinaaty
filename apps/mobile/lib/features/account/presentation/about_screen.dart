@@ -13,7 +13,7 @@ class AboutScreen extends StatelessWidget {
     final l = L10n.of(context); final t = Theme.of(context).textTheme;
     return AppScaffold(title: l.aboutTitle, body: ListView(padding: const EdgeInsets.all(SinaatySpace.lg), children: [
       SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [const BrandMark(size: 40), const SizedBox(width: 12), Text(l.appName.trim(), style: t.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800))]),
+        Row(children: [const BrandMark(size: 40), const SizedBox(width: 12), Text(l.appName, style: t.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800))]),
         const SizedBox(height: SinaatySpace.md),
         Text(l.aboutPromise, style: t.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: .88), height: 1.8)),
       ])),

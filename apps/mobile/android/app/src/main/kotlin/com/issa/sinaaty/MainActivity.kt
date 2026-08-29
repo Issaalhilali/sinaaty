@@ -1,4 +1,4 @@
-package com.example.sinaaty
+package com.issa.sinaaty
 
 import io.flutter.embedding.android.FlutterActivity
 

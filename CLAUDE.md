@@ -1,10 +1,10 @@
-# CLAUDE.md — Sinaaty (صناعتي)
+# CLAUDE.md — Sinaaty (صناعية)
 
 Guidance for Claude Code when working in this repository. Read this fully before touching code.
 
 ## 1. What this project is
 
-**Sinaaty (صناعتي)** is a three-sided platform for the Saudi automotive service sector: customers & fleets ↔ workshops/factories ↔ parts dealers/scrapyards, plus tow trucks/logistics. Its core differentiator is the **legal + financial layer**:
+**Sinaaty (صناعية)** is a three-sided platform for the Saudi automotive service sector: customers & fleets ↔ workshops/factories ↔ parts dealers/scrapyards, plus tow trucks/logistics. Its core differentiator is the **legal + financial layer**:
 
 - Work orders are digitally signed by the customer via **Nafath (نفاذ)**.
 - Deferred/unpaid amounts become an **electronic promissory note (سند لأمر)** issued through **Nafez (نافذ)**, enforceable via **Najiz (ناجز)**.

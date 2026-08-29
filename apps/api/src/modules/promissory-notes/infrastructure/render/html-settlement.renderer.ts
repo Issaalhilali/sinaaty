@@ -13,7 +13,7 @@ export class HtmlSettlementRenderer implements SettlementRendererPort {
 <div class="hdr"><div><h1>مخالصة رقمية ${esc(s.number)}</h1><div class="muted">${esc(dt(s.issuedAt))}</div></div><span class="seal">إبراء ذمة</span></div>
 <div class="box">يُقرّ <b>${esc(p.creditorNameAr)}</b> (الدائن) بأنه استلم من <b>${esc(p.debtorNameAr ?? '—')}</b> (المدين) مبلغاً وقدره <b class="num">${money(s.amountSettled)}</b>، سداداً كاملاً للسند لأمر رقم <b>${esc(n?.number ?? '—')}</b>${n?.nafezReference ? ` (مرجع نافذ ${esc(n.nafezReference)})` : ''}، وبذلك تبرأ ذمة المدين من هذا الدين، ولا يحق للدائن المطالبة به مستقبلاً.</div>
 <div class="box"><span class="muted">إغلاق السند في نافذ:</span> ${esc(dt(n?.closedAt))} · <span class="muted">تاريخ الاستحقاق الأصلي:</span> ${esc(n?.dueDate?.toISOString().slice(0, 10))}</div>
-<div class="muted">بصمة المستند (SHA-256): <code>${esc(s.contentSha256)}</code><br>صدرت آلياً عبر منصة  صناعية فور تأكيد السداد — وثيقة قابلة للتحقق برقمها وبصمتها.</div>
+<div class="muted">بصمة المستند (SHA-256): <code>${esc(s.contentSha256)}</code><br>صدرت آلياً عبر منصة صناعية فور تأكيد السداد — وثيقة قابلة للتحقق برقمها وبصمتها.</div>
 </body></html>`;
     return Promise.resolve({ bytes: Buffer.from(html, 'utf8'), mimeType: 'text/html' as const });
   }
@@ -21,7 +21,7 @@ export class HtmlSettlementRenderer implements SettlementRendererPort {
     const rows = events.map((e) => `<tr><td>${esc(dt(e.createdAt))}</td><td>${esc(STATUS_AR[e.toStatus] ?? e.toStatus)}</td><td>${esc(e.noteAr)}</td></tr>`).join('');
     const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>سند لأمر ${esc(n.number)}</title><style>${STYLE}</style></head><body>
 <div class="hdr"><div><h1>سند لأمر إلكتروني ${esc(n.number)}</h1><div class="muted">مرجع نافذ: ${esc(n.nafezReference ?? '—')} · ${esc(n.placeOfIssue)}</div></div><span class="seal">${esc(STATUS_AR[n.status] ?? n.status)}</span></div>
-<div class="box">أتعهد أنا <b>${esc(p.debtorNameAr ?? '—')}</b> بأن أدفع لأمر <b>${esc(p.creditorNameAr)}</b> مبلغاً وقدره <b class="num">${money(n.amount)}</b> في تاريخ <b>${esc(n.dueDate.toISOString().slice(0, 10))}</b>. سند تنفيذي وفق نظام التنفيذ — صادر عبر منصة نافذ.<br><span class="muted">المتبقي: <b class="num">${money(n.outstandingAmount)}</b> · يُغلق تلقائياً فور سداد الفاتورة عبر  صناعية.</span></div>
+<div class="box">أتعهد أنا <b>${esc(p.debtorNameAr ?? '—')}</b> بأن أدفع لأمر <b>${esc(p.creditorNameAr)}</b> مبلغاً وقدره <b class="num">${money(n.amount)}</b> في تاريخ <b>${esc(n.dueDate.toISOString().slice(0, 10))}</b>. سند تنفيذي وفق نظام التنفيذ — صادر عبر منصة نافذ.<br><span class="muted">المتبقي: <b class="num">${money(n.outstandingAmount)}</b> · يُغلق تلقائياً فور سداد الفاتورة عبر صناعية.</span></div>
 <table><thead><tr><th>التاريخ</th><th>الحالة</th><th>ملاحظة</th></tr></thead><tbody>${rows}</tbody></table>
 </body></html>`;
     return Promise.resolve({ bytes: Buffer.from(html, 'utf8'), mimeType: 'text/html' as const });

@@ -25,7 +25,7 @@ export async function bootstrap(): Promise<void> {
     const doc = SwaggerModule.createDocument(
       app,
       new DocumentBuilder()
-        .setTitle('Sinaaty API —  صناعية')
+        .setTitle('Sinaaty API — صناعية')
         .setDescription('Core API for the Sinaaty platform. Errors use {code, message_ar, message_en, details, request_id}.')
         .setVersion('1')
         .addBearerAuth()

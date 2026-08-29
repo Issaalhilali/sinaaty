@@ -16,7 +16,7 @@ process.env.PII_ENC_KEY ??= Buffer.alloc(32, 7).toString('base64');
 const { AppModule } = await import(resolve(here, '../dist/app.module.js'));
 const app = await NestFactory.create(AppModule, { logger: ['error'] });
 app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-const doc = SwaggerModule.createDocument(app, new DocumentBuilder().setTitle('Sinaaty API — صناعتي').setVersion('1').addBearerAuth().build());
+const doc = SwaggerModule.createDocument(app, new DocumentBuilder().setTitle('Sinaaty API — صناعية').setVersion('1').addBearerAuth().build());
 const out = resolve(here, '../../../packages/shared-types/openapi.json');
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, `${JSON.stringify(doc, null, 2)}\n`);

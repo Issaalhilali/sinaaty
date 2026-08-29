@@ -1,4 +1,4 @@
-# apps/admin-web — صناعتي · الإدارة
+# apps/admin-web — صناعية · الإدارة
 
 Next.js 15 (App Router) back-office. Arabic RTL, tokens from `docs/design/sinaaty-ui-v2.html`.
 

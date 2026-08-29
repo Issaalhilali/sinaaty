@@ -10,7 +10,7 @@ class L10nAr extends L10n {
   L10nAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appName => ' صناعية';
+  String get appName => 'صناعية';
 
   @override
   String get tabMyCars => 'سياراتي';
@@ -1276,7 +1276,7 @@ class L10nAr extends L10n {
 
   @override
   String get ptWarrantiesEmptyBody =>
-      'كل قطعة تُركّب لك عبر  صناعية تصلك بضمان رقمي هنا.';
+      'كل قطعة تُركّب لك عبر صناعية تصلك بضمان رقمي هنا.';
 
   @override
   String get ptWarrantyActive => 'ساري';

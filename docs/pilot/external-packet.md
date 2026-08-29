@@ -50,7 +50,7 @@
 وهي الفارق بين سوقٍ يعمل وسوقٍ يبدو أنه يعمل.
 
 - **اطلب**: مشروع Firebase مجاني باسم Sinaaty (console.firebase.google.com)، ثم:
-  1. أضف تطبيق **أندرويد** بمعرّف لكل نكهة: `com.example.sinaaty.customer` و`.partner`
+  1. أضف تطبيق **أندرويد** بمعرّف لكل نكهة: `com.issa.sinaaty.customer` و`.partner`
      و`.fleet` — ونزّل `google-services.json` لكل واحد.
      (إن غيّرنا المعرّف إلى `sa.sinaaty.*` كما هو مقترح، فليكن **قبل** هذه الخطوة.)
   2. أضف تطبيق **iOS** بنفس المعرّفات ونزّل `GoogleService-Info.plist`.

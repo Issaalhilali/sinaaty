@@ -47,7 +47,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
         child: Row(children: [
           const BrandMark(size: 34),
           const SizedBox(width: 10),
-          Text(l.appName.trim(), style: t.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800, letterSpacing: .2)),
+          Text(l.appName, style: t.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800, letterSpacing: .2)),
           const Spacer(),
           TextButton(onPressed: _start, style: TextButton.styleFrom(foregroundColor: Colors.white.withValues(alpha: .65)), child: Text(l.welcomeSkip)),
         ]),

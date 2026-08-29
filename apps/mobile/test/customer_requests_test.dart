@@ -155,7 +155,6 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
   @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) async => me();
   @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', phone: '+966512345678', platformRole: 'none', nafathVerified: false, orgs: []));
-  @override Future<Result<Me>> setName(String fullNameAr) => me();
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 

@@ -17,7 +17,7 @@ export function Shell({ children, title, sub }: { children: ReactNode; title: st
   if (!ready) return null;
   return <div className="min-h-screen grid grid-cols-[240px_1fr]">
     <aside className="bg-ink text-[#C2CDC7] p-5 sticky top-0 h-screen flex flex-col overflow-y-auto">
-      <div className="flex items-center gap-2.5 text-white font-bold text-lg mb-6"><span className="grid h-8 w-8 place-items-center rounded-[10px] bg-seal shadow-[0_8px_18px_-6px_rgba(14,107,84,.6)]"><span className="h-3 w-3 rounded-full border-2 border-white" /></span>صناعتي · الإدارة</div>
+      <div className="flex items-center gap-2.5 text-white font-bold text-lg mb-6"><span className="grid h-8 w-8 place-items-center rounded-[10px] bg-seal shadow-[0_8px_18px_-6px_rgba(14,107,84,.6)]"><span className="h-3 w-3 rounded-full border-2 border-white" /></span>صناعية · الإدارة</div>
       <nav className="flex-1 space-y-5">
         {NAV.map((group) => (
           <div key={group.title}>

@@ -99,7 +99,7 @@ async function ensureOrg(phone, type, nameAr, loc, { specialtyMakeId, vat } = {}
 }
 
 (async () => {
-  console.log('🎬 اليوم التجريبي الحي — صناعتي\n');
+  console.log('🎬 اليوم التجريبي الحي — صناعية\n');
   const adminTok = await login(PHONES.admin);
   await call('PUT', '/admin/pilot/flags/service_marketplace', { token: adminTok, body: { enabled: true, reason_ar: 'اليوم التجريبي' } }).catch(() => {});
   await call('PUT', '/admin/pilot/flags/parts_marketplace', { token: adminTok, body: { enabled: true, reason_ar: 'اليوم التجريبي' } }).catch(() => {});

@@ -15,7 +15,6 @@ import '../domain/workshop.dart';
 import 'quick_item_field.dart';
 import 'providers.dart';
 import 'services_screen.dart' show serviceItemsProvider;
-import '../domain/workshop.dart' show OrgServiceItem;
 /// New repair order in one screen: who (phone), which car (VIN or plate), what (items with prices), how to pay → estimate updates live.
 class NewOrderScreen extends ConsumerStatefulWidget { const NewOrderScreen({super.key}); @override ConsumerState<NewOrderScreen> createState() => _NewOrderScreenState(); }
 class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # افتح نكهة بعينها على المحاكي بأمر واحد:
 #
-#   tool/flavor.sh customer      # تطبيق العميل  — «صناعتي»
-#   tool/flavor.sh partner       # تطبيق الشركاء — «صناعتي للشركاء»
-#   tool/flavor.sh fleet         # تطبيق الأساطيل — «صناعتي للأساطيل»
+#   tool/flavor.sh customer      # تطبيق العميل  — «صناعية»
+#   tool/flavor.sh partner       # تطبيق الشركاء — «صناعية للشركاء»
+#   tool/flavor.sh fleet         # تطبيق الأساطيل — «صناعية للأساطيل»
 #
 # النكهات الثلاث كانت تتقاسم معرّفاً واحداً على iOS، فيمحو تنصيبُ إحداها الأخرى من الجهاز
 # ويبدو أن «التطبيق اختفى». هذا السكربت يكتب معرّف النكهة واسمها العربي في
@@ -13,9 +13,9 @@ cd "$(dirname "$0")/.."
 
 FLAVOR="${1:-customer}"
 case "$FLAVOR" in
-  customer) NAME='صناعتي' ;;
-  partner)  NAME='صناعتي للشركاء' ;;
-  fleet)    NAME='صناعتي للأساطيل' ;;
+  customer) NAME='صناعية' ;;
+  partner)  NAME='صناعية للشركاء' ;;
+  fleet)    NAME='صناعية للأساطيل' ;;
   *) echo "نكهة غير معروفة: $FLAVOR (customer | partner | fleet)" >&2; exit 2 ;;
 esac
 
@@ -32,7 +32,7 @@ CFG
 tool/api-host.sh "${HOST:-lan}"
 API=$(python3 -c "import json;print(json.load(open('env/dev.json'))['API_BASE_URL'])")
 
-echo "▶ $NAME (com.example.sinaaty.$FLAVOR) → $API"
+echo "▶ $NAME (com.issa.sinaaty.$FLAVOR) → $API"
 # على iOS تكفي الـxcconfig أعلاه: `--flavor` هناك يطلب مخططات Xcode مخصّصة لا وجود لها،
 # فيفشل البناء. على أندرويد النكهات gradle حقيقية فتحتاج الراية.
 # ونكتشف أندرويد من الأجهزة الموصولة لا من الوسائط: `tool/flavor.sh partner` على جوال أندرويد

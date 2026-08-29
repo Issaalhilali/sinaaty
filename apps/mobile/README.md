@@ -1,4 +1,4 @@
-# apps/mobile — صناعتي (Flutter)
+# apps/mobile — صناعية (Flutter)
 
 One codebase, three flavors: **customer** · **partner** (workshop / scrapyard / distributor / driver) · **fleet**.
 Clean Architecture per feature (`features/<f>/{domain,data,presentation}`), enforced by `dart run import_lint`.

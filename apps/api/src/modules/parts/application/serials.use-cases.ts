@@ -36,7 +36,7 @@ export class SerialsUseCases {
   }
   /** Public verify (customer/anyone scans the QR): genuine or not, status, and an alert flag when scans look abnormal. Counts scans. */
   async verify(qrToken: string) {
-    const s = await this.repo.findSerialByToken(qrToken); if (!s) return { genuine: false, message_ar: 'هذا الرمز غير مسجّل — القطعة غير موثّقة عبر  صناعية.', message_en: 'Unknown code — this part is not Sinaaty-verified.' };
+    const s = await this.repo.findSerialByToken(qrToken); if (!s) return { genuine: false, message_ar: 'هذا الرمز غير مسجّل — القطعة غير موثّقة عبر صناعية.', message_en: 'Unknown code — this part is not Sinaaty-verified.' };
     await this.uow.run((tx) => this.repo.updateSerial(s.id, { bumpScan: true }, tx));
     const cat = await this.repo.findCatalog(s.catalogId); const issuer = await this.orgs.findById(s.issuerOrgId);
     const scans = s.scanCount + 1; const alert = scans > SERIAL_SCAN_ALERT_THRESHOLD || s.status === 'void';

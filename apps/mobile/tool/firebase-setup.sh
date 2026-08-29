@@ -16,7 +16,7 @@ echo "▸ المشروع $PROJECT · المعرّف الأساس $BASE"
 
 apps="$(firebase apps:list --project="$PROJECT" 2>/dev/null)"
 for f in customer partner fleet; do
-  case $f in customer) N='صناعتي';; partner) N='صناعتي للشركاء';; fleet) N='صناعتي للأساطيل';; esac
+  case $f in customer) N='صناعية';; partner) N='صناعية للشركاء';; fleet) N='صناعية للأساطيل';; esac
   for plat in android ios; do
     # نبحث بالمعرّف لا بالاسم: الأسماء تتكرّر، والمعرّف هو الهوية.
     id="$(firebase apps:list --project="$PROJECT" 2>/dev/null | grep -oE "1:[0-9]+:$plat:[a-f0-9]+" | while read -r a; do
