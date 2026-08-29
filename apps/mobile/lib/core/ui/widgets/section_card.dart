@@ -57,19 +57,42 @@ class GateMarkPainter extends CustomPainter {
       ..style = PaintingStyle.stroke..strokeWidth = math.max(1.4, sw)..strokeCap = StrokeCap.round
       ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
           colors: [Color(0xFFE2BC7A), Color(0xFFC49A52)]).createShader(Offset.zero & s);
-    // القوس: بوابة الكراج
-    final arch = Path()
-      ..moveTo(w * .20, w * .735)
-      ..lineTo(w * .20, w * .44)
-      ..arcToPoint(Offset(w * .80, w * .44), radius: Radius.circular(w * .315))
-      ..lineTo(w * .80, w * .735);
-    c.drawPath(arch, stroke(w * .055));
-    // شرائح الباب الملفوف — مرفوع نصفه: الورشة مفتوحة تستقبل، وتحتها فراغ الدخول
-    for (var i = 0; i < 3; i++) {
-      c.drawLine(Offset(w * .295, w * (.375 + .085 * i)), Offset(w * .705, w * (.375 + .085 * i)), stroke(w * .04));
+    Paint fill() => Paint()
+      ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [Color(0xFFE2BC7A), Color(0xFFC49A52)]).createShader(Offset.zero & s);
+    // إطار الكراج: باب مستطيل بأكتاف شبه مستوية — لا قوساً نصف دائري (قرأه المالك غطاء صحن)
+    final frame = Path()
+      ..moveTo(w * .14, w * .775)
+      ..lineTo(w * .14, w * .335)
+      ..quadraticBezierTo(w * .14, w * .225, w * .25, w * .225)
+      ..lineTo(w * .75, w * .225)
+      ..quadraticBezierTo(w * .86, w * .225, w * .86, w * .335)
+      ..lineTo(w * .86, w * .775);
+    c.drawPath(frame, stroke(w * .05));
+    // شريحتا الباب الملفوف بعرض الفتحة كله — الباب مرفوع والورشة تستقبل
+    c.drawLine(Offset(w * .225, w * .325), Offset(w * .775, w * .325), stroke(w * .036));
+    c.drawLine(Offset(w * .225, w * .40), Offset(w * .775, w * .40), stroke(w * .036));
+    // السيارة داخل البوابة — جانبية مملوءة، بيتا العجلات مطروحان ثم العجلتان حلقتين
+    final body = Path()
+      ..moveTo(w * .255, w * .60)
+      ..quadraticBezierTo(w * .27, w * .545, w * .36, w * .535)
+      ..quadraticBezierTo(w * .41, w * .475, w * .50, w * .475)
+      ..quadraticBezierTo(w * .59, w * .475, w * .635, w * .53)
+      ..quadraticBezierTo(w * .72, w * .54, w * .74, w * .59)
+      ..quadraticBezierTo(w * .75, w * .625, w * .73, w * .655)
+      ..lineTo(w * .27, w * .655)
+      ..quadraticBezierTo(w * .25, w * .635, w * .255, w * .60)
+      ..close();
+    Path wheelCut(double cx) => Path()..addOval(Rect.fromCircle(center: Offset(w * cx, w * .655), radius: w * .062));
+    c.drawPath(
+        Path.combine(PathOperation.difference,
+            Path.combine(PathOperation.difference, body, wheelCut(.355)), wheelCut(.645)),
+        fill());
+    for (final cx in [.355, .645]) {
+      c.drawCircle(Offset(w * cx, w * .655), w * .038, stroke(w * .028));
     }
     // الأرض: الطريق يمتد أوسع من البوابة
-    c.drawLine(Offset(w * .12, w * .78), Offset(w * .88, w * .78), stroke(w * .05));
+    c.drawLine(Offset(w * .08, w * .775), Offset(w * .92, w * .775), stroke(w * .05));
   }
   @override bool shouldRepaint(covariant CustomPainter _) => false;
 }
