@@ -2714,4 +2714,26 @@ class L10nAr extends L10n {
 
   @override
   String get scanTypeInstead => 'أكتبه يدوياً';
+
+  @override
+  String get istTitle => 'صوّر الاستمارة';
+
+  @override
+  String get istWhy =>
+      'صورة واحدة تقرأ اللوحة ورقم الهيكل والسنة — بلا كتابة، وداخل جوالك لا على خادم.';
+
+  @override
+  String get istShoot => 'التقط الصورة';
+
+  @override
+  String istRead(int n) {
+    return 'قرأتُ $n من الاستمارة';
+  }
+
+  @override
+  String get istCheck => 'راجع الحقول تحت — القراءة الضوئية تخطئ أحياناً.';
+
+  @override
+  String get istUnreadable =>
+      'لم أقرأ شيئاً من الصورة. صوّرها في ضوء أفضل، أو اكتب الحقول يدوياً.';
 }

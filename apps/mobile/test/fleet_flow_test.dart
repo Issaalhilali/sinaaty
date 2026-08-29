@@ -72,12 +72,23 @@ class FakeAuth implements AuthRepository {
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 
+/// يسجّل خطّ السمة الحقيقي في الاختبارات.
+///
+/// كان يسجّل PlexArabic وحده، ثم تبدّل خطّ السمة إلى Almarai — فصارت كل لقطة تُولَّد بمربّعات
+/// فارغة بدل الحروف: عمياء عن أول ما يراه الإنسان. الاسمان معاً لأن الشاشات القديمة قد تطلب أياً
+/// منهما، ولقطةٌ لا تُظهر الخط لا تُراجَع.
 Future<void> loadArabicFont() async {
-  final loader = FontLoader('PlexArabic');
-  for (final f in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
-    loader.addFont(File('assets/fonts/IBMPlexSansArabic-$f.ttf').readAsBytes().then((b) => ByteData.view(b.buffer)));
+  final families = {
+    'Almarai': ['Regular', 'Bold', 'ExtraBold'].map((f) => 'assets/fonts/Almarai-$f.ttf'),
+    'PlexArabic': ['Regular', 'Medium', 'SemiBold', 'Bold'].map((f) => 'assets/fonts/IBMPlexSansArabic-$f.ttf'),
+  };
+  for (final entry in families.entries) {
+    final loader = FontLoader(entry.key);
+    for (final path in entry.value) {
+      loader.addFont(File(path).readAsBytes().then((b) => ByteData.view(b.buffer)));
+    }
+    await loader.load();
   }
-  await loader.load();
 }
 
 void main() {

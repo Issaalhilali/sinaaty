@@ -1232,5 +1232,18 @@
   "itemPart": "Part",
   "itemDiagnostic": "Diagnostic",
   "scanCameraFailed": "Could not open the camera. Allow camera access, or type the number instead.",
-  "scanTypeInstead": "Type it instead"
+  "scanTypeInstead": "Type it instead",
+  "istTitle": "Photograph the registration",
+  "istWhy": "One photo reads the plate, VIN and year — no typing, and it happens inside your phone, not on a server.",
+  "istShoot": "Take the photo",
+  "istRead": "Read {n} fields from the card",
+  "istCheck": "Check the fields below — OCR sometimes misreads.",
+  "istUnreadable": "Nothing was readable in that photo. Try better light, or type the fields yourself.",
+  "@istRead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

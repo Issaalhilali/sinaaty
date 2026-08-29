@@ -33,6 +33,9 @@ dependencies:
   socket_io_client: ^3.1.6
   path_provider: ^2.1.6
   image_picker: ^1.2.3
+  # قراءة الاستمارة على الجهاز نفسه: الوثيقة تحمل اسم المالك ورقم هويته، وإرسالها إلى خدمة
+  # خارجية قرارُ إقامة بيانات لا ميزة منتج (§5.4). ML Kit يقرأ بلا شبكة إطلاقاً.
+  google_mlkit_text_recognition: ^0.15.0
   crypto: ^3.0.7
   mobile_scanner: ^7.4.0
   speech_to_text: ^7.4.0

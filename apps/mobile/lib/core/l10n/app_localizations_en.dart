@@ -2750,4 +2750,26 @@ class L10nEn extends L10n {
 
   @override
   String get scanTypeInstead => 'Type it instead';
+
+  @override
+  String get istTitle => 'Photograph the registration';
+
+  @override
+  String get istWhy =>
+      'One photo reads the plate, VIN and year — no typing, and it happens inside your phone, not on a server.';
+
+  @override
+  String get istShoot => 'Take the photo';
+
+  @override
+  String istRead(int n) {
+    return 'Read $n fields from the card';
+  }
+
+  @override
+  String get istCheck => 'Check the fields below — OCR sometimes misreads.';
+
+  @override
+  String get istUnreadable =>
+      'Nothing was readable in that photo. Try better light, or type the fields yourself.';
 }

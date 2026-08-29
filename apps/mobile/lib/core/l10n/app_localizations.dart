@@ -5160,6 +5160,42 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أكتبه يدوياً'**
   String get scanTypeInstead;
+
+  /// No description provided for @istTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'صوّر الاستمارة'**
+  String get istTitle;
+
+  /// No description provided for @istWhy.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة واحدة تقرأ اللوحة ورقم الهيكل والسنة — بلا كتابة، وداخل جوالك لا على خادم.'**
+  String get istWhy;
+
+  /// No description provided for @istShoot.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقط الصورة'**
+  String get istShoot;
+
+  /// No description provided for @istRead.
+  ///
+  /// In ar, this message translates to:
+  /// **'قرأتُ {n} من الاستمارة'**
+  String istRead(int n);
+
+  /// No description provided for @istCheck.
+  ///
+  /// In ar, this message translates to:
+  /// **'راجع الحقول تحت — القراءة الضوئية تخطئ أحياناً.'**
+  String get istCheck;
+
+  /// No description provided for @istUnreadable.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم أقرأ شيئاً من الصورة. صوّرها في ضوء أفضل، أو اكتب الحقول يدوياً.'**
+  String get istUnreadable;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

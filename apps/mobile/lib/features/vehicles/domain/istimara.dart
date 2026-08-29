@@ -53,12 +53,13 @@ IstimaraRead parseIstimara(String text) {
   // سنة الصنع: تُؤخذ من الخانة العاشرة في رقم الهيكل حين يوجد (معيار عالمي أدقّ من قراءة ضوئية)،
   // وإلا فأول سنة معقولة في النص.
   int? year;
-  final ym = _year.firstMatch(up.replaceAll(vin ?? '', ''));
+  // حذر: `replaceAll('', …)` يُدخل بديلاً بين كل حرفين ويُفتّت النص. فلا يُحذف إلا رقم موجود.
+  final withoutVin = vin == null ? up : up.replaceAll(vin, ' ');
+  final ym = _year.firstMatch(withoutVin);
   if (ym != null) year = int.tryParse(ym.group(0)!);
 
   String? plate;
-  // لا نبحث عن اللوحة داخل رقم الهيكل نفسه — فيه حروف وأرقام تشبهها.
-  final withoutVin = up.replaceAll(vin ?? '', ' ');
+  // ولا نبحث عن اللوحة داخل رقم الهيكل نفسه — فيه حروف وأرقام تشبهها.
   final pm = _plateLatin.firstMatch(withoutVin);
   if (pm != null) {
     final letters = pm.group(1) ?? pm.group(4)!;
