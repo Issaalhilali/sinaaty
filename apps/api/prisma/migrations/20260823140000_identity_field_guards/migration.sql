@@ -3,13 +3,19 @@
 -- أُضيفت وصفر صف مخالف في القاعدة، أي بلا ترحيل بيانات: أرخص لحظة ممكنة قبل التجربة.
 
 -- السجل التجاري: يُطبع على الفاتورة الضريبية بجوار الرقم الضريبي المحروس أصلاً.
-ALTER TABLE organizations
-  ADD CONSTRAINT org_cr_format CHECK (cr_number IS NULL OR cr_number ~ '^[0-9]{10}$');
+DO $$ BEGIN
+  ALTER TABLE organizations
+    ADD CONSTRAINT org_cr_format CHECK (cr_number IS NULL OR cr_number ~ '^[0-9]{10}$');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- الجوال: هوية الدخول وقناة رمز التوقيع — رقم مشوّه يعني حساباً لا يُدخل إليه أبداً.
-ALTER TABLE users
-  ADD CONSTRAINT user_phone_e164_saudi CHECK (phone_e164 ~ '^\+9665[0-9]{8}$');
+DO $$ BEGIN
+  ALTER TABLE users
+    ADD CONSTRAINT user_phone_e164_saudi CHECK (phone_e164 ~ '^\+9665[0-9]{8}$');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- رقم الهيكل: يحكم توافق القطع وسجل المركبة؛ الحروف I/O/Q ممنوعة في معيار VIN.
-ALTER TABLE vehicles
-  ADD CONSTRAINT vehicle_vin_format CHECK (vin IS NULL OR vin ~ '^[A-HJ-NPR-Z0-9]{17}$');
+DO $$ BEGIN
+  ALTER TABLE vehicles
+    ADD CONSTRAINT vehicle_vin_format CHECK (vin IS NULL OR vin ~ '^[A-HJ-NPR-Z0-9]{17}$');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

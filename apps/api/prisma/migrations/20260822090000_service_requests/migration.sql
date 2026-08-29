@@ -19,7 +19,9 @@ CREATE TABLE IF NOT EXISTS service_requests (
   created_at        timestamptz NOT NULL DEFAULT now(),
   updated_at        timestamptz NOT NULL DEFAULT now()
 );
-CREATE TRIGGER trg_service_requests_updated BEFORE UPDATE ON service_requests FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_service_requests_updated BEFORE UPDATE ON service_requests FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_service_requests_status ON service_requests(status, expires_at);
 CREATE INDEX IF NOT EXISTS idx_service_requests_geo ON service_requests USING gist(geo);
 CREATE INDEX IF NOT EXISTS idx_service_requests_customer ON service_requests(customer_user_id, created_at DESC);
@@ -51,6 +53,10 @@ CREATE TABLE IF NOT EXISTS service_offers (
   CHECK (price_max IS NULL OR price_min IS NULL OR price_max >= price_min),
   UNIQUE (request_id, org_id)
 );
-CREATE TRIGGER trg_service_offers_updated BEFORE UPDATE ON service_offers FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+DO $$ BEGIN
+  CREATE TRIGGER trg_service_offers_updated BEFORE UPDATE ON service_offers FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_service_offers_request ON service_offers(request_id, status);
-ALTER TABLE service_requests ADD CONSTRAINT fk_sr_accepted_offer FOREIGN KEY (accepted_offer_id) REFERENCES service_offers(id);
+DO $$ BEGIN
+  ALTER TABLE service_requests ADD CONSTRAINT fk_sr_accepted_offer FOREIGN KEY (accepted_offer_id) REFERENCES service_offers(id);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;

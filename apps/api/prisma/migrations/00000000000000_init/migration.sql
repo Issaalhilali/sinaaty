@@ -80,9 +80,13 @@ BEGIN NEW.updated_at = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;
 -- =============================================================================
 CREATE TABLE users (
   id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  phone_e164         varchar(20) UNIQUE,                       -- +9665XXXXXXXX
+  phone_e164         varchar(20) UNIQUE
+    CHECK (phone_e164 ~ '^\+9665[0-9]{8}$'),                    -- هوية الدخول وقناة رمز التوقيع: رقم مشوّه = حساب لا يُدخل إليه
   email              citext UNIQUE,
   full_name_ar       varchar(150),
+  -- آخر تغييرٍ للاسم: الاسم يوقّع الاعتمادات، فتقلّبه يهدم حجيتها — التطبيق يمنع تغييره
+  -- قبل مضي مهلة (NAME_CHANGE_COOLDOWN_DAYS، افتراضياً 90 يوماً)
+  name_changed_at    timestamptz,
   full_name_en       varchar(150),
   national_id_hash   char(64) UNIQUE,                          -- sha256(salt+id) for lookup
   national_id_enc    bytea,                                    -- AES-256-GCM encrypted, key in KMS
@@ -159,8 +163,10 @@ CREATE TABLE organizations (
   trade_name_ar         varchar(200),
   trade_name_en         varchar(200),
   slug                  varchar(80) UNIQUE,
-  cr_number             varchar(20) UNIQUE,                    -- السجل التجاري
-  vat_number            varchar(15) UNIQUE,                    -- الرقم الضريبي (15 digits)
+  cr_number             varchar(20) UNIQUE
+    CHECK (cr_number IS NULL OR cr_number ~ '^[0-9]{10}$'),      -- السجل التجاري (يُطبع على الفاتورة الضريبية)
+  vat_number            varchar(15) UNIQUE
+    CHECK (vat_number IS NULL OR vat_number ~ '^3[0-9]{13}3$'),  -- 15 رقماً يبدأ وينتهي بـ3؛ القاعدة تعيد التحقق (البذور والأدوات تتجاوز الـDTO)
   vat_registered        boolean NOT NULL DEFAULT false,
   national_address      jsonb,                                 -- {building,street,district,city,postal_code,additional}
   phone_e164            varchar(20),
@@ -169,6 +175,9 @@ CREATE TABLE organizations (
   description_ar        text,
   description_en        text,
   rating_avg            numeric(3,2) NOT NULL DEFAULT 0,
+  -- «مشغولون الآن»: ورشة غارقة توقف استقبال طلبات السوق مؤقتاً بدل أن ترد متأخرة وتحرق سمعتها.
+  -- المطابقة تستثني من أطفأها؛ ولا تمس الأوامر الجارية ولا الاكتشاف العام.
+  accepting_requests    boolean NOT NULL DEFAULT true,
   rating_count          integer NOT NULL DEFAULT 0,
   commission_rate_bps   integer NOT NULL DEFAULT 500,          -- 500 = 5.00% (basis points)
   max_open_exposure_sar numeric(14,2) NOT NULL DEFAULT 20000,  -- risk limit for new orgs
@@ -182,6 +191,20 @@ CREATE TABLE organizations (
 CREATE TRIGGER trg_orgs_updated BEFORE UPDATE ON organizations FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE INDEX idx_orgs_type_status ON organizations(type, status);
 CREATE INDEX idx_orgs_trade_name_trgm ON organizations USING gin (trade_name_ar gin_trgm_ops);
+
+-- خدمات الورشة المحفوظة: «غيار زيت 280» يُدرج بنقرة بدل كتابته كل مرة — الأمر بنقرتين حقاً.
+-- كتالوج تشغيلي خاص بالمنشأة، لا علاقة له بكتالوج قطع الموزعين.
+CREATE TABLE org_service_items (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id        uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  name_ar       varchar(200) NOT NULL,
+  item_type     wo_item_type NOT NULL DEFAULT 'labor',
+  unit_price    numeric(12,2) NOT NULL,
+  warranty_days int NOT NULL DEFAULT 0,
+  is_active     boolean NOT NULL DEFAULT true,
+  created_at    timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_org_service_items_org ON org_service_items(org_id) WHERE is_active;
 
 CREATE TABLE organization_locations (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -326,7 +349,8 @@ ALTER TABLE kyb_documents ADD CONSTRAINT fk_kyb_media FOREIGN KEY (media_id) REF
 -- =============================================================================
 CREATE TABLE vehicles (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  vin              char(17) UNIQUE,
+  vin              char(17) UNIQUE
+    CHECK (vin IS NULL OR vin ~ '^[A-HJ-NPR-Z0-9]{17}$'),        -- معيار VIN: بلا I/O/Q
   plate_number     varchar(12),                                -- e.g. "أ ب ج 1234"
   plate_number_en  varchar(12),
   make_id          smallint REFERENCES vehicle_makes(id),
@@ -1545,6 +1569,81 @@ CREATE TABLE analytics_events (                                -- funnel/telemet
 CREATE INDEX idx_analytics_event_time ON analytics_events(event, occurred_at DESC);
 CREATE INDEX idx_analytics_org_time ON analytics_events(org_id, occurred_at DESC);
 CREATE INDEX idx_analytics_zone_time ON analytics_events(industrial_zone, occurred_at DESC);
+
+CREATE TABLE service_requests (                                -- العميل يعرض مشكلته والسوق يرد (سوق طلبات الإصلاح)
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  number            varchar(24) NOT NULL UNIQUE,               -- SR-2026-000123
+  customer_user_id  uuid NOT NULL REFERENCES users(id),
+  vehicle_id        uuid REFERENCES vehicles(id),
+  title_ar          varchar(200) NOT NULL,                     -- «السيارة ترجّ عند التسارع»
+  description_ar    text,
+  geo               geography(Point,4326) NOT NULL,            -- موقع العميل (أو السيارة)
+  address_hint      varchar(300),
+  radius_km         integer NOT NULL DEFAULT 15 CHECK (radius_km BETWEEN 2 AND 150),  -- العميل يحدد نطاقه
+  preferred_time    varchar(16) NOT NULL DEFAULT 'today',      -- now | today | this_week
+  status            varchar(16) NOT NULL DEFAULT 'open',       -- open | accepted | cancelled | expired
+  accepted_offer_id uuid,                                      -- FK بعد إنشاء service_offers
+  work_order_id     uuid REFERENCES work_orders(id),           -- يولد عند قبول عرض
+  expires_at        timestamptz NOT NULL,
+  created_at        timestamptz NOT NULL DEFAULT now(),
+  updated_at        timestamptz NOT NULL DEFAULT now()
+);
+CREATE TRIGGER trg_service_requests_updated BEFORE UPDATE ON service_requests FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_service_requests_status ON service_requests(status, expires_at);
+CREATE INDEX idx_service_requests_geo ON service_requests USING gist(geo);
+CREATE INDEX idx_service_requests_customer ON service_requests(customer_user_id, created_at DESC);
+
+CREATE TABLE service_request_recipients (                      -- أي الورش وصلها الطلب (توزيع PostGIS بنطاق العميل)
+  request_id   uuid NOT NULL REFERENCES service_requests(id) ON DELETE CASCADE,
+  org_id       uuid NOT NULL REFERENCES organizations(id),
+  distance_km  numeric(6,2),
+  notified_at  timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (request_id, org_id)
+);
+-- «متى وصل هذه المنشأةَ طلبٌ آخر مرة؟» — سؤال القسمة العادلة، يُسأل عند إنشاء كل طلب.
+CREATE INDEX idx_service_request_recipients_org ON service_request_recipients(org_id, notified_at DESC);
+
+CREATE TABLE service_offers (                                  -- ردّ الورشة: تحليل + سعر + جاهزية
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  request_id     uuid NOT NULL REFERENCES service_requests(id) ON DELETE CASCADE,
+  org_id         uuid NOT NULL REFERENCES organizations(id),
+  offer_type     varchar(16) NOT NULL DEFAULT 'estimate',      -- estimate | free_inspection («معاينة مجانية» نوع صريح لا سعر صفري)
+  diagnosis_ar   text,                                         -- «الأغلب مساعدات — نحتاج فحصاً على الرافعة»
+  price_min      numeric(14,2),                                -- تقدير مبدئي؛ قد يكون مدى، وقد يغيب («بعد الفحص»)
+  price_max      numeric(14,2),
+  availability   varchar(16) NOT NULL DEFAULT 'today',
+  available_at   timestamptz,                                  -- «اليوم ٤ عصراً» — الجاهزية نصف القرار         -- now | today | scheduled
+  eta_note_ar    varchar(200),                                 -- «نستقبلك خلال ساعة»
+  status         varchar(16) NOT NULL DEFAULT 'submitted',     -- submitted | withdrawn | accepted | lost
+  created_by     uuid REFERENCES users(id),
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now(),
+  CHECK (price_min IS NULL OR price_min >= 0),
+  CHECK (price_max IS NULL OR price_min IS NULL OR price_max >= price_min),
+  UNIQUE (request_id, org_id)                                  -- عرض حي واحد لكل ورشة (تحديثه upsert كمزاد القطع)
+);
+CREATE TRIGGER trg_service_offers_updated BEFORE UPDATE ON service_offers FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_service_offers_request ON service_offers(request_id, status);
+ALTER TABLE service_requests ADD CONSTRAINT fk_sr_accepted_offer FOREIGN KEY (accepted_offer_id) REFERENCES service_offers(id);
+
+CREATE TABLE admin_approvals (                                 -- maker/checker on sensitive admin actions (escrow refunds first)
+  id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  action             varchar(60)  NOT NULL,                    -- 'escrow.refund' today; generic by design
+  entity_type        varchar(40)  NOT NULL,
+  entity_id          uuid         NOT NULL,
+  payload            jsonb        NOT NULL,                    -- executed verbatim at approval, revalidated then
+  status             varchar(16)  NOT NULL DEFAULT 'requested',-- requested | approved | rejected | expired
+  requested_by       uuid         NOT NULL REFERENCES users(id),
+  requested_at       timestamptz  NOT NULL DEFAULT now(),
+  decided_by         uuid REFERENCES users(id),
+  decided_at         timestamptz,
+  decision_reason_ar text,
+  expires_at         timestamptz  NOT NULL,                    -- window from platform_settings approvals.expiry_hours
+  -- the requester may withdraw their own request; nobody approves what they requested
+  CONSTRAINT approvals_two_people CHECK (status <> 'approved' OR decided_by IS NULL OR decided_by <> requested_by)
+);
+CREATE INDEX idx_admin_approvals_pending ON admin_approvals (action, status) WHERE status = 'requested';
+CREATE UNIQUE INDEX uq_admin_approvals_open_entity ON admin_approvals (action, entity_id) WHERE status = 'requested';
 
 CREATE TABLE sequences_counters (                              -- platform-wide human numbers (WO-, PN-, PR-, ...)
   prefix      varchar(8) NOT NULL,

@@ -2,5 +2,7 @@
 -- لكن البذور والأدوات و UPDATE اليدوي تكتب في القاعدة مباشرة فتتجاوزه — فسافر رقم باطل الشكل عبر كل
 -- الفحوص وانفجر في مولّد رمز ZATCA بـ500 عامة، وورشةٌ تطالب بمالها تقرأ «حدث خطأ غير متوقع».
 -- القاعدة تعيد التحقق ولا تثق بالطبقة الأعلى — نفس فلسفة قيود الدفتر والاعتمادات.
-ALTER TABLE organizations
-  ADD CONSTRAINT org_vat_format CHECK (vat_number IS NULL OR vat_number ~ '^3[0-9]{13}3$');
+DO $$ BEGIN
+  ALTER TABLE organizations
+    ADD CONSTRAINT org_vat_format CHECK (vat_number IS NULL OR vat_number ~ '^3[0-9]{13}3$');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
