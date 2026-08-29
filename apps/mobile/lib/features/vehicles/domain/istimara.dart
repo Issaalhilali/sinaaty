@@ -19,9 +19,18 @@ class IstimaraRead {
   final String? plate;
   final int? year;
   final String? makeEn;
-  const IstimaraRead({this.vin, this.plate, this.year, this.makeEn});
+
+  /// الطراز كما تطبعه الاستمارة (كامري، سوناتا). **للعرض وحده**: الخادم يشتقّ الطراز من رقم
+  /// الهيكل، ولا نُرسل قراءةً ضوئية لتصير سجلاً. فائدته أن يرى صاحبها «تويوتا كامري ٢٠١٩»
+  /// فيتأكد أن الورقة المصوَّرة هي ورقة سيارته لا ورقة أخرى في الدرج.
+  final String? modelEn;
+
+  const IstimaraRead({this.vin, this.plate, this.year, this.makeEn, this.modelEn});
   bool get isEmpty => vin == null && plate == null && year == null && makeEn == null;
   int get found => [vin, plate, year?.toString(), makeEn].where((x) => x != null).length;
+
+  /// سطر التأكيد: «تويوتا كامري · 2019» بما توفّر منه.
+  String get carLine => [?makeEn, ?modelEn, if (year != null) '$year'].join(' · ');
 }
 
 /// الماركات الشائعة في السعودية — تُقرأ من الاستمارة بالإنجليزية غالباً.
@@ -35,6 +44,8 @@ const _makes = <String, String>{
 };
 
 final _year = RegExp(r'\b(19[8-9]\d|20[0-4]\d)\b');
+/// «MODEL: CAMRY» أو «الطراز CAMRY» — كلمة أو كلمتان بعد العنوان، بلا أرقام السنة.
+final _model = RegExp(r'(?:MODEL|TYPE|الطراز)\s*[:\-]?\s*([A-Z][A-Z0-9\-]{1,14}(?:\s[A-Z][A-Z0-9\-]{1,14})?)');
 /// لوحة سعودية بالحروف اللاتينية على الاستمارة: ثلاثة حروف وأربعة أرقام بأي ترتيب.
 final _plateLatin = RegExp(r'\b([A-Z]{3})[\s\-]?(\d{3,4})\b|\b(\d{3,4})[\s\-]?([A-Z]{3})\b');
 
@@ -67,5 +78,14 @@ IstimaraRead parseIstimara(String text) {
     plate = '$letters $digits';
   }
 
-  return IstimaraRead(vin: vin, plate: plate, year: year, makeEn: make);
+  // «MODEL YEAR 2019» عنوانٌ لا طراز، وهو يسبق «MODEL: CAMRY» على أغلب الاستمارات — فلا نتوقّف
+  // عند أول مطابقة بل نتخطّى العناوين ونُكمل. التوقّف عند الأولى كان يُسقط الطراز دائماً.
+  String? model;
+  for (final mm in _model.allMatches(withoutVin)) {
+    final raw = mm.group(1)!.trim();
+    if (RegExp(r'^(YEAR|NO|NUMBER)\b').hasMatch(raw)) continue;
+    model = raw; break;
+  }
+
+  return IstimaraRead(vin: vin, plate: plate, year: year, makeEn: make, modelEn: model);
 }

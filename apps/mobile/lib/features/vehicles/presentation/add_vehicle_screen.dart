@@ -83,9 +83,9 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
               const Icon(Icons.auto_awesome, size: 18, color: SinaatyColors.seal), const SizedBox(width: 8),
               Expanded(child: Text(l.istRead(read.found), style: t.bodyMedium)),
             ]),
-            if (read.makeEn != null || read.year != null) Padding(padding: const EdgeInsets.only(top: 6),
-              child: Text([if (read.makeEn != null) read.makeEn!, if (read.year != null) '${read.year}'].join(' · '),
-                  style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+            // سطر التأكيد: يرى «تويوتا كامري · 2019» فيعرف أن الورقة المصوَّرة ورقة سيارته.
+            if (read.carLine.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6),
+              child: Text(read.carLine, style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w700))),
             Padding(padding: const EdgeInsets.only(top: 6), child: Text(l.istCheck, style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))),
           ])),
         ],

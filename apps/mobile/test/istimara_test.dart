@@ -31,7 +31,15 @@ Make: TOYOTA   Model: CAMRY
     expect(r.plate, 'ABJ 4821');
     expect(r.year, 2019);
     expect(r.makeEn, 'تويوتا');
-    expect(r.found, 4);
+    expect(r.modelEn, 'CAMRY', reason: 'الطراز للعرض وحده — تأكيدٌ أن الورقة ورقة سيارته');
+    expect(r.carLine, 'تويوتا · CAMRY · 2019');
+    expect(r.found, 4, reason: 'الطراز لا يُحتسب حقلاً محفوظاً؛ الخادم يشتقّه من رقم الهيكل');
+  });
+
+  test('«MODEL YEAR» عنوانٌ مجاور لا طراز', () {
+    final r = parseIstimara('Model Year: 2019\nChassis JTDKN3DU0A0123456');
+    expect(r.modelEn, isNull);
+    expect(r.year, 2019);
   });
 
   test('اللوحة بالترتيب المعكوس (أرقام ثم حروف) كما تُطبع أحياناً', () {
