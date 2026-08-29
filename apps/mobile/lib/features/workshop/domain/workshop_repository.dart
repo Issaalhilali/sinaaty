@@ -13,6 +13,8 @@ abstract interface class WorkshopRepository {
   /// إرسالٌ للمراجعة — يرفضه الخادم حتى تكتمل الوثائق والموقع، ورسالته تقول ما ينقص.
   Future<Result<void>> submitForReview(String orgId);
   Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status});
+  /// «مشغولون الآن» — إيقاف/استئناف استقبال طلبات السوق.
+  Future<Result<bool>> setAvailability(String orgId, {required bool accepting});
   Future<Result<WorkOrder>> create(NewWorkOrder wo);
   Future<Result<WorkOrder>> addItem(String woId, NewItem item);
   Future<Result<WorkOrder>> removeItem(String woId, String itemId);

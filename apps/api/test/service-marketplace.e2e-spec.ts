@@ -254,4 +254,18 @@ describe('Service marketplace (e2e)', () => {
     await http().get('/v1/service-requests/nearby').set(auth(nearTok)).expect(404);
     await http().get('/v1/service-requests/not-a-uuid').set(auth(custTok)).expect(404);
   });
+
+  it('«مشغولون الآن»: من أطفأ الاستقبال لا يصله طلبٌ جديد — ويعود بعودته', async () => {
+    // ورشة غارقة ترد متأخرة تحرق سمعتها وسمعتنا — الإيقاف المؤقت أرحم من الصمت.
+    await http().patch(`/v1/organizations/${nearOrg}/availability`).set(auth(nearTok)).send({ accepting_requests: false }).expect(200);
+    const q1 = await http().post('/v1/service-requests').set(auth(custTok)).send({ vehicle_id: vehicleId, title_ar: 'فحص مشغول', lat: RIYADH.lat, lng: RIYADH.lng, radius_km: 25, preferred_time: 'today' }).expect(201);
+    const in1 = await http().get(`/v1/service-requests?org_id=${nearOrg}`).set(auth(nearTok)).expect(200);
+    expect(in1.body.find((r: { id: string }) => r.id === q1.body.id)).toBeUndefined();
+    await http().patch(`/v1/organizations/${nearOrg}/availability`).set(auth(nearTok)).send({ accepting_requests: true }).expect(200);
+    const q2 = await http().post('/v1/service-requests').set(auth(custTok)).send({ vehicle_id: vehicleId, title_ar: 'فحص عودة', lat: RIYADH.lat, lng: RIYADH.lng, radius_km: 25, preferred_time: 'today' }).expect(201);
+    const in2 = await http().get(`/v1/service-requests?org_id=${nearOrg}`).set(auth(nearTok)).expect(200);
+    expect(in2.body.find((r: { id: string }) => r.id === q2.body.id)).toBeDefined();
+    await http().post(`/v1/service-requests/${q1.body.id}/cancel`).set(auth(custTok)).expect(200);
+    await http().post(`/v1/service-requests/${q2.body.id}/cancel`).set(auth(custTok)).expect(200);
+  });
 });

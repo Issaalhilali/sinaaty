@@ -75,7 +75,7 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
       FROM service_requests r
       CROSS JOIN organizations o
       JOIN organization_locations l ON l.org_id = o.id
-      WHERE r.id = ${requestId}::uuid AND o.status = 'active' AND o.type::text = ANY(${WORKSHOP_TYPES}::text[])
+      WHERE r.id = ${requestId}::uuid AND o.status = 'active' AND o.accepting_requests = true AND o.type::text = ANY(${WORKSHOP_TYPES}::text[])
         AND l.geo IS NOT NULL AND ST_DWithin(l.geo, r.geo, ${radiusKm * 1000})
       GROUP BY o.id ORDER BY distance_km ASC LIMIT ${poolLimit}`;
     return rows.map((r) => ({ orgId: r.org_id, distanceKm: r.distance_km == null ? null : Math.round(r.distance_km * 100) / 100, lastNotifiedAt: r.last_notified_at }));

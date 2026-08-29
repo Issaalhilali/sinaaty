@@ -60,6 +60,7 @@ class FakeParts implements PartsRepository, QrScanner {
   @override Future<String?> scan() async => scanned;
 }
 class FakeWorkshop implements WorkshopRepository {
+  @override Future<Result<bool>> setAvailability(String orgId, {required bool accepting}) async => Result.ok(accepting);
   final String type; final String Function() org; FakeWorkshop(this.type, this.org);
   String? registeredType, registeredName; bool submitted = false; final kyb = <String>[];
   @override Future<Result<String>> registerOrg({required String type, required String legalNameAr, String? tradeNameAr, String? crNumber, String? phone}) async { registeredType = type; registeredName = legalNameAr; return const Result.ok('new-org'); }

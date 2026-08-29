@@ -30,6 +30,7 @@ import 'package:sinaaty/features/workshop/presentation/today_screen.dart';
 
 /// In-memory workshop backend: one org, orders with the real transition rules the app relies on. `offline` makes every call fail with NetworkFailure.
 class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrderRealtime, PendingActions {
+  @override Future<Result<bool>> setAvailability(String orgId, {required bool accepting}) async => Result.ok(accepting);
   @override Future<Result<MyReview?>> myReview(String workOrderId) async => const Result.ok(null);
   @override Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr}) async => const Result.ok(null);
 

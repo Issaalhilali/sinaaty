@@ -11,6 +11,9 @@ export type CreateOrgDto = z.infer<typeof CreateOrgDto>;
 export const UpdateOrgDto = CreateOrgDto.omit({ type: true, cr_number: true }).partial();
 export type UpdateOrgDto = z.infer<typeof UpdateOrgDto>;
 
+export const AvailabilityDto = z.object({ accepting_requests: z.boolean() });
+export type AvailabilityDto = z.infer<typeof AvailabilityDto>;
+
 export const AddLocationDto = z.object({ name_ar: z.string().max(120).optional(), is_primary: z.boolean().optional(), city: z.string().min(2).max(80), district: z.string().max(120).optional(), industrial_zone: z.string().max(120).optional(), address_line: z.string().max(500).optional(), lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180), service_radius_km: z.number().int().min(1).max(500).optional() });
 export type AddLocationDto = z.infer<typeof AddLocationDto>;
 export const SetSpecialtiesDto = z.object({ items: z.array(z.object({ make_id: z.number().int().optional(), category_id: z.number().int().optional() })).max(200) });

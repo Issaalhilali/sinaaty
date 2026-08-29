@@ -12,7 +12,7 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
   Map<String, dynamic> _item(NewItem i) => {'type': i.type, 'description_ar': i.descriptionAr, 'quantity': i.quantity, 'unit_price': i.unitPrice, 'warranty_days': i.warrantyDays, 'part_condition': ?i.partCondition};
   @override Future<Result<List<OrgBrief>>> myOrgs() => _run(() async => (await api.dio.get<List<dynamic>>('/organizations/mine')).data!
       .cast<Map<String, dynamic>>()
-      .map((d) => OrgBrief(id: d['id'] as String, nameAr: (d['name_ar'] ?? '') as String, type: d['type'] as String, status: d['status'] as String, role: d['role'] as String?))
+      .map((d) => OrgBrief(id: d['id'] as String, nameAr: (d['name_ar'] ?? '') as String, type: d['type'] as String, status: d['status'] as String, role: d['role'] as String?, acceptingRequests: (d['accepting_requests'] as bool?) ?? true))
       .toList());
   @override Future<Result<String>> registerOrg({required String type, required String legalNameAr, String? tradeNameAr, String? crNumber, String? phone}) =>
       _run(() async => (await api.dio.post<Map<String, dynamic>>('/organizations', data: {
@@ -36,6 +36,7 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
       _run(() async { await api.dio.post<void>('/organizations/$orgId/kyb/submit', data: {}); });
 
   @override Future<Result<List<WorkOrder>>> orgOrders(String orgId, {List<String>? status}) => _run(() async => (await api.dio.get<List<dynamic>>('/work-orders', queryParameters: {'org_id': orgId, 'limit': 100, if (status != null) 'status': status.join(',')})).data!.map((e) => workOrderFromJson(e as Map<String, dynamic>)).toList());
+  @override Future<Result<bool>> setAvailability(String orgId, {required bool accepting}) => _run(() async => ((await api.dio.patch<Map<String, dynamic>>('/organizations/$orgId/availability', data: {'accepting_requests': accepting})).data!['accepting_requests']) as bool);
   @override Future<Result<WorkOrder>> create(NewWorkOrder w) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders', data: {'org_id': w.orgId, 'vin': ?w.vin, 'plate': ?w.plate, 'customer_phone': w.customerPhone, 'title_ar': w.titleAr, 'payment_terms': w.paymentTerms, 'complaint_ar': ?w.complaintAr, 'items': w.items.map(_item).toList()})).data!));
   @override Future<Result<WorkOrder>> addItem(String woId, NewItem item) => _run(() async => workOrderFromJson((await api.dio.post<Map<String, dynamic>>('/work-orders/$woId/items', data: _item(item))).data!));
   @override Future<Result<AbandonedStatus>> abandonedStatus(String woId) => _run(() async {

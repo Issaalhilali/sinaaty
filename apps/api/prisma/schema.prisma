@@ -670,6 +670,7 @@ model Organization {
   descriptionAr                String?                   @map("description_ar")
   descriptionEn                String?                   @map("description_en")
   ratingAvg                    Decimal                   @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  acceptingRequests              Boolean                  @default(true) @map("accepting_requests")
   ratingCount                  Int                       @default(0) @map("rating_count")
   commissionRateBps            Int                       @default(500) @map("commission_rate_bps")
   maxOpenExposureSar           Decimal                   @default(20000) @map("max_open_exposure_sar") @db.Decimal(14, 2)

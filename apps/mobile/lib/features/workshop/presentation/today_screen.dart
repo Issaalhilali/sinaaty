@@ -26,6 +26,9 @@ class TodayScreen extends ConsumerWidget {
       return RefreshIndicator(onRefresh: () async { ref.invalidate(orgOrdersProvider); ref.invalidate(orgWalletProvider); await ref.read(orgOrdersProvider.future); }, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         // كل الأنظمة في صندوق واحد: ماذا ينتظرني؟ — وهو السؤال الذي يُفتح التطبيق من أجله.
         const ActionInboxCard(),
+        // «مشغولون الآن»: ورشة غارقة توقف استقبال طلبات السوق مؤقتاً بدل أن ترد متأخرة
+        // وتحرق سمعتها — مفتاحٌ ظاهر بلافتةٍ صادقة وهو مطفأ، ولا يمس الأوامر الجارية.
+        const _AvailabilitySwitch(),
         if (pending > 0) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: StatusBadge(l.wsPendingSync(pending), tone: BadgeTone.warn, icon: Icons.cloud_upload_outlined)),
         // Nearby repair requests (scope §1.ج) — the hot-request card pattern, behind its flag.
         if ((ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible).enabled(Flags.serviceMarketplace))
@@ -70,3 +73,45 @@ class _HeroAction extends ConsumerWidget {
     ])));
   }
 }
+
+/// مفتاح «مشغولون الآن» — حالته من `myOrgsProvider` (الخادم)، وقلبُه متفائلٌ ثم يتراجع عند الفشل.
+class _AvailabilitySwitch extends ConsumerStatefulWidget {
+  const _AvailabilitySwitch();
+  @override ConsumerState<_AvailabilitySwitch> createState() => _AvailabilitySwitchState();
+}
+
+class _AvailabilitySwitchState extends ConsumerState<_AvailabilitySwitch> {
+  bool? _local; bool _busy = false;
+
+  Future<void> _toggle(String orgId, bool next) async {
+    final locale = Localizations.localeOf(context).languageCode;
+    setState(() { _local = next; _busy = true; });
+    final r = await ref.read(workshopRepositoryProvider).setAvailability(orgId, accepting: next);
+    if (!mounted) return;
+    setState(() => _busy = false);
+    r.when(
+      ok: (v) { ref.invalidate(myOrgsProvider); setState(() => _local = v); },
+      err: (f) { setState(() => _local = !next); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))); },
+    );
+  }
+
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final t = Theme.of(context); final cs = t.colorScheme;
+    final org = ref.watch(myOrgsProvider).value?.firstOrNull;
+    if (org == null) return const SizedBox.shrink();
+    final accepting = _local ?? org.acceptingRequests;
+    return Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: SectionCard(
+      child: Row(children: [
+        Icon(accepting ? Icons.notifications_active_outlined : Icons.notifications_paused_outlined,
+            color: accepting ? cs.primary : SinaatyColors.warn),
+        const SizedBox(width: SinaatySpace.sm),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(accepting ? l.avOn : l.avOff, style: t.textTheme.titleSmall),
+          Text(accepting ? l.avOnBody : l.avOffBody, style: t.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+        ])),
+        Switch(value: accepting, onChanged: _busy ? null : (v) => _toggle(org.id, v)),
+      ]),
+    ));
+  }
+}
+

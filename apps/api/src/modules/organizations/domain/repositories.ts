@@ -8,6 +8,8 @@ export interface KybDoc { id: string; type: KybDocType; mediaId: string; status:
 export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null; /** تخصّصها يشمل صنع سيارة الباحث — الترتيب يقدّمها. */ specialised: boolean }
 
 export interface OrganizationRepository {
+  /** «مشغولون الآن» — مفتاح استقبال طلبات السوق. */
+  setAcceptingRequests(orgId: string, accepting: boolean): Promise<void>;
   create(input: { type: OrgType; legalNameAr: string; legalNameEn?: string; tradeNameAr?: string; slug?: string; crNumber?: string; vatNumber?: string; phone?: string; email?: string; descriptionAr?: string; createdBy: string }): Promise<Organization>;
   findById(id: string): Promise<Organization | null>;
   findByCr(cr: string): Promise<Organization | null>;

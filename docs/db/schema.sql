@@ -172,6 +172,9 @@ CREATE TABLE organizations (
   description_ar        text,
   description_en        text,
   rating_avg            numeric(3,2) NOT NULL DEFAULT 0,
+  -- «مشغولون الآن»: ورشة غارقة توقف استقبال طلبات السوق مؤقتاً بدل أن ترد متأخرة وتحرق سمعتها.
+  -- المطابقة تستثني من أطفأها؛ ولا تمس الأوامر الجارية ولا الاكتشاف العام.
+  accepting_requests    boolean NOT NULL DEFAULT true,
   rating_count          integer NOT NULL DEFAULT 0,
   commission_rate_bps   integer NOT NULL DEFAULT 500,          -- 500 = 5.00% (basis points)
   max_open_exposure_sar numeric(14,2) NOT NULL DEFAULT 20000,  -- risk limit for new orgs

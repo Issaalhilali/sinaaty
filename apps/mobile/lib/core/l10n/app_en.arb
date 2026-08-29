@@ -1193,5 +1193,9 @@
   "wpCancelled": "Cancelled",
   "delAccount": "Delete account",
   "delAccountConfirm": "Delete my account permanently",
-  "delAccountBody": "Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under 'Deleted account'. Open repair orders or unsettled notes must be completed first."
+  "delAccountBody": "Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under 'Deleted account'. Open repair orders or unsettled notes must be completed first.",
+  "avOn": "Accepting market requests",
+  "avOnBody": "Nearby customer requests reach you as they come",
+  "avOff": "Intake paused",
+  "avOffBody": "No new requests until you switch back on — ongoing orders are unaffected"
 }

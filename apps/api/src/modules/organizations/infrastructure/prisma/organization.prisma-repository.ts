@@ -6,15 +6,16 @@ import type { TxHandle } from '../../../../common/ports/unit-of-work.port';
 import type { Organization } from '../../domain/organization';
 import type { KybDoc, OrgLocation, OrgMember, OrgSearchHit, OrganizationRepository } from '../../domain/repositories';
 
-const orgSelect = { id: true, type: true, status: true, legalNameAr: true, legalNameEn: true, tradeNameAr: true, slug: true, crNumber: true, vatNumber: true, vatRegistered: true, phoneE164: true, email: true, descriptionAr: true, ratingAvg: true, ratingCount: true, commissionRateBps: true, verifiedAt: true, createdBy: true, createdAt: true } satisfies Prisma.OrganizationSelect;
+const orgSelect = { acceptingRequests: true, id: true, type: true, status: true, legalNameAr: true, legalNameEn: true, tradeNameAr: true, slug: true, crNumber: true, vatNumber: true, vatRegistered: true, phoneE164: true, email: true, descriptionAr: true, ratingAvg: true, ratingCount: true, commissionRateBps: true, verifiedAt: true, createdBy: true, createdAt: true } satisfies Prisma.OrganizationSelect;
 type OrgRow = Prisma.OrganizationGetPayload<{ select: typeof orgSelect }>;
-const toOrg = (r: OrgRow): Organization => ({ id: r.id, type: r.type, status: r.status, legalNameAr: r.legalNameAr, legalNameEn: r.legalNameEn, tradeNameAr: r.tradeNameAr, slug: r.slug, crNumber: r.crNumber, vatNumber: r.vatNumber, vatRegistered: r.vatRegistered, phone: r.phoneE164, email: r.email, descriptionAr: r.descriptionAr, ratingAvg: r.ratingAvg.toFixed(2), ratingCount: r.ratingCount, commissionRateBps: r.commissionRateBps, verifiedAt: r.verifiedAt, createdBy: r.createdBy, createdAt: r.createdAt });
+const toOrg = (r: OrgRow): Organization => ({ id: r.id, type: r.type, status: r.status, legalNameAr: r.legalNameAr, legalNameEn: r.legalNameEn, tradeNameAr: r.tradeNameAr, acceptingRequests: r.acceptingRequests, slug: r.slug, crNumber: r.crNumber, vatNumber: r.vatNumber, vatRegistered: r.vatRegistered, phone: r.phoneE164, email: r.email, descriptionAr: r.descriptionAr, ratingAvg: r.ratingAvg.toFixed(2), ratingCount: r.ratingCount, commissionRateBps: r.commissionRateBps, verifiedAt: r.verifiedAt, createdBy: r.createdBy, createdAt: r.createdAt });
 
 interface LocRow { id: string; name_ar: string | null; is_primary: boolean; city: string; district: string | null; industrial_zone: string | null; address_line: string | null; lat: number; lng: number; service_radius_km: number }
 const toLoc = (r: LocRow): OrgLocation => ({ id: r.id, nameAr: r.name_ar, isPrimary: r.is_primary, city: r.city, district: r.district, industrialZone: r.industrial_zone, addressLine: r.address_line, lat: Number(r.lat), lng: Number(r.lng), serviceRadiusKm: r.service_radius_km });
 
 @Injectable()
 export class OrganizationPrismaRepository implements OrganizationRepository {
+  async setAcceptingRequests(orgId: string, accepting: boolean) { await this.prisma.organization.update({ where: { id: orgId }, data: { acceptingRequests: accepting } }); }
   constructor(private readonly prisma: PrismaService) {}
 
   async create(i: Parameters<OrganizationRepository['create']>[0]) {

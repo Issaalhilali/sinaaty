@@ -69,9 +69,18 @@ export class OrganizationsUseCases {
     const roleOf = new Map(u.orgs.map((o) => [o.orgId, o.role]));
     const rank = (s: string) => (s === 'active' ? 0 : s === 'suspended' ? 1 : 2);
     return orgs
-      .map((o) => ({ id: o.id, role: roleOf.get(o.id) ?? null, name_ar: o.tradeNameAr ?? o.legalNameAr, type: o.type, status: o.status }))
+      .map((o) => ({ id: o.id, role: roleOf.get(o.id) ?? null, name_ar: o.tradeNameAr ?? o.legalNameAr, type: o.type, status: o.status, accepting_requests: o.acceptingRequests }))
       .sort((a, b) => rank(a.status) - rank(b.status));
   }
+  /** «مشغولون الآن» — قرارُ لحظةٍ يكتب أثره في التدقيق: من أطفأ الاستقبال ومتى. */
+  async setAvailability(u: { id: string }, orgId: string, accepting: boolean) {
+    await this.uow.run(async (tx) => {
+      await this.orgs.setAcceptingRequests(orgId, accepting);
+      await this.audit.write(tx, { action: accepting ? 'org.accepting_on' : 'org.accepting_off', entityType: 'organization', entityId: orgId, orgId, actorUserId: u.id, after: { accepting_requests: accepting } });
+    });
+    return { accepting_requests: accepting };
+  }
+
   update(id: string, dto: UpdateOrgDto) { return this.orgs.update(id, { legalNameAr: dto.legal_name_ar, legalNameEn: dto.legal_name_en, tradeNameAr: dto.trade_name_ar, phone: dto.phone, email: dto.email, descriptionAr: dto.description_ar, vatNumber: dto.vat_number, vatRegistered: dto.vat_number ? true : undefined }); }
   /** The industrial zone is derived from the point when the workshop does not name one — pilot cohorts
    *  must not depend on someone typing «الصناعية الثانية» the same way twice (Step 25). */

@@ -2,7 +2,7 @@ import type { OrgMemberRole, OrgStatus, OrgType } from '@sinaaty/shared-types';
 
 export interface Organization {
   id: string; type: OrgType; status: OrgStatus;
-  legalNameAr: string; legalNameEn: string | null; tradeNameAr: string | null; slug: string | null;
+  legalNameAr: string; legalNameEn: string | null; tradeNameAr: string | null; slug: string | null; acceptingRequests: boolean;
   crNumber: string | null; vatNumber: string | null; vatRegistered: boolean;
   phone: string | null; email: string | null; descriptionAr: string | null;
   ratingAvg: string; ratingCount: number; commissionRateBps: number; verifiedAt: Date | null; createdBy: string | null; createdAt: Date;

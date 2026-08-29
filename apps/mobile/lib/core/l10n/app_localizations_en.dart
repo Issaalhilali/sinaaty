@@ -2640,4 +2640,17 @@ class L10nEn extends L10n {
   @override
   String get delAccountBody =>
       'Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under \'Deleted account\'. Open repair orders or unsettled notes must be completed first.';
+
+  @override
+  String get avOn => 'Accepting market requests';
+
+  @override
+  String get avOnBody => 'Nearby customer requests reach you as they come';
+
+  @override
+  String get avOff => 'Intake paused';
+
+  @override
+  String get avOffBody =>
+      'No new requests until you switch back on — ongoing orders are unaffected';
 }

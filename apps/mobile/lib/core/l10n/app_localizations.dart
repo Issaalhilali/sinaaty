@@ -4956,6 +4956,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'يُحذف اسمك وجوالك وبريدك ولا يمكن استرجاعها، وتبقى فواتيرك وسجلاتك المالية محفوظةً باسم «حساب محذوف» كما يلزمنا النظام. لو عندك أمر إصلاح جارٍ أو سند لم يُسدَّد نكمله أولاً ثم نحذف.'**
   String get delAccountBody;
+
+  /// No description provided for @avOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'نستقبل طلبات السوق'**
+  String get avOn;
+
+  /// No description provided for @avOnBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'طلبات العملاء القريبة تصلكم أولاً بأول'**
+  String get avOnBody;
+
+  /// No description provided for @avOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاستقبال موقوف مؤقتاً'**
+  String get avOff;
+
+  /// No description provided for @avOffBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر'**
+  String get avOffBody;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

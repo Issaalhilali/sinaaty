@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import type { OrgType } from '@sinaaty/shared-types';
-import { AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../../application/dto/organizations.dto';
+import { AvailabilityDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../../application/dto/organizations.dto';
 import { OrganizationsUseCases } from '../../application/use-cases/organizations.use-cases';
 import type { AuthUser } from '../../../identity/domain/auth-user';
 import { CurrentUser, Public, Roles, zod } from '../../../identity/interface/http';
@@ -34,6 +34,10 @@ export class OrganizationsController {
   get(@Param('id') id: string) { return this.uc.get(id); }
 
   @Public() @Get(':id/public') publicProfile(@Param('id') id: string) { return this.uc.getPublic(id); }
+
+  @Patch(':id/availability') @ApiBearerAuth() @Roles(MANAGE)
+  @ApiOperation({ summary: '«مشغولون الآن»: إيقاف/استئناف استقبال طلبات السوق — لا يمس الجاري ولا الاكتشاف' })
+  availability(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(AvailabilityDto)) dto: AvailabilityDto) { return this.uc.setAvailability(u, id, dto.accepting_requests); }
 
   @Patch(':id') @ApiBearerAuth() @Roles(MANAGE) update(@Param('id') id: string, @Body(zod(UpdateOrgDto)) dto: UpdateOrgDto) { return this.uc.update(id, dto); }
 
