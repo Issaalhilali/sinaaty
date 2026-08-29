@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
-import { PrismaService } from '../../../../prisma';
+import type { TxHandle } from '../../../../common/ports/unit-of-work.port';
+import { asTx, PrismaService } from '../../../../prisma';
 import type { User } from '../../domain/user';
 import type { UserRepository } from '../../domain/repositories';
 
@@ -17,6 +18,7 @@ const toUser = (r: Row): User => ({
 @Injectable()
 export class UserPrismaRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
+  private db(tx?: TxHandle) { return tx ? asTx(tx) : this.prisma; }
   async findById(id: string) { const r = await this.prisma.user.findFirst({ where: { id, deletedAt: null }, select }); return r ? toUser(r) : null; }
   async findByPhone(phone: string) { const r = await this.prisma.user.findFirst({ where: { phoneE164: phone, deletedAt: null }, select }); return r ? toUser(r) : null; }
   async findByNationalIdHash(hash: string) { const r = await this.prisma.user.findFirst({ where: { nationalIdHash: hash, deletedAt: null }, select }); return r ? toUser(r) : null; }
@@ -38,5 +40,18 @@ export class UserPrismaRepository implements UserRepository {
     return toUser(r);
   }
   async touchLogin(userId: string) { await this.prisma.user.update({ where: { id: userId }, data: { lastLoginAt: new Date() } }); }
+  async anonymize(userId: string, tx?: TxHandle) {
+    // الجوال إلى NULL لا إلى شاهدة قبرٍ مزيفة: حارس القاعدة (سعودي حصراً) صدّ كل بديلٍ مُختلَق —
+    // وهذا صوابه: قيدُ هويةٍ لا يُثقب لحالةٍ خاصة. والفريد يسمح بتعدد NULL فلا تصادم.
+    await this.db(tx).user.update({ where: { id: userId }, data: {
+      phoneE164: null, email: null, fullNameAr: 'حساب محذوف', fullNameEn: 'Deleted account',
+      nationalIdEnc: null, nationalIdHash: null, dateOfBirth: null, status: 'deleted', deletedAt: new Date(),
+    } });
+    // أجهزته تُمحى معه — لا إشعار يطرق باب حسابٍ محذوف
+    await this.db(tx).device.deleteMany({ where: { userId } });
+    // وهويات دخوله تُحرَّر: القيد الفريد (provider, provider_uid) كان يمسك الرقم فيمنع
+    // صاحبَه الحقيقي من البدء من جديد — عاش الرقمُ محجوزاً لحسابٍ ميت (اصطاده الاختبار حياً)
+    await this.db(tx).userIdentity.deleteMany({ where: { userId } });
+  }
   async updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null; nameChangedAt?: Date }) { const r = await this.prisma.user.update({ where: { id: userId }, data: { fullNameAr: p.fullNameAr, email: p.email, nameChangedAt: p.nameChangedAt }, select }); return toUser(r); }
 }

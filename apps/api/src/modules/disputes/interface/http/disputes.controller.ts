@@ -14,6 +14,9 @@ export class DisputesController {
   @Get('disputes') list(@CurrentUser() u: AuthUser, @Query('org_id') orgId?: string, @Query('status') status?: string, @Query('mine') mine?: string) { return this.uc.list(u, { org_id: orgId, status: status?.split(',') as DisputeStatus[] | undefined, mine: mine === 'true' }); }
   @Get('disputes/:id') get(@CurrentUser() u: AuthUser, @Param('id') id: string) { return this.uc.get(u, id); }
   @Post('disputes/:id/messages') @HttpCode(201) message(@CurrentUser() u: AuthUser, @Param('id') id: string, @Body(zod(MessageDto)) dto: MessageDto) { return this.uc.message(u, id, dto); }
+  @Get('reviews/mine') @ApiOperation({ summary: 'تقييمي على أمرٍ بعينه — تعرض الشاشة النجومَ أو الشكر' })
+  myReview(@CurrentUser() u: AuthUser, @Query('work_order_id') wo?: string, @Query('part_order_id') po?: string) { return this.uc.myReview(u, { work_order_id: wo, part_order_id: po }); }
+
   @Post('reviews') @HttpCode(201) @ApiOperation({ summary: 'Rate the provider after delivery (one per order); refreshes the org rating' })
   review(@CurrentUser() u: AuthUser, @Body(zod(ReviewDto)) dto: ReviewDto) { return this.uc.review(u, dto); }
   @Public() @Get('organizations/:orgId/reviews') @ApiOperation({ summary: 'Public reviews of an organization (discovery)' }) reviews(@Param('orgId') orgId: string) { return this.uc.reviews({ org_id: orgId }); }

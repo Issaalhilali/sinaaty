@@ -14,6 +14,8 @@ export interface DisputeRepository {
   attachMedia(disputeId: string, mediaIds: string[], label: string, tx?: TxHandle): Promise<number>;
   listMedia(disputeId: string): Promise<Array<{ mediaId: string; label: string | null; mimeType: string }>>;
   // reviews
+  /** تقييمي أنا على أمرٍ بعينه — به تعرف الشاشة أتعرض النجوم أم «شكراً لك». */
+  findMyReview(reviewerUserId: string, q: { workOrderId?: string; partOrderId?: string }): Promise<Review | null>;
   createReview(r: { reviewerUserId: string; reviewerOrgId: string | null; targetOrgId: string | null; targetUserId: string | null; workOrderId: string | null; partOrderId: string | null; rating: number; dimensions: unknown; commentAr: string | null }, tx?: TxHandle): Promise<Review>;
   listReviews(q: { targetOrgId?: string; reviewerUserId?: string; limit: number }): Promise<Review[]>;
   /** Recompute org rating from public reviews (cached on organizations.rating_avg/count). */

@@ -11,6 +11,7 @@ import { NafathCompleteUseCase } from './application/use-cases/nafath-complete.u
 import { RefreshSessionUseCase } from './application/use-cases/refresh-session.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { DevicesUseCase } from './application/use-cases/devices.use-case';
+import { DeleteAccountUseCase } from './application/use-cases/delete-account.use-case';
 import { GetMeUseCase } from './application/use-cases/get-me.use-case';
 import { UserPrismaRepository } from './infrastructure/prisma/user.prisma-repository';
 import { OtpPrismaRepository } from './infrastructure/prisma/otp.prisma-repository';
@@ -35,7 +36,7 @@ const notImplemented = (name: string) => () => { throw new Error(`${name} live a
 @Module({
   controllers: [AuthController, MeController],
   providers: [
-    SessionService, RequestOtpUseCase, VerifyOtpUseCase, NafathInitiateUseCase, NafathCompleteUseCase, RefreshSessionUseCase, LogoutUseCase, DevicesUseCase, GetMeUseCase, NafathForceStateUseCase,
+    SessionService, RequestOtpUseCase, VerifyOtpUseCase, NafathInitiateUseCase, NafathCompleteUseCase, RefreshSessionUseCase, LogoutUseCase, DevicesUseCase, GetMeUseCase, DeleteAccountUseCase, NafathForceStateUseCase,
     JwtAuthGuard, RolesGuard,
     { provide: USER_REPOSITORY, useClass: UserPrismaRepository },
     { provide: OTP_REPOSITORY, useClass: OtpPrismaRepository },

@@ -94,6 +94,7 @@ class FakeTransportLive implements TransportRealtime {
 }
 
 class FakeAuth implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   final String Function() org; FakeAuth(this.org);
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());

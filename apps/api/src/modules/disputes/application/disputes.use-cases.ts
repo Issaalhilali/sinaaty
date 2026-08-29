@@ -123,6 +123,10 @@ export class DisputesUseCases {
     return this.get(u, id);
   }
   /** Review after the order is done (or the dispute closed). One review per reviewer per order; org rating recomputed. */
+  myReview(u: AuthUser, q: { work_order_id?: string; part_order_id?: string }) {
+    return this.repo.findMyReview(u.id, { workOrderId: q.work_order_id, partOrderId: q.part_order_id });
+  }
+
   async review(u: AuthUser, dto: ReviewDto) {
     let targetOrgId: string | null = null; let reviewerOrgId: string | null = null;
     if (dto.work_order_id) { const wo = await this.workOrders.findById(dto.work_order_id); if (!wo) throw new AppError('NOT_FOUND'); const isCustomer = wo.customerUserId === u.id || (!!wo.customerOrgId && !!membership(u, wo.customerOrgId)); if (!isCustomer) throw new AppError('FORBIDDEN', { messageAr: 'التقييم للعميل بعد الاستلام.', messageEn: 'Only the customer can review.' }); if (!['delivered', 'closed', 'disputed'].includes(wo.status)) throw new AppError('CONFLICT', { messageAr: 'التقييم بعد تسليم السيارة.', messageEn: 'Review after delivery.' }); targetOrgId = wo.orgId; reviewerOrgId = wo.customerOrgId ?? null; }

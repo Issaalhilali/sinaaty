@@ -4872,6 +4872,90 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تعذّر'**
   String get poFailed;
+
+  /// No description provided for @rvTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف كانت التجربة؟'**
+  String get rvTitle;
+
+  /// No description provided for @rvBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقييمك يظهر للعملاء بعدك — ويُحسب للورشة أو عليها.'**
+  String get rvBody;
+
+  /// No description provided for @rvCommentOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمة تفيد غيرك (اختياري)'**
+  String get rvCommentOptional;
+
+  /// No description provided for @rvCommentHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: شغل نظيف وسلّموني بالموعد'**
+  String get rvCommentHint;
+
+  /// No description provided for @rvSubmit.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسل التقييم'**
+  String get rvSubmit;
+
+  /// No description provided for @rvThanks.
+  ///
+  /// In ar, this message translates to:
+  /// **'شكراً لك — وصل تقييمك'**
+  String get rvThanks;
+
+  /// No description provided for @woPartGeneric.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطعة الإصلاح'**
+  String get woPartGeneric;
+
+  /// No description provided for @wpOrdered.
+  ///
+  /// In ar, this message translates to:
+  /// **'طُلبت'**
+  String get wpOrdered;
+
+  /// No description provided for @wpShipped.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق'**
+  String get wpShipped;
+
+  /// No description provided for @wpArrived.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصلت'**
+  String get wpArrived;
+
+  /// No description provided for @wpCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُلغيت'**
+  String get wpCancelled;
+
+  /// No description provided for @delAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get delAccount;
+
+  /// No description provided for @delAccountConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'احذف حسابي نهائياً'**
+  String get delAccountConfirm;
+
+  /// No description provided for @delAccountBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُحذف اسمك وجوالك وبريدك ولا يمكن استرجاعها، وتبقى فواتيرك وسجلاتك المالية محفوظةً باسم «حساب محذوف» كما يلزمنا النظام. لو عندك أمر إصلاح جارٍ أو سند لم يُسدَّد نكمله أولاً ثم نحذف.'**
+  String get delAccountBody;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

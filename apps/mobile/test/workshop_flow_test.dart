@@ -30,6 +30,9 @@ import 'package:sinaaty/features/workshop/presentation/today_screen.dart';
 
 /// In-memory workshop backend: one org, orders with the real transition rules the app relies on. `offline` makes every call fail with NetworkFailure.
 class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrderRealtime, PendingActions {
+  @override Future<Result<MyReview?>> myReview(String workOrderId) async => const Result.ok(null);
+  @override Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr}) async => const Result.ok(null);
+
   bool offline = false; final orders = <String, WorkOrder>{}; final history = <String, List<WoHistory>>{}; final inspections = <String, List<WoInspection>>{}; final media = <String, List<WoMedia>>{}; final invoices = <Invoice>[]; final queue = <PendingAction>[]; int seq = 0; final transitions = <String>[]; final presigned = <String>[]; final uploaded = <String>[];
   Future<Result<T>> _g<T>(T Function() f) async { if (offline) return const Result.err(NetworkFailure()); return Result.ok(f()); }
   WorkOrder _set(WorkOrder w) { orders[w.id] = w; return w; }
@@ -88,6 +91,7 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<void> remove(String id) async => queue.removeWhere((a) => a.id == id);
 }
 class FakeAuth implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);

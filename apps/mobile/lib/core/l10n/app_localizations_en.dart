@@ -2596,4 +2596,48 @@ class L10nEn extends L10n {
 
   @override
   String get poFailed => 'Failed';
+
+  @override
+  String get rvTitle => 'How was the experience?';
+
+  @override
+  String get rvBody =>
+      'Your rating shows to customers after you — it counts for or against the workshop.';
+
+  @override
+  String get rvCommentOptional => 'A word that helps others (optional)';
+
+  @override
+  String get rvCommentHint => 'e.g. Clean work, delivered on time';
+
+  @override
+  String get rvSubmit => 'Send rating';
+
+  @override
+  String get rvThanks => 'Thank you — your rating is in';
+
+  @override
+  String get woPartGeneric => 'Repair part';
+
+  @override
+  String get wpOrdered => 'Ordered';
+
+  @override
+  String get wpShipped => 'On the way';
+
+  @override
+  String get wpArrived => 'Arrived';
+
+  @override
+  String get wpCancelled => 'Cancelled';
+
+  @override
+  String get delAccount => 'Delete account';
+
+  @override
+  String get delAccountConfirm => 'Delete my account permanently';
+
+  @override
+  String get delAccountBody =>
+      'Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under \'Deleted account\'. Open repair orders or unsettled notes must be completed first.';
 }

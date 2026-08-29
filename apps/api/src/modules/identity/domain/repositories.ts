@@ -1,5 +1,6 @@
 import type { OtpChallenge, OtpPurpose } from './otp';
 import type { RefreshTokenRecord } from './refresh-token';
+import type { TxHandle } from '../../../common/ports/unit-of-work.port';
 import type { User } from './user';
 
 /** Domain PORTS — implemented by Prisma repositories in infrastructure/. */
@@ -16,6 +17,8 @@ export interface UserRepository {
   touchLogin(userId: string): Promise<void>;
   /** The name the user types about himself. Never overwrites a Nafath-verified name — that one is legal. */
   updateProfile(userId: string, p: { fullNameAr?: string; email?: string | null; nameChangedAt?: Date }): Promise<User>;
+  /** إخفاء هوية الحساب: تُمحى الدوالّ على الشخص ويبقى الأثر المالي باسم «حساب محذوف». */
+  anonymize(userId: string, tx?: TxHandle): Promise<void>;
 }
 
 export interface OtpRepository {

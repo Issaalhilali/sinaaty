@@ -43,4 +43,13 @@ abstract final class Labels {
         'failed' => l.poFailed,
         _ => s,
       };
+
+  /// حالة قطعة داخل أمر الإصلاح — رحلةٌ يفهمها صاحب السيارة، لا حالات مخزون.
+  static String woPartStatus(L10n l, String s) => switch (s) {
+        'pending_payment' || 'paid' || 'preparing' => l.wpOrdered,
+        'shipped' => l.wpShipped,
+        'delivered' || 'installed' || 'confirmed' => l.wpArrived,
+        'cancelled' => l.wpCancelled,
+        _ => s,
+      };
 }

@@ -43,6 +43,13 @@ class AccountScreen extends ConsumerWidget {
       ])),
       const SizedBox(height: SinaatySpace.lg),
       Center(child: TextButton(onPressed: () => ref.read(authControllerProvider.notifier).signOut(), child: Text(l.logout))),
+      const SizedBox(height: SinaatySpace.sm),
+      // بوابة المتاجر ونظام حماية البيانات: الحذف موجودٌ وواضح — لا مدفوناً في بريدٍ للدعم
+      Center(child: TextButton(
+        style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+        onPressed: () => _confirmDelete(context, ref),
+        child: Text(l.delAccount),
+      )),
     ]);
   }
 
@@ -78,3 +85,31 @@ class AccountScreen extends ConsumerWidget {
     r.when(ok: (_) {}, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
   }
 }
+
+/// ورقة تأكيد الحذف — تقول الصدق كله قبل النقرة: ما يُمحى، ما يبقى نظاماً، ومتى يُرفض.
+Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+  final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (c) {
+    final t = Theme.of(c);
+    return Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l.delAccount, style: t.textTheme.titleLarge?.copyWith(color: t.colorScheme.error)),
+        const SizedBox(height: SinaatySpace.sm),
+        Text(l.delAccountBody, style: t.textTheme.bodyMedium?.copyWith(height: 1.7)),
+        const SizedBox(height: SinaatySpace.xl),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: t.colorScheme.error, foregroundColor: t.colorScheme.onError),
+          onPressed: () => Navigator.pop(c, true), child: Text(l.delAccountConfirm)),
+        TextButton(onPressed: () => Navigator.pop(c, false), child: Text(l.cancel)),
+      ]));
+  });
+  if (ok != true || !context.mounted) return;
+  final r = await ref.read(authRepositoryProvider).deleteAccount();
+  if (!context.mounted) return;
+  r.when(
+    ok: (_) => ref.read(authControllerProvider.notifier).signOut(),
+    // الرفض على التزامٍ مفتوح يصل بنصّه: «عندك أمر إصلاح جارٍ…» — رسالة الخادم تسمّي العائق
+    err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+  );
+}
+

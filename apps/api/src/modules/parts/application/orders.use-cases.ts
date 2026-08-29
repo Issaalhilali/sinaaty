@@ -84,6 +84,13 @@ export class OrdersUseCases {
   /** Note closed on payment → trade account outstanding decreases. */
   async onNoteClosed(partOrderId: string, amount: string) { const o = await this.repo.findOrder(partOrderId); if (!o?.tradeAccountId) return; await this.uow.run((tx) => this.repo.updateTradeAccount(o.tradeAccountId!, { outstandingDelta: `-${amount}` }, tx)); }
 
+  /** رحلة قطع أمر إصلاحٍ بعينه — وصفٌ وحالة بلا أسعار: كلفة الورشة ليست شأن العميل،
+   *  لكنه يستحق أن يعرف أن قطعته طُلبت وشُحنت ووصلت بدل أن يتصل يسأل. */
+  async summaryForWorkOrder(workOrderId: string) {
+    const rows = await this.repo.listOrders({ workOrderId, limit: 20 });
+    return rows.map((o) => ({ id: o.id, status: o.status, items: o.items.map((i) => i.descriptionAr) }));
+  }
+
   async get(u: AuthUser, id: string) {
     const o = await this.repo.findOrder(id); if (!o) throw new AppError('NOT_FOUND');
     if (!this.isBuyer(o, u) && !this.isSupplier(o, u)) throw new AppError('FORBIDDEN');

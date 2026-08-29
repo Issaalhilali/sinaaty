@@ -31,6 +31,9 @@ import 'package:sinaaty/features/work_orders/presentation/work_order_screen.dart
 
 /// Step 13 verify: approve (OTP) → invoice → pay, against in-memory repositories (same shapes as the API).
 class FakeWorkOrders implements WorkOrdersRepository, WorkOrderRealtime {
+  @override Future<Result<MyReview?>> myReview(String workOrderId) async => const Result.ok(null);
+  @override Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr}) async => const Result.ok(null);
+
   String status = 'awaiting_approval'; String? lastMethod; String? lastCode; String? signedMethod;
   WorkOrder get wo => WorkOrder(id: 'wo1', number: 'WO-2026-000042', status: status, paymentTerms: 'on_delivery', currentVersion: 1, titleAr: 'سمكرة رفرف', vehicleId: 'v1', orgId: 'o1', subtotal: '1190.00', vatAmount: '178.50', total: '1368.50', depositRequired: '0', createdAt: DateTime(2026, 8, 18), items: const [WoItem(id: 'i1', type: 'labor', descriptionAr: 'سمكرة ودهان رفرف أمامي أيمن', quantity: '1', unitPrice: '650.00', lineTotal: '650.00', warrantyDays: 0), WoItem(id: 'i2', type: 'part', descriptionAr: 'دسكات أمامية — أصلي', quantity: '1', unitPrice: '420.00', lineTotal: '420.00', warrantyDays: 365), WoItem(id: 'i3', type: 'labor', descriptionAr: 'أجور فك وتركيب', quantity: '1', unitPrice: '120.00', lineTotal: '120.00', warrantyDays: 0)]);
   @override Future<Result<List<WorkOrder>>> list() async => Result.ok([wo]);
@@ -69,6 +72,7 @@ class FakeVehicles implements VehiclesRepository {
   @override Future<Result<String>> shareLink(String id) async => const Result.err(UnknownFailure());
 }
 class FakeAuth implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);

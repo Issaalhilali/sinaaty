@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, Optional } from '@nestjs/common';
 import Decimal from 'decimal.js';
 import type { InspectionType, PartCondition, PaymentTerms, WoItemType, WorkOrderStatus } from '@sinaaty/shared-types';
 import { FleetUseCases } from '../../../fleet/application/fleet.use-cases';
+import { OrdersUseCases } from '../../../parts/application/orders.use-cases';
 import { PARTS_REPOSITORY, type PartsRepository } from '../../../parts/domain/repositories';
 import { AppError } from '../../../../common/errors';
 import { AppConfig } from '../../../../config';
@@ -62,6 +63,7 @@ export class WorkOrdersUseCases {
     // Optional: work orders exist without the fleet module (a private customer has no policy).
     @Optional() @Inject(forwardRef(() => FleetUseCases)) private readonly fleet?: FleetUseCases,
     @Optional() @Inject(forwardRef(() => ApprovalLinkService)) private readonly approvalLinks?: ApprovalLinkService,
+    @Optional() @Inject(forwardRef(() => OrdersUseCases)) private readonly partOrders?: OrdersUseCases,
   ) {}
 
   // ---------- access ----------
@@ -134,7 +136,13 @@ export class WorkOrdersUseCases {
     });
     return this.load(wo.id);
   }
-  async get(u: AuthUser, id: string) { const wo = await this.load(id); this.mustRead(wo, u); return wo; }
+  async get(u: AuthUser, id: string) {
+    const wo = await this.load(id); this.mustRead(wo, u);
+    // رحلة القطعة تركب الأمر: «بانتظار القطع» بلا تفصيلٍ كانت تولّد مكالمات «وين وصلنا؟» —
+    // وصفٌ وحالة بلا أسعار (كلفة الورشة ليست شأن العميل). عبر خدمة وحدة القطع لا مستودعها.
+    const parts = await this.partOrders?.summaryForWorkOrder(id) ?? [];
+    return { ...wo, part_orders: parts };
+  }
   async list(u: AuthUser, q: { org_id?: string; status?: WorkOrderStatus[]; limit?: number }) {
     if (q.org_id) { if (!isWorkshopMember({ orgId: q.org_id }, u) && !isStaff(u)) throw new AppError('FORBIDDEN'); return this.repo.list({ orgId: q.org_id, status: q.status, limit: q.limit ?? 50 }); }
     const fleetOrgs = u.orgs.filter((o) => o.role.startsWith('fleet_') || o.role === 'owner').map((o) => o.orgId);

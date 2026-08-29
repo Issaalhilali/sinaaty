@@ -6,6 +6,7 @@ import '../domain/work_orders_repository.dart';
 String _s(Object? v) => v?.toString() ?? '0';
 WorkOrder workOrderFromJson(Map<String, dynamic> j) => WorkOrder(
   id: j['id'] as String, number: j['number'] as String, status: j['status'] as String, paymentTerms: j['paymentTerms'] as String, currentVersion: (j['currentVersion'] as num).toInt(), titleAr: j['titleAr'] as String?, vehicleId: j['vehicleId'] as String, orgId: j['orgId'] as String, vehicleLabelAr: j['vehicleLabelAr'] as String?, vehiclePlateAr: j['vehiclePlateAr'] as String?, orgNameAr: j['orgNameAr'] as String?,
+  parts: ((j['part_orders'] as List?) ?? []).cast<Map<String, dynamic>>().map((p) => WoPart(status: p['status'] as String, items: ((p['items'] as List?) ?? []).cast<String>())).toList(),
   subtotal: _s(j['subtotal']), vatAmount: _s(j['vatAmount']), total: _s(j['total']), depositRequired: _s(j['depositRequired']), createdAt: DateTime.parse(j['createdAt'] as String), promisedReadyAt: j['promisedReadyAt'] == null ? null : DateTime.tryParse(j['promisedReadyAt'] as String),
   items: ((j['items'] as List?) ?? []).map((e) => e as Map<String, dynamic>).where((i) => i['versionRemoved'] == null).map((i) => WoItem(id: i['id'] as String, type: i['type'] as String, descriptionAr: i['descriptionAr'] as String, quantity: _s(i['quantity']), unitPrice: _s(i['unitPrice']), lineTotal: _s(i['lineTotal']), warrantyDays: (i['warrantyDays'] as num?)?.toInt() ?? 0)).toList(),
 );
@@ -34,6 +35,13 @@ class WorkOrdersRepositoryImpl implements WorkOrdersRepository {
   @override Future<Result<ApproveInit>> approveInit(String id, {required String method, int? version}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$id/approve', data: {'method': method, 'version': ?version})).data!; return ApproveInit(method: d['method'] as String, version: (d['version'] as num).toInt(), transactionId: d['transaction_id'] as String?, random: d['random']?.toString(), debugCode: d['debug_code'] as String?); });
   @override Future<Result<WorkOrder>> approveComplete(String id, {required String method, int? version, String? transactionId, String? code}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/work-orders/$id/approve/complete', data: {'method': method, 'version': ?version, 'transaction_id': ?transactionId, 'code': ?code})).data!; return workOrderFromJson((d['work_order'] ?? d) as Map<String, dynamic>); });
   @override Future<Result<WorkOrder>> cancel(String id, String reasonAr) => _run(() async => workOrderFromJson(((await api.dio.post<Map<String, dynamic>>('/work-orders/$id/cancel', data: {'reason_ar': reasonAr})).data!['work_order'] ?? (await api.dio.get<Map<String, dynamic>>('/work-orders/$id')).data!) as Map<String, dynamic>));
+  @override Future<Result<MyReview?>> myReview(String workOrderId) => _run(() async {
+    final d = (await api.dio.get<Map<String, dynamic>>('/reviews/mine', queryParameters: {'work_order_id': workOrderId})).data;
+    return (d == null || d['rating'] == null) ? null : MyReview(rating: (d['rating'] as num).toInt(), commentAr: d['commentAr'] as String?);
+  });
+  @override Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr}) =>
+      _run(() async => (await api.dio.post<Map<String, dynamic>>('/reviews', data: {'work_order_id': workOrderId, 'rating': rating, 'comment_ar': ?commentAr})).data);
+
   @override Future<Result<InspectionDiff>> inspectionDiff(String id) => _run(() async => inspectionDiffFromJson((await api.dio.get<Map<String, dynamic>>('/work-orders/$id/inspection-diff')).data!));
   @override Future<Result<void>> confirmReceipt(String id) => _run(() async { await api.dio.post<void>('/work-orders/$id/confirm-receipt'); });
 }

@@ -12,6 +12,11 @@ abstract interface class WorkOrdersRepository {
   Future<Result<void>> confirmReceipt(String id);
   /// Check-in vs check-out comparison — the delivery evidence.
   Future<Result<InspectionDiff>> inspectionDiff(String id);
+  /// تقييمي على هذا الأمر إن قيّمت — به تُعرض النجوم أو «شكراً لك».
+  Future<Result<MyReview?>> myReview(String workOrderId);
+  Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr});
 }
+
+class MyReview { final int rating; final String? commentAr; const MyReview({required this.rating, this.commentAr}); }
 /// Live updates for `work-order:{id}` (Socket.IO under the hood; domain sees a stream of "changed" ticks).
 abstract interface class WorkOrderRealtime { Stream<void> changes(String workOrderId); }

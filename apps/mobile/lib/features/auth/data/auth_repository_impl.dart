@@ -40,4 +40,9 @@ class AuthRepositoryImpl implements AuthRepository {
     try { final rt = await tokens.refresh(); await api.dio.post<void>('/auth/logout', data: {'refresh_token': rt}); } catch (_) {/* best effort */}
     await tokens.clear(); return const Result.ok(null);
   }
+
+  @override Future<Result<void>> deleteAccount() async {
+    try { await api.dio.delete<Map<String, dynamic>>('/me'); await tokens.clear(); return const Result.ok(null); }
+    catch (e) { return Result.err(mapDioError(e)); }
+  }
 }

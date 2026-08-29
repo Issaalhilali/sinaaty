@@ -2562,4 +2562,47 @@ class L10nAr extends L10n {
 
   @override
   String get poFailed => 'تعذّر';
+
+  @override
+  String get rvTitle => 'كيف كانت التجربة؟';
+
+  @override
+  String get rvBody => 'تقييمك يظهر للعملاء بعدك — ويُحسب للورشة أو عليها.';
+
+  @override
+  String get rvCommentOptional => 'كلمة تفيد غيرك (اختياري)';
+
+  @override
+  String get rvCommentHint => 'مثال: شغل نظيف وسلّموني بالموعد';
+
+  @override
+  String get rvSubmit => 'أرسل التقييم';
+
+  @override
+  String get rvThanks => 'شكراً لك — وصل تقييمك';
+
+  @override
+  String get woPartGeneric => 'قطعة الإصلاح';
+
+  @override
+  String get wpOrdered => 'طُلبت';
+
+  @override
+  String get wpShipped => 'في الطريق';
+
+  @override
+  String get wpArrived => 'وصلت';
+
+  @override
+  String get wpCancelled => 'أُلغيت';
+
+  @override
+  String get delAccount => 'حذف الحساب';
+
+  @override
+  String get delAccountConfirm => 'احذف حسابي نهائياً';
+
+  @override
+  String get delAccountBody =>
+      'يُحذف اسمك وجوالك وبريدك ولا يمكن استرجاعها، وتبقى فواتيرك وسجلاتك المالية محفوظةً باسم «حساب محذوف» كما يلزمنا النظام. لو عندك أمر إصلاح جارٍ أو سند لم يُسدَّد نكمله أولاً ثم نحذف.';
 }

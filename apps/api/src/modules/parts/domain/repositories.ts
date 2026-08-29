@@ -53,7 +53,7 @@ export interface PartsRepository {
   bidSummaryByRequests(requestIds: string[], orgId?: string): Promise<Map<string, { count: number; lowest: string | null; myStatus: string | null }>>;
   /** فاتورة كل أمرٍ في المجموعة — الزرّ «ادفع الآن» في التطبيق مشروطٌ بوجودها في القراءة. */
   invoiceBriefByOrders(orderIds: string[]): Promise<Map<string, { id: string; number: string; status: string }>>;
-  listOrders(q: { buyerUserId?: string; buyerOrgId?: string; supplierOrgId?: string; tradeAccountId?: string; status?: PartOrderStatus[]; autoConfirmBefore?: Date; limit: number }): Promise<PartOrder[]>;
+  listOrders(q: { buyerUserId?: string; buyerOrgId?: string; supplierOrgId?: string; tradeAccountId?: string; workOrderId?: string; status?: PartOrderStatus[]; autoConfirmBefore?: Date; limit: number }): Promise<PartOrder[]>;
   updateOrder(id: string, p: { status?: PartOrderStatus; shippedAt?: Date; deliveredAt?: Date; installedAt?: Date; confirmedAt?: Date; autoConfirmAt?: Date | null; cancelledAt?: Date; transportJobId?: string }, tx?: TxHandle): Promise<void>;
   linkInvoice(orderId: string, invoiceId: string, tx?: TxHandle): Promise<void>;
   // trade accounts

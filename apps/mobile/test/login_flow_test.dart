@@ -17,6 +17,7 @@ import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'fleet_flow_test.dart' show loadArabicFont;
 
 class FakeAuthRepo implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   String? requested;
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async { requested = phone; return Result.ok((phone: phone, expiresIn: 300, debugCode: '123456')); }
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.ok(AuthSession(accessToken: 'a', refreshToken: 'r', userId: 'u'));

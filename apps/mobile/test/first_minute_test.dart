@@ -26,6 +26,7 @@ import 'workshop_flow_test.dart' show loadArabicFont;
 /// وبطاقة السيارة تعرض نبضها من سجلها — لا صفاً بارداً باسمها.
 
 class _Auth implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   String? nameAr; int saves = 0;
   _Auth({this.nameAr});
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());

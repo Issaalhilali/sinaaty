@@ -11,4 +11,6 @@ abstract interface class AuthRepository {
   /// الاسم والبريد معاً — تمرير null للبريد يمسحه، وإغفاله يتركه.
   Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false});
   Future<Result<void>> logout();
+  /// حذف الحساب: يمحو الهوية ويُبقي الأثر المالي نظاماً — الخادم يرفضه على التزامٍ مفتوح.
+  Future<Result<void>> deleteAccount();
 }

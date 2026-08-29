@@ -149,6 +149,7 @@ class FakeVehicles implements VehiclesRepository {
 }
 
 class FakeAuth implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);

@@ -6,13 +6,16 @@ class WorkOrder {
   /// Who the customer is dealing with. The approval screen always showed it; the detail screen did not —
   /// and that is the screen he watches for days (owner walk 2026-08-23).
   final String? orgNameAr;
+  /// رحلة قطع هذا الأمر — وصفٌ وحالة بلا أسعار: «بانتظار القطع» المبهمة كانت تولّد مكالمات
+  /// «وين وصلنا؟»، والعميل يستحق أن يرى أن قطعته طُلبت وشُحنت ووصلت.
+  final List<WoPart> parts;
   final String subtotal; final String vatAmount; final String total; final String depositRequired; final DateTime createdAt; final DateTime? promisedReadyAt; final List<WoItem> items;
   /// «تويوتا 2002 · د م و 777» — the row's identity; falls back to the technical title, then the number.
   String get carLine { final parts = [vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).cast<String>().toList(); return parts.isEmpty ? (titleAr ?? number) : parts.join(' · '); }
   bool get knowsCar => (vehicleLabelAr ?? vehiclePlateAr) != null;
   /// «ورشة النور · تويوتا 2002 · د م و 777» — who and which car, in one calm line.
   String get partyLine => [orgNameAr, vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).join(' · ');
-  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, this.orgNameAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items});
+  const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, this.orgNameAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items, this.parts = const []});
   bool get awaitingApproval => status == 'awaiting_approval';
   bool get isActive => !const {'closed', 'cancelled', 'abandoned'}.contains(status);
 
@@ -70,3 +73,5 @@ class InspectionDiff {
   const InspectionDiff({required this.comparable, required this.summaryAr, required this.appeared, required this.worsened, required this.repaired, required this.unchanged, this.checkInAt, this.checkOutAt, required this.checkInPhotos, required this.checkOutPhotos});
   bool get clean => comparable && appeared.isEmpty && worsened.isEmpty;
 }
+
+class WoPart { final String status; final List<String> items; const WoPart({required this.status, required this.items}); }

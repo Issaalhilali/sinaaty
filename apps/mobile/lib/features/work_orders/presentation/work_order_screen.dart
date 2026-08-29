@@ -10,6 +10,7 @@ import '../../../core/ui/ui.dart';
 import '../../billing/presentation/providers.dart';
 import '../../disputes/presentation/open_dispute_sheet.dart';
 import '../../disputes/presentation/providers.dart' as disputes;
+import '../domain/work_orders_repository.dart' show MyReview;
 import '../domain/work_order.dart';
 import 'providers.dart';
 /// Repair order for the customer: status + live timeline, items/total, photos, and ONE primary action
@@ -53,6 +54,20 @@ class WorkOrderScreen extends ConsumerWidget {
           const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
           const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(Labels.terms(l, o.paymentTerms), icon: Icons.payments_outlined), if (o.paymentTerms == 'deferred') SealPill(l.securedByNote, icon: Icons.verified_outlined), ?signedPill(l, tl.value?.valueOrNull?.versions)]),
         ])),
+        // «قطعتك وصلت»: رحلة القطعة بلا أسعار — «بانتظار القطع» المبهمة كانت نصف مكالمات «وين وصلنا؟»
+        if (o.parts.isNotEmpty) ...[
+          const SizedBox(height: SinaatySpace.lg),
+          SectionCard(child: Column(children: [
+            for (final part in o.parts) Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(children: [
+              const BrandIcon(BrandGlyph.gear, size: 20),
+              const SizedBox(width: SinaatySpace.sm),
+              Expanded(child: Text(part.items.isEmpty ? l.woPartGeneric : part.items.join('، '), style: Theme.of(context).textTheme.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis)),
+              StatusBadge(Labels.woPartStatus(l, part.status), tone: part.status == 'confirmed' || part.status == 'delivered' ? BadgeTone.seal : BadgeTone.plain),
+            ])),
+          ])),
+        ],
+        // التقييم بعد التسليم: نجومٌ تُروى مرةً واحدة — والسوق يكسب عملته
+        if (const {'delivered', 'closed'}.contains(o.status)) _RatingCard(workOrderId: id),
         const SizedBox(height: SinaatySpace.xl), SectionTitle(l.timeline),
         SectionCard(child: _Timeline(order: o, timeline: tl.value?.valueOrNull, locale: locale)),
         const SizedBox(height: SinaatySpace.xl), SectionTitle(l.items),
@@ -101,4 +116,79 @@ SealPill? signedPill(L10n l, List<WoVersionSummary>? versions) {
   if (signed.isEmpty) return null;
   final nafath = signed.any((v) => v.signedMethod == 'nafath');
   return SealPill(nafath ? l.signedByNafath : l.signedByOtp, icon: Icons.verified_user_outlined);
+}
+
+/// بطاقة التقييم — نجومُ الختم: تُعرض بعد التسليم، وتتحول «شكراً لك» بعد الإرسال.
+///
+/// النجمة المختارة قرصُ ختمٍ أخضر لا نجمة Material — والسؤال واحدٌ بلا استبيانٍ يُهجَر:
+/// كيف كانت التجربة؟ (وتعليقٌ اختياري). تقييمٌ واحد لكل أمر — يحرسه الخادم.
+class _RatingCard extends ConsumerStatefulWidget {
+  final String workOrderId;
+  const _RatingCard({required this.workOrderId});
+  @override ConsumerState<_RatingCard> createState() => _RatingCardState();
+}
+
+class _RatingCardState extends ConsumerState<_RatingCard> {
+  int _stars = 0; bool _busy = false; MyReview? _mine; bool _loaded = false;
+  final _comment = TextEditingController();
+
+  @override void initState() {
+    super.initState();
+    ref.read(workOrdersRepositoryProvider).myReview(widget.workOrderId).then((r) {
+      if (mounted) setState(() { _mine = r.valueOrNull; _loaded = true; });
+    });
+  }
+  @override void dispose() { _comment.dispose(); super.dispose(); }
+
+  Future<void> _submit() async {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    setState(() => _busy = true);
+    final r = await ref.read(workOrdersRepositoryProvider).submitReview(widget.workOrderId, rating: _stars, commentAr: _comment.text.trim().isEmpty ? null : _comment.text.trim());
+    if (!mounted) return;
+    setState(() => _busy = false);
+    r.when(
+      ok: (_) => setState(() => _mine = MyReview(rating: _stars)),
+      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    );
+    if (_mine != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.rvThanks)));
+  }
+
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final t = Theme.of(context); final cs = t.colorScheme;
+    if (!_loaded) return const SizedBox.shrink();
+    if (_mine != null) {
+      // قيّم من قبل: امتنانٌ هادئ بنجومه — لا نموذج يعود يطارده
+      return Padding(padding: const EdgeInsets.only(top: SinaatySpace.lg), child: SectionCard(child: Row(children: [
+        const BrandIcon(BrandGlyph.shieldSeal, size: 22),
+        const SizedBox(width: SinaatySpace.sm),
+        Expanded(child: Text(l.rvThanks, style: t.textTheme.titleSmall)),
+        Row(children: [for (var i = 0; i < _mine!.rating; i++) const Padding(padding: EdgeInsets.only(left: 2), child: Icon(Icons.star_rounded, size: 18, color: Color(0xFFC49A52)))]),
+      ])));
+    }
+    return Padding(padding: const EdgeInsets.only(top: SinaatySpace.lg), child: SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(l.rvTitle, style: t.textTheme.titleMedium),
+      const SizedBox(height: 2),
+      Text(l.rvBody, style: t.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+      const SizedBox(height: SinaatySpace.md),
+      // خمسة أقراص ختمٍ — المختار يمتلئ ختماً أخضر والبقية حلقات
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        for (var i = 1; i <= 5; i++) GestureDetector(
+          onTap: _busy ? null : () => setState(() => _stars = i),
+          child: AnimatedContainer(duration: const Duration(milliseconds: 150), width: 46, height: 46, margin: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(shape: BoxShape.circle,
+              color: i <= _stars ? cs.primary : Colors.transparent,
+              border: Border.all(color: i <= _stars ? cs.primary : cs.outlineVariant, width: 2)),
+            child: Icon(Icons.star_rounded, size: 24, color: i <= _stars ? Colors.white : cs.onSurfaceVariant.withValues(alpha: .5)),
+          ),
+        ),
+      ]),
+      if (_stars > 0) ...[
+        const SizedBox(height: SinaatySpace.md),
+        TextField(controller: _comment, minLines: 1, maxLines: 3,
+            decoration: InputDecoration(labelText: l.rvCommentOptional, hintText: l.rvCommentHint)),
+        const SizedBox(height: SinaatySpace.md),
+        PrimaryButton(label: l.rvSubmit, icon: Icons.check, loading: _busy, onPressed: _busy ? null : _submit),
+      ],
+    ])));
+  }
 }
