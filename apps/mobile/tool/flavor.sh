@@ -32,6 +32,20 @@ CFG
 tool/api-host.sh "${HOST:-lan}"
 API=$(python3 -c "import json;print(json.load(open('env/dev.json'))['API_BASE_URL'])")
 
+# حارس Firebase: معرّف النكهة يجب أن يوجد في `google-services.json` وإلا فشل البناء برسالة
+# Gradle الغامضة «No matching client found». يُقارَن ضد **كل** الحزم في الملف لا أولها — الملف
+# يحمل سبعة عملاء (القديمة والجديدة معاً) وأولها ليس بالضرورة نكهتنا.
+GS=android/app/google-services.json
+APP_ID="$(grep -m1 'applicationId' android/app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/').$FLAVOR"
+if [ -f "$GS" ] && ! python3 -c "
+import json,sys
+pkgs={c['client_info']['android_client_info']['package_name'] for c in json.load(open('$GS'))['client']}
+sys.exit(0 if '$APP_ID' in pkgs else 1)
+" 2>/dev/null; then
+  echo "⚠ $APP_ID غير مسجّل في $GS — الإشعارات لن تصل، وقد يفشل البناء." >&2
+  echo "  سجّله في كونسول Firebase ونزّل الملف من جديد." >&2
+fi
+
 echo "▶ $NAME (com.issa.sinaaty.$FLAVOR) → $API"
 # على iOS تكفي الـxcconfig أعلاه: `--flavor` هناك يطلب مخططات Xcode مخصّصة لا وجود لها،
 # فيفشل البناء. على أندرويد النكهات gradle حقيقية فتحتاج الراية.
