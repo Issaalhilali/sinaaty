@@ -23,4 +23,17 @@ void main() {
     expect(inbox.where((r) => !r.open).length, 5);   // ذيل المنتهي مقصوص
     expect(inbox.length, 7);
   });
+
+  test('قائمة الورشة: مزادٌ حيّ واحد بين خمسة منتهية لا يُدفن', () {
+    // ما رآه المالك على جهازه: خمسة صفوف متطابقة «انتهى بلا عروض» ولا حيّ بينها — لأن العرض كان
+    // «الأحدث خمسة» لا «الحيّ أولاً». حيٌّ واحد يجب أن يعلو كل ميت مهما كان أقدم.
+    final now = DateTime(2026, 8, 29, 12);
+    final all = [
+      for (var i = 0; i < 5; i++) req('dead$i', now.subtract(Duration(days: i + 1)), 'expired'),
+      req('live', now.add(const Duration(hours: 3)), 'open'),
+    ];
+    final shown = supplierInbox(all, deadTail: 2).take(6).toList();
+    expect(shown.first.id, 'live', reason: 'الحيّ يعلو حتى لو كان أقدم من كل ميت');
+    expect(shown.where((r) => !r.open).length, 2, reason: 'ذيلٌ قصير من التاريخ لا مقبرة');
+  });
 }
