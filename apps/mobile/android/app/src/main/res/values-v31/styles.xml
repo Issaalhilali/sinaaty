@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- أندرويد 12+ يرسم شاشة الإقلاع بنفسه من الأيقونة وخلفيةٍ يختارها — فكانت سوداء بشعار
+     Flutter. الهوية فاتحة بأخضر الختم في كل حال، فتُملى الخلفية هنا (ولمّا كان التطبيق
+     مقفلاً على المظهر الفاتح تُكرَّر القيمة نفسها في values-night-v31). -->
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">#E9EDEB</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

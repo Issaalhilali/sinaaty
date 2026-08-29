@@ -13,7 +13,9 @@ class SinaatyApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     return MaterialApp.router(
       title: 'صناعية', debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: ThemeMode.system,
+      // هوية واحدة لا وضعان: صناعية فاتحة بأخضر الختم مهما كان إعداد الجهاز (توجيه المالك 2026-08-29).
+      // الوضع الداكن كان يقلب الهوية سواداً عاماً بلا شخصية — أُقفل كما أُقفلت شاشات الدخول قبله.
+      theme: AppTheme.light(), darkTheme: AppTheme.light(), themeMode: ThemeMode.light,
       locale: Locale(locale), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: ref.watch(routerProvider),
       // الوِب يُفتح من حاسوب: بلا هذا تُدفع الورقة خارج الشاشة فلا يُرى إلا خلفية خضراء.
