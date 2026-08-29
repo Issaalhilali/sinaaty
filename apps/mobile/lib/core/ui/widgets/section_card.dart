@@ -29,35 +29,47 @@ class MoneyText extends StatelessWidget {
     return Text.rich(TextSpan(children: [TextSpan(text: amount, style: base.copyWith(fontFeatures: const [FontFeature.tabularFigures()])), if (cur.isNotEmpty) TextSpan(text: ' $cur', style: base.copyWith(fontSize: (base.fontSize ?? 16) * .6, fontWeight: FontWeight.w500, color: style?.color != null ? style!.color!.withValues(alpha: .7) : Theme.of(context).colorScheme.onSurfaceVariant))]), textDirection: TextDirection.ltr, textAlign: TextAlign.start);
   }
 }
-/// شعار صناعية v4: **قرص الطريق** — دائرة نحاسية وخطُّ طريقٍ أبيض يصعد، ونقطةُ انطلاق.
-///
-/// لا حرف ولا سداسي ولا أسنان (ثلاث نسخ لم تُرضِ المالك): علامةٌ مجرّدة من جوهر الوعد —
-/// «من العطل إلى الطريق». النحاس لون الصنعة في هويتنا، والقوس الصاعد طريقُ العودة، والنقطة
-/// سيارتُك عند أوله. تُقرأ من 24px، وتتبدّل في كل الشاشات من هذا المكوّن وحده.
+/// شعار صناعية v5 — **بوابة الصناعية**، اختيار المالك من ورقة معالم (2026-08-29):
+/// قوس الكراج وبابُ الشرائح مرفوعاً نصفَه (الورشة مفتوحة تستقبل) والطريق يمر من تحته،
+/// نحاسٌ على أخضر الختم. لا حرف ولا قرص ولا أسنان — أربع نسخ سبقتها لم تُرضِ المالك،
+/// وردُّه الحاسم: «معلمٌ يبرز إلى الورش أو الصناعيات أو السيارات». تُطبع الأيقونات من
+/// هذا الرسم نفسه (test/tool/icon_gen_test.dart → tool/gen_launcher_icons.sh).
 class BrandMark extends StatelessWidget {
   final double size; const BrandMark({super.key, this.size = 36});
-  @override Widget build(BuildContext context) =>
-      SizedBox(width: size, height: size, child: const RepaintBoundary(child: CustomPaint(painter: _RoadMarkPainter())));
+  @override Widget build(BuildContext context) => Container(
+        width: size, height: size,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(size * .26),
+          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+              colors: [SinaatyColors.sealInk, SinaatyColors.sealDeep]),
+          border: Border.all(color: const Color(0xFFC49A52).withValues(alpha: .45), width: math.max(1, size * .02)),
+        ),
+        child: const RepaintBoundary(child: CustomPaint(painter: GateMarkPainter(), size: Size.infinite)),
+      );
 }
 
-class _RoadMarkPainter extends CustomPainter {
-  const _RoadMarkPainter();
+/// رسم البوابة وحدها (نحاس على شفاف) — تستعمله الأيقونات التكيفية أيضاً.
+class GateMarkPainter extends CustomPainter {
+  const GateMarkPainter();
   @override void paint(Canvas c, Size s) {
-    final center = Offset(s.width / 2, s.height / 2); final r = s.width / 2;
-    // القرص النحاسي — تدرّج معدني هادئ (لا drawShadow: يجمّد canvaskit على الوِب)
-    c.drawCircle(center, r, Paint()..shader = const RadialGradient(center: Alignment(-.4, -.5), radius: 1.2,
-        colors: [Color(0xFFE2BC7A), Color(0xFFC49A52), Color(0xFF97702C)], stops: [0, .45, 1]).createShader(Offset.zero & s));
-    c.drawCircle(center, r * .97, Paint()..style = PaintingStyle.stroke..strokeWidth = math.max(1, s.width * .028)..color = Colors.white.withValues(alpha: .35));
-    // خط الطريق: قوسٌ أبيض يصعد من أسفل اليمين إلى أعلى اليسار — «من العطل إلى الطريق»
-    final w = math.max(2.2, s.width * .085);
-    final road = Path()
-      ..moveTo(s.width * .70, s.height * .74)
-      ..cubicTo(s.width * .40, s.height * .76, s.width * .62, s.height * .40, s.width * .30, s.height * .30);
-    c.drawPath(road, Paint()..style = PaintingStyle.stroke..strokeWidth = w..strokeCap = StrokeCap.round..color = Colors.white);
-    // تقطيع منتصف الطريق — شرطتان خافتتان توحيان بالمسار لا تشغلان العين
-    c.drawCircle(Offset(s.width * .30, s.height * .30), w * .95, Paint()..color = Colors.white);
-    // نقطة الانطلاق بلون الختم — سيارتك على أول الطريق
-    c.drawCircle(Offset(s.width * .70, s.height * .74), w * .78, Paint()..color = SinaatyColors.sealDeep);
+    final w = s.width;
+    Paint stroke(double sw) => Paint()
+      ..style = PaintingStyle.stroke..strokeWidth = math.max(1.4, sw)..strokeCap = StrokeCap.round
+      ..shader = const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+          colors: [Color(0xFFE2BC7A), Color(0xFFC49A52)]).createShader(Offset.zero & s);
+    // القوس: بوابة الكراج
+    final arch = Path()
+      ..moveTo(w * .20, w * .735)
+      ..lineTo(w * .20, w * .44)
+      ..arcToPoint(Offset(w * .80, w * .44), radius: Radius.circular(w * .315))
+      ..lineTo(w * .80, w * .735);
+    c.drawPath(arch, stroke(w * .055));
+    // شرائح الباب الملفوف — مرفوع نصفه: الورشة مفتوحة تستقبل، وتحتها فراغ الدخول
+    for (var i = 0; i < 3; i++) {
+      c.drawLine(Offset(w * .295, w * (.375 + .085 * i)), Offset(w * .705, w * (.375 + .085 * i)), stroke(w * .04));
+    }
+    // الأرض: الطريق يمتد أوسع من البوابة
+    c.drawLine(Offset(w * .12, w * .78), Offset(w * .88, w * .78), stroke(w * .05));
   }
   @override bool shouldRepaint(covariant CustomPainter _) => false;
 }
