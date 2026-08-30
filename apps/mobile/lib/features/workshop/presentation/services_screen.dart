@@ -29,9 +29,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     final name = TextEditingController(); final price = TextEditingController(); final days = TextEditingController(text: '0');
     var type = 'labor';
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true,
-      builder: (c) => StatefulBuilder(builder: (c, setS) => Padding(
-        padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(c).bottom + SinaatySpace.xl),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      builder: (c) => StatefulBuilder(builder: (c, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text(l.svcAdd, style: Theme.of(c).textTheme.titleLarge),
           const SizedBox(height: SinaatySpace.lg),
           TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.svcName, hintText: l.svcNameHint)),

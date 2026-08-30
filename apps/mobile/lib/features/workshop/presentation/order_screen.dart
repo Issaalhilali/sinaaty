@@ -58,9 +58,7 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
 
   Future<void> _declareAbandoned() async {
     final l = L10n.of(context); final reason = TextEditingController();
-    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.abDeclare, style: Theme.of(ctx).textTheme.titleLarge),
         const SizedBox(height: SinaatySpace.sm),
         Text(l.abDeclareWarn, style: Theme.of(ctx).textTheme.bodySmall?.copyWith(color: Theme.of(ctx).colorScheme.error)),
@@ -133,7 +131,7 @@ class _WorkshopOrderScreenState extends ConsumerState<WorkshopOrderScreen> {
   }
   Future<void> _addItemSheet() async {
     final l = L10n.of(context); final desc = TextEditingController(); final price = TextEditingController(); var type = 'labor';
-    final item = await showModalBottomSheet<NewItem>(context: context, isScrollControlled: true, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final item = await showModalBottomSheet<NewItem>(context: context, isScrollControlled: true, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(l.wsAddItem, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
       SegmentedButton<String>(segments: [ButtonSegment(value: 'labor', label: Text(l.wsLabor)), ButtonSegment(value: 'part', label: Text(l.wsPart))], selected: {type}, onSelectionChanged: (s) => setS(() => type = s.first), showSelectedIcon: false), const SizedBox(height: SinaatySpace.md),
       TextField(controller: desc, decoration: InputDecoration(labelText: l.wsItemDesc), autofocus: true), const SizedBox(height: SinaatySpace.md),

@@ -39,7 +39,7 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
   }
   Future<void> _addDamage() async {
     final l = L10n.of(context); final zone = TextEditingController(); final note = TextEditingController(); var sev = 'minor';
-    final d = await showModalBottomSheet<Damage>(context: context, isScrollControlled: true, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final d = await showModalBottomSheet<Damage>(context: context, isScrollControlled: true, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(l.wsAddDamage, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
       TextField(controller: zone, decoration: InputDecoration(labelText: l.wsZone, hintText: 'رفرف أمامي أيمن'), autofocus: true), const SizedBox(height: SinaatySpace.md),
       SegmentedButton<String>(segments: [ButtonSegment(value: 'minor', label: Text(l.wsMinor)), ButtonSegment(value: 'moderate', label: Text(l.wsModerate)), ButtonSegment(value: 'severe', label: Text(l.wsSevere))], selected: {sev}, onSelectionChanged: (s) => setS(() => sev = s.first), showSelectedIcon: false), const SizedBox(height: SinaatySpace.md),

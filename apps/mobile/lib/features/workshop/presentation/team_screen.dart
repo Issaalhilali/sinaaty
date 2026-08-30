@@ -33,9 +33,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final phone = TextEditingController(); var role = 'technician'; String? error;
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true,
-      builder: (c) => StatefulBuilder(builder: (c, setS) => Padding(
-        padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(c).bottom + SinaatySpace.xl),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      builder: (c) => StatefulBuilder(builder: (c, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text(l.teamAdd, style: Theme.of(c).textTheme.titleLarge),
           const SizedBox(height: 4),
           Text(l.teamAddBody, style: Theme.of(c).textTheme.bodySmall?.copyWith(color: Theme.of(c).colorScheme.onSurfaceVariant, height: 1.6)),

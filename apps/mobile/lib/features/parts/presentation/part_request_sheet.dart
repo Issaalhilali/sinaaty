@@ -21,9 +21,7 @@ Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehi
 
   final ok = await showModalBottomSheet<bool>(
     context: context, showDragHandle: true, isScrollControlled: true,
-    builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.reqPart, style: Theme.of(ctx).textTheme.titleLarge),
         const SizedBox(height: 4), Text(l.reqPartBody, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
         const SizedBox(height: SinaatySpace.md),

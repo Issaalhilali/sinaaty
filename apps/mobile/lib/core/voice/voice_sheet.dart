@@ -33,9 +33,7 @@ class _TypedDevSheetBody extends StatelessWidget {
   const _TypedDevSheetBody({this.title, this.badge});
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final c = TextEditingController();
-    return Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    return SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(title ?? l.voSpeak, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
         const SizedBox(height: SinaatySpace.sm),
         Center(child: StatusBadge(badge ?? l.voDevTyped, tone: BadgeTone.warn, icon: Icons.keyboard_alt_outlined)),
@@ -83,9 +81,7 @@ class _VoiceSheetBodyState extends State<_VoiceSheetBody> with SingleTickerProvi
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final t = Theme.of(context).textTheme; final scheme = Theme.of(context).colorScheme;
     if (_typed) return _TypedDevSheetBody(title: widget.title, badge: l.voDevBroken);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(context).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    return SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(widget.title ?? l.voSpeak, style: t.titleLarge, textAlign: TextAlign.center),
         const SizedBox(height: SinaatySpace.lg),
         Center(child: AnimatedBuilder(animation: _pulse, builder: (_, _) => Container(

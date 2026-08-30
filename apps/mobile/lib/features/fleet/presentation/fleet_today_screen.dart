@@ -26,9 +26,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
   Future<void> _decide(FleetPending p, String decision) async {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
     final note = TextEditingController();
-    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(decision == 'approved' ? l.flApprove : l.flReject, style: Theme.of(ctx).textTheme.titleLarge),
         const SizedBox(height: 4),
         Text('${Fmt.ltr(p.number)} · ${Fmt.money(p.total, locale: locale)}${p.workshopNameAr != null ? ' · ${p.workshopNameAr}' : ''}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),

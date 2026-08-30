@@ -39,7 +39,7 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
   }
   Future<void> _auction() async {
     final l = L10n.of(context); final name = TextEditingController(); final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'}; var minutes = 60;
-    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(l.ptOpenAuction, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
       TextField(controller: name, autofocus: true, decoration: InputDecoration(labelText: l.ptPartName, hintText: l.ptPartNameHint, suffixIcon: VoiceMicButton(controller: name, title: l.ptPartName))), const SizedBox(height: SinaatySpace.md),
       Text(l.ptAcceptedConditions, style: Theme.of(ctx).textTheme.titleSmall), const SizedBox(height: 6),

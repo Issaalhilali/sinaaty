@@ -24,9 +24,7 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
   Future<void> _cancel(TransportJob j) async {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
     final reason = TextEditingController();
-    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => Padding(
-      padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, MediaQuery.viewInsetsOf(ctx).bottom + SinaatySpace.xl),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.towCancelTitle, style: Theme.of(ctx).textTheme.titleLarge),
         const SizedBox(height: 4), Text(l.towCancelBody, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
         const SizedBox(height: SinaatySpace.md), TextField(controller: reason, autofocus: true, decoration: InputDecoration(labelText: l.towCancelReason)),
