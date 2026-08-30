@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
@@ -63,6 +64,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           const SizedBox(width: 6),
           Flexible(child: Text(l.loginNafathNote, textAlign: TextAlign.center, style: t.textTheme.bodySmall?.copyWith(color: t.colorScheme.onSurfaceVariant))),
         ]),
+        // بابُ الضيف — للعميل وحده: يستكشف الورش من حوله قبل أن يُطلب منه رقم.
+        // (متاجر التطبيقات تشترط التصفح قبل الحساب لتطبيقات السوق أصلاً.)
+        if (ref.watch(appConfigProvider).flavor == AppFlavor.customer)
+          TextButton(
+            onPressed: () { ref.read(guestModeProvider.notifier).enter(); context.go('/explore'); },
+            child: Text(l.exploreFirst),
+          ),
         // في بناء التطوير وحده: العنوان الذي يخاطبه التطبيق. ساعةٌ ضاعت في مطاردة «لا يوجد اتصال
         // بالإنترنت» بينما الشبكة سليمة والعنوان قديم — سطرٌ واحد يجعل التشخيص نظرة.
         if (ref.watch(appConfigProvider).appEnv != 'prod') ...[

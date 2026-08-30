@@ -24,6 +24,15 @@ final welcomeSeenInitialProvider = Provider<bool>((_) => true);   // يستبد�
 class WelcomeSeen extends Notifier<bool> { @override bool build() => ref.read(welcomeSeenInitialProvider); void mark() => state = true; }
 final welcomeSeenProvider = NotifierProvider<WelcomeSeen, bool>(WelcomeSeen.new);
 
+/// ضيفٌ يستكشف قبل أن يسجّل — حالة جلسةٍ عابرة لا تُحفظ: من أغلق التطبيق عاد من بابه.
+/// تفتح /explore وحدها في حارس المسارات؛ الدخول أو أي فعل حقيقي يطويها.
+class GuestMode extends Notifier<bool> {
+  @override bool build() => false;
+  void enter() => state = true;
+  void leave() => state = false;
+}
+final guestModeProvider = NotifierProvider<GuestMode, bool>(GuestMode.new);
+
 /// «جهّز حسابك» صُرف عنه بيده — لا يُلحّ على من قال لاحقاً.
 final setupDismissedInitialProvider = Provider<bool>((_) => false);
 class SetupDismissed extends Notifier<bool> { @override bool build() => ref.read(setupDismissedInitialProvider); void mark() => state = true; }

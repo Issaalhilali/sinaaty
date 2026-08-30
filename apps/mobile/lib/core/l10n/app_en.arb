@@ -1245,5 +1245,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exploreFirst": "Explore first",
+  "exploreTitle": "Around you",
+  "exploreSubtitle": "Verified workshops and parts shops — sign up when ready",
+  "exploreSearchHint": "Search workshops or parts shops…",
+  "exploreCta": "Sign up & start",
+  "exploreEmpty": "Nothing nearby",
+  "exploreEmptyBody": "Try another name — or sign up, post your request and offers come to you.",
+  "exploreOrgCta": "Sign up to order here",
+  "exploreNew": "New",
+  "orgWorkshop": "Workshop",
+  "orgScrapyard": "Scrapyard",
+  "orgPartsDealer": "Parts shop",
+  "orgPartsDistributor": "Parts distributor",
+  "orgPartsBrandAgent": "Brand agent",
+  "orgOther": "Business"
 }

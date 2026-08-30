@@ -2772,4 +2772,51 @@ class L10nEn extends L10n {
   @override
   String get istUnreadable =>
       'Nothing was readable in that photo. Try better light, or type the fields yourself.';
+
+  @override
+  String get exploreFirst => 'Explore first';
+
+  @override
+  String get exploreTitle => 'Around you';
+
+  @override
+  String get exploreSubtitle =>
+      'Verified workshops and parts shops — sign up when ready';
+
+  @override
+  String get exploreSearchHint => 'Search workshops or parts shops…';
+
+  @override
+  String get exploreCta => 'Sign up & start';
+
+  @override
+  String get exploreEmpty => 'Nothing nearby';
+
+  @override
+  String get exploreEmptyBody =>
+      'Try another name — or sign up, post your request and offers come to you.';
+
+  @override
+  String get exploreOrgCta => 'Sign up to order here';
+
+  @override
+  String get exploreNew => 'New';
+
+  @override
+  String get orgWorkshop => 'Workshop';
+
+  @override
+  String get orgScrapyard => 'Scrapyard';
+
+  @override
+  String get orgPartsDealer => 'Parts shop';
+
+  @override
+  String get orgPartsDistributor => 'Parts distributor';
+
+  @override
+  String get orgPartsBrandAgent => 'Brand agent';
+
+  @override
+  String get orgOther => 'Business';
 }

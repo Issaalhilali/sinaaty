@@ -5196,6 +5196,96 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'لم أقرأ شيئاً من الصورة. صوّرها في ضوء أفضل، أو اكتب الحقول يدوياً.'**
   String get istUnreadable;
+
+  /// No description provided for @exploreFirst.
+  ///
+  /// In ar, this message translates to:
+  /// **'أستكشف أولاً'**
+  String get exploreFirst;
+
+  /// No description provided for @exploreTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حولك في الصناعية'**
+  String get exploreTitle;
+
+  /// No description provided for @exploreSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورش ومحلات موثقة — سجّل حين تجهز'**
+  String get exploreSubtitle;
+
+  /// No description provided for @exploreSearchHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث عن ورشة أو محل قطع…'**
+  String get exploreSearchHint;
+
+  /// No description provided for @exploreCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل وابدأ'**
+  String get exploreCta;
+
+  /// No description provided for @exploreEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا نتائج قريبة'**
+  String get exploreEmpty;
+
+  /// No description provided for @exploreEmptyBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'جرّب اسماً آخر — أو سجّل وانشر طلبك والعروض تجيك.'**
+  String get exploreEmptyBody;
+
+  /// No description provided for @exploreOrgCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّل لتطلب منها'**
+  String get exploreOrgCta;
+
+  /// No description provided for @exploreNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'جديدة'**
+  String get exploreNew;
+
+  /// No description provided for @orgWorkshop.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورشة سيارات'**
+  String get orgWorkshop;
+
+  /// No description provided for @orgScrapyard.
+  ///
+  /// In ar, this message translates to:
+  /// **'تشليح'**
+  String get orgScrapyard;
+
+  /// No description provided for @orgPartsDealer.
+  ///
+  /// In ar, this message translates to:
+  /// **'محل قطع غيار'**
+  String get orgPartsDealer;
+
+  /// No description provided for @orgPartsDistributor.
+  ///
+  /// In ar, this message translates to:
+  /// **'موزّع قطع'**
+  String get orgPartsDistributor;
+
+  /// No description provided for @orgPartsBrandAgent.
+  ///
+  /// In ar, this message translates to:
+  /// **'وكيل قطع'**
+  String get orgPartsBrandAgent;
+
+  /// No description provided for @orgOther.
+  ///
+  /// In ar, this message translates to:
+  /// **'منشأة'**
+  String get orgOther;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

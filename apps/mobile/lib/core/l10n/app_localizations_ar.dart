@@ -2736,4 +2736,50 @@ class L10nAr extends L10n {
   @override
   String get istUnreadable =>
       'لم أقرأ شيئاً من الصورة. صوّرها في ضوء أفضل، أو اكتب الحقول يدوياً.';
+
+  @override
+  String get exploreFirst => 'أستكشف أولاً';
+
+  @override
+  String get exploreTitle => 'حولك في الصناعية';
+
+  @override
+  String get exploreSubtitle => 'ورش ومحلات موثقة — سجّل حين تجهز';
+
+  @override
+  String get exploreSearchHint => 'ابحث عن ورشة أو محل قطع…';
+
+  @override
+  String get exploreCta => 'سجّل وابدأ';
+
+  @override
+  String get exploreEmpty => 'لا نتائج قريبة';
+
+  @override
+  String get exploreEmptyBody =>
+      'جرّب اسماً آخر — أو سجّل وانشر طلبك والعروض تجيك.';
+
+  @override
+  String get exploreOrgCta => 'سجّل لتطلب منها';
+
+  @override
+  String get exploreNew => 'جديدة';
+
+  @override
+  String get orgWorkshop => 'ورشة سيارات';
+
+  @override
+  String get orgScrapyard => 'تشليح';
+
+  @override
+  String get orgPartsDealer => 'محل قطع غيار';
+
+  @override
+  String get orgPartsDistributor => 'موزّع قطع';
+
+  @override
+  String get orgPartsBrandAgent => 'وكيل قطع';
+
+  @override
+  String get orgOther => 'منشأة';
 }

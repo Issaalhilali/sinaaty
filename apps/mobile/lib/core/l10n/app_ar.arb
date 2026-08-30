@@ -1245,5 +1245,20 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exploreFirst": "أستكشف أولاً",
+  "exploreTitle": "حولك في الصناعية",
+  "exploreSubtitle": "ورش ومحلات موثقة — سجّل حين تجهز",
+  "exploreSearchHint": "ابحث عن ورشة أو محل قطع…",
+  "exploreCta": "سجّل وابدأ",
+  "exploreEmpty": "لا نتائج قريبة",
+  "exploreEmptyBody": "جرّب اسماً آخر — أو سجّل وانشر طلبك والعروض تجيك.",
+  "exploreOrgCta": "سجّل لتطلب منها",
+  "exploreNew": "جديدة",
+  "orgWorkshop": "ورشة سيارات",
+  "orgScrapyard": "تشليح",
+  "orgPartsDealer": "محل قطع غيار",
+  "orgPartsDistributor": "موزّع قطع",
+  "orgPartsBrandAgent": "وكيل قطع",
+  "orgOther": "منشأة"
 }
