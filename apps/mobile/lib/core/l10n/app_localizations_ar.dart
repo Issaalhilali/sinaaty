@@ -2782,4 +2782,27 @@ class L10nAr extends L10n {
 
   @override
   String get orgOther => 'منشأة';
+
+  @override
+  String get guestVerified => 'موثّقة في صناعية';
+
+  @override
+  String get guestAccepting => 'تستقبل الطلبات';
+
+  @override
+  String get guestBusy => 'مشغولون حالياً';
+
+  @override
+  String get guestBranches => 'الفروع';
+
+  @override
+  String get guestSpecialties => 'التخصصات';
+
+  @override
+  String guestRatingCount(int n) {
+    return '$n تقييم';
+  }
+
+  @override
+  String get guestMainBranch => 'الرئيسي';
 }

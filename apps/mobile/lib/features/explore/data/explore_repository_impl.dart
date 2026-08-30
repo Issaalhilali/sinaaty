@@ -31,4 +31,33 @@ class ExploreRepositoryImpl implements ExploreRepository {
       return Result.err(mapDioError(e));
     }
   }
+
+  @override
+  Future<Result<GuestOrgProfile>> publicProfile(String id) async {
+    try {
+      final r = await _dio.get<Map<String, dynamic>>('/organizations/$id/public', options: Options(extra: {'auth': false}));
+      final d = r.data!;
+      return Result.ok(GuestOrgProfile(
+        id: d['id'] as String,
+        type: d['type'] as String? ?? 'workshop',
+        nameAr: d['tradeNameAr'] as String? ?? d['legalNameAr'] as String? ?? '',
+        descriptionAr: d['descriptionAr'] as String?,
+        ratingAvg: d['ratingAvg'] as String? ?? '0.00',
+        ratingCount: (d['ratingCount'] as num?)?.toInt() ?? 0,
+        acceptingRequests: d['acceptingRequests'] as bool? ?? true,
+        verified: d['verifiedAt'] != null,
+        branches: [
+          for (final l in (d['locations'] as List<dynamic>? ?? const []))
+            GuestOrgBranch(nameAr: l['nameAr'] as String?, city: l['city'] as String? ?? '', district: l['district'] as String?, isPrimary: l['isPrimary'] as bool? ?? false),
+        ],
+        // التخصص يعرض ما سُمّي منه: فئة، أو ماركة، أو «فئة · ماركة» حين يجتمعان
+        specialties: [
+          for (final s in (d['specialties'] as List<dynamic>? ?? const []))
+            [if (s['categoryAr'] != null) s['categoryAr'] as String, if (s['makeAr'] != null) s['makeAr'] as String].join(' · '),
+        ].where((x) => x.isNotEmpty).toList(),
+      ));
+    } on DioException catch (e) {
+      return Result.err(mapDioError(e));
+    }
+  }
 }

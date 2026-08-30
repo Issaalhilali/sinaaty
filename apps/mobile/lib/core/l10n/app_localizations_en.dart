@@ -2819,4 +2819,27 @@ class L10nEn extends L10n {
 
   @override
   String get orgOther => 'Business';
+
+  @override
+  String get guestVerified => 'Verified on Sinaaty';
+
+  @override
+  String get guestAccepting => 'Accepting requests';
+
+  @override
+  String get guestBusy => 'Busy right now';
+
+  @override
+  String get guestBranches => 'Branches';
+
+  @override
+  String get guestSpecialties => 'Specialties';
+
+  @override
+  String guestRatingCount(int n) {
+    return '$n ratings';
+  }
+
+  @override
+  String get guestMainBranch => 'Main';
 }

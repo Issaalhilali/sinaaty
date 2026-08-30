@@ -106,6 +106,18 @@ describe('Organizations (e2e)', () => {
     expect(pub.body.locations).toHaveLength(1);
   });
 
+  it('الملف العام قائمة بيضاء: لا عمولة ولا منشئ ولا سجل تجاري — والتخصصات بأسمائها', async () => {
+    const pub = await http().get(`/v1/organizations/${orgId}/public`).expect(200);
+    // النسخة الأولى رمت الكيان كله فسرّبت عمولة المنصة (سر تجاري) ومعرف المنشئ على نقطة بلا رمز
+    for (const leak of ['commissionRateBps', 'createdBy', 'crNumber', 'vatNumber', 'phone', 'email', 'slug']) {
+      expect(pub.body).not.toHaveProperty(leak);
+    }
+    expect(pub.body.acceptingRequests).toBe(true);
+    expect(Array.isArray(pub.body.specialties)).toBe(true);
+    expect(pub.body.specialties.length).toBeGreaterThan(0);
+    expect(pub.body.specialties.every((s: { makeAr: string | null; categoryAr: string | null }) => 'makeAr' in s && 'categoryAr' in s)).toBe(true);
+  });
+
   it('خدمات الورشة المحفوظة: تُضاف وتُقرأ وتُحذف — والغريب عن المنشأة مردود', async () => {
     const a = await http().post(`/v1/organizations/${orgId}/services`).set(auth(ownerTok)).send({ name_ar: 'غيار زيت وفلتر', unit_price: '280.00', warranty_days: 30 }).expect(201);
     const list = await http().get(`/v1/organizations/${orgId}/services`).set(auth(ownerTok)).expect(200);

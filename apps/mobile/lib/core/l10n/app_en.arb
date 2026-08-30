@@ -1260,5 +1260,19 @@
   "orgPartsDealer": "Parts shop",
   "orgPartsDistributor": "Parts distributor",
   "orgPartsBrandAgent": "Brand agent",
-  "orgOther": "Business"
+  "orgOther": "Business",
+  "guestVerified": "Verified on Sinaaty",
+  "guestAccepting": "Accepting requests",
+  "guestBusy": "Busy right now",
+  "guestBranches": "Branches",
+  "guestSpecialties": "Specialties",
+  "guestRatingCount": "{n} ratings",
+  "@guestRatingCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "guestMainBranch": "Main"
 }

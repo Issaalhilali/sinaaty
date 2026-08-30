@@ -50,7 +50,21 @@ export class OrganizationsUseCases {
       return sql();
     }
   }
-  async getPublic(id: string) { const o = await this.orgs.findById(id); if (!o || !['active', 'suspended'].includes(o.status)) throw new AppError('NOT_FOUND'); return { ...o, locations: await this.orgs.listLocations(id) }; }
+  /// نقطة عامة = قائمة بيضاء لا كيانٌ يُرمى كله: النسخة الأولى سرّبت عمولة المنصة مع المنشأة
+  /// (commissionRateBps — سرّ تجاري) ومعرّف المنشئ. ما يظهر هنا هو ما يصح أن يقرأه ضيفٌ غريب.
+  async getPublic(id: string) {
+    const o = await this.orgs.findById(id);
+    if (!o || !['active', 'suspended'].includes(o.status)) throw new AppError('NOT_FOUND');
+    const [locations, specialties] = await Promise.all([this.orgs.listLocations(id), this.orgs.listSpecialtiesPublic(id)]);
+    return {
+      id: o.id, type: o.type, status: o.status,
+      tradeNameAr: o.tradeNameAr ?? o.legalNameAr, legalNameAr: o.legalNameAr,
+      descriptionAr: o.descriptionAr ?? null,
+      ratingAvg: o.ratingAvg, ratingCount: o.ratingCount,
+      acceptingRequests: o.acceptingRequests, vatRegistered: o.vatRegistered,
+      verifiedAt: o.verifiedAt, locations, specialties,
+    };
+  }
 
   // ---- owner/manager ----
   async create(actor: Actor, dto: CreateOrgDto) {

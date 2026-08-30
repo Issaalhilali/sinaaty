@@ -1260,5 +1260,19 @@
   "orgPartsDealer": "محل قطع غيار",
   "orgPartsDistributor": "موزّع قطع",
   "orgPartsBrandAgent": "وكيل قطع",
-  "orgOther": "منشأة"
+  "orgOther": "منشأة",
+  "guestVerified": "موثّقة في صناعية",
+  "guestAccepting": "تستقبل الطلبات",
+  "guestBusy": "مشغولون حالياً",
+  "guestBranches": "الفروع",
+  "guestSpecialties": "التخصصات",
+  "guestRatingCount": "{n} تقييم",
+  "@guestRatingCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "guestMainBranch": "الرئيسي"
 }

@@ -42,6 +42,13 @@ class _Explore implements ExploreRepository {
         NearbyOrg(id: 'o1', type: 'workshop', nameAr: 'ورشة النور للسمكرة', ratingAvg: '4.31', ratingCount: 64, city: 'الرياض', distanceKm: 3.2),
         NearbyOrg(id: 'o2', type: 'scrapyard', nameAr: 'تشليح الجزيرة', ratingAvg: '0.00', ratingCount: 0, city: 'الرياض', distanceKm: 11),
       ]);
+  @override Future<Result<GuestOrgProfile>> publicProfile(String id) async =>
+      const Result.ok(GuestOrgProfile(
+        id: 'o2', type: 'scrapyard', nameAr: 'تشليح الجزيرة', descriptionAr: null,
+        ratingAvg: '0.00', ratingCount: 0, acceptingRequests: true, verified: true,
+        branches: [GuestOrgBranch(nameAr: 'الفرع الرئيسي', city: 'الرياض', district: 'الصناعية الثانية', isPrimary: true)],
+        specialties: ['قطع مستعملة · تويوتا'],
+      ));
 }
 
 void main() {
@@ -72,8 +79,11 @@ void main() {
     expect(find.text('4.31'), findsOneWidget);                     // التقييم يظهر
     expect(find.text('جديدة'), findsOneWidget);                    // بلا تقييمات = «جديدة» لا «0.00»
 
-    await t.tap(find.text('تشليح الجزيرة'));                       // ورقة المنشأة
+    await t.tap(find.text('تشليح الجزيرة'));                       // ملف المنشأة الكامل
     await t.pumpAndSettle();
+    expect(find.text('موثّقة في صناعية'), findsOneWidget);         // التوثيق يظهر
+    expect(find.text('قطع مستعملة · تويوتا'), findsOneWidget);     // التخصصات بأسمائها
+    expect(find.text('الفرع الرئيسي'), findsOneWidget);            // الفروع
     await t.tap(find.text('سجّل لتطلب منها'));
     await t.pumpAndSettle();
     expect(find.text('أستكشف أولاً'), findsOneWidget);             // عاد إلى بابه — الدخول

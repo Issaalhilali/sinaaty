@@ -5286,6 +5286,48 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'منشأة'**
   String get orgOther;
+
+  /// No description provided for @guestVerified.
+  ///
+  /// In ar, this message translates to:
+  /// **'موثّقة في صناعية'**
+  String get guestVerified;
+
+  /// No description provided for @guestAccepting.
+  ///
+  /// In ar, this message translates to:
+  /// **'تستقبل الطلبات'**
+  String get guestAccepting;
+
+  /// No description provided for @guestBusy.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشغولون حالياً'**
+  String get guestBusy;
+
+  /// No description provided for @guestBranches.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفروع'**
+  String get guestBranches;
+
+  /// No description provided for @guestSpecialties.
+  ///
+  /// In ar, this message translates to:
+  /// **'التخصصات'**
+  String get guestSpecialties;
+
+  /// No description provided for @guestRatingCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} تقييم'**
+  String guestRatingCount(int n);
+
+  /// No description provided for @guestMainBranch.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرئيسي'**
+  String get guestMainBranch;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

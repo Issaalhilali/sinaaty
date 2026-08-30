@@ -91,6 +91,15 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
     ]);
   }
 
+  async listSpecialtiesPublic(orgId: string) {
+    const rows = await this.prisma.organizationSpecialty.findMany({
+      where: { orgId },
+      select: { make: { select: { nameAr: true } }, category: { select: { nameAr: true } } },
+      orderBy: { id: 'asc' },
+    });
+    return rows.map((r) => ({ makeAr: r.make?.nameAr ?? null, categoryAr: r.category?.nameAr ?? null }));
+  }
+
   async addKybDoc(orgId: string, type: KybDocType, mediaId: string, expiresAt?: Date): Promise<KybDoc> {
     const r = await this.prisma.kybDocument.create({ data: { orgId, type, mediaId, expiresAt }, select: { id: true, type: true, mediaId: true, status: true, rejectionReason: true, createdAt: true } });
     return r;

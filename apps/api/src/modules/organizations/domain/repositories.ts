@@ -32,6 +32,7 @@ export interface OrganizationRepository {
   addLocation(orgId: string, l: { nameAr?: string; isPrimary?: boolean; city: string; district?: string; industrialZone?: string; addressLine?: string; lat: number; lng: number; serviceRadiusKm?: number }): Promise<OrgLocation>;
   listLocations(orgId: string): Promise<OrgLocation[]>;
   setSpecialties(orgId: string, items: Array<{ makeId?: number; categoryId?: number }>): Promise<void>;
+  listSpecialtiesPublic(orgId: string): Promise<Array<{ makeAr: string | null; categoryAr: string | null }>>;
   // kyb
   addKybDoc(orgId: string, type: KybDocType, mediaId: string, expiresAt?: Date): Promise<KybDoc>;
   listKybDocs(orgId: string): Promise<KybDoc[]>;

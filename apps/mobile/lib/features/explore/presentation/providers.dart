@@ -15,3 +15,9 @@ final nearbyOrgsProvider = FutureProvider.autoDispose.family<List<NearbyOrg>, St
       lat: here?.lat ?? kFallbackLat, lng: here?.lng ?? kFallbackLng, q: q.isEmpty ? null : q);
   return r.valueOrNull ?? const [];
 });
+
+/// الملف العام لمنشأة واحدة — للضيف.
+final guestOrgProvider = FutureProvider.autoDispose.family<GuestOrgProfile, String>((ref, id) async {
+  final r = await ref.watch(exploreRepositoryProvider).publicProfile(id);
+  return r.when(ok: (v) => v, err: (f) => throw f);
+});

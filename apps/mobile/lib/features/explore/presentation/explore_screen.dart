@@ -30,18 +30,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   void _login() { ref.read(guestModeProvider.notifier).leave(); context.go('/login'); }
 
-  Future<void> _orgSheet(NearbyOrg o) async {
-    final l = L10n.of(context);
-    await showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (c) => SheetBody(child: Column(
-      mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(o.nameAr, style: Theme.of(c).textTheme.titleLarge),
-        const SizedBox(height: 4),
-        Text(_meta(l, o), style: Theme.of(c).textTheme.bodySmall?.copyWith(color: Theme.of(c).colorScheme.onSurfaceVariant)),
-        const SizedBox(height: SinaatySpace.lg),
-        PrimaryButton(label: l.exploreOrgCta, icon: Icons.login, onPressed: () { Navigator.pop(c); _login(); }),
-      ])));
-  }
-
   String _meta(L10n l, NearbyOrg o) => [
         _typeLabel(l, o.type),
         if (o.city != null && o.city!.isNotEmpty) o.city!,
@@ -86,7 +74,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                                   const SizedBox(width: 3),
                                   Text(o.ratingAvg, style: t.textTheme.titleSmall),
                                 ]),
-                          onTap: () => _orgSheet(o),
+                          onTap: () => context.push('/explore/org/${o.id}'),
                         ),
                     ])),
                   ])),
