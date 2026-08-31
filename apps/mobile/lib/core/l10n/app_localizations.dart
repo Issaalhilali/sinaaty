@@ -5340,6 +5340,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف'**
   String get coverUpdated;
+
+  /// No description provided for @kmAway.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} كم'**
+  String kmAway(String n);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

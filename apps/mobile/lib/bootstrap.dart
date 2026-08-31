@@ -22,7 +22,12 @@ Future<void> bootstrap(AppFlavor flavor) async {
     // `kReleaseMode` يُلغي شبكة الأمان في الوِب كلّه — وهو أكثر ما يحتاجها، إذ لا يُعاد تنصيبه
     // بل يُفتح برابط. والإنتاج يمرّ بـAPP_ENV=prod فيبقى معزولاً كما يجب.
     if (config.appEnv != 'prod') {
-      final found = await ApiHostProbe().resolve(config.apiBaseUrl);
+      // **بمهلة قصيرة**: كان المسح يقع قبل أول إطار، فإذا شاخ العنوان مسح المسبارُ الشبكةَ الفرعية
+      // كلها (٢٥٤ عنواناً) والمستخدم أمام دوّارةٍ ثلاث عشرة ثانية — التطبيق رهينة الشبكة عند الإقلاع.
+      // الآن ننتظر ثانيةً ونصفاً فقط ونمضي؛ فإن بقي العنوان شائخاً أصلحه ApiClient عند أول فشل اتصال
+      // (شبكة الأمان الثانية الموجودة أصلاً) بلا أن يرى أحدٌ شاشةً ميتة.
+      final found = await ApiHostProbe().resolve(config.apiBaseUrl).timeout(
+          const Duration(milliseconds: 1500), onTimeout: () => config.apiBaseUrl);
       if (found != config.apiBaseUrl) { debugPrint('الخادم على $found لا ${config.apiBaseUrl}'); config = config.copyWith(apiBaseUrl: found); }
     }
     // Firebase للإشعارات وحدها. الفشل هنا لا يمنع التطبيق من العمل: بناءٌ بلا ملفات إعداد

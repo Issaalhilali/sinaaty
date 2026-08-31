@@ -58,7 +58,7 @@ class MyOrdersScreen extends ConsumerWidget {
           ],
           if (fixes.isNotEmpty) ...[
             SectionTitle(l.srMine),
-            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
               for (final r in fixes) AppListRow(
                 brandIcon: BrandGlyph.carRepair, title: r.titleAr,
                 subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
@@ -69,7 +69,7 @@ class MyOrdersScreen extends ConsumerWidget {
           ],
           if (parts.isNotEmpty) ...[
             SectionTitle(l.moParts),
-            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
               for (final r in parts) AppListRow(
                 brandIcon: BrandGlyph.gear, title: r.partNameAr,
                 subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
@@ -80,7 +80,7 @@ class MyOrdersScreen extends ConsumerWidget {
           ],
           if (tows.isNotEmpty) ...[
             SectionTitle(l.moTow),
-            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
               for (final j in tows) AppListRow(
                 brandIcon: BrandGlyph.towTruck, title: j.number,
                 subtitle: Labels.transportStatus(l, j.status),

@@ -1276,5 +1276,13 @@
   },
   "guestMainBranch": "الرئيسي",
   "wsCoverPhoto": "صورة الورشة",
-  "coverUpdated": "تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف"
+  "coverUpdated": "تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف",
+  "kmAway": "{n} كم",
+  "@kmAway": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  }
 }

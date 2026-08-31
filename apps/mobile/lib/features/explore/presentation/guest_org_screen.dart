@@ -57,7 +57,7 @@ class GuestOrgScreen extends ConsumerWidget {
           if (o.branches.isNotEmpty) ...[
             const SizedBox(height: SinaatySpace.lg),
             SectionTitle(l.guestBranches),
-            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
               for (final b in o.branches)
                 AppListRow(
                   brandIcon: BrandGlyph.home,

@@ -84,7 +84,7 @@ class RequestHubScreen extends ConsumerWidget {
         ],
         if (fixes.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.srMine),
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
             for (final r in fixes.take(5)) AppListRow(
               icon: Icons.build_outlined, title: r.titleAr,
               subtitle: Fmt.meta([r.number, Fmt.date(r.createdAt, locale: locale)]),
@@ -95,7 +95,7 @@ class RequestHubScreen extends ConsumerWidget {
         ],
         if (partsOn && requests.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.reqMyRequests),
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
             for (final r in requests.take(5)) AppListRow(
               icon: Icons.gavel_outlined, title: r.partNameAr,
               subtitle: Fmt.meta([r.number, r.open ? l.ptEndsIn(r.remaining.inMinutes.clamp(0, 99999)) : l.ptEnded]),
@@ -106,7 +106,7 @@ class RequestHubScreen extends ConsumerWidget {
         ],
         if (towOn && tows.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.reqMyTows),
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
             for (final j in tows.take(5)) AppListRow(
               icon: Icons.local_shipping_outlined, title: Labels.transportStatus(l, j.status),
               subtitle: Fmt.meta([j.number, Fmt.date(j.createdAt, locale: locale)]),

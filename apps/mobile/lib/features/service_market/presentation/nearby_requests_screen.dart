@@ -20,7 +20,7 @@ class NearbyRequestsScreen extends ConsumerWidget {
       body: AsyncResultView<List<ServiceRequest>>(value: v, onRetry: () => ref.invalidate(nearbyServiceRequestsProvider), builder: (list) => list.isEmpty
           ? EmptyState(glyph: BrandGlyph.carRepair, title: l.srNoOffers.split(' —').first, body: '')
           : RefreshIndicator(onRefresh: () async => ref.invalidate(nearbyServiceRequestsProvider), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
-              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
                 for (final r in list) AppListRow(
                   icon: Icons.build_outlined, title: r.titleAr,
                   subtitle: Fmt.meta([r.number, if (r.distanceText != null) r.distanceText, Fmt.date(r.createdAt, locale: locale)]),

@@ -1276,5 +1276,13 @@
   },
   "guestMainBranch": "Main",
   "wsCoverPhoto": "Workshop photo",
-  "coverUpdated": "Photo updated — customers see it in Explore"
+  "coverUpdated": "Photo updated — customers see it in Explore",
+  "kmAway": "{n} km",
+  "@kmAway": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  }
 }

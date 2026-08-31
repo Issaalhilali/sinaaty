@@ -37,6 +37,8 @@ import '../../features/transport/presentation/tow_request_screen.dart';
 import '../di/core_providers.dart';
 import '../../features/account/presentation/about_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
+import '../theme/tokens.dart';
 import '../ui/ui.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
 import '../../features/explore/presentation/explore_screen.dart';
@@ -64,7 +66,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/splash', builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator()))),
+      // شاشة الإقلاع كانت دوّارةً عاريةً على رماديٍّ فارغ — أول ثانيتين من عمر التطبيق بلا هوية،
+      // وهي الثانيتان اللتان يحكم بهما الناس. الآن سطح الختم والعلامة، والانتظار يُقرأ عمداً لا عطلاً.
+      GoRoute(path: '/splash', builder: (_, _) => const _Splash()),
       GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
       GoRoute(path: '/explore', builder: (_, _) => const ExploreScreen()),
       GoRoute(path: '/explore/org/:id', builder: (_, s) => GuestOrgScreen(id: s.pathParameters['id']!)),
@@ -121,4 +125,20 @@ class _OrgWalletRoute extends StatelessWidget {
   const _OrgWalletRoute();
   @override Widget build(BuildContext context) =>
       AppScaffold(title: L10n.of(context).tabWallet, body: const OrgWalletScreen());
+}
+
+
+/// الإقلاع: العلامة على سطح الختم بدل دوّارةٍ في فراغ.
+class _Splash extends StatelessWidget {
+  const _Splash();
+  @override Widget build(BuildContext context) => Theme(data: AppTheme.light(), child: Builder(builder: (context) => Scaffold(
+        backgroundColor: SinaatyColors.sealDeep,
+        body: SealSurface(child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const BrandMark(size: 84),
+          const SizedBox(height: SinaatySpace.lg),
+          Text(L10n.of(context).appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+          const SizedBox(height: SinaatySpace.xl),
+          SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white.withValues(alpha: .7))),
+        ]))),
+      )));
 }

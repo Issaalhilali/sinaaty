@@ -28,7 +28,7 @@ class AccountScreen extends ConsumerWidget {
         StatusBadge(me?.nafathVerified ?? false ? l.nafathVerifiedLabel : l.notVerified, tone: me?.nafathVerified ?? false ? BadgeTone.seal : BadgeTone.plain, icon: Icons.verified_user_outlined),
       ])),
       const SizedBox(height: SinaatySpace.lg),
-      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
         // المحفظة والضمانات دخلتا هنا بعد تقليص التبويبات: «أنا» شيءٌ واحد لا تبويبان.
         AppListRow(brandIcon: BrandGlyph.wallet, title: l.tabWallet, onTap: () => context.push('/wallet')),
         AppListRow(brandIcon: BrandGlyph.shieldSeal, title: l.ptWarranties, onTap: () => context.push('/warranties')),
@@ -37,19 +37,18 @@ class AccountScreen extends ConsumerWidget {
       ])),
       const SizedBox(height: SinaatySpace.lg),
       // الدعم والتعريف — كان نصف الشاشة فراغاً أسود، والمتاجر تسألهما قبل النشر أصلاً
-      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
         AppListRow(icon: Icons.support_agent_outlined, title: l.supportTitle, onTap: () => context.push('/support')),
         AppListRow(icon: Icons.info_outline, title: l.aboutTitle, onTap: () => context.push('/about')),
       ])),
       const SizedBox(height: SinaatySpace.lg),
-      Center(child: TextButton(onPressed: () => ref.read(authControllerProvider.notifier).signOut(), child: Text(l.logout))),
-      const SizedBox(height: SinaatySpace.sm),
-      // بوابة المتاجر ونظام حماية البيانات: الحذف موجودٌ وواضح — لا مدفوناً في بريدٍ للدعم
-      Center(child: TextButton(
-        style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-        onPressed: () => _confirmDelete(context, ref),
-        child: Text(l.delAccount),
-      )),
+      // زرّان عائمان في فراغٍ أبيض كانا يبدوان سهواً لا خاتمة: صارا صفَّي قائمةٍ كبقية الشاشة.
+      // والحذف أسفلها وبلونه التحذيري — يُرى ولا يُزاحم الخروج (بوابة المتاجر تشترط وجوده ظاهراً).
+      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
+        AppListRow(icon: Icons.logout, title: l.logout, onTap: () => ref.read(authControllerProvider.notifier).signOut()),
+        AppListRow(icon: Icons.delete_outline, title: l.delAccount, onTap: () => _confirmDelete(context, ref),
+            trailing: Icon(Icons.warning_amber_rounded, size: 18, color: Theme.of(context).colorScheme.error.withValues(alpha: .8))),
+      ])),
     ]);
   }
 

@@ -54,7 +54,7 @@ class TodayScreen extends ConsumerWidget {
         Row(children: [_Kpi(value: '${active.length}', label: l.wsInShop), const SizedBox(width: 10), _Kpi(value: Fmt.money(available, locale: locale).split(' ').first.replaceAll(RegExp(r'\.00$'), ''), label: l.wsReadyToPayout)]),
         if (hero != null) ...[const SizedBox(height: SinaatySpace.md), _HeroAction(order: hero)],
         SectionTitle(l.wsTodayCars, trailing: TextButton(onPressed: () => context.push('/ws/orders'), child: Text(l.wsAll))),
-        SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in active.take(6)) AppListRow(icon: Icons.directions_car_outlined, title: w.carLine, subtitle: Fmt.meta([if (w.knowsCar) w.titleAr, Fmt.date(w.createdAt, locale: locale)]), trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : w.status == 'ready' ? BadgeTone.seal : BadgeTone.plain), onTap: () => context.push('/ws/orders/${w.id}'))])),
+        SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final w in active.take(6)) AppListRow(icon: Icons.directions_car_outlined, title: w.carLine, subtitle: Fmt.meta([if (w.knowsCar) w.titleAr, Fmt.date(w.createdAt, locale: locale)]), trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : w.status == 'ready' ? BadgeTone.seal : BadgeTone.plain), onTap: () => context.push('/ws/orders/${w.id}'))])),
       ]));
     });
   }

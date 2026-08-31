@@ -44,7 +44,7 @@ class _FleetStatementsScreenState extends ConsumerState<FleetStatementsScreen> {
       body: AsyncResultView<List<FleetStatement>>(value: v, onRetry: () => ref.invalidate(fleetStatementsProvider), builder: (list) => list.isEmpty
           ? EmptyState(glyph: BrandGlyph.orders, title: l.flStatementsEmpty, body: l.flStatementsEmptyBody)
           : RefreshIndicator(onRefresh: () async => ref.invalidate(fleetStatementsProvider), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, 96), children: [
-              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
                 for (final s in list) AppListRow(
                   icon: Icons.calendar_month_outlined,
                   title: Fmt.month(s.periodStart, locale: locale),
@@ -91,7 +91,7 @@ class FleetStatementScreen extends ConsumerWidget {
           MoneyText(Fmt.money(s.total, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
         ])),
         const SizedBox(height: SinaatySpace.lg),
-        SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+        SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
           for (final line in s.lines) AppListRow(
             icon: Icons.directions_car_outlined,
             title: line.assetCode ?? line.plate ?? line.number,

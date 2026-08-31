@@ -51,12 +51,12 @@ class WarrantiesScreen extends ConsumerWidget {
           children: [
             if (active.isNotEmpty) ...[
               SectionTitle(l.ptWarrantyActive),
-              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in active) row(w)])),
+              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final w in active) row(w)])),
               const SizedBox(height: SinaatySpace.lg),
             ],
             if (past.isNotEmpty) ...[
               SectionTitle(l.ptExpired),
-              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final w in past) row(w)])),
+              SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final w in past) row(w)])),
             ],
           ],
         ));

@@ -139,7 +139,7 @@ class _Offers extends ConsumerWidget {
       onRetry: () => ref.invalidate(driverOffersProvider),
       builder: (offers) {
         if (offers.isEmpty) return EmptyState(icon: Icons.local_shipping_outlined, title: l.drvNoOffersTitle, body: l.drvNoOffersBody);
-        return SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+        return SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
           for (final o in offers)
             AppListRow(
               icon: Icons.local_shipping_outlined,

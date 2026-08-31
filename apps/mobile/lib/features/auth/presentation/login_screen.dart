@@ -46,7 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Text(l.loginSubtitle, style: t.textTheme.bodySmall?.copyWith(color: t.colorScheme.onSurfaceVariant)),
         const SizedBox(height: SinaatySpace.lg),
         TextField(
-          controller: _phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, textAlign: TextAlign.left,
+          controller: _phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, textAlign: TextAlign.right,
           autofillHints: const [AutofillHints.telephoneNumber],
           inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+٠-٩ ]'))],
           decoration: InputDecoration(labelText: l.phoneLabel, hintText: l.phoneHint, errorText: _error, prefixIcon: const Icon(Icons.phone_iphone)),

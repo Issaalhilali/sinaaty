@@ -80,7 +80,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         data: (list) => list.isEmpty
             ? EmptyState(glyph: BrandGlyph.gear, title: l.svcEmpty, body: l.svcEmptyBody)
             : RefreshIndicator(onRefresh: () async => ref.invalidate(serviceItemsProvider), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
-                SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+                SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
                   for (final it in list)
                     AppListRow(
                       brandIcon: BrandGlyph.gear,

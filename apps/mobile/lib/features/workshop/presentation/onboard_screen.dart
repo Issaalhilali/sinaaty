@@ -182,7 +182,7 @@ class _OnboardScreenState extends ConsumerState<OnboardScreen> {
           const SizedBox(height: 4),
           Text(l.obDocsBody, style: t.bodyMedium?.copyWith(color: cs.onSurfaceVariant, height: 1.55)),
           const SizedBox(height: SinaatySpace.lg),
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
             for (final (type, label) in [('commercial_registration', l.obDocCr), ('owner_id', l.obDocId)])
               AppListRow(
                 icon: _docs[type]! ? Icons.check_circle_outline : Icons.upload_file_outlined,

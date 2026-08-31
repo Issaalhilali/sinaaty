@@ -38,7 +38,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
           const SizedBox(height: 4),
           Text(l.teamAddBody, style: Theme.of(c).textTheme.bodySmall?.copyWith(color: Theme.of(c).colorScheme.onSurfaceVariant, height: 1.6)),
           const SizedBox(height: SinaatySpace.lg),
-          TextField(controller: phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, textAlign: TextAlign.left, autofocus: true,
+          TextField(controller: phone, keyboardType: TextInputType.phone, textDirection: TextDirection.ltr, textAlign: TextAlign.right, autofocus: true,
               decoration: InputDecoration(labelText: l.phoneLabel, hintText: l.phoneHint, errorText: error, prefixIcon: const Icon(Icons.phone_iphone)),
               onChanged: (_) { if (error != null) setS(() => error = null); }),
           const SizedBox(height: SinaatySpace.md),
@@ -91,7 +91,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
         data: (list) => list.isEmpty
             ? EmptyState(glyph: BrandGlyph.person, title: l.teamEmpty, body: l.teamEmptyBody)
             : RefreshIndicator(onRefresh: () async => ref.invalidate(_membersProvider), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
-                SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+                SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
                   for (final m in list)
                     AppListRow(
                       brandIcon: BrandGlyph.person,

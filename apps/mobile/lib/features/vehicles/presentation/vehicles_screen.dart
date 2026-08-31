@@ -55,14 +55,14 @@ class WorkOrderCard extends StatelessWidget {
     final step = woFlow.indexOf(order.status == 'approved' || order.status == 'awaiting_parts' ? 'in_progress' : order.status); final locale = Localizations.localeOf(context).languageCode;
     if (order.awaitingApproval || order.status == 'ready') {
       return GestureDetector(onTap: onTap, child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, order.status))]),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 2, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, order.status))]),
         const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),
         const SizedBox(height: SinaatySpace.md), SealSteps(total: woFlow.length, current: step < 0 ? 0 : step),
         const SizedBox(height: SinaatySpace.lg), SealButton(label: order.awaitingApproval ? l.approveNow : l.confirmReceipt, onPressed: onTap),
       ])));
     }
     return SectionCard(onTap: onTap, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge, maxLines: 1, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: s.onSurfaceVariant))])), const SizedBox(width: 8), StatusBadge(Labels.woStatus(l, order.status), tone: tone)]),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge, maxLines: 2, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: s.onSurfaceVariant))])), const SizedBox(width: 8), StatusBadge(Labels.woStatus(l, order.status), tone: tone)]),
       const SizedBox(height: SinaatySpace.lg),
       Row(children: [Expanded(child: ProgressDots(total: woFlow.length, done: step < 0 ? 0 : step + 1)), const SizedBox(width: SinaatySpace.md),
         // مسودةُ صفرٍ كانت تصرخ «0.00 ر.س» — البنود لم تُسعَّر بعد، والصدق «بانتظار التسعير»

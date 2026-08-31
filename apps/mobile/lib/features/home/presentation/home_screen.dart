@@ -150,7 +150,9 @@ class _VehicleCard extends StatelessWidget {
         const SizedBox(width: SinaatySpace.md),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(v.title, style: t.titleSmall),
-          if (v.openWorkOrderId != null && v.lastServiceTitleAr == null) const SizedBox(height: 2),
+          // سيارةٌ بلا لوحة لا تُعرَّف: «تويوتا 2002» وحدها لا تميّز سيارةً عن أخرى في بيتٍ فيه ثلاث.
+          if (v.subtitle.trim().isNotEmpty)
+            Text(v.subtitle, style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 6),
           Wrap(spacing: 6, runSpacing: 4, children: vitals),
         ])),

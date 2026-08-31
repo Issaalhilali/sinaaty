@@ -33,7 +33,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   String _meta(L10n l, NearbyOrg o) => [
         _typeLabel(l, o.type),
         if (o.city != null && o.city!.isNotEmpty) o.city!,
-        if (o.distanceKm != null) '${o.distanceKm!.toStringAsFixed(o.distanceKm! < 10 ? 1 : 0)} كم',
+        // «كم» كانت مكتوبةً في الشيفرة، فتظهر عربيةً في الشاشة الإنجليزية
+        if (o.distanceKm != null) l.kmAway(o.distanceKm!.toStringAsFixed(o.distanceKm! < 10 ? 1 : 0)),
       ].join(' · ');
 
   @override Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               : RefreshIndicator(onRefresh: () async => ref.invalidate(nearbyOrgsProvider(_query)), child: ListView(
                   padding: EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.bottomClearance(context)),
                   children: [
-                    SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
+                    SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [
                       for (final o in list)
                         AppListRow(
                           leading: o.coverUrl != null

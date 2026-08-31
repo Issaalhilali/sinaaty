@@ -2848,4 +2848,9 @@ class L10nEn extends L10n {
 
   @override
   String get coverUpdated => 'Photo updated — customers see it in Explore';
+
+  @override
+  String kmAway(String n) {
+    return '$n km';
+  }
 }

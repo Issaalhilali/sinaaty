@@ -40,12 +40,14 @@ class ServicesRow extends ConsumerWidget {
     if (items.isEmpty) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SectionTitle(l.servicesTitle),
-      Row(children: [
+      // بطاقاتٌ متساوية الارتفاع: «أطلب قطعة غيار» يلتفّ سطرين فكان يعلو أخويه — عدم اتساقٍ
+      // تراه العين قبل أن تقرأ. IntrinsicHeight يجعل الثلاث بارتفاع أطولهنّ.
+      IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         for (final s in items) ...[
           Expanded(child: _Tile(icon: s.icon, label: s.label, body: expanded ? s.body : null, onTap: s.onTap)),
           if (s != items.last) const SizedBox(width: SinaatySpace.md),
         ],
-      ]),
+      ])),
     ]);
   }
 }

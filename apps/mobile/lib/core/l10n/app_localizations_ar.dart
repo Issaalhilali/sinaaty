@@ -2811,4 +2811,9 @@ class L10nAr extends L10n {
 
   @override
   String get coverUpdated => 'تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف';
+
+  @override
+  String kmAway(String n) {
+    return '$n كم';
+  }
 }

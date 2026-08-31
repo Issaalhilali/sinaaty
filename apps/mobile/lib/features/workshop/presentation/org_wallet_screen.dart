@@ -17,7 +17,7 @@ class OrgWalletScreen extends ConsumerWidget {
           // «35,410.00-» على الشاشة كان يقرأ خصماً (جولة الجهاز ٢٩ أغسطس)
           _Mini(label: l.wsWalletHeld, value: Fmt.money(wl.held.replaceFirst('-', ''), locale: locale))), const SizedBox(width: 12), Expanded(child: _Mini(label: l.wsWalletTransit, value: Fmt.money(wl.inTransit, locale: locale)))])])),
       const SizedBox(height: SinaatySpace.md), SectionTitle(l.wsPayouts),
-      if (wl.payouts.isEmpty) Text(l.wsNoPayouts, style: t.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [for (final p in wl.payouts) AppListRow(icon: Icons.account_balance_outlined, title: Fmt.money(p.amount, locale: locale), subtitle: Fmt.date(p.scheduledFor, locale: locale), trailing: StatusBadge(Labels.payoutStatus(l, p.status), tone: p.status == 'paid' ? BadgeTone.seal : BadgeTone.plain))])),
+      if (wl.payouts.isEmpty) Text(l.wsNoPayouts, style: t.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final p in wl.payouts) AppListRow(icon: Icons.account_balance_outlined, title: Fmt.money(p.amount, locale: locale), subtitle: Fmt.date(p.scheduledFor, locale: locale), trailing: StatusBadge(Labels.payoutStatus(l, p.status), tone: p.status == 'paid' ? BadgeTone.seal : BadgeTone.plain))])),
     ])));
   }
 }

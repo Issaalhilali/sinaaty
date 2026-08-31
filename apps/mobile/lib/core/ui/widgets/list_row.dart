@@ -10,7 +10,7 @@ class AppListRow extends StatelessWidget {
     return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SinaatySpace.radius), child: Padding(padding: const EdgeInsets.symmetric(vertical: SinaatySpace.md, horizontal: SinaatySpace.sm), child: Row(children: [
       if (leading != null) ...[leading!, const SizedBox(width: SinaatySpace.md)]
       else if (icon != null || brandIcon != null) ...[Container(width: 44, height: 44, alignment: Alignment.center, decoration: BoxDecoration(color: s.primaryContainer.withValues(alpha: .8), borderRadius: BorderRadius.circular(14)), child: brandIcon != null ? BrandIcon(brandIcon!, size: 24, color: s.onPrimaryContainer) : Icon(icon, color: s.onPrimaryContainer, size: 22)), const SizedBox(width: SinaatySpace.md)],
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis), if (subtitle != null) Text(subtitle!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis)])),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: t.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis), if (subtitle != null) Text(subtitle!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis)])),
       // الذيل (شارة/مبلغ) يلين حين يضيق الصف — عنوانٌ وشارةٌ عريضان بالخط الجديد كانا يفيضان مخططاً
       if (trailing != null) ...[const SizedBox(width: SinaatySpace.sm), Flexible(child: trailing!)],
       if (onTap != null) Icon(Icons.chevron_left, size: 20, color: s.onSurfaceVariant.withValues(alpha: .6), textDirection: Directionality.of(context) == TextDirection.rtl ? TextDirection.ltr : TextDirection.rtl),
@@ -28,4 +28,26 @@ class KeyValueRow extends StatelessWidget {
       const SizedBox(width: 12),
       Flexible(child: Text(value, style: st, textAlign: TextAlign.end)),
     ])); }
+}
+
+/// مجموعة صفوفٍ داخل بطاقة — بفواصل شعرية بينها.
+///
+/// كانت الصفوف تُرصّ في Column عارٍ في تسعة عشر موضعاً، فتبدو الشاشة عناصرَ طافية لا قائمة:
+/// «محفظتي» و«الضمانات» بينهما فراغٌ بلا خط يربطهما. الفاصل يبدأ بعد أيقونة الصف (indent)
+/// كما في قوائم النظام، فيقرأ العينُ عموداً واحداً لا جزراً متفرقة.
+class RowGroup extends StatelessWidget {
+  final List<Widget> children;
+  const RowGroup({super.key, required this.children});
+  @override Widget build(BuildContext context) {
+    final rows = children.where((w) => w is! SizedBox).toList();
+    if (rows.isEmpty) return const SizedBox.shrink();
+    return Column(children: [
+      for (var i = 0; i < rows.length; i++) ...[
+        rows[i],
+        if (i != rows.length - 1)
+          Padding(padding: const EdgeInsetsDirectional.only(start: 60, end: SinaatySpace.sm),
+              child: Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: .45))),
+      ],
+    ]);
+  }
 }

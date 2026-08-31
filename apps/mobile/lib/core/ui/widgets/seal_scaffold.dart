@@ -35,7 +35,10 @@ class SealScaffold extends StatelessWidget {
             child: IntrinsicHeight(child: Column(children: [
               Expanded(child: SealSurface(child: SafeArea(bottom: false, child: Stack(children: [
                 if (onBack != null) PositionedDirectional(start: 4, top: 4, child: IconButton(onPressed: onBack, icon: const Icon(Icons.arrow_forward), color: Colors.white)),
-                Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.xl, SinaatySpace.xl, SinaatySpace.xl, SinaatySpace.xl), child: Center(child: top)),
+                // المحتوى يهبط إلى أسفل الأخضر لا وسطه: شاشة الرمز محتواها سطران فكان ثلث الشاشة
+                // العلوي فراغاً ميتاً والعين تقفز فوقه. الهبوط يُقرّب الكلام من الحقل الذي يخصّه.
+                Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.xl, SinaatySpace.xxl, SinaatySpace.xl, SinaatySpace.lg),
+                    child: Align(alignment: AlignmentDirectional.bottomStart, child: top)),
               ])))),
               Container(
                 width: double.infinity,
