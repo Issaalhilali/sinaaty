@@ -106,6 +106,23 @@ describe('Organizations (e2e)', () => {
     expect(pub.body.locations).toHaveLength(1);
   });
 
+  it('صورة الواجهة: يرفعها المدير فتظهر رابطاً موقّتاً في الاستكشاف والملف العام — وPDF مردود', async () => {
+    const p = await http().post('/v1/media/presign').set(auth(ownerTok)).send({ kind: 'image', mime_type: 'image/png', size_bytes: 999, sha256: 'b'.repeat(64), purpose: 'org_logo' }).expect(200);
+    await http().put(`/v1/organizations/${orgId}/branding`).set(auth(ownerTok)).send({ cover_media_id: p.body.media_id }).expect(200);
+    const pub = await http().get(`/v1/organizations/${orgId}/public`).expect(200);
+    expect(typeof pub.body.coverUrl).toBe('string');
+    expect(pub.body.coverUrl.length).toBeGreaterThan(10);
+    const list = await http().get(`/v1/organizations?type=workshop&lat=24.64&lng=46.80&radius_km=10&q=${suffix}`).expect(200);
+    const hit = list.body.find((o: { id: string }) => o.id === orgId);
+    expect(typeof hit.coverUrl).toBe('string');                      // القائمة تحمل الوجه لا معرّفات المخزن
+    expect(hit.coverBucket).toBeUndefined(); expect(hit.coverKey).toBeUndefined();
+    // ملف PDF لا يصير واجهة، ووسائط الغير لا تُثبَّت
+    const pdf = await http().post('/v1/media/presign').set(auth(ownerTok)).send({ kind: 'pdf', mime_type: 'application/pdf', size_bytes: 99, sha256: 'c'.repeat(64), purpose: 'org_logo' }).expect(200);
+    await http().put(`/v1/organizations/${orgId}/branding`).set(auth(ownerTok)).send({ cover_media_id: pdf.body.media_id }).expect(400);
+    const alien = await http().post('/v1/media/presign').set(auth(strangerTok)).send({ kind: 'image', mime_type: 'image/png', size_bytes: 99, sha256: 'd'.repeat(64), purpose: 'org_logo' }).expect(200);
+    await http().put(`/v1/organizations/${orgId}/branding`).set(auth(ownerTok)).send({ cover_media_id: alien.body.media_id }).expect(403);
+  });
+
   it('الملف العام قائمة بيضاء: لا عمولة ولا منشئ ولا سجل تجاري — والتخصصات بأسمائها', async () => {
     const pub = await http().get(`/v1/organizations/${orgId}/public`).expect(200);
     // النسخة الأولى رمت الكيان كله فسرّبت عمولة المنصة (سر تجاري) ومعرف المنشئ على نقطة بلا رمز

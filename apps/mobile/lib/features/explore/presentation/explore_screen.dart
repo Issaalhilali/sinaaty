@@ -64,6 +64,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: Column(children: [
                       for (final o in list)
                         AppListRow(
+                          leading: o.coverUrl != null
+                              ? ClipRRect(borderRadius: BorderRadius.circular(14), child: Image.network(o.coverUrl!, width: 44, height: 44, fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => BrandIcon(_typeGlyph(o.type), size: 24)))
+                              : null,
                           brandIcon: _typeGlyph(o.type),
                           title: o.nameAr,
                           subtitle: _meta(l, o),

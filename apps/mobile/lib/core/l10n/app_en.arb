@@ -1274,5 +1274,7 @@
       }
     }
   },
-  "guestMainBranch": "Main"
+  "guestMainBranch": "Main",
+  "wsCoverPhoto": "Workshop photo",
+  "coverUpdated": "Photo updated — customers see it in Explore"
 }

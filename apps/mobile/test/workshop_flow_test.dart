@@ -37,6 +37,7 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<Result<void>> addServiceItem(String orgId, {required String nameAr, required String unitPrice, String itemType = 'labor', int warrantyDays = 0}) async => const Result.ok(null);
   @override Future<Result<void>> removeServiceItem(String orgId, String id) async => const Result.ok(null);
   @override Future<Result<bool>> setAvailability(String orgId, {required bool accepting}) async => Result.ok(accepting);
+  @override Future<Result<void>> setCover(String orgId, String mediaId) async => const Result.ok(null);
   @override Future<Result<MyReview?>> myReview(String workOrderId) async => const Result.ok(null);
   @override Future<Result<void>> submitReview(String workOrderId, {required int rating, String? commentAr}) async => const Result.ok(null);
 

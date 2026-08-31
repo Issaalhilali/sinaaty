@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,7 @@ import 'package:sinaaty/core/theme/app_theme.dart';
 import 'package:sinaaty/features/auth/domain/auth_entities.dart';
 import 'package:sinaaty/features/auth/domain/auth_repository.dart';
 import 'package:sinaaty/features/auth/presentation/providers.dart';
+import 'package:sinaaty/features/explore/data/explore_repository_impl.dart';
 import 'package:sinaaty/features/explore/domain/explore.dart';
 import 'package:sinaaty/features/explore/presentation/providers.dart';
 import 'workshop_flow_test.dart' show loadArabicFont;
@@ -53,6 +55,15 @@ class _Explore implements ExploreRepository {
 
 void main() {
   setUpAll(loadArabicFont);
+
+  test('روابط الصور: localhost يصير أصل العميل الحي — وروابط S3 الحقيقية تمر كما هي', () {
+    final repo = ExploreRepositoryImpl(Dio(BaseOptions(baseUrl: 'http://10.241.102.76:3000/v1')));
+    expect(repo.publicUrl('http://localhost:3000/v1/media/mock-download/b/k'),
+        'http://10.241.102.76:3000/v1/media/mock-download/b/k');
+    expect(repo.publicUrl('https://s3.me-south-1.amazonaws.com/media/k?sig=x'),
+        'https://s3.me-south-1.amazonaws.com/media/k?sig=x');
+    expect(repo.publicUrl(null), isNull);
+  });
 
   testWidgets('ضيفٌ يستكشف ثم يُقاد إلى بابه: دخول → استكشاف → ورقة منشأة → «سجّل» → دخول', (t) async {
     SharedPreferences.setMockInitialValues({});
@@ -110,3 +121,5 @@ void main() {
     expect(find.text('أستكشف أولاً'), findsOneWidget);             // الحارس ردّه إلى الدخول
   });
 }
+
+

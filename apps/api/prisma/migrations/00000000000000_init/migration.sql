@@ -172,6 +172,7 @@ CREATE TABLE organizations (
   phone_e164            varchar(20),
   email                 citext,
   logo_media_id         uuid,                                  -- FK added after media_assets
+  cover_media_id        uuid,                                  -- صورة الواجهة: وجه الورشة أمام الضيف (FK بعد media_assets)
   description_ar        text,
   description_en        text,
   rating_avg            numeric(3,2) NOT NULL DEFAULT 0,
@@ -342,6 +343,7 @@ CREATE TABLE media_assets (
   UNIQUE (bucket, object_key)
 );
 ALTER TABLE organizations ADD CONSTRAINT fk_orgs_logo FOREIGN KEY (logo_media_id) REFERENCES media_assets(id);
+ALTER TABLE organizations ADD CONSTRAINT fk_orgs_cover FOREIGN KEY (cover_media_id) REFERENCES media_assets(id);
 ALTER TABLE kyb_documents ADD CONSTRAINT fk_kyb_media FOREIGN KEY (media_id) REFERENCES media_assets(id);
 
 -- =============================================================================

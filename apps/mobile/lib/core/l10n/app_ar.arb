@@ -1274,5 +1274,7 @@
       }
     }
   },
-  "guestMainBranch": "الرئيسي"
+  "guestMainBranch": "الرئيسي",
+  "wsCoverPhoto": "صورة الورشة",
+  "coverUpdated": "تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف"
 }

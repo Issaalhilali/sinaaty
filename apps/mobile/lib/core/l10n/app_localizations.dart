@@ -5328,6 +5328,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'الرئيسي'**
   String get guestMainBranch;
+
+  /// No description provided for @wsCoverPhoto.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة الورشة'**
+  String get wsCoverPhoto;
+
+  /// No description provided for @coverUpdated.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف'**
+  String get coverUpdated;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

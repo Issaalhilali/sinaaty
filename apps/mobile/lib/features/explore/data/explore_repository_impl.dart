@@ -8,6 +8,17 @@ class ExploreRepositoryImpl implements ExploreRepository {
   final Dio _dio;
   ExploreRepositoryImpl(this._dio);
 
+  /// مخزن التطوير يوقّع روابط الصور على localhost — وعلى الجهاز localhost يعني الجهازَ نفسه،
+  /// فتأتي القائمة بوجوهٍ بيضاء. يُعاد كتابة الأصل على أصل العميل الحي (الذي يصححه المسبار).
+  /// روابط الإنتاج (S3 حقيقي) لا تبدأ بـlocalhost فتمرّ كما هي.
+  String? publicUrl(String? url) {
+    if (url == null) return null;
+    final m = RegExp(r'^https?://(localhost|127\.0\.0\.1|10\.0\.2\.2)(:\d+)?').firstMatch(url);
+    if (m == null) return url;
+    final origin = _dio.options.baseUrl.replaceFirst(RegExp(r'/v1/?$'), '');
+    return url.replaceRange(0, m.end, origin);
+  }
+
   @override
   Future<Result<List<NearbyOrg>>> nearby({required double lat, required double lng, double radiusKm = 40, String? q}) async {
     try {
@@ -25,6 +36,7 @@ class ExploreRepositoryImpl implements ExploreRepository {
             ratingCount: (e['ratingCount'] as num?)?.toInt() ?? 0,
             city: e['city'] as String?,
             distanceKm: (e['distanceKm'] as num?)?.toDouble(),
+            coverUrl: publicUrl(e['coverUrl'] as String?),
           ),
       ]);
     } on DioException catch (e) {
@@ -45,6 +57,7 @@ class ExploreRepositoryImpl implements ExploreRepository {
         ratingAvg: d['ratingAvg'] as String? ?? '0.00',
         ratingCount: (d['ratingCount'] as num?)?.toInt() ?? 0,
         acceptingRequests: d['acceptingRequests'] as bool? ?? true,
+        coverUrl: publicUrl(d['coverUrl'] as String?),
         verified: d['verifiedAt'] != null,
         branches: [
           for (final l in (d['locations'] as List<dynamic>? ?? const []))

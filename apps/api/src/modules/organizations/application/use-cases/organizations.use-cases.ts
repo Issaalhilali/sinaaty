@@ -1,4 +1,5 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
+import { OBJECT_STORAGE_PORT, type ObjectStoragePort } from '../../../media/application/storage.port';
 import type { KybDocStatus, KybDocType, OrgMemberRole, OrgStatus, OrgType } from '@sinaaty/shared-types';
 import { PilotService } from '../../../pilot/application/pilot.service';
 import { SEARCH_PORT, type SearchPort } from '../../../search/application/ports/search.port';
@@ -11,7 +12,7 @@ import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/r
 import { isValidSaudiIban, KYB_REQUIRED_DOCS, ROLES_BY_ORG_TYPE } from '../../domain/organization';
 import { ORGANIZATION_REPOSITORY, type OrganizationRepository, SUBSCRIPTION_REPOSITORY, type SubscriptionRepository } from '../../domain/repositories';
 import { OrgTransitionService } from '../org-transition.service';
-import type { ServiceItemDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../dto/organizations.dto';
+import type { ServiceItemDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetBrandingDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../dto/organizations.dto';
 
 type Actor = { userId: string; requestId?: string | null };
 
@@ -28,14 +29,26 @@ export class OrganizationsUseCases {
     // Optional: organizations exist without the pilot module (tests, future deployments without zones).
     @Optional() private readonly pilot?: PilotService,
     @Optional() @Inject(SEARCH_PORT) private readonly searchPort?: SearchPort,
+    // صور الواجهات عامة بطبيعتها؛ التوقيع قصير العمر يحمي المخزن لا الصورة
+    @Optional() @Inject(OBJECT_STORAGE_PORT) private readonly storage?: ObjectStoragePort,
   ) {}
+
+  /** رابط موقّع لصورةٍ عامة — وفشل التوقيع لا يُفشل النتيجة: بلا صورةٍ خيرٌ من بلا ورشة. */
+  private async signPublic(bucket: string | null, key: string | null): Promise<string | null> {
+    if (!bucket || !key || !this.storage) return null;
+    try { return await this.storage.presignDownload({ bucket, objectKey: key, ttlSeconds: 3600 }); } catch { return null; }
+  }
+  private hitOut = async (h: import('../../domain/repositories').OrgSearchHit) => {
+    const { coverBucket, coverKey, ...rest } = h;
+    return { ...rest, coverUrl: await this.signPublic(coverBucket, coverKey) };
+  };
 
   // ---- public / discovery ----
   /** Discovery. Typed text goes through the search port (typo-tolerant Arabic) and the hits are hydrated
    *  from the database; anything else — and any search failure — is answered by SQL+PostGIS directly.
    *  Finding a workshop slightly worse always beats finding nothing. */
   async search(q: SearchOrgsDto) {
-    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, makeId: q.make_id, limit: q.limit });
+    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, makeId: q.make_id, limit: q.limit }).then((rows) => Promise.all(rows.map(this.hitOut)));
     if (!q.q?.trim() || !this.searchPort) return sql();
     try {
       const hits = await this.searchPort.searchOrgs({ text: q.q.trim(), type: q.type, city: q.city, limit: q.limit ?? 20 });
@@ -45,7 +58,7 @@ export class OrganizationsUseCases {
       const rows = await this.orgs.search({ ids: hits.map((h) => h.id), type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, makeId: q.make_id, limit: hits.length });
       const rank = new Map(hits.map((h, i) => [h.id, i]));
       const ranked = rows.sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
-      return ranked.length ? ranked.slice(0, q.limit ?? 20) : sql();
+      return ranked.length ? Promise.all(ranked.slice(0, q.limit ?? 20).map(this.hitOut)) : sql();
     } catch {
       return sql();
     }
@@ -56,6 +69,7 @@ export class OrganizationsUseCases {
     const o = await this.orgs.findById(id);
     if (!o || !['active', 'suspended'].includes(o.status)) throw new AppError('NOT_FOUND');
     const [locations, specialties] = await Promise.all([this.orgs.listLocations(id), this.orgs.listSpecialtiesPublic(id)]);
+    const cover = o.coverMediaId ? await this.orgs.mediaRef(o.coverMediaId) : null;
     return {
       id: o.id, type: o.type, status: o.status,
       tradeNameAr: o.tradeNameAr ?? o.legalNameAr, legalNameAr: o.legalNameAr,
@@ -63,6 +77,7 @@ export class OrganizationsUseCases {
       ratingAvg: o.ratingAvg, ratingCount: o.ratingCount,
       acceptingRequests: o.acceptingRequests, vatRegistered: o.vatRegistered,
       verifiedAt: o.verifiedAt, locations, specialties,
+      coverUrl: await this.signPublic(cover?.bucket ?? null, cover?.objectKey ?? null),
     };
   }
 
@@ -89,6 +104,20 @@ export class OrganizationsUseCases {
   listServiceItems(orgId: string) { return this.orgs.listServiceItems(orgId); }
   addServiceItem(orgId: string, dto: ServiceItemDto) { return this.orgs.addServiceItem(orgId, { nameAr: dto.name_ar, itemType: dto.item_type, unitPrice: dto.unit_price, warrantyDays: dto.warranty_days }); }
   async removeServiceItem(orgId: string, id: string) { const ok = await this.orgs.removeServiceItem(orgId, id); if (!ok) throw new AppError('NOT_FOUND'); return { removed: true }; }
+
+  /** صورة واجهة الورشة — وجهها أمام الضيف. الصورة يثبتها من رفعها (لا تثبيت وسائط الغير)،
+   *  وصورةً تكون: أول ما يظهر في الاستكشاف يجب ألا يكون ملف PDF تنكّر. */
+  async setBranding(actor: Actor, orgId: string, dto: SetBrandingDto) {
+    const m = await this.orgs.mediaRef(dto.cover_media_id);
+    if (!m) throw new AppError('NOT_FOUND', { messageAr: 'الصورة غير موجودة — ارفعها أولاً.', messageEn: 'Media not found; upload it first.' });
+    if (m.uploadedBy !== actor.userId) throw new AppError('FORBIDDEN', { messageAr: 'الصورة يثبتها من رفعها.', messageEn: 'Only the uploader can set this media.' });
+    if (!m.mimeType.startsWith('image/')) throw new AppError('VALIDATION', { messageAr: 'صورة الواجهة يجب أن تكون صورة.', messageEn: 'Cover must be an image.' });
+    await this.uow.run(async (tx) => {
+      await this.orgs.setBranding(orgId, { coverMediaId: dto.cover_media_id });
+      await this.audit.write(tx, { action: 'organization.set_branding', entityType: 'organization', entityId: orgId, orgId, actorUserId: actor.userId, after: { cover_media_id: dto.cover_media_id }, requestId: actor.requestId ?? null });
+    });
+    return { ok: true };
+  }
 
   /** «مشغولون الآن» — قرارُ لحظةٍ يكتب أثره في التدقيق: من أطفأ الاستقبال ومتى. */
   async setAvailability(u: { id: string }, orgId: string, accepting: boolean) {

@@ -6,9 +6,9 @@ import type { TxHandle } from '../../../../common/ports/unit-of-work.port';
 import type { Organization } from '../../domain/organization';
 import type { KybDoc, OrgLocation, OrgMember, OrgSearchHit, OrganizationRepository } from '../../domain/repositories';
 
-const orgSelect = { acceptingRequests: true, id: true, type: true, status: true, legalNameAr: true, legalNameEn: true, tradeNameAr: true, slug: true, crNumber: true, vatNumber: true, vatRegistered: true, phoneE164: true, email: true, descriptionAr: true, ratingAvg: true, ratingCount: true, commissionRateBps: true, verifiedAt: true, createdBy: true, createdAt: true } satisfies Prisma.OrganizationSelect;
+const orgSelect = { acceptingRequests: true, coverMediaId: true, id: true, type: true, status: true, legalNameAr: true, legalNameEn: true, tradeNameAr: true, slug: true, crNumber: true, vatNumber: true, vatRegistered: true, phoneE164: true, email: true, descriptionAr: true, ratingAvg: true, ratingCount: true, commissionRateBps: true, verifiedAt: true, createdBy: true, createdAt: true } satisfies Prisma.OrganizationSelect;
 type OrgRow = Prisma.OrganizationGetPayload<{ select: typeof orgSelect }>;
-const toOrg = (r: OrgRow): Organization => ({ id: r.id, type: r.type, status: r.status, legalNameAr: r.legalNameAr, legalNameEn: r.legalNameEn, tradeNameAr: r.tradeNameAr, acceptingRequests: r.acceptingRequests, slug: r.slug, crNumber: r.crNumber, vatNumber: r.vatNumber, vatRegistered: r.vatRegistered, phone: r.phoneE164, email: r.email, descriptionAr: r.descriptionAr, ratingAvg: r.ratingAvg.toFixed(2), ratingCount: r.ratingCount, commissionRateBps: r.commissionRateBps, verifiedAt: r.verifiedAt, createdBy: r.createdBy, createdAt: r.createdAt });
+const toOrg = (r: OrgRow): Organization => ({ id: r.id, type: r.type, status: r.status, legalNameAr: r.legalNameAr, legalNameEn: r.legalNameEn, tradeNameAr: r.tradeNameAr, acceptingRequests: r.acceptingRequests, coverMediaId: r.coverMediaId, slug: r.slug, crNumber: r.crNumber, vatNumber: r.vatNumber, vatRegistered: r.vatRegistered, phone: r.phoneE164, email: r.email, descriptionAr: r.descriptionAr, ratingAvg: r.ratingAvg.toFixed(2), ratingCount: r.ratingCount, commissionRateBps: r.commissionRateBps, verifiedAt: r.verifiedAt, createdBy: r.createdBy, createdAt: r.createdAt });
 
 interface LocRow { id: string; name_ar: string | null; is_primary: boolean; city: string; district: string | null; industrial_zone: string | null; address_line: string | null; lat: number; lng: number; service_radius_km: number }
 const toLoc = (r: LocRow): OrgLocation => ({ id: r.id, nameAr: r.name_ar, isPrimary: r.is_primary, city: r.city, district: r.district, industrialZone: r.industrial_zone, addressLine: r.address_line, lat: Number(r.lat), lng: Number(r.lng), serviceRadiusKm: r.service_radius_km });
@@ -19,6 +19,13 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
   async addServiceItem(orgId: string, p: { nameAr: string; itemType: string; unitPrice: string; warrantyDays: number }) { const r = await this.prisma.orgServiceItem.create({ data: { orgId, nameAr: p.nameAr, itemType: p.itemType as never, unitPrice: p.unitPrice, warrantyDays: p.warrantyDays }, select: { id: true } }); return r; }
   async removeServiceItem(orgId: string, id: string) { const r = await this.prisma.orgServiceItem.updateMany({ where: { id, orgId }, data: { isActive: false } }); return r.count > 0; }
   async setAcceptingRequests(orgId: string, accepting: boolean) { await this.prisma.organization.update({ where: { id: orgId }, data: { acceptingRequests: accepting } }); }
+  async setBranding(orgId: string, b: { logoMediaId?: string; coverMediaId?: string }) {
+    await this.prisma.organization.update({ where: { id: orgId }, data: { ...(b.logoMediaId !== undefined ? { logoMediaId: b.logoMediaId } : {}), ...(b.coverMediaId !== undefined ? { coverMediaId: b.coverMediaId } : {}) } });
+  }
+  async mediaRef(mediaId: string) {
+    const m = await this.prisma.mediaAsset.findUnique({ where: { id: mediaId }, select: { bucket: true, objectKey: true, uploadedBy: true, mimeType: true } });
+    return m ? { bucket: m.bucket, objectKey: m.objectKey, uploadedBy: m.uploadedBy, mimeType: m.mimeType } : null;
+  }
   constructor(private readonly prisma: PrismaService) {}
 
   async create(i: Parameters<OrganizationRepository['create']>[0]) {
@@ -42,12 +49,14 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
     const spec = q.makeId !== undefined
       ? Prisma.sql`EXISTS (SELECT 1 FROM organization_specialties sp WHERE sp.org_id = o.id AND sp.make_id = ${q.makeId})`
       : Prisma.sql`false`;
-    const rows = await this.prisma.$queryRaw<Array<{ id: string; type: OrgType; trade_name_ar: string | null; legal_name_ar: string; rating_avg: Prisma.Decimal; rating_count: number; city: string | null; distance_km: number | null; lat: number | null; lng: number | null; specialised: boolean }>>`
+    const rows = await this.prisma.$queryRaw<Array<{ id: string; type: OrgType; trade_name_ar: string | null; legal_name_ar: string; rating_avg: Prisma.Decimal; rating_count: number; city: string | null; distance_km: number | null; lat: number | null; lng: number | null; specialised: boolean; cover_bucket: string | null; cover_key: string | null }>>`
       SELECT o.id, o.type, o.trade_name_ar, o.legal_name_ar, o.rating_avg, o.rating_count, l.city, ${spec} AS specialised,
+             cm.bucket AS cover_bucket, cm.object_key AS cover_key,
              ${point ? Prisma.sql`ST_Distance(l.geo, ${point}) / 1000.0` : Prisma.sql`NULL::float8`} AS distance_km,
              ST_Y(l.geo::geometry) AS lat, ST_X(l.geo::geometry) AS lng
       FROM organizations o
       LEFT JOIN organization_locations l ON l.org_id = o.id AND l.is_primary = true
+      LEFT JOIN media_assets cm ON cm.id = o.cover_media_id
       WHERE o.status = 'active' AND o.deleted_at IS NULL
         ${q.ids ? Prisma.sql`AND o.id = ANY(${q.ids}::uuid[])` : Prisma.empty}
         ${q.type ? Prisma.sql`AND o.type = ${q.type}::org_type` : Prisma.empty}
@@ -56,7 +65,7 @@ export class OrganizationPrismaRepository implements OrganizationRepository {
         ${point ? Prisma.sql`AND l.geo IS NOT NULL AND ST_DWithin(l.geo, ${point}, ${(q.radiusKm ?? 25) * 1000})` : Prisma.empty}
       ORDER BY ${q.makeId !== undefined ? Prisma.sql`specialised DESC,` : Prisma.empty} ${point ? Prisma.sql`distance_km ASC NULLS LAST,` : Prisma.empty} o.rating_avg DESC, o.rating_count DESC
       LIMIT ${q.limit}`;
-    return rows.map((r) => ({ id: r.id, type: r.type, tradeNameAr: r.trade_name_ar, legalNameAr: r.legal_name_ar, ratingAvg: r.rating_avg.toFixed(2), ratingCount: r.rating_count, city: r.city, distanceKm: r.distance_km === null ? null : Number(Number(r.distance_km).toFixed(2)), lat: r.lat === null ? null : Number(r.lat), lng: r.lng === null ? null : Number(r.lng), specialised: r.specialised }));
+    return rows.map((r) => ({ id: r.id, type: r.type, tradeNameAr: r.trade_name_ar, legalNameAr: r.legal_name_ar, ratingAvg: r.rating_avg.toFixed(2), ratingCount: r.rating_count, city: r.city, distanceKm: r.distance_km === null ? null : Number(Number(r.distance_km).toFixed(2)), lat: r.lat === null ? null : Number(r.lat), lng: r.lng === null ? null : Number(r.lng), specialised: r.specialised, coverBucket: r.cover_bucket, coverKey: r.cover_key }));
   }
   async listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit: number }) { const rows = await this.prisma.organization.findMany({ where: { status: q.status, type: q.type, deletedAt: null }, orderBy: { createdAt: 'asc' }, take: q.limit, select: orgSelect }); return rows.map(toOrg); }
 

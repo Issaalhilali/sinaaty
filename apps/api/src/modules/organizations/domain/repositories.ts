@@ -5,7 +5,7 @@ import type { TxHandle } from '../../../common/ports/unit-of-work.port';
 export interface OrgMember { userId: string; role: OrgMemberRole; isActive: boolean; joinedAt: Date; phone: string | null; fullNameAr: string | null }
 export interface OrgLocation { id: string; nameAr: string | null; isPrimary: boolean; city: string; district: string | null; industrialZone: string | null; addressLine: string | null; lat: number; lng: number; serviceRadiusKm: number }
 export interface KybDoc { id: string; type: KybDocType; mediaId: string; status: KybDocStatus; rejectionReason: string | null; createdAt: Date }
-export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null; /** تخصّصها يشمل صنع سيارة الباحث — الترتيب يقدّمها. */ specialised: boolean }
+export interface OrgSearchHit { id: string; type: OrgType; tradeNameAr: string | null; legalNameAr: string; ratingAvg: string; ratingCount: number; city: string | null; distanceKm: number | null; lat: number | null; lng: number | null; /** تخصّصها يشمل صنع سيارة الباحث — الترتيب يقدّمها. */ specialised: boolean; coverBucket: string | null; coverKey: string | null }
 
 export interface OrganizationRepository {
   // خدمات الورشة المحفوظة — «الأمر بنقرتين حقاً»
@@ -32,6 +32,8 @@ export interface OrganizationRepository {
   addLocation(orgId: string, l: { nameAr?: string; isPrimary?: boolean; city: string; district?: string; industrialZone?: string; addressLine?: string; lat: number; lng: number; serviceRadiusKm?: number }): Promise<OrgLocation>;
   listLocations(orgId: string): Promise<OrgLocation[]>;
   setSpecialties(orgId: string, items: Array<{ makeId?: number; categoryId?: number }>): Promise<void>;
+  setBranding(orgId: string, b: { logoMediaId?: string; coverMediaId?: string }): Promise<void>;
+  mediaRef(mediaId: string): Promise<{ bucket: string; objectKey: string; uploadedBy: string | null; mimeType: string } | null>;
   listSpecialtiesPublic(orgId: string): Promise<Array<{ makeAr: string | null; categoryAr: string | null }>>;
   // kyb
   addKybDoc(orgId: string, type: KybDocType, mediaId: string, expiresAt?: Date): Promise<KybDoc>;

@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'package:crypto/crypto.dart' show sha256;
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/di/core_providers.dart';
 import '../../../core/flags/feature_flags.dart';
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/result/result.dart';
 import '../../../core/ui/ui.dart';
 import '../../../core/voice/assistant.dart';
 import '../../../core/voice/voice_input.dart';
@@ -137,6 +140,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
           PopupMenuItem(value: 'availability', child: Text((ref.watch(myOrgsProvider).value?.firstOrNull?.acceptingRequests ?? true) ? l.avMenuOn : l.avMenuOff)),
           PopupMenuItem(value: 'team', child: Text(l.wsTeam)),
           PopupMenuItem(value: 'services', child: Text(l.wsServices)),
+          PopupMenuItem(value: 'cover', child: Text(l.wsCoverPhoto)),
         ],
         PopupMenuItem(value: 'logout', child: Text(l.logout)),
       ],
@@ -146,6 +150,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         if (v == 'team') unawaited(context.push('/ws/team'));
         if (v == 'services') unawaited(context.push('/ws/services'));
         if (v == 'availability') unawaited(_toggleAvailability());
+        if (v == 'cover') unawaited(_setCoverPhoto());
       },
       // البطاقة تعلو أي تبويب لأن الطلب لا يعرف أين صاحب الورشة الآن — وأول من يردّ يأخذ العمل.
       bottom: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -155,6 +160,29 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
   }
 
 
+
+  /// صورة الورشة — وجهها أمام الضيف في الاستكشاف وملفها العام. من المعرض لا الكاميرا:
+  /// صاحبها يختار أفضل لقطة لواجهته، لا ما تصادف أمام العدسة الآن.
+  Future<void> _setCoverPhoto() async {
+    final org = ref.read(myOrgsProvider).value?.firstOrNull;
+    if (org == null) return;
+    final locale = Localizations.localeOf(context).languageCode;
+    final x = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 1600);
+    if (x == null || !mounted) return;
+    final bytes = await x.readAsBytes();
+    final repo = ref.read(workshopRepositoryProvider);
+    void fail(Failure f) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))); }
+    final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha256.convert(bytes).toString(), purpose: 'org_logo');
+    final pre = p.valueOrNull; if (pre == null) { p.when(ok: (_) {}, err: fail); return; }
+    final up = await repo.upload(pre, bytes, 'image/jpeg');
+    if (!up.isOk) { up.when(ok: (_) {}, err: fail); return; }
+    final r = await repo.setCover(org.id, pre.mediaId);
+    if (!mounted) return;
+    r.when(
+      ok: (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).coverUpdated))),
+      err: fail,
+    );
+  }
 
   /// تبديل «مشغولون الآن» من قائمة ⋯ — الحالة تُقرأ من الخادم وتُرد الرسالة بأمانة عند الفشل.
   Future<void> _toggleAvailability() async {

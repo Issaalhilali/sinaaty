@@ -2805,4 +2805,10 @@ class L10nAr extends L10n {
 
   @override
   String get guestMainBranch => 'الرئيسي';
+
+  @override
+  String get wsCoverPhoto => 'صورة الورشة';
+
+  @override
+  String get coverUpdated => 'تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف';
 }

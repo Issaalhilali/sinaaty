@@ -67,6 +67,7 @@ class FakeWorkshop implements WorkshopRepository {
   @override Future<Result<void>> addServiceItem(String orgId, {required String nameAr, required String unitPrice, String itemType = 'labor', int warrantyDays = 0}) async => const Result.ok(null);
   @override Future<Result<void>> removeServiceItem(String orgId, String id) async => const Result.ok(null);
   @override Future<Result<bool>> setAvailability(String orgId, {required bool accepting}) async => Result.ok(accepting);
+  @override Future<Result<void>> setCover(String orgId, String mediaId) async => const Result.ok(null);
   final String type; final String Function() org; FakeWorkshop(this.type, this.org);
   String? registeredType, registeredName; bool submitted = false; final kyb = <String>[];
   @override Future<Result<String>> registerOrg({required String type, required String legalNameAr, String? tradeNameAr, String? crNumber, String? phone}) async { registeredType = type; registeredName = legalNameAr; return const Result.ok('new-org'); }

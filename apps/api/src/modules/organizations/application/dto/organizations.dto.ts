@@ -15,6 +15,8 @@ export const ServiceItemDto = z.object({ name_ar: z.string().trim().min(2).max(2
 export type ServiceItemDto = z.infer<typeof ServiceItemDto>;
 
 export const AvailabilityDto = z.object({ accepting_requests: z.boolean() });
+export const SetBrandingDto = z.object({ cover_media_id: z.string().uuid() });
+export type SetBrandingDto = z.infer<typeof SetBrandingDto>;
 export type AvailabilityDto = z.infer<typeof AvailabilityDto>;
 
 export const AddLocationDto = z.object({ name_ar: z.string().max(120).optional(), is_primary: z.boolean().optional(), city: z.string().min(2).max(80), district: z.string().max(120).optional(), industrial_zone: z.string().max(120).optional(), address_line: z.string().max(500).optional(), lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180), service_radius_km: z.number().int().min(1).max(500).optional() });

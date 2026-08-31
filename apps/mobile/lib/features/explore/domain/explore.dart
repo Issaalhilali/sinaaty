@@ -9,7 +9,8 @@ class NearbyOrg {
   final int ratingCount;
   final String? city;
   final double? distanceKm;
-  const NearbyOrg({required this.id, required this.type, required this.nameAr, required this.ratingAvg, required this.ratingCount, this.city, this.distanceKm});
+  final String? coverUrl;
+  const NearbyOrg({required this.id, required this.type, required this.nameAr, required this.ratingAvg, required this.ratingCount, this.city, this.distanceKm, this.coverUrl});
 }
 
 /// فرع منشأة كما يظهر للضيف.
@@ -33,9 +34,10 @@ class GuestOrgProfile {
   final bool verified;
   final List<GuestOrgBranch> branches;
   final List<String> specialties;
+  final String? coverUrl;
   const GuestOrgProfile({required this.id, required this.type, required this.nameAr, this.descriptionAr,
       required this.ratingAvg, required this.ratingCount, required this.acceptingRequests,
-      required this.verified, required this.branches, required this.specialties});
+      required this.verified, required this.branches, required this.specialties, this.coverUrl});
 }
 
 abstract interface class ExploreRepository {
