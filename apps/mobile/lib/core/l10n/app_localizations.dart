@@ -5346,6 +5346,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'{n} كم'**
   String kmAway(String n);
+
+  /// No description provided for @staleData.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّر تحديث البيانات — ما تراه قد يكون قديماً'**
+  String get staleData;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

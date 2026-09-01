@@ -13,3 +13,4 @@ export 'widgets/media_thumb.dart';
 export 'widgets/wide_shell.dart';
 export 'widgets/brand_icons.dart';
 export 'widgets/sheet_body.dart';
+export 'widgets/stale_notice.dart';

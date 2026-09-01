@@ -27,9 +27,10 @@ class RequestHubScreen extends ConsumerWidget {
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme;
     // Watched (not read) so the car list is loaded before the request sheet opens.
-    final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
-    final requests = ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[];
-    final tows = ref.watch(myTowJobsProvider).value?.valueOrNull ?? const <TransportJob>[];
+    final vSrc = ref.watch(vehiclesProvider), pSrc = ref.watch(myPartRequestsProvider), tSrc = ref.watch(myTowJobsProvider);
+    final vehicles = vSrc.value?.valueOrNull ?? const <Vehicle>[];
+    final requests = pSrc.value?.valueOrNull ?? const <PartRequest>[];
+    final tows = tSrc.value?.valueOrNull ?? const <TransportJob>[];
     // Flags hide entry points only (charter §5.0 #3); the server enforces regardless.
     final flags = ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible;
     final towOn = flags.enabled(Flags.tow); final partsOn = flags.enabled(Flags.partsMarketplace);
@@ -41,6 +42,7 @@ class RequestHubScreen extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async { ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider); },
       child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
+        StaleNotice(sources: [vSrc, pSrc, tSrc], onRetry: () { ref.invalidate(myPartRequestsProvider); ref.invalidate(myTowJobsProvider); ref.invalidate(vehiclesProvider); }),
         if (liveTow != null) ...[
           SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [

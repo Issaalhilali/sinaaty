@@ -28,12 +28,15 @@ class MyOrdersScreen extends ConsumerWidget {
 
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
-    final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
-    final orders = (ref.watch(workOrdersProvider).value?.valueOrNull ?? const <WorkOrder>[]).where((w) => w.isActive).toList()
+    // المصادر تُراقَب مرةً كي يعرف الشريط أيّها سقط — الفراغُ عند الفشل كذبةٌ لا حالة.
+    final vSrc = ref.watch(vehiclesProvider), oSrc = ref.watch(workOrdersProvider);
+    final fSrc = ref.watch(sm.myServiceRequestsProvider), pSrc = ref.watch(myPartRequestsProvider), tSrc = ref.watch(myTowJobsProvider);
+    final vehicles = vSrc.value?.valueOrNull ?? const <Vehicle>[];
+    final orders = (oSrc.value?.valueOrNull ?? const <WorkOrder>[]).where((w) => w.isActive).toList()
       ..sort((a, b) => a.customerPriority.compareTo(b.customerPriority));
-    final fixes = (ref.watch(sm.myServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]).where((r) => r.open).toList();
-    final parts = (ref.watch(myPartRequestsProvider).value?.valueOrNull ?? const <PartRequest>[]).where((r) => r.open).toList();
-    final tows = (ref.watch(myTowJobsProvider).value?.valueOrNull ?? const <TransportJob>[]).where((j) => j.isLive).toList();
+    final fixes = (fSrc.value?.valueOrNull ?? const <ServiceRequest>[]).where((r) => r.open).toList();
+    final parts = (pSrc.value?.valueOrNull ?? const <PartRequest>[]).where((r) => r.open).toList();
+    final tows = (tSrc.value?.valueOrNull ?? const <TransportJob>[]).where((j) => j.isLive).toList();
 
     Future<void> refresh() async {
       ref.invalidate(workOrdersProvider); ref.invalidate(sm.myServiceRequestsProvider);
@@ -44,6 +47,7 @@ class MyOrdersScreen extends ConsumerWidget {
     return RefreshIndicator(onRefresh: refresh, child: ListView(
       padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)),
       children: [
+        StaleNotice(sources: [vSrc, oSrc, fSrc, pSrc, tSrc], onRetry: refresh),
         const DueRow(),
         if (empty)
           EmptyState(glyph: BrandGlyph.orders, title: l.myOrdersEmpty, body: l.myOrdersEmptyBody)

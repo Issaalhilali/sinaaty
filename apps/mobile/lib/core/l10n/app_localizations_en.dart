@@ -2853,4 +2853,7 @@ class L10nEn extends L10n {
   String kmAway(String n) {
     return '$n km';
   }
+
+  @override
+  String get staleData => 'Couldn\'t refresh — what you see may be out of date';
 }

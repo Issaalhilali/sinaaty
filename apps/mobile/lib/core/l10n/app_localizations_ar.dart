@@ -2816,4 +2816,7 @@ class L10nAr extends L10n {
   String kmAway(String n) {
     return '$n كم';
   }
+
+  @override
+  String get staleData => 'تعذّر تحديث البيانات — ما تراه قد يكون قديماً';
 }

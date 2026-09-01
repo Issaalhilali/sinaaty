@@ -16,8 +16,17 @@ class AuthController extends Notifier<AuthState> {
   @override AuthState build() { Future.microtask(restore); return const AuthState(AuthStatus.unknown); }
   Future<void> restore() async {
     final t = await ref.read(tokenStoreProvider).access(); if (t == null) { state = const AuthState(AuthStatus.signedOut); return; }
-    final me = await ref.read(authRepositoryProvider).me();
-    state = me.when(ok: (m) => AuthState(AuthStatus.signedIn, m), err: (_) => const AuthState(AuthStatus.signedOut));
+    // ولا ننتظر الشبكة بلا سقف: مهلةٌ قصيرة ثم نفتح التطبيق. الخادم الساقط كان يُبقي صاحبه
+    // أمام شاشة الإقلاع أبداً (مهلة الاتصال ١٥ث ثم بحثٌ عن الخادم فوقها) — والتطبيق لديه
+    // رمزٌ صالح ويستطيع أن يفتح ويقول الحقيقة بدل أن يتجمّد.
+    final me = await ref.read(authRepositoryProvider).me()
+        .timeout(const Duration(seconds: 6), onTimeout: () => const Result.err(NetworkFailure()));
+    // **انقطاعُ الشبكة ليس انتهاءَ جلسة.** كان أيُّ فشلٍ في /me يطرد صاحب الرمز إلى شاشة الدخول:
+    // خادمٌ متعثّر أو شبكةٌ ضعيفة على الطريق = خروجٌ من الحساب في أسوأ لحظة. الطردُ الآن لمن
+    // رفضه الخادمُ فعلاً (رمزٌ باطل)؛ ومن تعذّر الوصول إليه يبقى داخلاً وتقول له الشاشة الحقيقة.
+    state = me.when(
+      ok: (m) => AuthState(AuthStatus.signedIn, m),
+      err: (f) => f is NetworkFailure ? AuthState(AuthStatus.signedIn, state.me) : const AuthState(AuthStatus.signedOut));
     if (state.status == AuthStatus.signedIn) unawaited(_syncPushToken());
   }
   Future<void> signedIn() async {

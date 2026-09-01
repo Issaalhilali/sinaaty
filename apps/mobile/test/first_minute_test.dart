@@ -27,20 +27,22 @@ import 'workshop_flow_test.dart' show loadArabicFont;
 
 class _Auth implements AuthRepository {
   @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
-  String? nameAr; int saves = 0;
-  _Auth({this.nameAr});
+  String? nameAr; int saves = 0; final Failure? meFails;
+  _Auth({this.nameAr, this.meFails});
   @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async => const Result.err(UnknownFailure());
   @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.err(UnknownFailure());
   @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
-  @override Future<Result<Me>> me() async => Result.ok(Me(id: 'u', phone: '+966512345678', fullNameAr: nameAr, platformRole: 'none', nafathVerified: false, orgs: const []));
+  @override Future<Result<Me>> me() async => meFails != null
+      ? Result.err(meFails!)
+      : Result.ok(Me(id: 'u', phone: '+966512345678', fullNameAr: nameAr, platformRole: 'none', nafathVerified: false, orgs: const []));
   @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) { if (fullNameAr != null) { nameAr = fullNameAr; saves++; } return me(); }
   @override Future<Result<void>> logout() async => const Result.ok(null);
 }
 
 class _Vehicles implements VehiclesRepository {
-  final List<Vehicle> cars;
-  _Vehicles(this.cars);
-  @override Future<Result<List<Vehicle>>> list() async => Result.ok(cars);
+  final List<Vehicle> cars; final bool fail;
+  _Vehicles(this.cars, {this.fail = false});
+  @override Future<Result<List<Vehicle>>> list() async => fail ? const Result.err(NetworkFailure()) : Result.ok(cars);
   @override Future<Result<Vehicle>> add({String? vin, String? plate}) async => const Result.err(UnknownFailure());
   @override Future<Result<VehiclePassport>> passport(String id) async => const Result.err(UnknownFailure());
   @override Future<Result<String>> shareLink(String id) async => const Result.err(UnknownFailure());
@@ -122,6 +124,39 @@ void main() {
     expect(find.text('أضف سيارتك'), findsOneWidget);         // الخطوة الثانية
     await t.tap(find.text('أضف سيارتي')); await t.pumpAndSettle();
     expect(find.text('إضافة سيارة'), findsOneWidget);        // مسار الإضافة الحقيقي
+  });
+
+  testWidgets('انقطاع الشبكة لا يطرد صاحب الرمز — والرمز الباطل يطرده', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    Future<AuthStatus> statusAfter(Failure f) async {
+      final c = ProviderContainer(overrides: [
+        appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
+        tokenStoreProvider.overrideWithValue(MemoryTokenStore()),
+        authRepositoryProvider.overrideWithValue(_Auth(meFails: f)),
+      ]);
+      addTearDown(c.dispose);
+      await c.read(tokenStoreProvider).save(access: 'a', refresh: 'r');
+      await c.read(authControllerProvider.notifier).restore();
+      return c.read(authControllerProvider).status;
+    }
+    // الخادم متعذّر: يبقى داخلاً — الشاشة تقول «تعذّر التحديث» ولا تُفقده جلسته على الطريق
+    expect(await statusAfter(const NetworkFailure()), AuthStatus.signedIn);
+    // الخادم ردّ ورفض الرمز: يخرج فعلاً
+    expect(await statusAfter(const UnknownFailure()), AuthStatus.signedOut);
+  });
+
+  testWidgets('الخادم ساقط: الشاشة تقول «تعذّر التحديث» ولا تكذب بـ«ما عندك سيارات»', (t) async {
+    SharedPreferences.setMockInitialValues({});
+    await t.pumpWidget(ProviderScope(overrides: [
+      appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')),
+      tokenStoreProvider.overrideWithValue(MemoryTokenStore()),
+      authRepositoryProvider.overrideWithValue(_Auth(nameAr: 'مشعل')),
+      vehiclesRepositoryProvider.overrideWithValue(_Vehicles(const [], fail: true)),
+    ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+      localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      routerConfig: GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const HomeShell())]))));
+    await t.pump(); await signIn(t);
+    expect(find.textContaining('تعذّر تحديث البيانات'), findsOneWidget);
   });
 
   testWidgets('البطاقة الحيّة: آخر صيانة وضمانات من السجل — والإصلاح الجاري يعلو ويُفتح', (t) async {

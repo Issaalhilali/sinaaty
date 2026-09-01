@@ -90,7 +90,9 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     // وكلاهما يُكتب في حسابه في قاعدة البيانات لا في ذاكرة الجهاز. و«لاحقاً» تُحترم.
     final cars = ref.watch(vehiclesProvider);
     if (shouldGuideSetup(flavor: flavor, signedIn: me != null,
-        carsLoaded: cars.hasValue, hasCars: (cars.value?.valueOrNull ?? const []).isNotEmpty,
+        // «حُمِّلت» تعني **نجحت**: قائمةٌ فشل جلبها تصل كقيمةٍ ناجحة تحمل خطأً، فكان صاحب
+        // ثلاث سيارات يُدفع إلى «جهّز حسابك» لمجرد تعثّر الشبكة — أسوأ صور الكذب على المستخدم.
+        carsLoaded: cars.value?.isOk ?? false, hasCars: (cars.value?.valueOrNull ?? const []).isNotEmpty,
         dismissed: ref.watch(setupDismissedProvider))) {
       return const SetupScreen();
     }
