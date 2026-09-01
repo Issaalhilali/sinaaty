@@ -1299,5 +1299,14 @@
   },
   "srvFix": "Repair",
   "srvPart": "Parts",
-  "srvTow": "Tow"
+  "srvTow": "Tow",
+  "srvInspect": "Pre-purchase check",
+  "srvInspectBody": "A neutral workshop inspects it and writes you a report before you pay",
+  "srvService": "Scheduled service",
+  "srvServiceBody": "Oil, filters and a full check at an agreed price",
+  "srvRoadside": "Battery & roadside",
+  "srvRoadsideBody": "Won't start? The nearest workshop comes to you",
+  "srvPresetInspect": "Full pre-purchase inspection — I want a condition report",
+  "srvPresetService": "Scheduled service — oil, filters and a full check",
+  "srvPresetRoadside": "My car won't start — I need help at my location"
 }

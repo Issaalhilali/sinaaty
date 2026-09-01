@@ -5394,6 +5394,60 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'سطحة'**
   String get srvTow;
+
+  /// No description provided for @srvInspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص قبل الشراء'**
+  String get srvInspect;
+
+  /// No description provided for @srvInspectBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورشة محايدة تفحصها وتكتب لك تقريراً قبل ما تدفع'**
+  String get srvInspectBody;
+
+  /// No description provided for @srvService.
+  ///
+  /// In ar, this message translates to:
+  /// **'صيانة دورية'**
+  String get srvService;
+
+  /// No description provided for @srvServiceBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'زيت وفلاتر وفحص شامل بسعر متفق عليه'**
+  String get srvServiceBody;
+
+  /// No description provided for @srvRoadside.
+  ///
+  /// In ar, this message translates to:
+  /// **'بطارية وطريق'**
+  String get srvRoadside;
+
+  /// No description provided for @srvRoadsideBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'ما تشتغل؟ أقرب ورشة تجيك مكانك'**
+  String get srvRoadsideBody;
+
+  /// No description provided for @srvPresetInspect.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص شامل قبل الشراء — أريد تقرير حالة السيارة'**
+  String get srvPresetInspect;
+
+  /// No description provided for @srvPresetService.
+  ///
+  /// In ar, this message translates to:
+  /// **'صيانة دورية — زيت وفلاتر وفحص شامل'**
+  String get srvPresetService;
+
+  /// No description provided for @srvPresetRoadside.
+  ///
+  /// In ar, this message translates to:
+  /// **'السيارة ما تشتغل — أحتاج مساعدة في موقعي'**
+  String get srvPresetRoadside;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

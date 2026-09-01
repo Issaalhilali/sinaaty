@@ -2880,4 +2880,37 @@ class L10nEn extends L10n {
 
   @override
   String get srvTow => 'Tow';
+
+  @override
+  String get srvInspect => 'Pre-purchase check';
+
+  @override
+  String get srvInspectBody =>
+      'A neutral workshop inspects it and writes you a report before you pay';
+
+  @override
+  String get srvService => 'Scheduled service';
+
+  @override
+  String get srvServiceBody =>
+      'Oil, filters and a full check at an agreed price';
+
+  @override
+  String get srvRoadside => 'Battery & roadside';
+
+  @override
+  String get srvRoadsideBody =>
+      'Won\'t start? The nearest workshop comes to you';
+
+  @override
+  String get srvPresetInspect =>
+      'Full pre-purchase inspection — I want a condition report';
+
+  @override
+  String get srvPresetService =>
+      'Scheduled service — oil, filters and a full check';
+
+  @override
+  String get srvPresetRoadside =>
+      'My car won\'t start — I need help at my location';
 }

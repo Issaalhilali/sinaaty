@@ -29,6 +29,9 @@ class ServicesRow extends ConsumerWidget {
     final flags = ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible;
     final vehicles = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
     // أيقوناتُ البيت المرسومة لا Material الجاهزة — «السلايدرز» لقطعة الغيار كانت تقول قالباً
+    // ست خدماتٍ لا ثلاث — والثلاث الجديدة أبوابٌ لمسارٍ **عامل** (طلب إصلاحٍ بوصفٍ مكتوبٍ
+    // سلفاً تستقبله الورش وتسعّره)، لا أزرارٌ تَعِد بما لم يُبنَ. وهي أكثر ما يُطلب فعلاً في
+    // السوق السعودي: فحصُ ما قبل الشراء، والصيانة الدورية، والبطارية على الطريق.
     final items = <({BrandGlyph icon, String label, String? body, VoidCallback onTap})>[
       if (flags.enabled(Flags.serviceMarketplace))
         (icon: BrandGlyph.carRepair, label: l.srvFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
@@ -36,18 +39,21 @@ class ServicesRow extends ConsumerWidget {
         (icon: BrandGlyph.gear, label: l.srvPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
       if (flags.enabled(Flags.tow))
         (icon: BrandGlyph.towTruck, label: l.srvTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+      if (flags.enabled(Flags.serviceMarketplace)) ...[
+        (icon: BrandGlyph.shieldSeal, label: l.srvInspect, body: l.srvInspectBody, onTap: () => openFixCarSheet(context, ref, vehicles, preset: l.srvPresetInspect)),
+        (icon: BrandGlyph.symService, label: l.srvService, body: l.srvServiceBody, onTap: () => openFixCarSheet(context, ref, vehicles, preset: l.srvPresetService)),
+        (icon: BrandGlyph.symBolt, label: l.srvRoadside, body: l.srvRoadsideBody, onTap: () => openFixCarSheet(context, ref, vehicles, preset: l.srvPresetRoadside)),
+      ],
     ];
     if (items.isEmpty) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SectionTitle(l.servicesTitle),
-      // بطاقاتٌ متساوية الارتفاع: «أطلب قطعة غيار» يلتفّ سطرين فكان يعلو أخويه — عدم اتساقٍ
-      // تراه العين قبل أن تقرأ. IntrinsicHeight يجعل الثلاث بارتفاع أطولهنّ.
-      IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        for (final s in items) ...[
-          Expanded(child: _Tile(icon: s.icon, label: s.label, body: expanded ? s.body : null, onTap: s.onTap)),
-          if (s != items.last) const SizedBox(width: SinaatySpace.md),
-        ],
-      ])),
+      // شبكةٌ من ثلاثة أعمدة: ستُّ خدماتٍ في صفّين متساويي الارتفاع بلا حسابٍ يدوي.
+      GridView.count(
+        crossAxisCount: 3, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: SinaatySpace.md, crossAxisSpacing: SinaatySpace.md, childAspectRatio: .84,
+        children: [for (final s in items) _Tile(icon: s.icon, label: s.label, body: null, onTap: s.onTap)],
+      ),
     ]);
   }
 }
@@ -66,14 +72,25 @@ class _Tile extends StatelessWidget {
         // والاسم القصير يقول الخدمة نفسها. (كلمة المالك: غير متوازنة ونفس الأسلوب.)
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.lg),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
+          // `mainAxisSize.min` + `Flexible` على النص: البلاطة تفيض ٧٫٥px على المقاسات التي
+          // يكبر فيها الخط (تكبير النظام، أو شاشة أضيق) — والمرونة تحلّها بلا رقمٍ سحري.
+          child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
+            // أيقونةٌ على قرصٍ متدرّج بلون الهوية بدل مربّعٍ باهتٍ بخطٍّ رفيع: الحجم أكبر،
+            // والتباين أقوى، والقرص يعطي الأيقونة وزناً تراه العين من بعيد (كلمة المالك:
+            // غيّر الأيقونات للأفضل). لا ظلال — تدرّجٌ ولمسةُ نحاسٍ واحدة.
             Container(
-              width: 46, height: 46, alignment: Alignment.center,
-              decoration: BoxDecoration(color: s.primaryContainer, borderRadius: BorderRadius.circular(14)),
-              child: BrandIcon(icon, size: 26, color: s.onPrimaryContainer),
+              width: 56, height: 56, alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(begin: Alignment.topRight, end: Alignment.bottomLeft,
+                    colors: [s.primary, SinaatyColors.sealInk]),
+              ),
+              child: BrandIcon(icon, size: 30, color: Colors.white, accent: SinaatyColors.brass),
             ),
             const SizedBox(height: SinaatySpace.sm),
-            Text(label, style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+            // «فحص قبل الشراء» لا يسع ثلث العرض في سطر: سطران يحفظان الاسم كاملاً — وبتره
+            // إلى «فحص قبل الشـ...» يخفي الخدمة نفسها (نفس درس بطاقات الأمر).
+            Flexible(child: Text(label, style: t.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
             if (body != null) ...[
               const SizedBox(height: 2),
               Text(body!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant, height: 1.4), maxLines: 2, textAlign: TextAlign.center),

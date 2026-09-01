@@ -168,6 +168,8 @@ void main() {
     ];
     await t.pumpWidget(app(auth: _Auth(nameAr: 'مشعل'), cars: cars));
     await t.pump(); await signIn(t);
+    // القائمة تبني كسولاً وقد طالت بست خدمات: نمرّر إلى قسم السيارات كما يفعل صاحبها
+    await t.scrollUntilVisible(find.text('تويوتا كامري 2019'), 300, scrollable: find.byType(Scrollable).first);
     expect(find.text('2 ضمان ساري'), findsOneWidget);
     expect(find.textContaining('آخر صيانة'), findsOneWidget);
     expect(find.text('في الورشة الآن — تابعها'), findsOneWidget);

@@ -30,11 +30,14 @@ const _icons = <String, BrandGlyph>{
 /// رابطاً، ولا يعرف أن ٢٥ كم أفضل من ١٠ — ذاك قرارنا لا قراره. وزرّ «أرسل» كان يصمت عند أي نقص.
 ///
 /// الآن: **ينقر ما يلاحظه**، وموقعه يُقرأ من الجهاز، والنطاق حُذف، والزرّ يقول ما ينقص.
+/// [preset] وصفٌ مكتوبٌ سلفاً يفتح الورقة جاهزة — بابُ خدمةٍ محدّدة (فحص قبل الشراء،
+/// صيانة دورية، بطارية على الطريق) يقود إلى **المسار نفسه** لا إلى زرٍّ ميت: الورش
+/// تستقبله طلباً عادياً وتسعّره، فالخدمة الجديدة تعمل يوم إطلاقها لا بعد بناءٍ آخر.
 Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles,
-    {Future<Uint8List?> Function()? pickImage, Here? here}) async {
+    {Future<Uint8List?> Function()? pickImage, Here? here, String? preset}) async {
   final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
   final Here loc = here ?? ref.read(hereProvider);
-  final note = TextEditingController(); final manual = TextEditingController();
+  final note = TextEditingController(text: preset ?? ''); final manual = TextEditingController();
   String? vehicleId = vehicles.isNotEmpty ? vehicles.first.id : null;
   final picked = <Symptom>{}; final photos = <Uint8List>[];
   var when = 'today';

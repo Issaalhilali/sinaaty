@@ -2843,4 +2843,33 @@ class L10nAr extends L10n {
 
   @override
   String get srvTow => 'سطحة';
+
+  @override
+  String get srvInspect => 'فحص قبل الشراء';
+
+  @override
+  String get srvInspectBody =>
+      'ورشة محايدة تفحصها وتكتب لك تقريراً قبل ما تدفع';
+
+  @override
+  String get srvService => 'صيانة دورية';
+
+  @override
+  String get srvServiceBody => 'زيت وفلاتر وفحص شامل بسعر متفق عليه';
+
+  @override
+  String get srvRoadside => 'بطارية وطريق';
+
+  @override
+  String get srvRoadsideBody => 'ما تشتغل؟ أقرب ورشة تجيك مكانك';
+
+  @override
+  String get srvPresetInspect =>
+      'فحص شامل قبل الشراء — أريد تقرير حالة السيارة';
+
+  @override
+  String get srvPresetService => 'صيانة دورية — زيت وفلاتر وفحص شامل';
+
+  @override
+  String get srvPresetRoadside => 'السيارة ما تشتغل — أحتاج مساعدة في موقعي';
 }
