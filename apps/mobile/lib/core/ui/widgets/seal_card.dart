@@ -69,11 +69,20 @@ class SealMeter extends StatelessWidget {
 /// Floating pill navigation (UI v2): translucent surface, rounded, 3–4 items, selected item gets a soft seal fill.
 class FloatingNav extends StatelessWidget {
   final int index; final ValueChanged<int> onChanged; final List<({BrandGlyph icon, String label})> items;
-  const FloatingNav({super.key, required this.index, required this.onChanged, required this.items});
+  /// فعلٌ مرافقٌ **داخل** الشريط (المساعد الصوتي). كان زرّاً عائماً فوق المحتوى فيحجب
+  /// عناوين الأقسام وبطاقات الورش — الشريطُ مكانه الطبيعي: يُبلغه الإبهام ولا يغطّي شيئاً.
+  final Widget? trailing;
+  const FloatingNav({super.key, required this.index, required this.onChanged, required this.items, this.trailing});
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme; final dark = Theme.of(context).brightness == Brightness.dark;
     return Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 14), child: SafeArea(top: false, child: Container(height: 68, padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: s.surface.withValues(alpha: dark ? .94 : .96), borderRadius: BorderRadius.circular(26), border: Border.all(color: s.outlineVariant.withValues(alpha: .8)), boxShadow: [BoxShadow(color: SinaatyColors.ink.withValues(alpha: dark ? .6 : .18), blurRadius: 40, spreadRadius: -14, offset: const Offset(0, 20))]),
-      child: Row(children: [for (var i = 0; i < items.length; i++) Expanded(child: _NavItem(item: items[i], selected: i == index, onTap: () => onChanged(i)))]))));
+      child: Row(children: [
+        for (var i = 0; i < items.length; i++) Expanded(child: _NavItem(item: items[i], selected: i == index, onTap: () => onChanged(i))),
+        if (trailing != null) ...[
+          Container(width: 1, height: 30, margin: const EdgeInsets.symmetric(horizontal: 4), color: s.outlineVariant.withValues(alpha: .7)),
+          trailing!,
+        ],
+      ]))));
   }
 }
 class _NavItem extends StatelessWidget {

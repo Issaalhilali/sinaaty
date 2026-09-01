@@ -2871,4 +2871,13 @@ class L10nEn extends L10n {
   String insPhotosPending(int n) {
     return '$n photo(s) didn\'t upload — tap to retry before saving';
   }
+
+  @override
+  String get srvFix => 'Repair';
+
+  @override
+  String get srvPart => 'Parts';
+
+  @override
+  String get srvTow => 'Tow';
 }

@@ -230,12 +230,12 @@ void main() {
   testWidgets('«اطلب» offers its three doors, and a part request lands on the bids screen', (tester) async {
     size(tester);
     await tester.pumpWidget(app(router('/'))); await tester.pumpAndSettle();
-    expect(find.text('أصلح سيارتي'), findsOneWidget);       // the marketplace door (scope 2026-08-22)
-    expect(find.text('أطلب قطعة غيار'), findsOneWidget);
-    expect(find.text('أطلب سطحة'), findsOneWidget);
+    expect(find.text('إصلاح'), findsOneWidget);       // the marketplace door (scope 2026-08-22)
+    expect(find.text('قطع غيار'), findsOneWidget);
+    expect(find.text('سطحة'), findsOneWidget);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/customer_request_hub_light.png'));
 
-    await tester.tap(find.text('أطلب قطعة غيار')); await tester.pumpAndSettle();
+    await tester.tap(find.text('قطع غيار')); await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'مساعد أمامي يمين');
     await tester.tap(find.text('أرسل الطلب')); await tester.pumpAndSettle();
     expect(parts.lastCreate?.name, 'مساعد أمامي يمين');

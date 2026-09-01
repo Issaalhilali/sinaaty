@@ -99,7 +99,7 @@ void main() {
       localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: GoRouter(initialLocation: '/', routes: [GoRoute(path: '/', builder: (_, _) => const Scaffold(body: RequestHubScreen()))]))));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    await tester.tap(find.text('إصلاح')); await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.mic_none).first); await tester.pumpAndSettle();
     expect(find.text('تبديل دسكات أمامية مع أجور الفك'), findsOneWidget);      // live words on the voice sheet
     await tester.tap(find.text('تم')); await tester.pumpAndSettle();
@@ -151,7 +151,7 @@ void main() {
       localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
       routerConfig: GoRouter(initialLocation: '/', routes: [GoRoute(path: '/', builder: (_, _) => const Scaffold(body: RequestHubScreen()))]))));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    await tester.tap(find.text('إصلاح')); await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.mic_none).first); await tester.pumpAndSettle();
     expect(find.textContaining('الإملاء لا يعمل'), findsOneWidget);           // the sheet flipped, it did not die
     await tester.enterText(find.byType(TextField).last, 'صوت طقطقة من الأمام');

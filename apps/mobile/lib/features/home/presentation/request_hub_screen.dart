@@ -72,13 +72,13 @@ class RequestHubScreen extends ConsumerWidget {
             const SizedBox(height: 6),
             Text(l.reqFixHeroBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
             const SizedBox(height: SinaatySpace.lg),
-            SealButton(label: l.srFix, icon: Icons.build_outlined, onPressed: () => openFixCarSheet(context, ref, vehicles)),
+            SealButton(label: l.srvFix, icon: Icons.build_outlined, onPressed: () => openFixCarSheet(context, ref, vehicles)),
           ])),
           if (partsOn || towOn) const SizedBox(height: SinaatySpace.md),
         ],
-        if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
+        if (partsOn) _Choice(icon: Icons.settings_input_component_outlined, title: l.srvPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
         if (partsOn && towOn) const SizedBox(height: SinaatySpace.md),
-        if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        if (towOn) _Choice(icon: Icons.local_shipping_outlined, title: l.srvTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
         // يرى من حوله قبل أن يسأل: هذا جوهر شكواه — «أمرّ على الورش واحدة واحدة».
         if (fixOn && shops.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl),

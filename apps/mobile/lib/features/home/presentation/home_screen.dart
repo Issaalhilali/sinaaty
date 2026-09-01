@@ -33,7 +33,7 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override Widget build(BuildContext context, WidgetRef ref) {
-    final l = L10n.of(context); final t = Theme.of(context).textTheme;
+    final l = L10n.of(context); final t = Theme.of(context).textTheme; final cs = Theme.of(context).colorScheme;
     final locale = Localizations.localeOf(context).languageCode;
     final vSrc = ref.watch(vehiclesProvider), oSrc = ref.watch(workOrdersProvider);
     final vehicles = vSrc.value?.valueOrNull ?? const <Vehicle>[];
@@ -87,8 +87,23 @@ class HomeScreen extends ConsumerWidget {
         SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'),
             icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
         if (vehicles.isEmpty)
-          EmptyState(glyph: BrandGlyph.car, title: l.emptyCarsTitle, body: l.emptyCarsBody,
-              actionLabel: l.addCar, onAction: () => context.push('/vehicles/add'))
+          // دعوةٌ في صفٍّ لا شاشةُ فراغ: حالةُ الفراغ الكاملة (دائرةٌ بقطر ١٣٢ وزرٌّ عريض) تصلح
+          // لشاشةٍ خالية، أما هنا فهي قسمٌ من صفحةٍ عامرة — كانت تلتهم ثلثها بلا داعٍ.
+          SectionCard(child: InkWell(
+            borderRadius: BorderRadius.circular(SinaatySpace.radius),
+            onTap: () => context.push('/vehicles/add'),
+            child: Padding(padding: const EdgeInsets.symmetric(vertical: SinaatySpace.sm), child: Row(children: [
+              Container(width: 46, height: 46, alignment: Alignment.center,
+                  decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(14)),
+                  child: BrandIcon(BrandGlyph.car, size: 26, color: cs.onPrimaryContainer)),
+              const SizedBox(width: SinaatySpace.md),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(l.emptyCarsTitle, style: t.titleSmall),
+                Text(l.emptyCarsBody, style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis),
+              ])),
+              Icon(Icons.chevron_left, color: cs.onSurfaceVariant),
+            ])),
+          ))
         else
           // البطاقة الحيّة لا الصفّ البارد: سجل السيارة يعرف آخر صيانتها وضماناتها منذ شهور،
           // وكانت الشاشة تعرض اسمها فقط. القيمة المخزونة تُعرض حيث يُنظر — من قاعدة البيانات.

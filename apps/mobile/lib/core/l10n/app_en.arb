@@ -1296,5 +1296,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "srvFix": "Repair",
+  "srvPart": "Parts",
+  "srvTow": "Tow"
 }

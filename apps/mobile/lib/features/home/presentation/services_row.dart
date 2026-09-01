@@ -31,11 +31,11 @@ class ServicesRow extends ConsumerWidget {
     // أيقوناتُ البيت المرسومة لا Material الجاهزة — «السلايدرز» لقطعة الغيار كانت تقول قالباً
     final items = <({BrandGlyph icon, String label, String? body, VoidCallback onTap})>[
       if (flags.enabled(Flags.serviceMarketplace))
-        (icon: BrandGlyph.carRepair, label: l.srFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
+        (icon: BrandGlyph.carRepair, label: l.srvFix, body: l.srFixBody, onTap: () => openFixCarSheet(context, ref, vehicles)),
       if (flags.enabled(Flags.partsMarketplace))
-        (icon: BrandGlyph.gear, label: l.reqPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
+        (icon: BrandGlyph.gear, label: l.srvPart, body: l.reqPartBody, onTap: () => openPartRequestSheet(context, ref, vehicles)),
       if (flags.enabled(Flags.tow))
-        (icon: BrandGlyph.towTruck, label: l.reqTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
+        (icon: BrandGlyph.towTruck, label: l.srvTow, body: l.reqTowBody, onTap: () => context.push('/tow/new')),
     ];
     if (items.isEmpty) return const SizedBox.shrink();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -61,20 +61,22 @@ class _Tile extends StatelessWidget {
       color: s.surface, borderRadius: BorderRadius.circular(SinaatySpace.radius),
       child: InkWell(
         onTap: onTap, borderRadius: BorderRadius.circular(SinaatySpace.radius),
+        // ثلاثُ بطاقاتٍ **متطابقة**: أيقونة في الوسط واسمٌ من كلمةٍ تحتها. الأسماء الطويلة
+        // («أطلب قطعة غيار») كانت تلتفّ سطرين فتعلو البطاقةُ أختيها ويختلّ الصف كله؛
+        // والاسم القصير يقول الخدمة نفسها. (كلمة المالك: غير متوازنة ونفس الأسلوب.)
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.md, vertical: SinaatySpace.lg),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.lg),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
             Container(
-              width: 40, height: 40, alignment: Alignment.center,
-              decoration: BoxDecoration(color: s.primaryContainer, borderRadius: BorderRadius.circular(12)),
-              child: BrandIcon(icon, size: 24, color: s.onPrimaryContainer),
+              width: 46, height: 46, alignment: Alignment.center,
+              decoration: BoxDecoration(color: s.primaryContainer, borderRadius: BorderRadius.circular(14)),
+              child: BrandIcon(icon, size: 26, color: s.onPrimaryContainer),
             ),
             const SizedBox(height: SinaatySpace.sm),
-            // سطران: «أطلب قطعة غيار» لا يسع ثلث العرض في سطر، وقصّه إلى «أطلب قطعة ...» يخفي الخدمة نفسها.
-            Text(label, style: t.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(label, style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
             if (body != null) ...[
               const SizedBox(height: 2),
-              Text(body!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant, height: 1.4), maxLines: 3),
+              Text(body!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant, height: 1.4), maxLines: 2, textAlign: TextAlign.center),
             ],
           ]),
         ),

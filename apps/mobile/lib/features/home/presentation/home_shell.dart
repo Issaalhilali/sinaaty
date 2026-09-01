@@ -129,9 +129,15 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     final body = tabs[_index].$3;
     final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
     final partner = flavor == AppFlavor.partner;
-    return AppScaffold(title: title, subtitle: _index == 0 && name.isNotEmpty ? '${l.welcomeBack} $name' : null, leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
+    // ترويسة الصفحة الأولى بأسلوب التطبيقات الحديثة: اسم صاحبها هو العنوان — لا كلمة
+    // «الرئيسية» فوق كل شيء (كلمة المالك: أزلها). وبقية التبويبات تحتفظ بعناوينها لأن
+    // العنوان فيها يدلّ على مكانٍ لا يعرفه المستخدم بالضرورة.
+    final homeTab = _index == 0;
+    return AppScaffold(
+      title: homeTab && name.isNotEmpty ? name : title,
+      subtitle: homeTab && name.isNotEmpty ? l.welcomeBack : null,
+      leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        if (!ref.watch(voiceDeadProvider)) IconButton(tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none), onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier)),
         if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
       ]),
       // «الرهيبة تختصر» (كلمة المالك): أدوات الورشة النادرة الاستعمال تسكن هنا لا في الصفحة —
@@ -155,9 +161,14 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         if (v == 'cover') unawaited(_setCoverPhoto());
       },
       // البطاقة تعلو أي تبويب لأن الطلب لا يعرف أين صاحب الورشة الآن — وأول من يردّ يأخذ العمل.
+      // الميكروفون نزل من الرأس إلى فوق الشريط السفلي: الإبهام يبلغه، والرأس يتنفّس (كلمة المالك).
       bottom: Column(mainAxisSize: MainAxisSize.min, children: [
         if (partner) const IncomingBanner(),
-        FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i), items: [for (final t in tabs) (icon: t.$2, label: t.$1)]),
+        FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i),
+          items: [for (final t in tabs) (icon: t.$2, label: t.$1)],
+          trailing: ref.watch(voiceDeadProvider) ? null : IconButton(
+              tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none),
+              onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier))),
       ]));
   }
 

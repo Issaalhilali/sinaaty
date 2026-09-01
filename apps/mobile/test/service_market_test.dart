@@ -117,7 +117,7 @@ void main() {
   testWidgets('the full flow: request → two offers with two different arguments → accept → a work order', (tester) async {
     size(tester);
     await tester.pumpWidget(app('/')); await tester.pumpAndSettle();
-    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    await tester.tap(find.text('إصلاح')); await tester.pumpAndSettle();
     // العميل **ينقر** ما يلاحظه ولا يكتب مقالاً: أكثر الناس لا يصف عطلاً بالكتابة.
     await tester.tap(find.text('صوت غريب')); await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'يزيد مع المطبات');
@@ -207,7 +207,7 @@ void main() {
   testWidgets('a customer with no car is invited to add one — never sent into a validation dead end', (tester) async {
     size(tester);
     await tester.pumpWidget(app('/', withVehicle: false)); await tester.pumpAndSettle();
-    await tester.tap(find.text('أصلح سيارتي')); await tester.pumpAndSettle();
+    await tester.tap(find.text('إصلاح')); await tester.pumpAndSettle();
     expect(find.text('أضف سيارتك أولاً'), findsOneWidget);
     expect(find.text('أضف سيارة'), findsOneWidget);
     expect(find.text('أرسل الطلب'), findsNothing);                          // the API requires a vehicle: no send button at all
@@ -230,7 +230,7 @@ void main() {
   testWidgets('flag off: «أصلح سيارتي» does not exist', (tester) async {
     size(tester);
     await tester.pumpWidget(app('/', flags: const {'service_marketplace': false})); await tester.pumpAndSettle();
-    expect(find.text('أصلح سيارتي'), findsNothing);
-    expect(find.text('أطلب قطعة غيار'), findsOneWidget);                    // the neighbours stay
+    expect(find.text('إصلاح'), findsNothing);
+    expect(find.text('قطع غيار'), findsOneWidget);                    // the neighbours stay
   });
 }

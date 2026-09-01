@@ -5376,6 +5376,24 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'{n} صورة لم تُرفع — المسها لإعادة الرفع قبل الحفظ'**
   String insPhotosPending(int n);
+
+  /// No description provided for @srvFix.
+  ///
+  /// In ar, this message translates to:
+  /// **'إصلاح'**
+  String get srvFix;
+
+  /// No description provided for @srvPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطع غيار'**
+  String get srvPart;
+
+  /// No description provided for @srvTow.
+  ///
+  /// In ar, this message translates to:
+  /// **'سطحة'**
+  String get srvTow;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

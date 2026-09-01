@@ -2834,4 +2834,13 @@ class L10nAr extends L10n {
   String insPhotosPending(int n) {
     return '$n صورة لم تُرفع — المسها لإعادة الرفع قبل الحفظ';
   }
+
+  @override
+  String get srvFix => 'إصلاح';
+
+  @override
+  String get srvPart => 'قطع غيار';
+
+  @override
+  String get srvTow => 'سطحة';
 }

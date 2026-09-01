@@ -31,9 +31,11 @@ final serviceRequestLiveProvider = StreamProvider.autoDispose.family<void, Strin
 /// «ورش قريبة» ليس عطلاً يستحق رسالة.
 final nearbyShopsProvider = FutureProvider.autoDispose<List<NearbyShop>>((ref) async {
   ref.keepAlive();
-  // بلا طلب إذن: من لم يمنحه لا يرى الشريط، ولا تعترضه نافذة لم يطلبها.
-  final where = await ref.watch(hereProvider).ifGranted();
-  if (where == null) return const [];
+  // بلا طلب إذن: لا نافذة تعترض من لم يطلب شيئاً. لكن **غياب الإذن لا يعني غياب الورش**:
+  // كان القسم يعود فارغاً أبداً لمن لم يمنح موقعه — أي أن أهم شريطٍ في الشاشة ميّت عند
+  // أغلب الناس. نسقط إلى مركز المدينة كما تفعل شاشة الاستكشاف؛ والموقع إن مُنح يشحذ القرب.
+  final granted = await ref.watch(hereProvider).ifGranted();
+  final where = granted ?? (lat: 24.7136, lng: 46.6753);
   final cars = ref.watch(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
   final makeId = cars.map((v) => v.makeId).whereType<int>().firstOrNull;
   return (await ref.watch(serviceMarketRepositoryProvider).nearbyShops(lat: where.lat, lng: where.lng, makeId: makeId, limit: 8)).valueOrNull ?? const [];

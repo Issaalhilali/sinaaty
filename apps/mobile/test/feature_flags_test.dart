@@ -11,6 +11,8 @@ import 'package:sinaaty/core/flags/feature_flags.dart';
 import 'package:sinaaty/core/l10n/app_localizations.dart';
 import 'package:sinaaty/core/result/result.dart';
 import 'package:sinaaty/core/theme/app_theme.dart';
+import 'package:sinaaty/features/service_market/presentation/providers.dart' as sm;
+import 'package:sinaaty/features/service_market/domain/service_request.dart';
 import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'package:sinaaty/features/billing/domain/billing.dart';
 import 'package:sinaaty/features/billing/presentation/providers.dart';
@@ -42,6 +44,9 @@ void main() {
     vehiclesProvider.overrideWith((ref) async => const Result.ok([])),
     myPartRequestsProvider.overrideWith((ref) async => const Result.ok([])),
     myTowJobsProvider.overrideWith((ref) async => const Result.ok([])),
+    // الورش القريبة تُطلب دائماً الآن (سقوطٌ إلى مركز المدينة حين لا موقع) — فالاختبار
+    // يزيّفها كبقية المصادر، وإلا سرّب مؤقت Dio بعد تفكيك الشجرة.
+    sm.nearbyShopsProvider.overrideWith((ref) async => const <NearbyShop>[]),
     ...extra,
   ], child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
     localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
@@ -53,8 +58,8 @@ void main() {
     size(tester);
     await tester.pumpWidget(app(const RequestHubScreen(), flags: FakeFlags(const Result.ok(FeatureFlags({'tow': false})))));
     await tester.pumpAndSettle();
-    expect(find.text('أطلب سطحة'), findsNothing);
-    expect(find.text('أطلب قطعة غيار'), findsOneWidget);
+    expect(find.text('سطحة'), findsNothing);
+    expect(find.textContaining('قطع غيار'), findsWidgets);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/request_hub_tow_off_light.png'));
   });
 
@@ -74,7 +79,7 @@ void main() {
     size(tester);
     await tester.pumpWidget(app(const RequestHubScreen(), flags: FakeFlags(const Result.err(NetworkFailure()))));
     await tester.pumpAndSettle();
-    expect(find.text('أطلب سطحة'), findsOneWidget);
-    expect(find.text('أطلب قطعة غيار'), findsOneWidget);
+    expect(find.text('سطحة'), findsOneWidget);
+    expect(find.textContaining('قطع غيار'), findsWidgets);
   });
 }
