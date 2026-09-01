@@ -24,6 +24,7 @@ import { DisputesModule } from './modules/disputes/disputes.module';
 import { AccidentsModule } from './modules/accidents/accidents.module';
 import { FleetModule } from './modules/fleet/fleet.module';
 import { VisionModule } from './modules/vision/vision.module';
+import { AssistModule } from './modules/assist/assist.module';
 import { VoiceModule } from './modules/voice/voice.module';
 import { PilotModule } from './modules/pilot/pilot.module';
 import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
@@ -63,6 +64,7 @@ import { RolesGuard } from './modules/identity/interface/http/guards/roles.guard
     PilotModule,
     SearchModule, ServiceRequestsModule,
     FleetModule,
+    AssistModule,
     VoiceModule,
     VisionModule,
     NotificationsModule,

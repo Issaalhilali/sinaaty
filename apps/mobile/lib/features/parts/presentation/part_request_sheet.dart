@@ -11,10 +11,11 @@ import '../../vehicles/domain/vehicle.dart';
 import 'providers.dart';
 
 /// «قطعة غيار» — نفس الورقة تُفتح من تبويب «اطلب» ومن خدمات الصفحة الرئيسية، فلا نسختان تتباعدان.
-Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles) async {
+/// [preset] اسم القطعة كما فهمه المساعد — الورقة تُفتح جاهزةً بدل أن يكتبه مرتين.
+Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles, {String? preset}) async {
   final l = L10n.of(context);
   final locale = Localizations.localeOf(context).languageCode;
-  final name = TextEditingController();
+  final name = TextEditingController(text: preset ?? '');
   final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'};
   String? vehicleId = vehicles.length == 1 ? vehicles.first.id : null;
   var minutes = 60;

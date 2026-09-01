@@ -2872,4 +2872,34 @@ class L10nAr extends L10n {
 
   @override
   String get srvPresetRoadside => 'السيارة ما تشتغل — أحتاج مساعدة في موقعي';
+
+  @override
+  String get askTitle => 'وش فيها سيارتك؟';
+
+  @override
+  String get askBody => 'اكتبها بكلامك أو قُلها — نفهمها ونرسلها للمكان الصح.';
+
+  @override
+  String get askHint => 'مثال: سيارتي ما تشتغل من الصبح';
+
+  @override
+  String get askAnalyze => 'حلّل وأرسل';
+
+  @override
+  String get askThinking => 'نقرأ وصفك…';
+
+  @override
+  String get askSendRepair => 'أرسلها للورش القريبة';
+
+  @override
+  String get askSendPart => 'أرسلها لمحلات القطع';
+
+  @override
+  String get askSendTow => 'اطلب سطحة الآن';
+
+  @override
+  String get askEdit => 'مو هذا اللي أقصده';
+
+  @override
+  String get askUrgent => 'عاجل';
 }

@@ -5448,6 +5448,66 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'السيارة ما تشتغل — أحتاج مساعدة في موقعي'**
   String get srvPresetRoadside;
+
+  /// No description provided for @askTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'وش فيها سيارتك؟'**
+  String get askTitle;
+
+  /// No description provided for @askBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبها بكلامك أو قُلها — نفهمها ونرسلها للمكان الصح.'**
+  String get askBody;
+
+  /// No description provided for @askHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: سيارتي ما تشتغل من الصبح'**
+  String get askHint;
+
+  /// No description provided for @askAnalyze.
+  ///
+  /// In ar, this message translates to:
+  /// **'حلّل وأرسل'**
+  String get askAnalyze;
+
+  /// No description provided for @askThinking.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقرأ وصفك…'**
+  String get askThinking;
+
+  /// No description provided for @askSendRepair.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسلها للورش القريبة'**
+  String get askSendRepair;
+
+  /// No description provided for @askSendPart.
+  ///
+  /// In ar, this message translates to:
+  /// **'أرسلها لمحلات القطع'**
+  String get askSendPart;
+
+  /// No description provided for @askSendTow.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب سطحة الآن'**
+  String get askSendTow;
+
+  /// No description provided for @askEdit.
+  ///
+  /// In ar, this message translates to:
+  /// **'مو هذا اللي أقصده'**
+  String get askEdit;
+
+  /// No description provided for @askUrgent.
+  ///
+  /// In ar, this message translates to:
+  /// **'عاجل'**
+  String get askUrgent;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

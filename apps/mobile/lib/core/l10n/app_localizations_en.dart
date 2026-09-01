@@ -2913,4 +2913,35 @@ class L10nEn extends L10n {
   @override
   String get srvPresetRoadside =>
       'My car won\'t start — I need help at my location';
+
+  @override
+  String get askTitle => 'What\'s wrong with your car?';
+
+  @override
+  String get askBody =>
+      'Type it or say it — we understand it and send it to the right place.';
+
+  @override
+  String get askHint => 'Example: my car won\'t start this morning';
+
+  @override
+  String get askAnalyze => 'Analyze & send';
+
+  @override
+  String get askThinking => 'Reading your description…';
+
+  @override
+  String get askSendRepair => 'Send to nearby workshops';
+
+  @override
+  String get askSendPart => 'Send to parts shops';
+
+  @override
+  String get askSendTow => 'Request a tow now';
+
+  @override
+  String get askEdit => 'That\'s not what I meant';
+
+  @override
+  String get askUrgent => 'Urgent';
 }

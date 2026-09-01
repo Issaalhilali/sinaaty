@@ -1308,5 +1308,15 @@
   "srvRoadsideBody": "Won't start? The nearest workshop comes to you",
   "srvPresetInspect": "Full pre-purchase inspection — I want a condition report",
   "srvPresetService": "Scheduled service — oil, filters and a full check",
-  "srvPresetRoadside": "My car won't start — I need help at my location"
+  "srvPresetRoadside": "My car won't start — I need help at my location",
+  "askTitle": "What's wrong with your car?",
+  "askBody": "Type it or say it — we understand it and send it to the right place.",
+  "askHint": "Example: my car won't start this morning",
+  "askAnalyze": "Analyze & send",
+  "askThinking": "Reading your description…",
+  "askSendRepair": "Send to nearby workshops",
+  "askSendPart": "Send to parts shops",
+  "askSendTow": "Request a tow now",
+  "askEdit": "That's not what I meant",
+  "askUrgent": "Urgent"
 }

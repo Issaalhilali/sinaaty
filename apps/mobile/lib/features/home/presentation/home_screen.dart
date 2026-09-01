@@ -73,6 +73,9 @@ class HomeScreen extends ConsumerWidget {
               ])),
           ],
           const SizedBox(height: SinaatySpace.lg),
+          // **الباب الأول** حتى مع وجود أوامر جارية: من لا يعرف ما يريد يصف عطله بكلامه.
+          _AssistCard(l: l, t: t),
+          const SizedBox(height: SinaatySpace.lg),
           const ServicesRow(),
         ] else
           // لا شيء جارٍ: السؤال نفسه يتصدّر بحجمه الكامل بدل صفٍّ صغير فوق فراغ.
@@ -128,11 +131,12 @@ class _AskHero extends ConsumerWidget {
     final l = L10n.of(context); final t = Theme.of(context).textTheme;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(l.reqFixHero, style: t.headlineSmall?.copyWith(color: Colors.white)),
+        // بابٌ واحد للجميع: من لا سيارة له ومن له سيارات — كلاهما يبدأ بوصف مشكلته.
+        Text(l.askTitle, style: t.headlineSmall?.copyWith(color: Colors.white)),
         const SizedBox(height: 6),
-        Text(l.reqFixHeroBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
+        Text(l.askBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
         const SizedBox(height: SinaatySpace.lg),
-        SealButton(label: l.srFix, icon: Icons.build_outlined, onPressed: () => openFixCarSheet(context, ref, vehicles)),
+        SealButton(label: l.askAnalyze, icon: Icons.auto_awesome, onPressed: () => context.push('/ask')),
       ])),
       const SizedBox(height: SinaatySpace.lg),
       const ServicesRow(),
@@ -177,4 +181,24 @@ class _VehicleCard extends StatelessWidget {
       ]),
     ));
   }
+}
+
+
+/// بطاقة الصدارة: سؤالٌ واحد يفتح كل المسارات.
+class _AssistCard extends StatelessWidget {
+  final L10n l; final TextTheme t;
+  const _AssistCard({required this.l, required this.t});
+  @override Widget build(BuildContext context) => SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(width: 40, height: 40, alignment: Alignment.center,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .14)),
+              child: const Icon(Icons.auto_awesome, color: SinaatyColors.brass, size: 21)),
+          const SizedBox(width: SinaatySpace.md),
+          Expanded(child: Text(l.askTitle, style: t.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800))),
+        ]),
+        const SizedBox(height: SinaatySpace.sm),
+        Text(l.askBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.7)),
+        const SizedBox(height: SinaatySpace.lg),
+        SealButton(label: l.askAnalyze, icon: Icons.auto_awesome, onPressed: () => context.push('/ask')),
+      ]));
 }
