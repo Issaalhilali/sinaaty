@@ -32,11 +32,11 @@ class WalletScreen extends ConsumerWidget {
         ])), const SizedBox(height: SinaatySpace.md), SectionTitle(l.due), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final i in due) invRow(i)])), const SizedBox(height: SinaatySpace.lg)],
         if (ns.isNotEmpty) ...[SectionTitle(l.notes), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final n in ns) AppListRow(icon: Icons.verified_outlined, title: l.noteNumber(n.number), subtitle: n.dueDate != null && n.isOpen ? l.dueOn(Fmt.date(n.dueDate!, locale: locale)) : Labels.noteStatus(l, n.status), trailing: Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [Text(Fmt.money(n.isOpen ? n.outstanding : n.amount, locale: locale), style: const TextStyle(fontWeight: FontWeight.w600)), StatusBadge(n.overdue ? l.overdue : Labels.noteStatus(l, n.status), tone: n.overdue ? BadgeTone.bad : n.isOpen ? BadgeTone.brass : BadgeTone.seal)]), onTap: () => context.push('/notes/${n.id}'))])), const SizedBox(height: SinaatySpace.lg)],
         if (isFleet) ...[
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.receipt_long_outlined, title: l.flStatements, subtitle: l.flStatementsBody, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/fleet/statements'))),
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.receipt_long_outlined, title: l.flStatements, subtitle: l.flStatementsBody, onTap: () => context.push('/fleet/statements'))),
           const SizedBox(height: SinaatySpace.lg),
         ],
         if (warrantiesOn) ...[
-          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.verified_outlined, title: l.ptWarranties, subtitle: l.ptWarrantiesEmptyBody, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/warranties'))),
+          SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.verified_outlined, title: l.ptWarranties, subtitle: l.ptWarrantiesEmptyBody, onTap: () => context.push('/warranties'))),
           const SizedBox(height: SinaatySpace.lg),
         ],
         if (rest.isNotEmpty) ...[SectionTitle(l.invoices), SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final i in rest) invRow(i)]))],

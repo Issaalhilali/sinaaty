@@ -2819,4 +2819,14 @@ class L10nAr extends L10n {
 
   @override
   String get staleData => 'تعذّر تحديث البيانات — ما تراه قد يكون قديماً';
+
+  @override
+  String get payInDoubtTitle => 'دفعتك قيد التأكيد';
+
+  @override
+  String get payInDoubtBody =>
+      'بدأت العملية ولم يصلنا تأكيدها بعد. لا تُعد الدفع — تحقّق بعد لحظات، وإن لم تُخصم فلن يُخصم شيء.';
+
+  @override
+  String get payCheckNow => 'تحقّق الآن';
 }

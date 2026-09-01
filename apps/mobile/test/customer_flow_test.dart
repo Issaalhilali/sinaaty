@@ -57,11 +57,17 @@ class FakeWorkOrders implements WorkOrdersRepository, WorkOrderRealtime {
 extension<T> on T { R let<R>(R Function(T) f) => f(this); }
 class FakeBilling implements BillingRepository {
   String status = 'issued'; String paid = '0.00'; final paidIds = <String>[];
+  /// يحاكي انقطاع الطريق **بعد** إنشاء العملية على الخادم — أخطر لحظةٍ في مسار المال.
+  bool confirmFails = false;
   Invoice get inv => Invoice(id: 'inv1', number: 'INV-2026-000007', type: 'simplified_tax', status: status, workOrderId: 'wo1', sellerNameAr: 'ورشة النور للسمكرة والميكانيكا', subtotal: '1190.00', vatTotal: '178.50', total: '1368.50', paidTotal: paid, paymentTerms: 'on_delivery', issueDate: DateTime(2026, 8, 18), lines: const [InvoiceLine(descriptionAr: 'سمكرة ودهان رفرف أمامي أيمن', quantity: '1', unitPrice: '650.00', vatAmount: '97.50', lineTotal: '747.50'), InvoiceLine(descriptionAr: 'دسكات أمامية — أصلي', quantity: '1', unitPrice: '420.00', vatAmount: '63.00', lineTotal: '483.00'), InvoiceLine(descriptionAr: 'أجور فك وتركيب', quantity: '1', unitPrice: '120.00', vatAmount: '18.00', lineTotal: '138.00')]);
   @override Future<Result<List<Invoice>>> invoices() async => Result.ok([inv]);
   @override Future<Result<Invoice>> invoice(String id) async => Result.ok(inv);
   @override Future<Result<PaymentIntent>> createPayment(String invoiceId, String method) async => const Result.ok(PaymentIntent(paymentId: 'p1', amount: '1368.50'));
-  @override Future<Result<void>> mockPay(String paymentId) async { paidIds.add(paymentId); status = 'paid'; paid = '1368.50'; return const Result.ok(null); }
+  @override Future<Result<void>> mockPay(String paymentId) async {
+    paidIds.add(paymentId);
+    if (confirmFails) return const Result.err(NetworkFailure());
+    status = 'paid'; paid = '1368.50'; return const Result.ok(null);
+  }
   @override Future<Result<List<PromissoryNote>>> notes() async => const Result.ok([]);
   @override Future<Result<PromissoryNote>> note(String id) async => const Result.err(UnknownFailure());
 }
@@ -131,6 +137,23 @@ void main() {
     expect(find.text('اختر طريقة الدفع'), findsOneWidget);
     await tester.tap(find.textContaining('مدى')); await tester.pumpAndSettle();
     expect(billing.paidIds, ['p1']); expect(find.text('تم الدفع — شكراً لك'), findsOneWidget); expect(find.text('مدفوعة'), findsOneWidget); expect(find.textContaining('ادفع '), findsNothing);
+  });
+
+  testWidgets('انقطاع بعد إنشاء الدفع: لا زرّ «ادفع» يعود — الشاشة تقول «قيد التأكيد» وتعطي «تحقّق الآن»', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    billing.confirmFails = true;                                  // الطريق ينقطع بعد إنشاء العملية
+    await tester.pumpWidget(app(router('/invoices/inv1'))); await tester.pumpAndSettle();
+    await tester.tap(find.text('ادفع 1,368.50 ر.س')); await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('مدى')); await tester.pumpAndSettle();
+    expect(billing.paidIds, ['p1']);                              // العملية أُنشئت فعلاً
+    expect(find.text('دفعتك قيد التأكيد'), findsOneWidget);        // الحقيقة تُقال
+    expect(find.textContaining('ادفع '), findsNothing);            // ولا بابَ لدفعٍ ثانٍ
+    expect(find.text('تحقّق الآن'), findsOneWidget);               // الفعل الوحيد: اسأل عن المصير
+    // ثم يُشفى الخادم ويؤكّد الدفع: «تحقّق الآن» تُنهي الشك
+    billing.confirmFails = false; billing.status = 'paid'; billing.paid = '1368.50';
+    await tester.tap(find.text('تحقّق الآن')); await tester.pumpAndSettle();
+    expect(find.text('مدفوعة'), findsOneWidget);
+    expect(find.text('دفعتك قيد التأكيد'), findsNothing);
   });
 
   testWidgets('condition comparison: clean handover leads with «سيارتك كما استلمناها»', (tester) async {

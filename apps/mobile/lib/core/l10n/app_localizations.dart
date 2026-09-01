@@ -5352,6 +5352,24 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تعذّر تحديث البيانات — ما تراه قد يكون قديماً'**
   String get staleData;
+
+  /// No description provided for @payInDoubtTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفعتك قيد التأكيد'**
+  String get payInDoubtTitle;
+
+  /// No description provided for @payInDoubtBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'بدأت العملية ولم يصلنا تأكيدها بعد. لا تُعد الدفع — تحقّق بعد لحظات، وإن لم تُخصم فلن يُخصم شيء.'**
+  String get payInDoubtBody;
+
+  /// No description provided for @payCheckNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحقّق الآن'**
+  String get payCheckNow;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

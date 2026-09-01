@@ -78,7 +78,7 @@ class WorkOrderScreen extends ConsumerWidget {
         if ((tl.value?.valueOrNull?.media.isNotEmpty ?? false) || (tl.value?.valueOrNull?.inspections.isNotEmpty ?? false)) ...[
           if ((ref.watch(featureFlagsProvider(null)).value ?? FeatureFlags.allVisible).enabled(Flags.aiInspection) && (tl.value?.valueOrNull?.inspections ?? []).any((i) => i.type == 'check_in')) ...[
             const SizedBox(height: SinaatySpace.lg),
-            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.compare_outlined, title: l.diffOpen, subtitle: l.diffSub, trailing: const Icon(Icons.chevron_left), onTap: () => context.push('/work-orders/$id/condition'))),
+            SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: AppListRow(icon: Icons.compare_outlined, title: l.diffOpen, subtitle: l.diffSub, onTap: () => context.push('/work-orders/$id/condition'))),
           ],
           const SizedBox(height: SinaatySpace.xl), SectionTitle(l.photos),
           SectionCard(child: Column(children: [

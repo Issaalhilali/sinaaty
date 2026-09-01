@@ -2856,4 +2856,14 @@ class L10nEn extends L10n {
 
   @override
   String get staleData => 'Couldn\'t refresh — what you see may be out of date';
+
+  @override
+  String get payInDoubtTitle => 'Your payment is being confirmed';
+
+  @override
+  String get payInDoubtBody =>
+      'The payment started but we haven\'t received confirmation yet. Don\'t pay again — check in a moment; if it didn\'t go through, nothing is charged.';
+
+  @override
+  String get payCheckNow => 'Check now';
 }
