@@ -24,7 +24,11 @@ class NearbyRequestsScreen extends ConsumerWidget {
                 for (final r in list) AppListRow(
                   icon: Icons.build_outlined, title: r.titleAr,
                   subtitle: Fmt.meta([r.number, if (r.distanceText != null) r.distanceText, Fmt.date(r.createdAt, locale: locale)]),
-                  trailing: StatusBadge(switch (r.preferredTime) { 'now' => l.srNow, 'this_week' => l.srThisWeek, _ => l.srToday }, tone: r.preferredTime == 'now' ? BadgeTone.brass : BadgeTone.plain),
+                  // المهلة تنبض في الصف نفسه: صاحب الورشة يرى كم بقي له قبل أن يضيع الطلب —
+                  // وهذا ما يجعل السوق يتحرك (نمط طلبات التوصيل، كلمة المالك).
+                  trailing: r.open && r.expiresAt != null
+                      ? LiveCountdown(until: r.expiresAt!)
+                      : StatusBadge(switch (r.preferredTime) { 'now' => l.srNow, 'this_week' => l.srThisWeek, _ => l.srToday }, tone: r.preferredTime == 'now' ? BadgeTone.brass : BadgeTone.plain),
                   onTap: () => context.push('/ws/service-requests/${r.id}'),
                 ),
               ])),

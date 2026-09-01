@@ -1318,5 +1318,35 @@
   "askSendPart": "أرسلها لمحلات القطع",
   "askSendTow": "اطلب سطحة الآن",
   "askEdit": "مو هذا اللي أقصده",
-  "askUrgent": "عاجل"
+  "askUrgent": "عاجل",
+  "cdEnded": "انتهت المهلة",
+  "cdMinutes": "يبقى {n} دقيقة",
+  "@cdMinutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cdHours": "يبقى {h} س {m} د",
+  "@cdHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMinSec": "يبقى {t}",
+  "@cdMinSec": {
+    "placeholders": {
+      "t": {
+        "type": "String"
+      }
+    }
+  },
+  "cdWorkshopsHave": "الورش عندها مهلة للرد",
+  "cdShopsHave": "المحلات عندها مهلة للعرض"
 }

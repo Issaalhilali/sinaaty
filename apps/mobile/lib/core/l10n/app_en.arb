@@ -1318,5 +1318,35 @@
   "askSendPart": "Send to parts shops",
   "askSendTow": "Request a tow now",
   "askEdit": "That's not what I meant",
-  "askUrgent": "Urgent"
+  "askUrgent": "Urgent",
+  "cdEnded": "Time is up",
+  "cdMinutes": "{n} min left",
+  "@cdMinutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cdHours": "{h}h {m}m left",
+  "@cdHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMinSec": "{t} left",
+  "@cdMinSec": {
+    "placeholders": {
+      "t": {
+        "type": "String"
+      }
+    }
+  },
+  "cdWorkshopsHave": "Workshops have time to reply",
+  "cdShopsHave": "Shops have time to bid"
 }

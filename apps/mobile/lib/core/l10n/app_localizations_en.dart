@@ -2944,4 +2944,28 @@ class L10nEn extends L10n {
 
   @override
   String get askUrgent => 'Urgent';
+
+  @override
+  String get cdEnded => 'Time is up';
+
+  @override
+  String cdMinutes(int n) {
+    return '$n min left';
+  }
+
+  @override
+  String cdHours(int h, int m) {
+    return '${h}h ${m}m left';
+  }
+
+  @override
+  String cdMinSec(String t) {
+    return '$t left';
+  }
+
+  @override
+  String get cdWorkshopsHave => 'Workshops have time to reply';
+
+  @override
+  String get cdShopsHave => 'Shops have time to bid';
 }

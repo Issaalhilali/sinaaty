@@ -44,8 +44,12 @@ class SealButton extends StatelessWidget {
 }
 /// Translucent chip for SealCard.
 class SealPill extends StatelessWidget {
-  final String label; final IconData? icon; const SealPill(this.label, {super.key, this.icon});
-  @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(999)), child: Row(mainAxisSize: MainAxisSize.min, children: [if (icon != null) ...[Icon(icon, size: 13), const SizedBox(width: 5)] else ...[Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white)), const SizedBox(width: 6)], Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, height: 1.2)))]));
+  final String label; final IconData? icon;
+  /// محتوىً حيّ بدل نصٍّ ثابت (مؤقّت ينبض مثلاً) — القشرة واحدة فلا يفترق شكلها.
+  final Widget? child;
+  const SealPill(this.label, {super.key, this.icon}) : child = null;
+  const SealPill.widget(this.child, {super.key, this.icon}) : label = '';
+  @override Widget build(BuildContext context) => Container(padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(999)), child: Row(mainAxisSize: MainAxisSize.min, children: [if (icon != null) ...[Icon(icon, size: 13), const SizedBox(width: 5)] else ...[Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white)), const SizedBox(width: 6)], Flexible(child: child ?? Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, height: 1.2)))]));
 }
 /// Progress segments (steps done / current / upcoming) for a SealCard.
 class SealSteps extends StatelessWidget {

@@ -128,6 +128,19 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
             SealPill(l.srKm(r.radiusKm), icon: Icons.radar_outlined),
             if (!widget.workshop) SealPill('${r.offersCount}', icon: Icons.local_offer_outlined),
           ]),
+          // المهلة تنبض أمام الطرفين: العميل يعرف كم ينتظر، والورشة كم بقي لها.
+          if (r.open && r.expiresAt != null) ...[
+            const SizedBox(height: SinaatySpace.md),
+            Row(children: [
+              Icon(Icons.timer_outlined, size: 17, color: Colors.white.withValues(alpha: .8)),
+              const SizedBox(width: 6),
+              LiveCountdown(until: r.expiresAt!, urgentTint: false,
+                  style: t.titleSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+              const SizedBox(width: 8),
+              Expanded(child: Text(widget.workshop ? l.srRespond : l.cdWorkshopsHave,
+                  style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .7)), maxLines: 1, overflow: TextOverflow.ellipsis)),
+            ]),
+          ],
         ])),
         if (r.mediaIds.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.lg),

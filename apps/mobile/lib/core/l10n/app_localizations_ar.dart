@@ -2902,4 +2902,28 @@ class L10nAr extends L10n {
 
   @override
   String get askUrgent => 'عاجل';
+
+  @override
+  String get cdEnded => 'انتهت المهلة';
+
+  @override
+  String cdMinutes(int n) {
+    return 'يبقى $n دقيقة';
+  }
+
+  @override
+  String cdHours(int h, int m) {
+    return 'يبقى $h س $m د';
+  }
+
+  @override
+  String cdMinSec(String t) {
+    return 'يبقى $t';
+  }
+
+  @override
+  String get cdWorkshopsHave => 'الورش عندها مهلة للرد';
+
+  @override
+  String get cdShopsHave => 'المحلات عندها مهلة للعرض';
 }

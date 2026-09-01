@@ -11,7 +11,6 @@ import 'package:sinaaty/core/theme/app_theme.dart';
 import 'package:sinaaty/features/assist/domain/assist.dart';
 import 'package:sinaaty/features/assist/presentation/ask_screen.dart';
 import 'package:sinaaty/features/assist/presentation/providers.dart';
-import 'package:sinaaty/features/home/domain/effective_flavor.dart';
 import 'package:sinaaty/features/vehicles/domain/vehicle.dart';
 import 'package:sinaaty/features/vehicles/domain/vehicles_repository.dart';
 import 'package:sinaaty/features/vehicles/presentation/providers.dart';

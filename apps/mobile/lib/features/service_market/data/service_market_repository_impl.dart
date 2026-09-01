@@ -24,17 +24,21 @@ ServiceOffer offerFromJson(Map<String, dynamic> j) => ServiceOffer(
   respondsInMinutes: (j['respondsInMinutes'] ?? j['responds_in_minutes']) is num ? ((j['respondsInMinutes'] ?? j['responds_in_minutes']) as num).toInt() : null,
 );
 
+/// الخادم يرسل camelCase والتطبيق كان يقرأ snake_case: كل طلبات الإصلاح ظهرت **بلا عنوان**
+/// وبلا نطاقٍ وبلا وقتٍ مفضّل — حقولٌ موجودةٌ تماماً وتضيع في الترجمة. نقرأ الاسمين معاً:
+/// عيبٌ صامتٌ كهذا لا يُكتشف باختبارٍ يزيّف المستودع، بل بفتح الشاشة على خادمٍ حقيقي.
 ServiceRequest requestFromJson(Map<String, dynamic> j) => ServiceRequest(
   id: j['id'] as String, number: (j['number'] ?? '') as String, status: (j['status'] ?? 'open') as String,
-  titleAr: (j['title_ar'] ?? '') as String, descriptionAr: j['description_ar'] as String?,
-  vehicleId: j['vehicle_id'] as String?,
-  radiusKm: (j['radius_km'] as num?)?.toInt() ?? 15,
-  preferredTime: j['preferred_time'] as String?,
+  titleAr: (j['title_ar'] ?? j['titleAr'] ?? '') as String, descriptionAr: (j['description_ar'] ?? j['descriptionAr']) as String?,
+  vehicleId: (j['vehicle_id'] ?? j['vehicleId']) as String?,
+  radiusKm: ((j['radius_km'] ?? j['radiusKm']) as num?)?.toInt() ?? 15,
+  preferredTime: (j['preferred_time'] ?? j['preferredTime']) as String?,
   distanceText: (j['distance_text'] ?? j['distance_ar']) as String?,
-  createdAt: Fmt.parseDate(j['created_at']) ?? DateTime.now(),
-  mediaIds: ((j['media_ids'] as List?) ?? []).map((m) => m.toString()).toList(),
+  createdAt: Fmt.parseDate(j['created_at'] ?? j['createdAt']) ?? DateTime.now(),
+  expiresAt: Fmt.parseDate(j['expires_at'] ?? j['expiresAt']),
+  mediaIds: (((j['media_ids'] ?? j['mediaIds']) as List?) ?? []).map((m) => m.toString()).toList(),
   offers: ((j['offers'] as List?) ?? []).cast<Map<String, dynamic>>().map(offerFromJson).toList(),
-  offersCountRaw: (j['offers_count'] as num?)?.toInt(),
+  offersCountRaw: ((j['offers_count'] ?? j['offersCount']) as num?)?.toInt(),
 );
 
 class ServiceMarketRepositoryImpl implements ServiceMarketRepository {

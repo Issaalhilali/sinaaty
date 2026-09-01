@@ -34,12 +34,17 @@ class ServiceRequest {
   final String? preferredTime;   // now | today | this_week
   final String? distanceText;    // workshop view: how far the car is
   final DateTime createdAt;
+  /// المهلة التي تملكها الورش للرد. كان الخادم يرسلها والتطبيق يهملها، فلا العميل يعرف
+  /// كم ينتظر ولا الورشة تعرف كم بقي لها — والسوق بلا مؤقّتٍ يبدو ساكناً.
+  final DateTime? expiresAt;
   final List<String> mediaIds;
   final List<ServiceOffer> offers;
   /// The list view carries a count without the offers themselves — the badge never lies as zero.
   final int? offersCountRaw;
-  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
+  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.expiresAt, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
   bool get open => status == 'open';
+  /// ما بقي من المهلة — سالبٌ يعني انتهت.
+  Duration? get remaining => expiresAt?.difference(DateTime.now());
   int get offersCount => offersCountRaw ?? offers.length;
 }
 

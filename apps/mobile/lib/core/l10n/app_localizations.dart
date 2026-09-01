@@ -5508,6 +5508,42 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'عاجل'**
   String get askUrgent;
+
+  /// No description provided for @cdEnded.
+  ///
+  /// In ar, this message translates to:
+  /// **'انتهت المهلة'**
+  String get cdEnded;
+
+  /// No description provided for @cdMinutes.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبقى {n} دقيقة'**
+  String cdMinutes(int n);
+
+  /// No description provided for @cdHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبقى {h} س {m} د'**
+  String cdHours(int h, int m);
+
+  /// No description provided for @cdMinSec.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبقى {t}'**
+  String cdMinSec(String t);
+
+  /// No description provided for @cdWorkshopsHave.
+  ///
+  /// In ar, this message translates to:
+  /// **'الورش عندها مهلة للرد'**
+  String get cdWorkshopsHave;
+
+  /// No description provided for @cdShopsHave.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحلات عندها مهلة للعرض'**
+  String get cdShopsHave;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
