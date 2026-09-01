@@ -21,16 +21,36 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
   final _shots = <String, ({Uint8List bytes, String? mediaId})>{}; final _damages = <Damage>[]; final _odo = TextEditingController(); final _fuel = TextEditingController(); bool _busy = false; String? _error;
   String angleLabel(L10n l, String a) => switch (a) { 'front' => l.wsAngleFront, 'front_right' => l.wsAngleFrontRight, 'right' => l.wsAngleRight, 'rear_right' => l.wsAngleRearRight, 'rear' => l.wsAngleRear, 'rear_left' => l.wsAngleRearLeft, 'left' => l.wsAngleLeft, _ => l.wsAngleFrontLeft };
   Future<Uint8List?> _capture() async { if (widget.pickImage != null) return widget.pickImage!(); final x = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 80, maxWidth: 1600); return x?.readAsBytes(); }
+  /// صورةٌ التُقطت ولم تُرفع: لمسُها يعيد رفع **بايتاتها هي** لا يفتح الكاميرا من جديد —
+  /// الرسالة تقول «المسها لإعادة الرفع»، والوعد يطابق الفعل.
   Future<void> _shoot(String angle) async {
-    final bytes = await _capture(); if (bytes == null || !mounted) return;
+    final existing = _shots[angle];
+    final bytes = existing != null && existing.mediaId == null ? existing.bytes : await _capture();
+    if (bytes == null || !mounted) return;
     setState(() { _shots[angle] = (bytes: bytes, mediaId: null); _busy = true; });
     final repo = ref.read(workshopRepositoryProvider); final sha = crypto.sha256.convert(bytes).toString();
     final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha, purpose: 'inspection'); if (!mounted) return;
-    await p.when(ok: (pre) async { await repo.upload(pre, bytes, 'image/jpeg'); if (mounted) setState(() => _shots[angle] = (bytes: bytes, mediaId: pre.mediaId)); }, err: (f) async => setState(() => _error = f.message(Localizations.localeOf(context).languageCode)));
+    // **نتيجة الرفع كانت تُهمَل**: تُعلَّم الصورة بعلامة نجاحٍ خضراء وهي لم تصل المخزن أصلاً.
+    // وهذه صور فحصٍ تُحسم بها النزاعات: فقدُها صامتاً يعني ضياع الدليل يوم يُحتاج إليه.
+    // الآن الفشل يُقال، والصورة تبقى بعلامة «لم تُرفع» ويُعاد رفعها بلمسها.
+    await p.when(
+      ok: (pre) async {
+        final up = await repo.upload(pre, bytes, 'image/jpeg');
+        if (!mounted) return;
+        setState(() {
+          if (up.isOk) { _shots[angle] = (bytes: bytes, mediaId: pre.mediaId); }
+          else { _shots[angle] = (bytes: bytes, mediaId: null); _error = up.when(ok: (_) => null, err: (f) => f.message(Localizations.localeOf(context).languageCode)); }
+        });
+      },
+      err: (f) async => setState(() => _error = f.message(Localizations.localeOf(context).languageCode)));
     if (mounted) setState(() => _busy = false);
   }
   String? get _nextAngle => inspectionAngles.where((a) => !_shots.containsKey(a)).firstOrNull;
   Future<void> _submit() async {
+    final l = L10n.of(context);
+    // صورةٌ التُقطت ولم تُرفع لا تُحسب: التسليم بلا دليلها أسوأ من تأخيره لحظة.
+    final pending = _shots.entries.where((e) => e.value.mediaId == null).length;
+    if (pending > 0) { setState(() => _error = l.insPhotosPending(pending)); return; }
     setState(() { _busy = true; _error = null; });
     final ids = {for (final e in _shots.entries) if (e.value.mediaId != null) e.key: e.value.mediaId!};
     final r = await ref.read(workshopRepositoryProvider).inspect(widget.id, NewInspection(type: 'check_in', odometerKm: int.tryParse(_odo.text), fuelLevelPct: int.tryParse(_fuel.text), damages: _damages, mediaIds: ids.values.toList(), anglesToMedia: ids));
@@ -49,7 +69,10 @@ class _InspectionScreenState extends ConsumerState<InspectionScreen> {
     if (d != null) setState(() => _damages.add(d));
   }
   @override Widget build(BuildContext context) {
-    final l = L10n.of(context); final s = Theme.of(context).colorScheme; final next = _nextAngle; final done = _shots.length;
+    final l = L10n.of(context); final s = Theme.of(context).colorScheme; final next = _nextAngle;
+    // «٨ / ٨» يجب أن تعني ثماني صورٍ **محفوظة**، لا ثماني ضغطاتٍ على الزر: العدّاد كان
+    // يحسب ما التُقط فيطمئن المفتش وصوره في الطريق ضاعت.
+    final done = _shots.values.where((v) => v.mediaId != null).length;
     return AppScaffold(title: l.wsInspect,
       primaryAction: next != null ? PrimaryButton(label: '${l.wsShootNext} — ${angleLabel(l, next)}', icon: Icons.photo_camera_outlined, loading: _busy, onPressed: () => _shoot(next)) : PrimaryButton(label: l.wsSubmitInspection, icon: Icons.check, loading: _busy, onPressed: _submit),
       body: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.xl), children: [

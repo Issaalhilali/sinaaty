@@ -5370,6 +5370,12 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'تحقّق الآن'**
   String get payCheckNow;
+
+  /// No description provided for @insPhotosPending.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} صورة لم تُرفع — المسها لإعادة الرفع قبل الحفظ'**
+  String insPhotosPending(int n);
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

@@ -60,7 +60,12 @@ class FakeBackend implements WorkshopRepository, WorkOrdersRepository, WorkOrder
   @override Future<Result<WorkOrder>> transition(String woId, String to, {String? noteAr}) => _g(() { transitions.add('$woId:$to'); return _st(orders[woId]!, to); });
   @override Future<Result<void>> requestApproval(String woId) => _g(() { _st(orders[woId]!, 'awaiting_approval'); });
   @override Future<Result<Presigned>> presign({required String mimeType, required int sizeBytes, required String sha256, required String purpose}) => _g(() { final id = 'm${presigned.length + 1}'; presigned.add(id); return Presigned(mediaId: id, uploadUrl: 'mock://$id'); });
-  @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) => _g(() { uploaded.add(p.mediaId); });
+  /// يحاكي رفعاً يفشل — كانت نتيجته تُهمَل فتُعلَّم الصورة ناجحةً وهي لم تصل.
+  bool uploadFails = false;
+  @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) async {
+    if (uploadFails) return const Result.err(NetworkFailure());
+    return _g(() { uploaded.add(p.mediaId); });
+  }
   @override Future<Result<void>> inspect(String woId, NewInspection ins) => _g(() { inspections.putIfAbsent(woId, () => []).add(WoInspection(id: 'ins1', type: ins.type, odometerKm: ins.odometerKm, damagesCount: ins.damages.length, mediaIds: ins.mediaIds, performedAt: DateTime(2026, 8, 18, 9, 10))); final w = orders[woId]!; _st(w, 'received'); _st(orders[woId]!, 'inspecting'); });
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) => _g(() { media.putIfAbsent(woId, () => []).addAll(mediaIds.map((m) => WoMedia(mediaId: m, mimeType: 'image/jpeg', label: label))); });
   @override Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId) => _g(() => {for (final i in invoices) i.workOrderId!});
@@ -162,6 +167,35 @@ void main() {
     await tester.tap(find.text('إصدار الفاتورة')); await tester.pumpAndSettle(); expect(be.invoices.length, 1); expect(find.text('invoice inv1'), findsOneWidget);
     GoRouter.of(tester.element(find.text('invoice inv1'))).pop(); await tester.pumpAndSettle();
     await tester.tap(find.text('تم التسليم')); await tester.pumpAndSettle(); expect(be.orders[id]!.status, 'delivered');
+  });
+
+  testWidgets('صورة فحصٍ لم تُرفع: لا علامة نجاحٍ كاذبة، ولا حفظَ بلا دليل — واللمس يعيد رفعها', (tester) async {
+    size(tester);
+    // نُنشئ أمراً ونستلمه ثم نفتح الفحص
+    await tester.pumpWidget(app(router('/ws/new'))); await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'جوال العميل'), '0512345678');
+    await tester.enterText(find.widgetWithText(TextField, 'رقم اللوحة'), 'أ ب ج 4821');
+    await tester.enterText(find.widgetWithText(TextField, 'أضف بنداً بسطر'), 'غيار زيت بسعر 280');
+    await tester.pumpAndSettle(); await tester.tap(find.byIcon(Icons.add_circle)); await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('إنشاء الأمر')); await tester.pumpAndSettle();
+    await tester.tap(find.text('استلام السيارة')); await tester.pumpAndSettle();
+    await tester.tap(find.text('فحص الاستلام')); await tester.pumpAndSettle();
+
+    // الزوايا الثماني تُلتقط، لكن آخرها يقع والمخزن لا يستجيب
+    for (var i = 0; i < 7; i++) { await tester.tap(find.textContaining('صوّر الزاوية التالية')); await tester.pumpAndSettle(); }
+    be.uploadFails = true;
+    await tester.tap(find.textContaining('صوّر الزاوية التالية')); await tester.pumpAndSettle();
+    expect(be.uploaded.length, 7, reason: 'الثامنة لم تصل فعلاً');
+    expect(find.text('7 / 8'), findsOneWidget, reason: 'العدّاد يحسب المحفوظ لا الملتقَط');
+    await tester.enterText(find.widgetWithText(TextField, 'العدّاد'), '84250');
+    await tester.tap(find.text('حفظ فحص الاستلام')); await tester.pumpAndSettle();
+    expect(be.inspections, isEmpty, reason: 'لا يُحفظ فحصٌ ودليلُه ناقص');
+    expect(find.textContaining('لم تُرفع'), findsOneWidget);       // الحقيقة تُقال
+
+    be.uploadFails = false;                                       // عاد المخزن
+    await tester.tap(find.byIcon(Icons.upload)); await tester.pumpAndSettle();   // شارة «لم تُرفع» على الصورة نفسها
+    expect(be.uploaded.length, 8, reason: 'اللمس أعاد رفع البايتات نفسها لا صورةً جديدة');
+    expect(find.text('8 / 8'), findsOneWidget);
   });
 
   testWidgets('offline → online: status update and photo are queued while offline, then synced in order', (tester) async {

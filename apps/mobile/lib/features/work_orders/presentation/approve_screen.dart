@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../core/result/result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,13 +23,27 @@ class _ApproveScreenState extends ConsumerState<ApproveScreen> {
     final r = await ref.read(workOrdersRepositoryProvider).approveInit(widget.id, method: method, version: version); if (!mounted) return;
     r.when(ok: (i) { setState(() { _init = i; _busy = false; if (i.debugCode != null) _code.text = i.debugCode!; }); if (i.method == 'nafath') _pollNafath(i, version); }, err: (f) => setState(() { _busy = false; _error = f.message(_locale); }));
   }
-  void _pollNafath(ApproveInit i, int version) { _poll?.cancel(); _poll = Timer.periodic(const Duration(seconds: 2), (_) async { final r = await ref.read(workOrdersRepositoryProvider).approveComplete(widget.id, method: 'nafath', version: version, transactionId: i.transactionId); if (!mounted) return; r.when(ok: (_) => _finish(), err: (f) { if (f.code != 'NAFATH_PENDING') { _poll?.cancel(); setState(() => _error = f.message(_locale)); } }); }); }
+  void _pollNafath(ApproveInit i, int version) { _poll?.cancel(); _poll = Timer.periodic(const Duration(seconds: 2), (_) async { final r = await ref.read(workOrdersRepositoryProvider).approveComplete(widget.id, method: 'nafath', version: version, transactionId: i.transactionId); if (!mounted) return; r.when(ok: (_) => _finish(), err: (f) { if (f.code != 'NAFATH_PENDING') { _poll?.cancel(); unawaited(_failedOrActuallyDone(f)); } }); }); }
   Future<void> _completeOtp(int version) async {
     final l = L10n.of(context); if (!RegExp(r'^\d{6}$').hasMatch(_code.text)) { setState(() => _error = l.invalidCode); return; }
     setState(() { _busy = true; _error = null; });
     final r = await ref.read(workOrdersRepositoryProvider).approveComplete(widget.id, method: 'otp', version: version, code: _code.text); if (!mounted) return;
-    r.when(ok: (_) => _finish(), err: (f) => setState(() { _busy = false; _error = f.message(_locale); }));
+    await r.when(ok: (_) async => _finish(), err: (f) async => _failedOrActuallyDone(f));
   }
+
+  /// **لا نخمّن، نسأل.** التوقيع فعلٌ لا يقبل التكرار: قد يسجّله الخادم ثم ينقطع الردّ في
+  /// الطريق. كان التطبيق يعرض خطأً حينها — فيظنّ صاحبه أن اعتماده ضاع، وإعادة المحاولة
+  /// تردّ «ليس بانتظار الاعتماد» (لأنه اعتُمد فعلاً) فيزداد الالتباس.
+  /// الآن نعيد قراءة الأمر: إن كان قد جاوز الانتظار فقد نجح توقيعه — نقولها له.
+  Future<void> _failedOrActuallyDone(Failure f) async {
+    ref.invalidate(workOrderProvider(widget.id));
+    final again = await ref.read(workOrderProvider(widget.id).future);
+    if (!mounted) return;
+    final o = again.valueOrNull;
+    if (o != null && o.status != 'awaiting_approval') { _finish(); return; }
+    setState(() { _busy = false; _error = f.message(_locale); });
+  }
+
   void _finish() { _poll?.cancel(); ref.invalidate(workOrderProvider(widget.id)); ref.invalidate(workOrderTimelineProvider(widget.id)); ref.invalidate(workOrdersProvider); setState(() { _done = true; _busy = false; }); }
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final wo = ref.watch(workOrderProvider(widget.id)); final order = wo.value?.valueOrNull; final nafath = ref.watch(authControllerProvider).me?.nafathVerified ?? false;

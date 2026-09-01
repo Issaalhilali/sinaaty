@@ -2866,4 +2866,9 @@ class L10nEn extends L10n {
 
   @override
   String get payCheckNow => 'Check now';
+
+  @override
+  String insPhotosPending(int n) {
+    return '$n photo(s) didn\'t upload — tap to retry before saving';
+  }
 }

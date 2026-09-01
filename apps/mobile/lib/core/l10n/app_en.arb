@@ -1288,5 +1288,13 @@
   "staleData": "Couldn't refresh — what you see may be out of date",
   "payInDoubtTitle": "Your payment is being confirmed",
   "payInDoubtBody": "The payment started but we haven't received confirmation yet. Don't pay again — check in a moment; if it didn't go through, nothing is charged.",
-  "payCheckNow": "Check now"
+  "payCheckNow": "Check now",
+  "insPhotosPending": "{n} photo(s) didn't upload — tap to retry before saving",
+  "@insPhotosPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

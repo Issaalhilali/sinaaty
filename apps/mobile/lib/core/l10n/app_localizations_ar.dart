@@ -2829,4 +2829,9 @@ class L10nAr extends L10n {
 
   @override
   String get payCheckNow => 'تحقّق الآن';
+
+  @override
+  String insPhotosPending(int n) {
+    return '$n صورة لم تُرفع — المسها لإعادة الرفع قبل الحفظ';
+  }
 }
