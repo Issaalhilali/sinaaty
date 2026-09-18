@@ -46,6 +46,8 @@ dependencies:
   url_launcher: ^6.3.2
 
 dev_dependencies:
+  # مؤقّتات وهمية: نختبر «يشفي نفسه بعد ٣ث» بلا أن ينتظر المختبر ثلاث ثوانٍ حقيقية.
+  fake_async: ^1.3.1
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0

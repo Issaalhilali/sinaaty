@@ -13,7 +13,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepositoryI
 enum AuthStatus { unknown, signedOut, signedIn }
 class AuthState { final AuthStatus status; final Me? me; const AuthState(this.status, [this.me]); }
 class AuthController extends Notifier<AuthState> {
-  @override AuthState build() { Future.microtask(restore); return const AuthState(AuthStatus.unknown); }
+  @override AuthState build() { ref.onDispose(() { _heal?.cancel(); unawaited(_refreshSub?.cancel() ?? Future<void>.value()); }); Future.microtask(restore); return const AuthState(AuthStatus.unknown); }
   Future<void> restore() async {
     final t = await ref.read(tokenStoreProvider).access(); if (t == null) { state = const AuthState(AuthStatus.signedOut); return; }
     // ولا ننتظر الشبكة بلا سقف: مهلةٌ قصيرة ثم نفتح التطبيق. الخادم الساقط كان يُبقي صاحبه
@@ -24,10 +24,37 @@ class AuthController extends Notifier<AuthState> {
     // **انقطاعُ الشبكة ليس انتهاءَ جلسة.** كان أيُّ فشلٍ في /me يطرد صاحب الرمز إلى شاشة الدخول:
     // خادمٌ متعثّر أو شبكةٌ ضعيفة على الطريق = خروجٌ من الحساب في أسوأ لحظة. الطردُ الآن لمن
     // رفضه الخادمُ فعلاً (رمزٌ باطل)؛ ومن تعذّر الوصول إليه يبقى داخلاً وتقول له الشاشة الحقيقة.
+    // صُرف المزوّد بينما كنا ننتظر الشبكة؟ لا نكتب في حالةٍ ماتت — كتابةٌ كهذه ترمي استثناءً
+    // يبتلعه الإطار ويظهر أثره لاحقاً بلا سبب. (النداء يقع مرتين: من `build` ومن المستدعي.)
+    if (!ref.mounted) return;
     state = me.when(
       ok: (m) => AuthState(AuthStatus.signedIn, m),
       err: (f) => f is NetworkFailure ? AuthState(AuthStatus.signedIn, state.me) : const AuthState(AuthStatus.signedOut));
     if (state.status == AuthStatus.signedIn) unawaited(_syncPushToken());
+    // ودخلنا بلا هوية؟ **نعاود بهدوء بدل أن نستسلم.** المهلة تفتح التطبيق ولا تُنهي المحاولة:
+    // صاحب ورشةٍ فتح تطبيقه على محاكٍ بطيء فتجاوز /me الست ثوانٍ، فبقي «داخلاً» بلا مستخدم
+    // ولا منشأة — وكل شاشةٍ بعدها فارغة إلى أن يقتل التطبيق ويفتحه. الآن يشفي نفسه.
+    if (state.status == AuthStatus.signedIn && state.me == null) _scheduleHeal();
+  }
+
+  /// محاولاتٌ متباعدة لاستعادة الهوية بعد فشلٍ شبكي — تتوقّف عند أول نجاح، أو عند خروجٍ حقيقي،
+  /// أو حين يُصرف المتحكّم. متباعدةٌ عمداً: لا نُغرق خادماً متعثّراً بطلباتٍ كل ثانية. والمؤقّت
+  /// يُلغى عند الصرف: مؤقّتٌ يعيش بعد صاحبه يُبقي الاختبارات معلّقةً ويُسرّب عملاً في الإنتاج.
+  static const _healDelays = [Duration(seconds: 3), Duration(seconds: 8), Duration(seconds: 20)];
+  Timer? _heal;
+  void _scheduleHeal([int step = 0]) {
+    _heal?.cancel();
+    if (step >= _healDelays.length) return;
+    _heal = Timer(_healDelays[step], () async {
+      if (!ref.mounted || state.status != AuthStatus.signedIn || state.me != null) return;
+      final r = await ref.read(authRepositoryProvider).me()
+          .timeout(const Duration(seconds: 8), onTimeout: () => const Result.err(NetworkFailure()));
+      if (!ref.mounted) return;
+      final healed = r.when(ok: (m) { state = AuthState(AuthStatus.signedIn, m); return true; },
+          err: (f) { if (f is! NetworkFailure) state = const AuthState(AuthStatus.signedOut); return f is! NetworkFailure; });
+      if (healed) { unawaited(_syncPushToken()); return; }
+      _scheduleHeal(step + 1);
+    });
   }
   Future<void> signedIn() async {
     final me = await ref.read(authRepositoryProvider).me();
@@ -46,9 +73,11 @@ class AuthController extends Notifier<AuthState> {
     Future<void> send(String t) => ref.read(authRepositoryProvider).registerPushToken(t, platform: platformName(), flavor: ref.read(appConfigProvider).flavor.name).then((_) {});
     final t = await push.token();
     if (t != null) await send(t);
+    // `ref.onDispose` بعد فجوةٍ غير متزامنة يرمي إن كان المزوّد قد صُرف — والتسجيل مكانه
+    // `build` مرةً واحدة (أدناه)، فلا نُسجّل هنا شيئاً بل نكتفي بالحراسة قبل الاشتراك.
+    if (!ref.mounted) return;
     unawaited(_refreshSub?.cancel() ?? Future<void>.value());
     _refreshSub = push.refreshed.listen(send);
-    ref.onDispose(() => _refreshSub?.cancel());
   }
   StreamSubscription<String>? _refreshSub;
   Future<Result<Me>> setName(String fullNameAr) => updateProfile(fullNameAr: fullNameAr);

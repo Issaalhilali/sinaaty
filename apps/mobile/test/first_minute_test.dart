@@ -134,10 +134,13 @@ void main() {
         tokenStoreProvider.overrideWithValue(MemoryTokenStore()),
         authRepositoryProvider.overrideWithValue(_Auth(meFails: f)),
       ]);
-      addTearDown(c.dispose);
       await c.read(tokenStoreProvider).save(access: 'a', refresh: 'r');
       await c.read(authControllerProvider.notifier).restore();
-      return c.read(authControllerProvider).status;
+      final st = c.read(authControllerProvider).status;
+      // نصرفه هنا لا في tearDown: الفشل الشبكي يجدول محاولة شفاءٍ للهوية (مؤقّت ٣ث)، وصرف
+      // المتحكّم يلغيها. مؤقّتٌ يعيش بعد صاحبه يُبقي المختبر معلّقاً — وهو في الإنتاج تسريبُ عمل.
+      c.dispose();
+      return st;
     }
     // الخادم متعذّر: يبقى داخلاً — الشاشة تقول «تعذّر التحديث» ولا تُفقده جلسته على الطريق
     expect(await statusAfter(const NetworkFailure()), AuthStatus.signedIn);

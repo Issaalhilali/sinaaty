@@ -14,10 +14,15 @@ import '../domain/workshop_repository.dart';
 final workshopRepositoryProvider = Provider<WorkshopRepository>((ref) => WorkshopRepositoryImpl(ref.watch(apiClientProvider)));
 final pendingActionsProvider = Provider<PendingActions>((_) => FilePendingActions());
 /// Every org the member belongs to, active ones first (the server sorts).
-final myOrgsProvider = FutureProvider<List<OrgBrief>>((ref) async {
-  if (ref.watch(authControllerProvider).me == null) return const [];
-  return (await ref.watch(workshopRepositoryProvider).myOrgs()).valueOrNull ?? const [];
+/// نتيجة «منشآتي» كما هي — بنجاحها أو فشلها. الفشل **لا يُترجم فراغاً**: صاحب ورشةٍ فيها ٣٧
+/// أمراً رأى «لا توجد أوامر بعد» لأن الجلسة لم تصل، فثلاث طبقاتٍ حوّلت العطل إلى خبرٍ مطمئن.
+final myOrgsResultProvider = FutureProvider<Result<List<OrgBrief>>>((ref) async {
+  // الجلسة لم تصل بعد (شبكة أو استعادة جارية) — وهذا ليس «بلا منشآت».
+  if (ref.watch(authControllerProvider).me == null) return const Result.err(NetworkFailure());
+  return ref.watch(workshopRepositoryProvider).myOrgs();
 });
+final myOrgsProvider = FutureProvider<List<OrgBrief>>((ref) async =>
+    (await ref.watch(myOrgsResultProvider.future)).valueOrNull ?? const []);
 /// The org the partner app is currently acting as. Falls back to the token's first membership only
 /// until the briefs arrive — an old draft org must never be the one the app opens into.
 final currentOrgIdProvider = Provider<String?>((ref) =>
@@ -29,7 +34,15 @@ final currentOrgInfoProvider = FutureProvider<({String type, String nameAr})?>((
   return null;
 });
 const supplierOrgTypes = {'scrapyard', 'parts_dealer', 'parts_distributor', 'parts_brand_agent'};
-final orgOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) async { final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok([]); return ref.watch(workshopRepositoryProvider).orgOrders(org); });
+final orgOrdersProvider = FutureProvider.autoDispose<Result<List<WorkOrder>>>((ref) async {
+  // لا نعرف منشأته؟ نقول ذلك. كان يُعاد `Result.ok([])` — نجاحٌ مُختلَق يقرأه المستخدم
+  // «ورشتك فارغة»، والشاشة تعرض حالة الفراغ التعليمية بدل «تعذّر الاتصال · أعد المحاولة».
+  final orgs = await ref.watch(myOrgsResultProvider.future);
+  if (orgs case Err(:final failure)) return Result.err(failure);
+  final org = ref.watch(currentOrgIdProvider);
+  if (org == null) return const Result.ok([]);
+  return ref.watch(workshopRepositoryProvider).orgOrders(org);
+});
 /// الأوامر التي صدرت لها فاتورة — نداء واحد يكشف ما سُلّم بلا مطالبة بالمال.
 final invoicedWorkOrderIdsProvider = FutureProvider.autoDispose<Result<Set<String>>>((ref) async {
   final org = ref.watch(currentOrgIdProvider); if (org == null) return const Result.ok(<String>{});
