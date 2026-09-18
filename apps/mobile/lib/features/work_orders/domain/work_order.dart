@@ -13,6 +13,9 @@ class WorkOrder {
   /// «تويوتا 2002 · د م و 777» — the row's identity; falls back to the technical title, then the number.
   String get carLine { final parts = [vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).cast<String>().toList(); return parts.isEmpty ? (titleAr ?? number) : parts.join(' · '); }
   bool get knowsCar => (vehicleLabelAr ?? vehiclePlateAr) != null;
+  /// هل صار للأمر مبلغٌ حقيقي؟ المسودّة بلا بنود مجموعها `0.00`، وعرضه «٠٫٠٠ ر.س» كذبةٌ صغيرة:
+  /// العميل لم يُسعَّر له شيء بعد. الصفر يُقال بكلمته — «بانتظار التسعير» — لا برقمه.
+  bool get priced => (double.tryParse(total) ?? 0) > 0;
   /// «ورشة النور · تويوتا 2002 · د م و 777» — who and which car, in one calm line.
   String get partyLine => [orgNameAr, vehicleLabelAr, vehiclePlateAr].where((x) => x != null && x.trim().isNotEmpty).join(' · ');
   const WorkOrder({required this.id, required this.number, required this.status, required this.paymentTerms, required this.currentVersion, this.titleAr, required this.vehicleId, required this.orgId, this.vehicleLabelAr, this.vehiclePlateAr, this.orgNameAr, required this.subtotal, required this.vatAmount, required this.total, required this.depositRequired, required this.createdAt, this.promisedReadyAt, required this.items, this.parts = const []});

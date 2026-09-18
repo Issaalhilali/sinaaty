@@ -130,17 +130,21 @@ class _OrgWalletRoute extends StatelessWidget {
 }
 
 
-/// الإقلاع: العلامة على سطح الختم بدل دوّارةٍ في فراغ.
+/// الإقلاع: العلامة على أرضية التطبيق نفسها — **امتدادٌ لشاشة النظام لا قفزةٌ عنها**.
+///
+/// أندرويد يرسم أول إطارٍ بنفسه على `#E9EDEB` (قرارٌ مقصود: هوية صناعية فاتحة)، وكانت هذه
+/// الشاشة تقلبه إلى أخضر عميق ثم يعود التطبيق فاتحاً — وميضان في ثانيتين. الآن الأرضية واحدة
+/// من أول بكسل: لا يرى المستخدم انتقالاً أصلاً، وهو أرقى ما يفعله انتقال.
 class _Splash extends StatelessWidget {
   const _Splash();
   @override Widget build(BuildContext context) => Theme(data: AppTheme.light(), child: Builder(builder: (context) => Scaffold(
-        backgroundColor: SinaatyColors.sealDeep,
-        body: SealSurface(child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        backgroundColor: SinaatyColors.ground,
+        body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
           const BrandMark(size: 84),
           const SizedBox(height: SinaatySpace.lg),
-          Text(L10n.of(context).appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+          Text(L10n.of(context).appName, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: SinaatySpace.xl),
-          SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white.withValues(alpha: .7))),
-        ]))),
+          SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.2, color: SinaatyColors.seal.withValues(alpha: .55))),
+        ])),
       )));
 }
