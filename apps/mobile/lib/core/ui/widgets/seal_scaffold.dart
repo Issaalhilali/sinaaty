@@ -40,7 +40,12 @@ class SealScaffold extends StatelessWidget {
                 Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.xl, SinaatySpace.xxl, SinaatySpace.xl, SinaatySpace.lg),
                     child: Align(alignment: AlignmentDirectional.bottomStart, child: top)),
               ])))),
-              Container(
+              // اللوح يطلب نصف الشاشة على الأقل، والأخضر Expanded فيأخذ ما بقي — أي أن حدّ اللوح
+              // يقصّ الأخضر تلقائياً. بلا هذا كان الأخضر يبتلع ثلثي الجوال الطويل فراغاً ميتاً
+              // والكلام مسحوقٌ في قاعه (لقطة تطبيق الشريك، 2026-09-18).
+              ConstrainedBox(
+                constraints: BoxConstraints(minHeight: box.maxHeight * .46),
+                child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -51,7 +56,7 @@ class SealScaffold extends StatelessWidget {
                   padding: const EdgeInsets.all(SinaatySpace.xl),
                   child: sheet,
                 )),
-              ),
+              )),
             ])),
           ),
         )),

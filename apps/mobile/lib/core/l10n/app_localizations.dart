@@ -3865,6 +3865,30 @@ abstract class L10n {
   /// **'سيارتك من العطل إلى الطريق — في مكان واحد.'**
   String get loginPromise;
 
+  /// No description provided for @loginPromisePartner.
+  ///
+  /// In ar, this message translates to:
+  /// **'ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.'**
+  String get loginPromisePartner;
+
+  /// No description provided for @loginTrustPartnerOrders.
+  ///
+  /// In ar, this message translates to:
+  /// **'أوامر موقّعة'**
+  String get loginTrustPartnerOrders;
+
+  /// No description provided for @loginTrustPartnerMoney.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستحقّاتك محفوظة'**
+  String get loginTrustPartnerMoney;
+
+  /// No description provided for @loginTrustPartnerParts.
+  ///
+  /// In ar, this message translates to:
+  /// **'قطع برقم الهيكل'**
+  String get loginTrustPartnerParts;
+
   /// No description provided for @loginTrustSign.
   ///
   /// In ar, this message translates to:

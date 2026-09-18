@@ -971,6 +971,10 @@
     }
   },
   "loginPromise": "سيارتك من العطل إلى الطريق — في مكان واحد.",
+  "loginPromisePartner": "ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.",
+  "loginTrustPartnerOrders": "أوامر موقّعة",
+  "loginTrustPartnerMoney": "مستحقّاتك محفوظة",
+  "loginTrustPartnerParts": "قطع برقم الهيكل",
   "loginTrustSign": "اعتماد موقّع",
   "loginTrustEscrow": "المبلغ محفوظ",
   "loginTrustInvoice": "فاتورة نظامية",

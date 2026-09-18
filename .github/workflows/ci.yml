@@ -77,6 +77,9 @@ jobs:
           JOBS_ENABLED=false node apps/api/dist/main & echo $! > /tmp/api.pid
           for i in $(seq 1 40); do sleep 2; curl -sf localhost:3000/v1/health > /dev/null && break; done
           node tools/seam-check.mjs
+          # عقد السلك: الخادم يرسل camelCase والمُحلِّل كان يقرأ snake_case، فظهرت كل طلبات
+          # الإصلاح بلا عنوان على الجهاز. هذا يقارن مفاتيح الردّ الحيّ بما تقرؤه ملفات data/.
+          node tools/wire-shape-check.mjs
           kill $(cat /tmp/api.pid)
       # Contract artefacts: OpenAPI + generated enums must match the code that produced them.
       - run: pnpm --filter api openapi:export

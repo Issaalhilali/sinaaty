@@ -39,7 +39,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Theme(data: AppTheme.light(), child: Builder(builder: (context) {
       final t = Theme.of(context);
       return SealScaffold(
-      top: _Hero(l: l),
+      top: _Hero(l: l, partner: ref.watch(appConfigProvider).flavor != AppFlavor.customer),
       sheet: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.loginTitle, style: t.textTheme.titleLarge),
         const SizedBox(height: 4),
@@ -86,7 +86,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
 /// سطح الختم: الاسم، الجملة التي تختصر المنصة، وثلاث ضمانات هي فرقها عن أي تطبيق ورش.
 class _Hero extends StatelessWidget {
-  final L10n l; const _Hero({required this.l});
+  final L10n l;
+  /// صاحب الورشة كان يُستقبل بوعدٍ موجّهٍ للعميل («سيارتك من العطل إلى الطريق») — كلامٌ لا يخصّه،
+  /// وأول انطباعٍ يقول إن هذا ليس تطبيقه. لكل بابٍ وعدُه، والضمانات نفسها مقروءةً من جهته.
+  final bool partner;
+  const _Hero({required this.l, this.partner = false});
   @override Widget build(BuildContext context) {
     // «النصوص كبيرة لحجم الشاشة» — كلمة المالك على جهازه: المقاس يُشتق من عرض الشاشة
     // ويُحصر بين حدّين، فيتنفس على الكبيرة ولا يزاحم على الصغيرة. والارتفاع القصير
@@ -103,13 +107,19 @@ class _Hero extends StatelessWidget {
         ]),
         const SizedBox(height: SinaatySpace.lg),
       ],
-      Text(l.loginPromise, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.white, height: 1.45)),
+      Text(partner ? l.loginPromisePartner : l.loginPromise, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.white, height: 1.45)),
       const SizedBox(height: SinaatySpace.md),
-      Wrap(spacing: 6, runSpacing: 6, children: [
-        SealPill(l.loginTrustSign, icon: Icons.draw_outlined),
-        SealPill(l.loginTrustEscrow, icon: Icons.lock_outline),
-        SealPill(l.loginTrustInvoice, icon: Icons.receipt_long_outlined),
-      ]),
+      Wrap(spacing: 6, runSpacing: 6, children: partner
+          ? [
+              SealPill(l.loginTrustPartnerOrders, icon: Icons.draw_outlined),
+              SealPill(l.loginTrustPartnerMoney, icon: Icons.lock_outline),
+              SealPill(l.loginTrustPartnerParts, icon: Icons.qr_code_2_outlined),
+            ]
+          : [
+              SealPill(l.loginTrustSign, icon: Icons.draw_outlined),
+              SealPill(l.loginTrustEscrow, icon: Icons.lock_outline),
+              SealPill(l.loginTrustInvoice, icon: Icons.receipt_long_outlined),
+            ]),
     ]);
   }
 }

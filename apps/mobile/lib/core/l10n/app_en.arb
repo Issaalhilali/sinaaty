@@ -971,6 +971,10 @@
     }
   },
   "loginPromise": "Your car, from breakdown to back on the road — in one place.",
+  "loginPromisePartner": "Your workshop: signed orders, secured earnings.",
+  "loginTrustPartnerOrders": "Signed orders",
+  "loginTrustPartnerMoney": "Earnings secured",
+  "loginTrustPartnerParts": "Parts by VIN",
   "loginTrustSign": "Signed approvals",
   "loginTrustEscrow": "Money held",
   "loginTrustInvoice": "Tax invoice",

@@ -2057,6 +2057,19 @@ class L10nEn extends L10n {
       'Your car, from breakdown to back on the road — in one place.';
 
   @override
+  String get loginPromisePartner =>
+      'Your workshop: signed orders, secured earnings.';
+
+  @override
+  String get loginTrustPartnerOrders => 'Signed orders';
+
+  @override
+  String get loginTrustPartnerMoney => 'Earnings secured';
+
+  @override
+  String get loginTrustPartnerParts => 'Parts by VIN';
+
+  @override
   String get loginTrustSign => 'Signed approvals';
 
   @override

@@ -133,9 +133,14 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
     // «الرئيسية» فوق كل شيء (كلمة المالك: أزلها). وبقية التبويبات تحتفظ بعناوينها لأن
     // العنوان فيها يدلّ على مكانٍ لا يعرفه المستخدم بالضرورة.
     final homeTab = _index == 0;
+    // في تطبيق الشريك العنوان هو **اسم المنشأة** لا اسم الشخص: صاحب الورشة يعرف نفسه، ويحتاج أن
+    // يعرف أيّ ورشةٍ يشغّلها الآن (وقد يملك أكثر من واحدة). وكان يُعرض «أبو محمد — مالك و…» —
+    // اسمٌ ودورٌ مبتوران معاً، لا يقولان شيئاً. الاسم ينزل سطراً ثانياً حيث يكفيه مكانه.
+    final orgName = partner ? (ref.watch(currentOrgInfoProvider).value?.nameAr ?? '') : '';
+    final headTitle = partner && orgName.isNotEmpty ? orgName : name;
     return AppScaffold(
-      title: homeTab && name.isNotEmpty ? name : title,
-      subtitle: homeTab && name.isNotEmpty ? l.welcomeBack : null,
+      title: homeTab && headTitle.isNotEmpty ? headTitle : title,
+      subtitle: homeTab && headTitle.isNotEmpty ? (partner && name.isNotEmpty ? name : l.welcomeBack) : null,
       leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
