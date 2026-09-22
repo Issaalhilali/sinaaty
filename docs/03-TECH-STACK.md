@@ -7,7 +7,7 @@
 | الطبقة | الاختيار | البديل المدروس | سبب الاختيار |
 |---|---|---|---|
 | **Mobile / Web Apps (الأطراف)** | **Flutter 3.x (Dart 3.13+)** — codebase واحد بثلاث Flavors: `customer`, `partner`, `fleet` | React Native / Native | مشروع Flutter قائم؛ أداء RTL ممتاز؛ Web للأسطول |
-| **Admin Back-office** | **Next.js 15 (App Router) + TypeScript + shadcn/ui + TanStack Table** | Flutter Web | جداول/تقارير كثيفة، سرعة بناء لوحات داخلية |
+| **Admin Back-office** | **Angular 22 (standalone/zoneless) + PrimeNG 22 + Tailwind 3** — ADR-0010 (كان Next.js) | Flutter Web | جداول/تقارير كثيفة، سرعة بناء لوحات داخلية |
 | **Backend API** | **NestJS 11 (Node 22 LTS, TypeScript)** — Modular Monolith | Go (Fiber/Chi), Django | إنتاجية عالية، DI وModules مدمجة، تكامل ممتاز مع BullMQ/Prisma؛ الأجزاء عالية التزامن (Realtime/Matching) قابلة للنقل إلى Go لاحقاً |
 | **ORM / DB Access** | **Prisma 6** + `pg` Raw SQL للـ Ledger والاستعلامات المعقدة | Drizzle, TypeORM | Type-safety وMigrations؛ Raw SQL حيث تلزم الدقة المالية |
 | **Database** | **PostgreSQL 16 + PostGIS + pg_trgm + pgcrypto** | MySQL, Mongo | العلاقات المعقدة، JSONB للـ Snapshots، PostGIS للمطابقة الجغرافية |
@@ -67,7 +67,7 @@ sinaaty/
 ├── apps/
 │   ├── mobile/                   # Flutter (customer | partner | fleet flavors)  ← المشروع الحالي يُنقل هنا
 │   ├── api/                      # NestJS Core API + Workers + Realtime
-│   └── admin-web/                # Next.js back-office
+│   └── admin-web/                # Angular + PrimeNG back-office (ADR-0010)
 ├── packages/
 │   ├── shared-types/             # DTOs/Enums مشتركة (TS) + مولّد OpenAPI → Dart
 │   ├── zatca-ubl/                # مكتبة فواتير ZATCA

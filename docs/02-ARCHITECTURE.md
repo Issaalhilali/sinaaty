@@ -66,7 +66,7 @@ flowchart TB
     APP_W[Sinaaty Partner App<br/>ورشة/تشليح/وكيل قطع/سطحة<br/>iOS/Android/Web]
     WEB_F[Fleet Portal<br/>Flutter Web]
   end
-  WEB_A[Admin Back-office<br/>Next.js]
+  WEB_A[Admin Back-office<br/>Angular + PrimeNG]
 
   GW[API Gateway / Ingress<br/>TLS, Rate limit, WAF]
 
@@ -111,7 +111,7 @@ flowchart TB
 | **Customer App** | Flutter (flavor `customer`) | الأفراد | نفاذ Login، Work Orders، الدفع، Car Passport، طلب قطع/سطحة |
 | **Partner App** | Flutter (flavor `partner`) | الورش/التشاليح/وكلاء القطع/السطحات | نفس Codebase مع أدوار؛ Offline-first لتحديث الحالة والصور؛ Voice-to-Invoice |
 | **Fleet Portal** | Flutter Web (flavor `fleet`) | شركات الأساطيل | لوحات تحكم، اعتمادات، تقارير |
-| **Admin Back-office** | Next.js + shadcn/ui | فريق المنصة | KYB، النزاعات، مراقبة التكاملات، التسويات |
+| **Admin Back-office** | Angular + PrimeNG (ADR-0010) | فريق المنصة | KYB، النزاعات، مراقبة التكاملات، التسويات |
 
 > قرار: الحفاظ على Flutter كـ Codebase واحد لكل الأطراف (Multi-flavor + Role-based navigation) لتقليل التكلفة. لوحة الإدارة الداخلية فقط بـ Next.js لأنها كثيفة الجداول والتقارير.
 
@@ -326,7 +326,7 @@ Region: داخل المملكة (مثل: AWS me-central-1 / Oracle Jeddah / STC 
 │   ├── api (NestJS)         × 3+ replicas, HPA
 │   ├── workers (BullMQ)     × 2+ (queues: integrations, notifications, media, matching, settlements)
 │   ├── realtime (ws)        × 2
-│   └── admin-web (Next.js)
+│   └── admin-web (Angular + PrimeNG)
 ├── PostgreSQL 16 managed (Multi-AZ) + PostGIS + PgBouncer ; PITR backups
 ├── Redis 7 (managed) — cache, queues, rate-limit, presence
 ├── Object Storage (S3-compatible) — buckets: media/, documents/ (WORM للفواتير والمخالصات)
@@ -348,7 +348,7 @@ CI/CD: GitHub Actions — lint/test/build → docker → deploy (ArgoCD/Helm أ�
 | ADR-003 | Prisma كـ ORM + Raw SQL للـ Ledger والاستعلامات المعقدة | TypeORM / Drizzle | Type-safety، Migrations واضحة |
 | ADR-004 | Ledger مزدوج القيد داخلي | الاعتماد على تقارير مزود الدفع | مصدر حقيقة مالي مستقل وقابل للتدقيق |
 | ADR-005 | Outbox + BullMQ للتكاملات | استدعاء مباشر متزامن | موثوقية أمام تقطع الجهات الحكومية |
-| ADR-006 | Next.js فقط للـ Back-office | Flutter Web للإدارة | تجربة جداول/تقارير أفضل للفريق الداخلي |
+| ADR-006 | Next.js فقط للـ Back-office — **ألغاه ADR-010: Angular + PrimeNG (2026-09-22)** | Flutter Web للإدارة | تجربة جداول/تقارير أفضل للفريق الداخلي |
 | ADR-007 | **Clean Architecture** داخل كل Module/Feature: `domain → application → infrastructure/interface` (API) و`domain → data → presentation` (Flutter)، مع قاعدة الاعتماد نحو الداخل مفروضة بالـ Lint | طبقات Controller/Service/Repository التقليدية | قابلية اختبار المنطق المالي/القانوني بلا DB أو شبكة، وسهولة استبدال مزودي التكامل |
 
 ---

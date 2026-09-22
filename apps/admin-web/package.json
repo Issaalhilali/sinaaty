@@ -1,31 +1,39 @@
 {
   "name": "admin-web",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
+  "description": "صناعية — لوحة الإدارة (Angular + PrimeNG)",
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start -p 3001",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "dev": "ng serve --port 3001",
+    "build": "ng build",
+    "start": "node tools/serve.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test": "ng test",
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.59.0",
-    "next": "^15.4.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@primeuix/themes": "^1.2.0",
+    "primeicons": "^7.0.0",
+    "primeng": "^22.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@types/node": "^22.17.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.0",
+    "@angular/build": "^22.0.5",
+    "@angular/cli": "^22.0.5",
+    "@angular/compiler-cli": "^22.0.0",
+    "@playwright/test": "^1.48.0",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^28.0.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5.9.2",
-    "vitest": "^2.1.0",
-    "@playwright/test": "^1.48.0"
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
   }
 }

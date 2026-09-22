@@ -112,7 +112,7 @@ jobs:
       OTP_MAX_REQUESTS_PER_10MIN: '2000'
       # Same reason: every suite calls the API from the runner's single address.
       THROTTLE_LIMIT: '100000'
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
+      # admin-web (Angular) bakes API_BASE_URL at build time; the default in angular.json is this runner's API.
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
