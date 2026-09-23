@@ -39,7 +39,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Theme(data: AppTheme.light(), child: Builder(builder: (context) {
       final t = Theme.of(context);
       return SealScaffold(
-      top: _Hero(l: l, partner: ref.watch(appConfigProvider).flavor != AppFlavor.customer),
+      top: _Hero(l: l, partner: ref.watch(appConfigProvider).flavor != AppFlavor.customer, fleet: ref.watch(appConfigProvider).flavor == AppFlavor.fleet),
       sheet: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.loginTitle, style: t.textTheme.titleLarge),
         const SizedBox(height: 4),
@@ -90,7 +90,9 @@ class _Hero extends StatelessWidget {
   /// صاحب الورشة كان يُستقبل بوعدٍ موجّهٍ للعميل («سيارتك من العطل إلى الطريق») — كلامٌ لا يخصّه،
   /// وأول انطباعٍ يقول إن هذا ليس تطبيقه. لكل بابٍ وعدُه، والضمانات نفسها مقروءةً من جهته.
   final bool partner;
-  const _Hero({required this.l, this.partner = false});
+  /// ومدير الأسطول ليس صاحب ورشة: على المحاكي استُقبل بـ«ورشتك: أوامر موقّعة» — وعدُه أن لا إصلاح يُدفع قبل اعتماده.
+  final bool fleet;
+  const _Hero({required this.l, this.partner = false, this.fleet = false});
   @override Widget build(BuildContext context) {
     // «النصوص كبيرة لحجم الشاشة» — كلمة المالك على جهازه: المقاس يُشتق من عرض الشاشة
     // ويُحصر بين حدّين، فيتنفس على الكبيرة ولا يزاحم على الصغيرة. والارتفاع القصير
@@ -107,9 +109,15 @@ class _Hero extends StatelessWidget {
         ]),
         const SizedBox(height: SinaatySpace.lg),
       ],
-      Text(partner ? l.loginPromisePartner : l.loginPromise, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.white, height: 1.45)),
+      Text(fleet ? l.loginPromiseFleet : partner ? l.loginPromisePartner : l.loginPromise, style: TextStyle(fontFamily: AppTheme.fontFamily, fontSize: titleSize, fontWeight: FontWeight.w800, color: Colors.white, height: 1.45)),
       const SizedBox(height: SinaatySpace.md),
-      Wrap(spacing: 6, runSpacing: 6, children: partner
+      Wrap(spacing: 6, runSpacing: 6, children: fleet
+          ? [
+              SealPill(l.loginTrustFleetApprove, icon: Icons.fact_check_outlined),
+              SealPill(l.loginTrustFleetBudget, icon: Icons.account_balance_wallet_outlined),
+              SealPill(l.loginTrustFleetPassport, icon: Icons.directions_car_outlined),
+            ]
+          : partner
           ? [
               SealPill(l.loginTrustPartnerOrders, icon: Icons.draw_outlined),
               SealPill(l.loginTrustPartnerMoney, icon: Icons.lock_outline),

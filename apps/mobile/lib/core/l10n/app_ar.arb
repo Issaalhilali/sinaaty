@@ -645,6 +645,8 @@
   },
   "flNoPolicy": "لا توجد سياسة صرف — كل إصلاح يحتاج اعتمادك.",
   "flPolicyLine": "سياسة «{name}»: اعتماد تلقائي تحت {auto}",
+  "flPolicyLineNoAuto": "سياسة «{name}»: كل إصلاح يحتاج اعتمادك",
+  "@flPolicyLineNoAuto": {"placeholders": {"name": {"type": "String"}}},
   "@flPolicyLine": {
     "placeholders": {
       "name": {
@@ -990,6 +992,10 @@
   },
   "loginPromise": "سيارتك من العطل إلى الطريق — في مكان واحد.",
   "loginPromisePartner": "ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.",
+  "loginPromiseFleet": "أسطولك: لا إصلاح يُدفع قبل أن تعتمده.",
+  "loginTrustFleetApprove": "اعتماد قبل الدفع",
+  "loginTrustFleetBudget": "ميزانية مضبوطة",
+  "loginTrustFleetPassport": "سجل لكل سيارة",
   "loginTrustPartnerOrders": "أوامر موقّعة",
   "loginTrustPartnerMoney": "مستحقّاتك محفوظة",
   "loginTrustPartnerParts": "قطع برقم الهيكل",

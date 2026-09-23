@@ -1413,6 +1413,11 @@ class L10nEn extends L10n {
   }
 
   @override
+  String flPolicyLineNoAuto(String name) {
+    return 'Policy “$name”: every repair needs your approval';
+  }
+
+  @override
   String get flInboxTitle => 'Awaiting your decision';
 
   @override
@@ -2114,6 +2119,19 @@ class L10nEn extends L10n {
   @override
   String get loginPromisePartner =>
       'Your workshop: signed orders, secured earnings.';
+
+  @override
+  String get loginPromiseFleet =>
+      'Your fleet: no repair is paid before you approve it.';
+
+  @override
+  String get loginTrustFleetApprove => 'Approve before paying';
+
+  @override
+  String get loginTrustFleetBudget => 'Budget under control';
+
+  @override
+  String get loginTrustFleetPassport => 'A record per car';
 
   @override
   String get loginTrustPartnerOrders => 'Signed orders';

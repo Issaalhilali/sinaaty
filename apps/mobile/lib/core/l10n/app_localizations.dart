@@ -2713,6 +2713,12 @@ abstract class L10n {
   /// **'سياسة «{name}»: اعتماد تلقائي تحت {auto}'**
   String flPolicyLine(String name, String auto);
 
+  /// No description provided for @flPolicyLineNoAuto.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة «{name}»: كل إصلاح يحتاج اعتمادك'**
+  String flPolicyLineNoAuto(String name);
+
   /// No description provided for @flInboxTitle.
   ///
   /// In ar, this message translates to:
@@ -3966,6 +3972,30 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.'**
   String get loginPromisePartner;
+
+  /// No description provided for @loginPromiseFleet.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسطولك: لا إصلاح يُدفع قبل أن تعتمده.'**
+  String get loginPromiseFleet;
+
+  /// No description provided for @loginTrustFleetApprove.
+  ///
+  /// In ar, this message translates to:
+  /// **'اعتماد قبل الدفع'**
+  String get loginTrustFleetApprove;
+
+  /// No description provided for @loginTrustFleetBudget.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميزانية مضبوطة'**
+  String get loginTrustFleetBudget;
+
+  /// No description provided for @loginTrustFleetPassport.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل لكل سيارة'**
+  String get loginTrustFleetPassport;
 
   /// No description provided for @loginTrustPartnerOrders.
   ///

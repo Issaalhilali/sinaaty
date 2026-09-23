@@ -102,7 +102,8 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
             Icon(Icons.verified_user_outlined, size: 14, color: Colors.white.withValues(alpha: .85)),
             const SizedBox(width: 6),
             Expanded(child: Text(
-              o?.policyNameAr != null ? l.flPolicyLine(o!.policyNameAr!, Fmt.money(o.autoApproveBelow ?? '0', locale: locale)) : l.flNoPolicy,
+              // سياسةٌ حُفظت بلا حدّ تلقائي قالت على الجهاز «اعتماد تلقائي تحت 0.00 ر.س» — الصدق: كل إصلاح يحتاج اعتمادك.
+              o?.policyNameAr == null ? l.flNoPolicy : (double.tryParse(o!.autoApproveBelow ?? '0') ?? 0) > 0 ? l.flPolicyLine(o.policyNameAr!, Fmt.money(o.autoApproveBelow!, locale: locale)) : l.flPolicyLineNoAuto(o.policyNameAr!),
               style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .85)),
             )),
             // القاعدة تُقرأ هنا منذ اليوم الأول؛ ومن يقرؤها هو من يجب أن يملك تغييرها.

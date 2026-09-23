@@ -1402,6 +1402,11 @@ class L10nAr extends L10n {
   }
 
   @override
+  String flPolicyLineNoAuto(String name) {
+    return 'سياسة «$name»: كل إصلاح يحتاج اعتمادك';
+  }
+
+  @override
   String get flInboxTitle => 'بانتظار قرارك';
 
   @override
@@ -2087,6 +2092,18 @@ class L10nAr extends L10n {
 
   @override
   String get loginPromisePartner => 'ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.';
+
+  @override
+  String get loginPromiseFleet => 'أسطولك: لا إصلاح يُدفع قبل أن تعتمده.';
+
+  @override
+  String get loginTrustFleetApprove => 'اعتماد قبل الدفع';
+
+  @override
+  String get loginTrustFleetBudget => 'ميزانية مضبوطة';
+
+  @override
+  String get loginTrustFleetPassport => 'سجل لكل سيارة';
 
   @override
   String get loginTrustPartnerOrders => 'أوامر موقّعة';

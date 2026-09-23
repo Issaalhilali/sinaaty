@@ -645,6 +645,8 @@
   },
   "flNoPolicy": "No spending policy — every repair needs your approval.",
   "flPolicyLine": "Policy “{name}”: auto-approve below {auto}",
+  "flPolicyLineNoAuto": "Policy “{name}”: every repair needs your approval",
+  "@flPolicyLineNoAuto": {"placeholders": {"name": {"type": "String"}}},
   "@flPolicyLine": {
     "placeholders": {
       "name": {
@@ -990,6 +992,10 @@
   },
   "loginPromise": "Your car, from breakdown to back on the road — in one place.",
   "loginPromisePartner": "Your workshop: signed orders, secured earnings.",
+  "loginPromiseFleet": "Your fleet: no repair is paid before you approve it.",
+  "loginTrustFleetApprove": "Approve before paying",
+  "loginTrustFleetBudget": "Budget under control",
+  "loginTrustFleetPassport": "A record per car",
   "loginTrustPartnerOrders": "Signed orders",
   "loginTrustPartnerMoney": "Earnings secured",
   "loginTrustPartnerParts": "Parts by VIN",
