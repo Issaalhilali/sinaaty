@@ -1699,6 +1699,12 @@ abstract class L10n {
   /// **'أقل عرض'**
   String get ptLowest;
 
+  /// No description provided for @ptNoBidsShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا عروض بعد'**
+  String get ptNoBidsShort;
+
   /// No description provided for @ptEndsIn.
   ///
   /// In ar, this message translates to:
@@ -2040,6 +2046,60 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'أصدر دفعة QR'**
   String get spIssueSerials;
+
+  /// No description provided for @spLabels.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملصقات QR'**
+  String get spLabels;
+
+  /// No description provided for @spLabelsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملصقات القطع'**
+  String get spLabelsTitle;
+
+  /// No description provided for @spLabelPartName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم القطعة'**
+  String get spLabelPartName;
+
+  /// No description provided for @spLabelCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الملصقات'**
+  String get spLabelCount;
+
+  /// No description provided for @spLabelsHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل ملصق يحمل رمزاً فريداً — من يمسحه يعرف أن القطعة من عندك.'**
+  String get spLabelsHint;
+
+  /// No description provided for @spMakeLabels.
+  ///
+  /// In ar, this message translates to:
+  /// **'أنشئ الملصقات'**
+  String get spMakeLabels;
+
+  /// No description provided for @spScanToVerify.
+  ///
+  /// In ar, this message translates to:
+  /// **'امسح للتحقق · صناعية'**
+  String get spScanToVerify;
+
+  /// No description provided for @spLabelsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا ملصقات في هذه الدفعة.'**
+  String get spLabelsEmpty;
+
+  /// No description provided for @spLabelsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} ملصق'**
+  String spLabelsCount(int n);
 
   /// No description provided for @spSerialsIssued.
   ///

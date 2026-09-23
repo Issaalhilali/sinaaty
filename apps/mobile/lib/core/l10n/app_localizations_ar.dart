@@ -862,6 +862,9 @@ class L10nAr extends L10n {
   String get ptLowest => 'أقل عرض';
 
   @override
+  String get ptNoBidsShort => 'لا عروض بعد';
+
+  @override
   String ptEndsIn(int m) {
     return 'ينتهي خلال $m د';
   }
@@ -1043,6 +1046,36 @@ class L10nAr extends L10n {
 
   @override
   String get spIssueSerials => 'أصدر دفعة QR';
+
+  @override
+  String get spLabels => 'ملصقات QR';
+
+  @override
+  String get spLabelsTitle => 'ملصقات القطع';
+
+  @override
+  String get spLabelPartName => 'اسم القطعة';
+
+  @override
+  String get spLabelCount => 'عدد الملصقات';
+
+  @override
+  String get spLabelsHint =>
+      'كل ملصق يحمل رمزاً فريداً — من يمسحه يعرف أن القطعة من عندك.';
+
+  @override
+  String get spMakeLabels => 'أنشئ الملصقات';
+
+  @override
+  String get spScanToVerify => 'امسح للتحقق · صناعية';
+
+  @override
+  String get spLabelsEmpty => 'لا ملصقات في هذه الدفعة.';
+
+  @override
+  String spLabelsCount(int n) {
+    return '$n ملصق';
+  }
 
   @override
   String spSerialsIssued(int n, String batch) {

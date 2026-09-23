@@ -82,6 +82,8 @@ class FakeCustomerParts implements PartsRepository {
   @override Future<Result<PartOrder>> transition(String orderId, String to) async => const Result.err(UnknownFailure());
   @override Future<Result<List<InventoryItem>>> inventory(String orgId) async => const Result.ok([]);
   @override Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count}) async => const Result.ok((issued: 0, batchCode: ''));
+  @override Future<Result<String>> createOwnPart({required String orgId, required String brand, required String nameAr, String? partNumber}) async => const Result.ok('cat-own');
+  @override Future<Result<List<PartLabel>>> serials({required String orgId, String? batch}) async => const Result.ok([]);
 }
 
 class FakeTransport implements TransportRepository {

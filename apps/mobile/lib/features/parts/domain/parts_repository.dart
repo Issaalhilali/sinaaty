@@ -24,6 +24,9 @@ abstract interface class PartsRepository {
   Future<Result<PartOrder>> transition(String orderId, String to);
   Future<Result<List<InventoryItem>>> inventory(String orgId);
   Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count});
+  /// التشليح/المحل يسجّل قطعته باسمه (العلامة = اسمه) ليصدر لها ملصقات: الخادم لا يسمح بالأرقام إلا لمن أنشأ القطعة، وهذا يجعله هو.
+  Future<Result<String>> createOwnPart({required String orgId, required String brand, required String nameAr, String? partNumber});
+  Future<Result<List<PartLabel>>> serials({required String orgId, String? batch});
 }
 /// Camera QR scanning port (mobile_scanner impl in data/; tests inject a fake).
 abstract interface class QrScanner { Future<String?> scan(); }

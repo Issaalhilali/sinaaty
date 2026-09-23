@@ -865,6 +865,9 @@ class L10nEn extends L10n {
   String get ptLowest => 'Lowest';
 
   @override
+  String get ptNoBidsShort => 'No offers yet';
+
+  @override
   String ptEndsIn(int m) {
     return 'Ends in $m min';
   }
@@ -1048,6 +1051,36 @@ class L10nEn extends L10n {
 
   @override
   String get spIssueSerials => 'Issue QR batch';
+
+  @override
+  String get spLabels => 'QR labels';
+
+  @override
+  String get spLabelsTitle => 'Part labels';
+
+  @override
+  String get spLabelPartName => 'Part name';
+
+  @override
+  String get spLabelCount => 'Number of labels';
+
+  @override
+  String get spLabelsHint =>
+      'Each label carries a unique code — whoever scans it knows the part came from you.';
+
+  @override
+  String get spMakeLabels => 'Create labels';
+
+  @override
+  String get spScanToVerify => 'Scan to verify · Sinaaty';
+
+  @override
+  String get spLabelsEmpty => 'No labels in this batch.';
+
+  @override
+  String spLabelsCount(int n) {
+    return '$n labels';
+  }
 
   @override
   String spSerialsIssued(int n, String batch) {

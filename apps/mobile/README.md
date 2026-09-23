@@ -10,7 +10,7 @@ flutter run --flavor customer --dart-define-from-file=env/dev.json -t lib/main_c
 flutter run --flavor partner  --dart-define-from-file=env/dev.json -t lib/main_partner.dart
 # iOS: create matching Xcode schemes (customer/partner/fleet) or run without --flavor using the entrypoint only.
 ```
-API base URL comes from `env/<env>.json` (`API_BASE_URL`); the API must be reachable from the device (use your LAN IP, not localhost, on a phone).
+API base URL comes from `env/<env>.json` (`API_BASE_URL`); the API must be reachable from the device (use your LAN IP, not localhost, on a phone). On an **Android emulator** use `env/emulator.json` — its `10.0.2.2` is the emulator's fixed alias for the host machine, so the build keeps working when the Mac's Wi‑Fi address changes (a stale LAN IP in `dev.json` silently kills sockets, refresh and the incoming banner).
 
 ## Checks (design review gate — CLAUDE.md §5.0 #10)
 ```bash

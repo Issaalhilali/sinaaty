@@ -75,3 +75,5 @@ List<PartRequest> supplierInbox(List<PartRequest> all, {int deadTail = 5}) {
   final dead = all.where((r) => !r.open).toList()..sort((a, b) => b.biddingEndsAt.compareTo(a.biddingEndsAt));
   return [...open, ...dead.take(deadTail)];
 }
+/// ملصق قطعة: رقمٌ تسلسلي + رمز QR فريد. للتشليح والمحل كما للوكيل — الفرق أن قطعة التشليح مسجّلة باسمه هو.
+class PartLabel { final String id; final String serialNumber; final String qrToken; final String batchCode; final String status; const PartLabel({required this.id, required this.serialNumber, required this.qrToken, required this.batchCode, required this.status}); }

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sinaaty/features/parts/presentation/labels_screen.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sinaaty/core/auth/token_store.dart';
 import 'package:sinaaty/core/location/here.dart';
@@ -56,7 +58,10 @@ class FakeParts implements PartsRepository, QrScanner {
   @override Future<Result<PartBid>> bid(String requestId, {required String orgId, required String condition, required String unitPrice, int quantity = 1, String deliveryFee = '0', int? etaHours, int warrantyDays = 0, String? notesAr, List<String> mediaIds = const []}) async { lastBidMedia = mediaIds; final r = requests[requestId]!; final b = PartBid(id: 'b${r.bids.length + 1}', supplierOrgId: orgId, condition: condition, unitPrice: double.parse(unitPrice).toStringAsFixed(2), quantity: quantity, deliveryFee: deliveryFee, etaHours: etaHours, warrantyDays: warrantyDays, notesAr: notesAr, status: 'submitted', createdAt: DateTime.now(), mediaIds: mediaIds); requests[requestId] = _with(r, status: 'bidding', bids: [...r.bids.where((x) => x.supplierOrgId != orgId), b]); return Result.ok(b); }
   @override Future<Result<PartOrder>> transition(String orderId, String to) async { final o = store[orderId]!; store[orderId] = PartOrder(id: o.id, number: o.number, source: o.source, status: to, paymentTerms: o.paymentTerms, supplierOrgId: o.supplierOrgId, buyerOrgId: o.buyerOrgId, total: o.total, createdAt: o.createdAt, items: o.items); return Result.ok(store[orderId]!); }
   @override Future<Result<List<InventoryItem>>> inventory(String orgId) async => const Result.ok([InventoryItem(id: 'inv1', titleAr: 'دسكات فرامل أمامية كامري — أصلي', partNumber: '04465-33471', condition: 'oem_new', price: '480.00', tradePrice: '420.00', quantity: 12, reservedQty: 1)]);
-  @override Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count}) async => Result.ok((issued: count, batchCode: 'B1'));
+  int issued = 0; ({String brand, String nameAr})? ownPart;
+  @override Future<Result<({int issued, String batchCode})>> issueSerials({required String orgId, required String catalogId, required int count}) async { issued = count; return Result.ok((issued: count, batchCode: 'B1')); }
+  @override Future<Result<String>> createOwnPart({required String orgId, required String brand, required String nameAr, String? partNumber}) async { ownPart = (brand: brand, nameAr: nameAr); return const Result.ok('cat-own'); }
+  @override Future<Result<List<PartLabel>>> serials({required String orgId, String? batch}) async => Result.ok([for (var i = 1; i <= issued; i++) PartLabel(id: 's$i', serialNumber: 'U1-$batch-${i.toString().padLeft(5, '0')}', qrToken: 'tok$i', batchCode: batch ?? 'B1', status: 'issued')]);
   @override Future<String?> scan() async => scanned;
 }
 class FakeWorkshop implements WorkshopRepository {
@@ -124,7 +129,7 @@ void main() {
   Widget app(GoRouter router, {String orgType = 'workshop', bool dark = false}) => ProviderScope(key: UniqueKey(), overrides: [hereProvider.overrideWithValue(FixedHere()), appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.partner, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), tokenStoreProvider.overrideWithValue(ts), authRepositoryProvider.overrideWithValue(FakeAuth(() => parts.currentOrg)), workshopRepositoryProvider.overrideWithValue(FakeWorkshop(orgType, () => parts.currentOrg)), partsRepositoryProvider.overrideWithValue(parts), qrScannerProvider.overrideWithValue(parts), transportRealtimeProvider.overrideWithValue(live)],
     child: MaterialApp.router(theme: AppTheme.light(), darkTheme: AppTheme.dark(), themeMode: dark ? ThemeMode.dark : ThemeMode.light, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router));
   final fakeJpeg = Uint8List.fromList(List<int>.filled(64, 9));
-  GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
+  GoRouter router(String initial) => GoRouter(initialLocation: initial, routes: [GoRoute(path: '/parts', builder: (_, _) => const Scaffold(body: WorkshopPartsScreen())), GoRoute(path: '/supplier', builder: (_, _) => const Scaffold(body: SupplierRequestsScreen())), GoRoute(path: '/sales', builder: (_, _) => const Scaffold(body: SupplierSalesScreen())), GoRoute(path: '/sp/labels/:batch', builder: (_, s) => PartLabelsScreen(orgId: s.uri.queryParameters['org'] ?? '', batch: s.pathParameters['batch']!, partName: s.uri.queryParameters['name'])), GoRoute(path: '/parts/requests/:id', builder: (_, s) => PartRequestScreen(id: s.pathParameters['id']!, pickImage: () async => fakeJpeg)), GoRoute(path: '/parts/orders/:id', builder: (_, s) => PartOrderScreen(id: s.pathParameters['id']!)), GoRoute(path: '/invoices/:id', builder: (_, s) => Scaffold(body: Text('invoice ${s.pathParameters['id']}')))]);
   setUp(() async { parts = FakeParts(); live = FakeTransportLive(); ts = MemoryTokenStore(); await ts.save(access: 'a', refresh: 'r'); });
   void size(WidgetTester t) { t.view.physicalSize = const Size(1170, 2532); t.view.devicePixelRatio = 3; addTearDown(t.view.reset); }
 
@@ -139,6 +144,29 @@ void main() {
     expect(find.text('آجل على الحساب المضمون — يصدر سند لأمر'), findsOneWidget);
     await tester.tap(find.textContaining('اشترِ الآن · 483.00')); await tester.pumpAndSettle();
     expect(parts.store.length, 1); expect(parts.store.values.first.paymentTerms, 'deferred'); expect(find.textContaining('PO-2026-000771'), findsWidgets); expect(find.text('مدفوع'), findsWidgets);
+  });
+  testWidgets('scrapyard makes QR labels: part registered under its own name → batch → one QR per label', (tester) async {
+    size(tester); parts.currentOrg = 'scrap';
+    await tester.pumpWidget(app(router('/sales'), orgType: 'scrapyard')); await tester.pumpAndSettle();
+    expect(find.text('أصدر دفعة QR'), findsNothing, reason: 'زر الوكيل لا يظهر للتشليح');
+    await tester.tap(find.text('ملصقات QR')); await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'اسم القطعة'), 'دينمو كامري مستعمل'); await tester.enterText(find.widgetWithText(TextField, 'عدد الملصقات'), '3');
+    await tester.tap(find.text('أنشئ الملصقات')); await tester.pumpAndSettle();
+    expect(parts.ownPart?.nameAr, 'دينمو كامري مستعمل'); expect(parts.issued, 3);
+    expect(find.byType(QrImageView), findsNWidgets(3)); expect(find.text('3 ملصق'), findsOneWidget); expect(find.text('دينمو كامري مستعمل'), findsNWidgets(3));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/part_labels_light.png'));
+    parts.currentOrg = 'ws1';
+  });
+  testWidgets("customer's request (no requester org): the supplier sees «قدّم عرضك», not the requester's view nor 0.00", (tester) async {
+    // على الجهاز: التنبيه أوصل التشليح إلى طلبٍ أنشأه عميل، فرأى «لم تصل عروض بعد — ننبّه المورّدين» و«أقل عرض 0.00» وبلا زرّ عرض.
+    size(tester);
+    final r = (await parts.createRequest(partNameAr: 'دينمو كامري 2019', vin: '4T1B11HK5KU456789')).valueOrNull!; expect(r.requesterOrgId, isNull);
+    parts.currentOrg = 'scrap';
+    await tester.pumpWidget(app(router('/parts/requests/${r.id}'), orgType: 'scrapyard')); await tester.pumpAndSettle();
+    expect(find.text('قدّم عرضك'), findsWidgets);
+    expect(find.text('لا عروض بعد'), findsOneWidget); expect(find.textContaining('0.00'), findsNothing);
+    expect(find.text('لم تصل عروض بعد — ننبّه المورّدين القريبين.'), findsNothing);
+    parts.currentOrg = 'ws1';
   });
   testWidgets('auction: workshop opens a request → supplier bids → workshop accepts → order; supplier inbox shows hot request', (tester) async {
     size(tester);

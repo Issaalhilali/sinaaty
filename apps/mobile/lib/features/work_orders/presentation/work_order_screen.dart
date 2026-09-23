@@ -51,7 +51,7 @@ class WorkOrderScreen extends ConsumerWidget {
         ],
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(o.titleAr ?? l.workOrder, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)), Text(Fmt.meta([o.partyLine.isEmpty ? null : o.partyLine, o.number]), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, o.status))]),
-          const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
+          const SizedBox(height: SinaatySpace.md), (o.priced || o.status != 'draft') ? MoneyText(Fmt.money(o.total, locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)) : Text(l.awaitingPricing, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white.withValues(alpha: .92))),  // «0.00 ر.س» فوق مسودةٍ لم تُسعَّر بعد يقول للعميل شيئاً غير صحيح
           const SizedBox(height: SinaatySpace.md), Wrap(spacing: 8, runSpacing: 6, children: [SealPill(Labels.terms(l, o.paymentTerms), icon: Icons.payments_outlined), if (o.paymentTerms == 'deferred') SealPill(l.securedByNote, icon: Icons.verified_outlined), ?signedPill(l, tl.value?.valueOrNull?.versions)]),
         ])),
         // «قطعتك وصلت»: رحلة القطعة بلا أسعار — «بانتظار القطع» المبهمة كانت نصف مكالمات «وين وصلنا؟»

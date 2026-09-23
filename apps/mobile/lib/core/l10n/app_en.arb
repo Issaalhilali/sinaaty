@@ -389,6 +389,7 @@
     }
   },
   "ptLowest": "Lowest",
+  "ptNoBidsShort": "No offers yet",
   "ptEndsIn": "Ends in {m} min",
   "@ptEndsIn": {
     "placeholders": {
@@ -481,6 +482,16 @@
   },
   "spSerials": "QR serials",
   "spIssueSerials": "Issue QR batch",
+  "spLabels": "QR labels",
+  "spLabelsTitle": "Part labels",
+  "spLabelPartName": "Part name",
+  "spLabelCount": "Number of labels",
+  "spLabelsHint": "Each label carries a unique code — whoever scans it knows the part came from you.",
+  "spMakeLabels": "Create labels",
+  "spScanToVerify": "Scan to verify · Sinaaty",
+  "spLabelsEmpty": "No labels in this batch.",
+  "spLabelsCount": "{n} labels",
+  "@spLabelsCount": {"placeholders": {"n": {"type": "int"}}},
   "spSerialsIssued": "{n} serials issued — batch {batch}",
   "@spSerialsIssued": {
     "placeholders": {

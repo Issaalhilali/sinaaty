@@ -25,6 +25,7 @@ import '../../features/workshop/presentation/voice_invoice_screen.dart';
 import '../../features/workshop/presentation/orders_screen.dart';
 import '../../features/parts/presentation/part_order_screen.dart';
 import '../../features/parts/presentation/request_screen.dart';
+import '../../features/parts/presentation/labels_screen.dart';
 import '../../features/parts/presentation/warranties_screen.dart';
 import '../../features/disputes/presentation/dispute_screen.dart';
 import '../../features/fleet/presentation/fleet_statements_screen.dart';
@@ -86,6 +87,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // المحفظة كانت تبويباً؛ صارت داخل «حسابي» بعد تقليص التبويبات إلى ثلاثة — فتحتاج عنواناً.
       GoRoute(path: '/wallet', builder: (_, _) => const _WalletRoute()),
       GoRoute(path: '/warranties', builder: (_, _) => const WarrantiesScreen()),
+      GoRoute(path: '/sp/labels/:batch', builder: (_, s) => PartLabelsScreen(orgId: s.uri.queryParameters['org'] ?? '', batch: s.pathParameters['batch']!, partName: s.uri.queryParameters['name'])),
       GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
       GoRoute(path: '/support', builder: (_, _) => const SupportScreen()),
       GoRoute(path: '/disputes/:id', builder: (_, s) => DisputeScreen(id: s.pathParameters['id']!)),
