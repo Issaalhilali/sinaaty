@@ -34,7 +34,8 @@ class _LabelTile extends StatelessWidget {
       Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)), child: QrImageView(data: label.qrToken, size: 118, backgroundColor: Colors.white, padding: EdgeInsets.zero)),
       const SizedBox(height: SinaatySpace.sm),
       if (partName != null && partName!.isNotEmpty) Text(partName!, style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
-      Text(label.serialNumber, style: t.bodySmall?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]), maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr),
+      // الرقم طويل (رقم الصنف + الدفعة + الوحدة): سطران كي لا يضيع رقم الوحدة — وهو ما يميّز الملصق عن جاره.
+      Text(label.serialNumber, style: t.labelSmall?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, textDirection: TextDirection.ltr),
       const SizedBox(height: 6),
       Text(l.spScanToVerify, style: t.labelSmall?.copyWith(color: c.onSurfaceVariant)),
     ]));
