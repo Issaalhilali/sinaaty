@@ -13,6 +13,9 @@ import { ReasonDialog } from '../ui/reason-dialog';
 
 type Msg = { id: string; authorUserId: string; authorNameAr: string | null; isInternal: boolean; bodyAr: string; createdAt: string };
 type D = { id: string; number: string; status: string; category: string; descriptionAr: string; claimedAmount: string | null; resolution: string | null; resolutionAmountToCustomer: string | null; resolutionNoteAr: string | null; workOrderId: string | null; partOrderId: string | null; assignedTo: string | null; createdAt: string; messages: Msg[]; media: Array<{ mediaId: string; label: string | null }>; escrow: { id: string; status: string; amount: string; released: string; refunded: string } | null };
+type Timeline = { status: string; versions: Array<{ id: string; version: number; sha256: string; reasonAr: string | null; createdAt: string; signed: boolean; signedMethod: string | null }>; inspections: Array<{ id: string; type: string; performedAt: string; mediaIds: string[] }>; media: Array<{ mediaId: string; entityType: string; label: string | null; mimeType: string }> };
+type DamageView = { zone: string; zone_ar?: string; severity: string; source?: string };
+type Diff = { comparable: boolean; summary_ar: string; appeared: DamageView[]; worsened: Array<{ zone: string; zone_ar?: string; from: string; to: string }>; repaired: DamageView[]; unchanged: DamageView[] };
 const RESOLUTIONS = ['release_to_provider', 'refund_customer', 'split', 'replace_part', 'no_action'] as const;
 
 /** غرفة النزاع: الشكوى والأدلة والمحادثة يساراً، والمال والقرار يميناً — والقرار يحرّك المبلغ فوراً بعد تأكيدٍ بسبب. */
@@ -30,6 +33,40 @@ const RESOLUTIONS = ['release_to_provider', 'refund_customer', 'split', 'replace
               <div class="flex gap-4 mt-3 text-sm text-muted"><span>المطالبة: <b class="num text-ink">{{ d.claimedAmount ? money(d.claimedAmount) : '—' }}</b></span><span>الأدلة: <b class="num text-ink">{{ d.media.length }}</b></span>@if (d.workOrderId) {<span class="num">WO {{ short(d.workOrderId) }}</span>}@if (d.partOrderId) {<span class="num">PO {{ short(d.partOrderId) }}</span>}</div>
               @if (d.media.length > 0) { <div class="flex flex-wrap gap-2 mt-3">@for (m of d.media; track m.mediaId) { <app-media-thumb [id]="m.mediaId" [label]="m.label" /> }</div> }
             </div>
+            @if (d.workOrderId) {
+              <!-- خزنة الأدلة: كل ما يحسم الخلاف في لوحةٍ واحدة — صور الاستلام مقابل التسليم والفرق بينهما كما حسبه
+                   النظام، والإصدار الموقّع وطريقة توقيعه وبصمته. كل عنصرٍ كان موجوداً؛ الجديد أنه لا يحتاج تنقّلاً. -->
+              <div class="card p-5"><app-eyebrow>خزنة الأدلة<span right>WO {{ short(d.workOrderId) }}</span></app-eyebrow>
+                @if (timeline.isLoading() && !timeline.value()) { <app-loading /> }
+                @if (timeline.value(); as tl) {
+                  <div class="grid grid-cols-2 gap-4">
+                    @for (kind of ['check_in', 'check_out']; track kind) {
+                      @let insp = inspectionOf(tl, kind);
+                      <div><div class="text-xs font-bold text-muted mb-1">{{ kind === 'check_in' ? 'صور الاستلام' : 'صور التسليم' }}@if (insp) { <span class="num font-normal"> · {{ date(insp.performedAt) }}</span> }</div>
+                        @if (!insp) { <p class="text-sm text-muted">{{ kind === 'check_in' ? 'لا فحص استلام' : 'لم يُفحص التسليم بعد' }}</p> }
+                        @else if (!insp.mediaIds.length) { <p class="text-sm text-muted">بلا صور</p> }
+                        @else { <div class="flex flex-wrap gap-2">@for (m of insp.mediaIds; track m) { <app-media-thumb [id]="m" [size]="64" /> }</div> }
+                      </div>
+                    }
+                  </div>
+                  <div class="mt-4"><div class="text-xs font-bold text-muted mb-1">ما تغيّر بين الاستلام والتسليم</div>
+                    @if (diff.error()) { <p class="text-sm text-muted">لا فحص استلام لهذا الأمر — لا مقارنة.</p> }
+                    @else if (diff.value(); as df) {
+                      <p class="text-sm">{{ df.summary_ar }}</p>
+                      @if (df.appeared.length) { <div class="mt-2 text-sm"><b class="text-bad">ظهر عند التسليم:</b> @for (x of df.appeared; track $index) { <app-pill [label]="(x.zone_ar ?? x.zone) + ' · ' + x.severity + (x.source === 'ai' ? ' · ذكاء اصطناعي' : '')" tone="pill-bad" /> } </div> }
+                      @if (df.worsened.length) { <div class="mt-2 text-sm"><b class="text-warn">ازداد:</b> @for (x of df.worsened; track $index) { <app-pill [label]="(x.zone_ar ?? x.zone) + ' · ' + x.from + ' → ' + x.to" tone="pill-warn" /> } </div> }
+                      @if (df.repaired.length) { <div class="mt-2 text-sm"><b class="text-seal">أُصلح:</b> @for (x of df.repaired; track $index) { <app-pill [label]="x.zone_ar ?? x.zone" tone="pill-seal" /> } </div> }
+                    } @else if (diff.isLoading()) { <app-loading /> }
+                  </div>
+                  <div class="mt-4"><div class="text-xs font-bold text-muted mb-1">التوقيع</div>
+                    @if (!tl.versions.length) { <p class="text-sm text-muted">لا إصدار بعد</p> }
+                    @else { <table class="tbl"><thead><tr><th>الإصدار</th><th>الحالة</th><th>البصمة</th><th>التاريخ</th></tr></thead><tbody>
+                      @for (v of tl.versions; track v.id) { <tr><td class="num">v{{ v.version }}</td><td>@if (v.signed) { <app-pill [label]="v.signedMethod === 'nafath' ? 'موقّع بنفاذ' : 'موقّع برمز التحقق'" tone="pill-seal" /> } @else { <app-pill label="غير موقّع" /> }</td><td class="num text-[10px] text-muted">{{ v.sha256.slice(0, 16) }}…</td><td class="num text-muted">{{ date(v.createdAt) }}</td></tr> }
+                    </tbody></table> }
+                  </div>
+                }
+              </div>
+            }
             <div class="card p-5"><app-eyebrow>المحادثة<span right>{{ d.messages.length }} رسالة</span></app-eyebrow>
               <div class="space-y-2 max-h-[380px] overflow-auto">
                 @for (m of d.messages; track m.id) { <div class="rounded-xl p-3 text-sm" [class.bg-brass-soft]="m.isInternal" [class.border]="m.isInternal" [class.border-brass/30]="m.isInternal" [class.bg-ground]="!m.isInternal"><div class="flex justify-between text-xs text-muted mb-1"><span class="font-bold text-ink">{{ m.authorNameAr ?? 'مستخدم' }}{{ m.isInternal ? ' · ملاحظة داخلية' : '' }}</span><span class="num">{{ date(m.createdAt) }}</span></div>{{ m.bodyAr }}</div> }
@@ -72,6 +109,10 @@ export class DisputePage {
   private api = inject(Api);
   q = httpResource<D>(() => `${API}/admin/disputes/${this.id()}`);
   get d() { return this.q.value(); }
+  /** خزنة الأدلة تُطلب فقط حين يكون النزاع على أمر عملٍ — فريق المنصة يقرأ الأمر بصلاحيته (isStaff). */
+  timeline = httpResource<Timeline>(() => { const wo = this.q.value()?.workOrderId; return wo ? `${API}/work-orders/${wo}/timeline` : undefined; });
+  diff = httpResource<Diff>(() => { const wo = this.q.value()?.workOrderId; return wo ? `${API}/work-orders/${wo}/inspection-diff` : undefined; });
+  inspectionOf = (tl: Timeline, kind: string) => tl.inspections.find((i) => i.type === kind);
   open = computed(() => { const d = this.q.value(); return !!d && ['open', 'under_review', 'awaiting_parties', 'escalated'].includes(d.status); });
   body = ''; internal = true; resolution = 'split'; amount = ''; note = '';
   posting = signal(false); resolving = signal(false); err = signal<string | null>(null);
