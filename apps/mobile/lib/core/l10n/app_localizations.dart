@@ -3361,6 +3361,42 @@ abstract class L10n {
   /// **'وسّع النطاق إلى {n} كم'**
   String srWiden(int n);
 
+  /// No description provided for @srListView.
+  ///
+  /// In ar, this message translates to:
+  /// **'قائمة'**
+  String get srListView;
+
+  /// No description provided for @srMapView.
+  ///
+  /// In ar, this message translates to:
+  /// **'على الخريطة'**
+  String get srMapView;
+
+  /// No description provided for @srMapNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيارتك في المنتصف، وكل ورشة حيث هي فعلاً — اضغط دبّوساً لترى عرضها.'**
+  String get srMapNote;
+
+  /// No description provided for @srMapNoPin.
+  ///
+  /// In ar, this message translates to:
+  /// **'{n} من العروض بلا موقعٍ مضبوط — تجدها في القائمة.'**
+  String srMapNoPin(int n);
+
+  /// No description provided for @srMapFree.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص مجاني'**
+  String get srMapFree;
+
+  /// No description provided for @srVoiceAttached.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيلك الصوتي سيُرفق بالطلب فتسمعه الورشة بصوتك.'**
+  String get srVoiceAttached;
+
   /// No description provided for @srWidened.
   ///
   /// In ar, this message translates to:

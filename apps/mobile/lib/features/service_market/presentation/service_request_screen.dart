@@ -9,6 +9,7 @@ import '../../../core/ui/ui.dart';
 import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
 import '../domain/service_request.dart';
 import 'providers.dart';
+import 'offer_map.dart';
 
 /// One request, two seats (scope §1.ب/ج): the customer compares offers — each with its visible
 /// argument, distance line and rating AS THE API SENT THEM — and accepting lands on the normal
@@ -21,6 +22,9 @@ class ServiceRequestScreen extends ConsumerStatefulWidget {
 }
 
 class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
+  /// «قائمة | على الخريطة» — القائمة تقارن الأسعار، والخريطة تجيب «كم تبعد عني؟». النقر على دبّوس يُبرز بطاقته.
+  bool _mapView = false;
+  String? _selectedOffer;
   bool _busy = false;
   void _refresh() { ref.invalidate(serviceRequestProvider(widget.id)); ref.invalidate(myServiceRequestsProvider); ref.invalidate(nearbyServiceRequestsProvider); }
 
@@ -150,15 +154,35 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
           const SizedBox(height: SinaatySpace.sm),
           Text(l.srFinalPriceNote, style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
           const SizedBox(height: SinaatySpace.lg),
-          SectionTitle(l.srOffers),
+          Row(children: [
+            Expanded(child: SectionTitle(l.srOffers)),
+            // المبدّل يظهر حين توجد عروضٌ بموقعٍ وسيارةٌ بموقع — وإلا فلا خريطة تُعد بشيء.
+            if (r.lat != null && r.offers.any((o) => o.hasPin))
+              SegmentedButton<bool>(
+                showSelectedIcon: false, style: const ButtonStyle(visualDensity: VisualDensity.compact),
+                segments: [ButtonSegment(value: false, icon: const Icon(Icons.view_agenda_outlined, size: 16), label: Text(l.srListView)), ButtonSegment(value: true, icon: const Icon(Icons.map_outlined, size: 16), label: Text(l.srMapView))],
+                selected: {_mapView}, onSelectionChanged: (s) => setState(() => _mapView = s.first),
+              ),
+          ]),
           if (r.offers.isEmpty) ...[
             EmptyState(icon: Icons.storefront_outlined, title: l.srNoOffers, body: ''),
             if (r.open && r.radiusKm < 150) Center(child: TextButton.icon(onPressed: _busy ? null : () => _widen(r), icon: const Icon(Icons.radar_outlined, size: 18), label: Text(l.srWiden(r.radiusKm < 100 ? 100 : 150)))),
           ] else ...[
-            for (final o in r.offers) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: _OfferCard(
-              o: o, busy: _busy, canAccept: r.open,
-              badgeLabel: (b) => _badge(l, b), whenLabel: _when(l, o.availability),
-              onAccept: () => _accept(o),
+            // الخريطة عدسةٌ فوق القائمة لا بديلٌ عنها: تختار دبّوساً فتُبرَز بطاقته تحتها، والقبول من البطاقة.
+            if (_mapView && r.lat != null) ...[
+              AnimatedSize(duration: const Duration(milliseconds: 260), curve: Curves.easeOutCubic,
+                  child: OfferMap(centerLat: r.lat!, centerLng: r.lng!, offers: r.offers, selectedId: _selectedOffer, onSelect: (o) => setState(() => _selectedOffer = o.id))),
+              const SizedBox(height: SinaatySpace.md),
+            ],
+            for (final o in r.offers) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(SinaatySpace.radiusLg + 2),
+                  border: Border.all(color: _selectedOffer == o.id ? SinaatyColors.seal : Colors.transparent, width: 2)),
+              child: _OfferCard(
+                o: o, busy: _busy, canAccept: r.open,
+                badgeLabel: (b) => _badge(l, b), whenLabel: _when(l, o.availability),
+                onAccept: () => _accept(o),
+              ),
             )),
           ],
         ] else if (r.offers.isNotEmpty) ...[

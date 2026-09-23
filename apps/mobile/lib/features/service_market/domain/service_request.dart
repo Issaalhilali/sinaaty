@@ -17,7 +17,10 @@ class ServiceOffer {
   final List<String> badges;     // cheapest | fastest | nearest | top_rated | previously_used | specialist
   final bool specialist;
   final int? respondsInMinutes;  // null for a workshop with no history — never an invented number
-  const ServiceOffer({required this.id, this.workshopOrgId, this.workshopNameAr, this.rating, this.distanceText, required this.offerType, this.diagnosisAr, this.priceMin, this.priceMax, this.availability, this.availableAt, this.etaNoteAr, this.badges = const [], this.specialist = false, this.respondsInMinutes});
+  /// إحداثيات الفرع الذي سيخدم — لخريطة العروض. null = بلا موقعٍ مضبوط، فيبقى في القائمة لا على الخريطة.
+  final double? lat, lng;
+  const ServiceOffer({required this.id, this.workshopOrgId, this.workshopNameAr, this.rating, this.distanceText, required this.offerType, this.diagnosisAr, this.priceMin, this.priceMax, this.availability, this.availableAt, this.etaNoteAr, this.badges = const [], this.specialist = false, this.respondsInMinutes, this.lat, this.lng});
+  bool get hasPin => lat != null && lng != null;
   bool get freeInspection => offerType == 'free_inspection';
 }
 
@@ -41,7 +44,9 @@ class ServiceRequest {
   final List<ServiceOffer> offers;
   /// The list view carries a count without the offers themselves — the badge never lies as zero.
   final int? offersCountRaw;
-  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.expiresAt, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
+  /// موقع السيارة كما أرسله العميل — مركز خريطة العروض.
+  final double? lat, lng;
+  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.expiresAt, this.lat, this.lng, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
   bool get open => status == 'open';
   /// ما بقي من المهلة — سالبٌ يعني انتهت.
   Duration? get remaining => expiresAt?.difference(DateTime.now());

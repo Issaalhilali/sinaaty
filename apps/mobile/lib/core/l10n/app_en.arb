@@ -835,6 +835,13 @@
   "srOffers": "Offers",
   "srNoOffers": "No offers yet — nearby workshops are reviewing your request.",
   "srWiden": "Widen to {n} km",
+  "srListView": "List",
+  "srMapView": "On the map",
+  "srMapNote": "Your car is in the middle; every workshop is where it really is — tap a pin to see its offer.",
+  "srMapNoPin": "{n} offers have no precise location — find them in the list.",
+  "@srMapNoPin": { "placeholders": { "n": { "type": "int" } } },
+  "srMapFree": "Free check",
+  "srVoiceAttached": "Your voice note will be attached so the workshop hears you in your own words.",
   "@srWiden": {
     "placeholders": {
       "n": {

@@ -119,6 +119,8 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
              o.availability, o.available_at, o.eta_note_ar, o.status, o.created_by, o.created_at, o.updated_at,
              org.trade_name_ar, org.legal_name_ar, org.rating_avg::text AS rating_avg, org.rating_count,
              l.city, l.district, (ST_Distance(l.geo, r.geo) / 1000.0)::float AS distance_km,
+             -- إحداثيات الفرع الذي سيخدم فعلاً: خريطة العروض عند العميل ترسم كل ورشةٍ حيث هي بالنسبة لسيارته.
+             ST_Y(l.geo::geometry)::float AS lat, ST_X(l.geo::geometry)::float AS lng,
              EXISTS (SELECT 1 FROM work_orders w WHERE w.org_id = o.org_id AND w.customer_user_id = r.customer_user_id AND w.id IS DISTINCT FROM r.work_order_id) AS previously_used,
              EXISTS (SELECT 1 FROM organization_specialties sp JOIN vehicles v ON v.id = r.vehicle_id WHERE sp.org_id = o.org_id AND sp.make_id = v.make_id) AS specialist,
              (SELECT count(*)::int FROM work_orders w WHERE w.org_id = o.org_id AND w.status IN ('delivered','closed')) AS completed_jobs,
@@ -144,6 +146,7 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
       status: x.status as OfferView['status'], createdBy: x.created_by, createdAt: x.created_at, updatedAt: x.updated_at,
       orgNameAr: x.trade_name_ar ?? x.legal_name_ar, ratingAvg: Number(x.rating_avg ?? 0).toFixed(2), ratingCount: x.rating_count,
       city: x.city, district: x.district, distanceKm: x.distance_km == null ? null : Math.round(x.distance_km * 10) / 10,
+      lat: x.lat, lng: x.lng,
       previouslyUsed: x.previously_used, specialist: x.specialist, completedJobs: x.completed_jobs,
       respondsInMinutes: x.responds_in_minutes == null ? null : Math.max(1, Math.round(x.responds_in_minutes)),
     }));
@@ -159,4 +162,4 @@ export class ServiceRequestsPrismaRepository implements ServiceRequestRepository
   async listMediaIds(requestId: string) { const rows = await this.prisma.mediaLink.findMany({ where: { entityType: 'service_request', entityId: requestId }, select: { mediaId: true } }); return rows.map((r) => r.mediaId); }
 }
 
-interface OfferRowSql { specialist: boolean; completed_jobs: number; responds_in_minutes: number | null; id: string; request_id: string; org_id: string; offer_type: string; diagnosis_ar: string | null; price_min: string | null; price_max: string | null; availability: string; available_at: Date | null; eta_note_ar: string | null; status: string; created_by: string | null; created_at: Date; updated_at: Date; trade_name_ar: string | null; legal_name_ar: string; rating_avg: string | null; rating_count: number; city: string | null; district: string | null; distance_km: number | null; previously_used: boolean }
+interface OfferRowSql { specialist: boolean; completed_jobs: number; responds_in_minutes: number | null; id: string; request_id: string; org_id: string; offer_type: string; diagnosis_ar: string | null; price_min: string | null; price_max: string | null; availability: string; available_at: Date | null; eta_note_ar: string | null; status: string; created_by: string | null; created_at: Date; updated_at: Date; trade_name_ar: string | null; legal_name_ar: string; rating_avg: string | null; rating_count: number; city: string | null; district: string | null; distance_km: number | null; lat: number | null; lng: number | null; previously_used: boolean }

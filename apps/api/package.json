@@ -10,6 +10,7 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
+    "dev:local": "bash tools/dev.sh",
     "start": "node dist/main.js",
     "start:debug": "nest start --debug --watch",
     "lint": "eslint \"{src,test,tools}/**/*.{ts,mjs}\"",

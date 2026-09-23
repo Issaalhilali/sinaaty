@@ -67,6 +67,7 @@ class FakeServiceMarket implements ServiceMarketRepository {
   @override Future<Result<void>> widen(String id, {required int radiusKm}) async { lastWiden = radiusKm; return const Result.ok(null); }
   @override Future<Result<void>> cancel(String id) async => const Result.ok(null);
   @override Future<Result<String>> uploadPhoto(List<int> bytes, {required String mimeType}) async => const Result.ok('m-sr-1');
+  @override Future<Result<String>> uploadAudio(List<int> bytes) async => const Result.ok('m-sr-voice');
 
   void seedWithOffers() {
     store['sr1'] = _seed(offers: const [

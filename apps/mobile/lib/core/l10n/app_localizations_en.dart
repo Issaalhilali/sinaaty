@@ -1773,6 +1773,28 @@ class L10nEn extends L10n {
   }
 
   @override
+  String get srListView => 'List';
+
+  @override
+  String get srMapView => 'On the map';
+
+  @override
+  String get srMapNote =>
+      'Your car is in the middle; every workshop is where it really is — tap a pin to see its offer.';
+
+  @override
+  String srMapNoPin(int n) {
+    return '$n offers have no precise location — find them in the list.';
+  }
+
+  @override
+  String get srMapFree => 'Free check';
+
+  @override
+  String get srVoiceAttached =>
+      'Your voice note will be attached so the workshop hears you in your own words.';
+
+  @override
   String get srWidened => 'Search radius widened';
 
   @override

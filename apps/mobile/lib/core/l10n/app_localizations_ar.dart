@@ -1755,6 +1755,28 @@ class L10nAr extends L10n {
   }
 
   @override
+  String get srListView => 'قائمة';
+
+  @override
+  String get srMapView => 'على الخريطة';
+
+  @override
+  String get srMapNote =>
+      'سيارتك في المنتصف، وكل ورشة حيث هي فعلاً — اضغط دبّوساً لترى عرضها.';
+
+  @override
+  String srMapNoPin(int n) {
+    return '$n من العروض بلا موقعٍ مضبوط — تجدها في القائمة.';
+  }
+
+  @override
+  String get srMapFree => 'فحص مجاني';
+
+  @override
+  String get srVoiceAttached =>
+      'تسجيلك الصوتي سيُرفق بالطلب فتسمعه الورشة بصوتك.';
+
+  @override
   String get srWidened => 'وُسّع نطاق البحث';
 
   @override

@@ -26,6 +26,8 @@ export interface ServiceOffer {
 export interface OfferView extends ServiceOffer {
   orgNameAr: string; ratingAvg: string; ratingCount: number;
   city: string | null; district: string | null; distanceKm: number | null;
+  /** إحداثيات الفرع الذي سيخدم — لخريطة العروض عند العميل. null لمنشأةٍ بلا موقعٍ مضبوط (تُرسم قائمةً لا دبّوساً). */
+  lat: number | null; lng: number | null;
   /** «سبق تعاملك معها» — from THIS customer's own work-order history. */
   previouslyUsed: boolean;
   /** «متخصصون في سيارتك» — the org declares a specialty in this vehicle's make (Step 5 data, finally earning). */

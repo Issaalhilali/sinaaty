@@ -34,7 +34,7 @@ const _icons = <String, BrandGlyph>{
 /// صيانة دورية، بطارية على الطريق) يقود إلى **المسار نفسه** لا إلى زرٍّ ميت: الورش
 /// تستقبله طلباً عادياً وتسعّره، فالخدمة الجديدة تعمل يوم إطلاقها لا بعد بناءٍ آخر.
 Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles,
-    {Future<Uint8List?> Function()? pickImage, Here? here, String? preset}) async {
+    {Future<Uint8List?> Function()? pickImage, Here? here, String? preset, Uint8List? voiceNote}) async {
   final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
   final Here loc = here ?? ref.read(hereProvider);
   final note = TextEditingController(text: preset ?? ''); final manual = TextEditingController();
@@ -188,7 +188,7 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
     await context.push('/vehicles/add');
     if (!context.mounted) return;
     final fresh = ref.read(vehiclesProvider).value?.valueOrNull ?? const <Vehicle>[];
-    if (fresh.isNotEmpty) await openFixCarSheet(context, ref, fresh, pickImage: pickImage, here: loc);
+    if (fresh.isNotEmpty) await openFixCarSheet(context, ref, fresh, pickImage: pickImage, here: loc, preset: preset, voiceNote: voiceNote);
     return;
   }
   if (ok != true || !context.mounted) return;
@@ -196,6 +196,9 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
   final repo = ref.read(serviceMarketRepositoryProvider);
   final mediaIds = <String>[];
   for (final p in photos) { final id = (await repo.uploadPhoto(p, mimeType: 'image/jpeg')).valueOrNull; if (id != null) mediaIds.add(id); }
+  // صوت العميل نفسه يرافق الطلب: الورشة تسمع الطقطقة بدل وصفها. فشل رفعه لا يمنع الطلب —
+  // النصّ المفهوم هو العنوان، والصوت إضافةٌ لا شرط.
+  if (voiceNote != null && voiceNote.isNotEmpty) { final id = (await repo.uploadAudio(voiceNote)).valueOrNull; if (id != null) mediaIds.add(id); }
   // `GeoPoint` نوع النقل و«place» سجلّ من منفذ الموقع — نوحّدهما هنا صراحةً بدل ضمّهما بـ`??`
   // فيستنتج المحلّل `Object` ويسقط البناء.
   final typed = parseLocationLink(manual.text);

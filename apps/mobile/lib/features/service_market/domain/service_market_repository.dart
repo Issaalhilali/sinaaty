@@ -17,6 +17,8 @@ abstract interface class ServiceMarketRepository {
   Future<Result<void>> cancel(String id);
   /// Presign + upload one problem photo → media id (existing pipeline).
   Future<Result<String>> uploadPhoto(List<int> bytes, {required String mimeType});
+  /// التسجيل الصوتي للعميل (m4a) مرفقاً بالطلب — الورشة تسمع الطقطقة بدل أن تقرأ وصفها.
+  Future<Result<String>> uploadAudio(List<int> bytes);
 }
 
 /// Live channel `service-request:{id}` (offer / accepted / widened): the comparison screen sees a

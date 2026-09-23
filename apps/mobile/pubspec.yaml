@@ -40,6 +40,8 @@ dependencies:
   mobile_scanner: ^7.4.0
   speech_to_text: ^7.4.0
   record: ^7.1.1
+  # تشغيل الملاحظة الصوتية المرفقة بالطلب — الورشة تسمع العميل بصوته من الرابط الموقّع قصير العمر.
+  audioplayers: ^6.4.0
   firebase_core: ^4.14.0
   firebase_messaging: ^16.6.0
   geolocator: ^14.0.2

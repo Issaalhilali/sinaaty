@@ -7,18 +7,22 @@ import '../../../core/result/result.dart';
 import '../domain/service_request.dart';
 import '../domain/service_market_repository.dart';
 
+/// الخادم يرسل العرض camelCase (`orgNameAr`, `priceMin`, `diagnosisAr`, `where_text`…) وكان المُحلِّل يقرأ
+/// snake_case وحدها — فرأى العميل على الجهاز عروضاً **بلا اسم ورشة ولا سعر ولا تشخيص ولا مسافة**.
+/// اللقطات الذهبية لم تمسكه لأن بياناتها المزيّفة كانت snake_case. نقرأ الاسمين، والحارس `wire_contract_test` يشهد.
 ServiceOffer offerFromJson(Map<String, dynamic> j) => ServiceOffer(
   id: j['id'] as String,
-  workshopOrgId: (j['workshop_org_id'] ?? j['org_id']) as String?,
-  workshopNameAr: (j['workshop_name_ar'] ?? j['org_name_ar']) as String?,
-  rating: j['rating']?.toString(),
-  distanceText: (j['distance_text'] ?? j['distance_ar']) as String?,
-  offerType: (j['offer_type'] ?? 'estimate') as String,
-  diagnosisAr: j['diagnosis_ar'] as String?,
-  priceMin: j['price_min']?.toString(), priceMax: j['price_max']?.toString(),
+  workshopOrgId: (j['workshop_org_id'] ?? j['org_id'] ?? j['orgId']) as String?,
+  lat: (j['lat'] as num?)?.toDouble(), lng: (j['lng'] as num?)?.toDouble(),
+  workshopNameAr: (j['workshop_name_ar'] ?? j['org_name_ar'] ?? j['orgNameAr']) as String?,
+  rating: (j['rating'] ?? j['ratingAvg'] ?? j['rating_avg'])?.toString(),
+  distanceText: (j['distance_text'] ?? j['distance_ar'] ?? j['where_text'] ?? j['whereText']) as String?,
+  offerType: (j['offer_type'] ?? j['offerType'] ?? 'estimate') as String,
+  diagnosisAr: (j['diagnosis_ar'] ?? j['diagnosisAr']) as String?,
+  priceMin: (j['price_min'] ?? j['priceMin'])?.toString(), priceMax: (j['price_max'] ?? j['priceMax'])?.toString(),
   availability: j['availability'] as String?,
-  availableAt: Fmt.parseDate(j['available_at']),
-  etaNoteAr: j['eta_note_ar'] as String?,
+  availableAt: Fmt.parseDate(j['available_at'] ?? j['availableAt']),
+  etaNoteAr: (j['eta_note_ar'] ?? j['etaNoteAr']) as String?,
   badges: ((j['badges'] as List?) ?? []).map((b) => b.toString()).toList(),
   specialist: j['specialist'] as bool? ?? false,
   respondsInMinutes: (j['respondsInMinutes'] ?? j['responds_in_minutes']) is num ? ((j['respondsInMinutes'] ?? j['responds_in_minutes']) as num).toInt() : null,
@@ -32,6 +36,7 @@ ServiceRequest requestFromJson(Map<String, dynamic> j) => ServiceRequest(
   titleAr: (j['title_ar'] ?? j['titleAr'] ?? '') as String, descriptionAr: (j['description_ar'] ?? j['descriptionAr']) as String?,
   vehicleId: (j['vehicle_id'] ?? j['vehicleId']) as String?,
   radiusKm: ((j['radius_km'] ?? j['radiusKm']) as num?)?.toInt() ?? 15,
+  lat: (j['lat'] as num?)?.toDouble(), lng: (j['lng'] as num?)?.toDouble(),
   preferredTime: (j['preferred_time'] ?? j['preferredTime']) as String?,
   distanceText: (j['distance_text'] ?? j['distance_ar']) as String?,
   createdAt: Fmt.parseDate(j['created_at'] ?? j['createdAt']) ?? DateTime.now(),
@@ -76,6 +81,15 @@ class ServiceMarketRepositoryImpl implements ServiceMarketRepository {
       _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/service-requests/$id/accept', data: {'offer_id': offerId})).data!; return (d['work_order_id'] ?? d['workOrderId']) as String; });
   @override Future<Result<void>> widen(String id, {required int radiusKm}) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/service-requests/$id/widen', data: {'radius_km': radiusKm})).data);
   @override Future<Result<void>> cancel(String id) => _run(() async => (await api.dio.post<Map<String, dynamic>>('/service-requests/$id/cancel')).data);
+  @override Future<Result<String>> uploadAudio(List<int> bytes) => _run(() async {
+    // النوع `audio` وغرضه `voice_note` — كما يرفع الفنيّ صوته لفاتورته؛ الخادم يحرس النوع والحجم.
+    final d = (await api.dio.post<Map<String, dynamic>>('/media/presign', data: {'kind': 'audio', 'mime_type': 'audio/mp4', 'size_bytes': bytes.length, 'sha256': crypto.sha256.convert(bytes).toString(), 'purpose': 'voice_note'})).data!;
+    final url = ((d['upload'] as Map?)?['url'] ?? '') as String;
+    if (url.isNotEmpty && !url.startsWith('mock://')) {
+      await Dio().put<void>(url, data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': 'audio/mp4', 'content-length': bytes.length}));
+    }
+    return d['media_id'] as String;
+  });
   @override Future<Result<String>> uploadPhoto(List<int> bytes, {required String mimeType}) => _run(() async {
     final d = (await api.dio.post<Map<String, dynamic>>('/media/presign', data: {'kind': 'image', 'mime_type': mimeType, 'size_bytes': bytes.length, 'sha256': crypto.sha256.convert(bytes).toString(), 'purpose': 'work_order'})).data!;
     final url = ((d['upload'] as Map?)?['url'] ?? '') as String;

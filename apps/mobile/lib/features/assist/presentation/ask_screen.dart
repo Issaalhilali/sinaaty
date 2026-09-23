@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import '../../service_market/presentation/fix_car_sheet.dart';
 import '../../vehicles/presentation/providers.dart';
 import '../domain/assist.dart';
 import 'providers.dart';
+import '../../../core/voice/voice_input.dart';
 
 /// **«قل وش فيها»** — الباب الواحد الذي يفتح كل شيء.
 ///
@@ -26,6 +28,8 @@ class AskScreen extends ConsumerStatefulWidget {
 class _AskScreenState extends ConsumerState<AskScreen> {
   final _text = TextEditingController();
   bool _busy = false;
+  /// صوت العميل الخام، يُسجَّل بالتوازي مع الإملاء ويُرفق بطلب الإصلاح — الورشة تسمع الطقطقة بصوته.
+  Uint8List? _audio;
   Triage? _result;
   String? _error;
 
@@ -43,8 +47,15 @@ class _AskScreenState extends ConsumerState<AskScreen> {
   }
 
   Future<void> _dictate() async {
+    // التسجيل الخام يبدأ مع الإملاء وينتهي معه: ما يُفهم يصير عنواناً، وما قيل يبقى بصوت صاحبه.
+    final rec = ref.read(voiceRecorderProvider);
+    final recording = await rec.begin();
+    if (!mounted) { if (recording) await rec.finish(); return; }
     final said = await showVoiceSheet(context, ref, title: L10n.of(context).askTitle);
-    if (said == null || said.trim().isEmpty || !mounted) return;
+    final audio = recording ? await rec.finish() : null;
+    if (!mounted) return;
+    if (said == null || said.trim().isEmpty) return;
+    _audio = audio;
     _text.text = said.trim();
     await _analyze();
   }
@@ -55,7 +66,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
     switch (t.kind) {
       case 'tow': await context.push('/tow/new'); break;
       case 'part': if (mounted) await openPartRequestSheet(context, ref, cars, preset: t.partNameAr); break;
-      default: if (mounted) await openFixCarSheet(context, ref, cars, preset: t.titleAr);
+      default: if (mounted) await openFixCarSheet(context, ref, cars, preset: t.titleAr, voiceNote: _audio);
     }
   }
 

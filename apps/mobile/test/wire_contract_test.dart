@@ -34,6 +34,27 @@ void main() {
     expect(r.remaining, isNotNull);
   });
 
+  test('عرض الورشة كما يرسله الخادم فعلاً (camelCase) — الاسم والسعر والتشخيص والمسافة والإحداثيات', () {
+    // منسوخ من GET /v1/service-requests/:id → offers[0] على خادمٍ حيّ (2026-09-23). على الجهاز ظهر
+    // العرض بلا اسمٍ ولا سعرٍ ولا تشخيص لأن المُحلِّل قرأ snake_case وحدها — والدبّوس على الخريطة قال «—».
+    final o = offerFromJson(<String, dynamic>{
+      'id': '273bb0b7', 'requestId': '0bd82138', 'orgId': '021db98e', 'offerType': 'estimate',
+      'diagnosisAr': 'الأرجح فحمات أمامية — نغيّرها ونفحص الهوبات', 'priceMin': '220.00', 'priceMax': '340.00',
+      'availability': 'today', 'availableAt': null, 'etaNoteAr': null, 'status': 'submitted',
+      'orgNameAr': 'ورشة النور للسمكرة والميكانيكا', 'ratingAvg': '4.70', 'ratingCount': 12,
+      'city': 'الرياض', 'district': 'الصناعية', 'distanceKm': 14.9, 'lat': 24.63, 'lng': 46.79,
+      'previouslyUsed': true, 'specialist': false, 'respondsInMinutes': 9, 'completedJobs': 3,
+      'where_text': 'الصناعية — 14.9 كم', 'badges': ['cheapest', 'previously_used'],
+    });
+    expect(o.workshopNameAr, 'ورشة النور للسمكرة والميكانيكا');   // كان null
+    expect(o.priceMin, '220.00');                                   // كان null → «—» على الدبّوس
+    expect(o.diagnosisAr, contains('فحمات'));                       // كان null
+    expect(o.distanceText, 'الصناعية — 14.9 كم');                  // كان null
+    expect(o.rating, '4.70');
+    expect(o.hasPin, isTrue);
+    expect(o.badges, contains('cheapest'));
+  });
+
   test('وردّ بـsnake_case يبقى مقروءاً — لا نكسر ما كان يعمل', () {
     final r = requestFromJson(<String, dynamic>{
       'id': 'x', 'number': 'SR-1', 'title_ar': 'صيانة', 'radius_km': 30,
