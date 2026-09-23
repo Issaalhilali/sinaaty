@@ -11,12 +11,12 @@ void main() {
   test('every media purpose the app sends exists in the API enum', () {
     final dto = File('../api/src/modules/media/application/media.dto.ts');
     if (!dto.existsSync()) { markTestSkipped('apps/api not checked out next to apps/mobile'); return; }
-    final enumMatch = RegExp(r"purpose:\s*z\.enum\(\[([^\]]+)\]").firstMatch(dto.readAsStringSync());
+    final enumMatch = RegExp(r'purpose:\s*z\.enum\(\[([^\]]+)\]').firstMatch(dto.readAsStringSync());
     expect(enumMatch, isNotNull, reason: 'PresignDto.purpose enum not found — update the regex');
-    final allowed = RegExp(r"'([a-z_]+)'").allMatches(enumMatch!.group(1)!).map((m) => m.group(1)!).toSet();
+    final allowed = RegExp("'([a-z_]+)'").allMatches(enumMatch!.group(1)!).map((m) => m.group(1)!).toSet();
     final used = <String, String>{};
     for (final f in Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'))) {
-      for (final m in RegExp(r"purpose'?\s*:\s*'([a-z_]+)'").allMatches(f.readAsStringSync())) { used[m.group(1)!] = f.path; }
+      for (final m in RegExp("purpose'?\\s*:\\s*'([a-z_]+)'").allMatches(f.readAsStringSync())) { used[m.group(1)!] = f.path; }
     }
     expect(used, isNotEmpty);
     for (final e in used.entries) { expect(allowed, contains(e.key), reason: '${e.value} sends purpose «${e.key}» which the API rejects (allowed: ${allowed.join(', ')})'); }

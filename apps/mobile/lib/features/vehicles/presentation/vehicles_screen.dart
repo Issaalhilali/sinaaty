@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/config/app_config.dart';
+import '../../../core/di/core_providers.dart';
 import '../../../core/format/format.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/l10n/labels.dart';
@@ -10,6 +12,7 @@ import '../../billing/presentation/due_row.dart';
 import '../../home/presentation/services_row.dart';
 import '../../work_orders/domain/work_order.dart';
 import '../../work_orders/presentation/providers.dart';
+import '../../workshop/presentation/providers.dart' show currentOrgIdProvider;
 import '../domain/vehicle.dart';
 import 'providers.dart';
 /// Tab «سياراتي»: current repair orders first (what matters now), then my cars. One primary action: add car.
@@ -17,15 +20,18 @@ class VehiclesScreen extends ConsumerWidget {
   const VehiclesScreen({super.key});
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final vehicles = ref.watch(vehiclesProvider); final orders = ref.watch(workOrdersProvider);
+    // مدير الأسطول ليس مالك سيارة: خدمات العميل الست («فحص قبل الشراء»…) لا تخصّه، وبابه الأول قائمةٌ تُستورد لا سيارةٌ تُضاف.
+    final fleet = ref.watch(appConfigProvider).flavor == AppFlavor.fleet; final fleetOrg = fleet ? ref.watch(currentOrgIdProvider) : null;
+    Widget? importBtn = fleetOrg == null ? null : TextButton.icon(onPressed: () => context.push('/fleet/import', extra: fleetOrg), icon: const Icon(Icons.upload_file_outlined, size: 18), label: Text(l.flImportEntry));
     Future<void> refresh() async { ref.invalidate(vehiclesProvider); ref.invalidate(workOrdersProvider); }
     return AsyncResultView<List<Vehicle>>(value: vehicles, onRetry: refresh, builder: (list) {
       // شاشة فارغة تُعلّم: من يفتح التطبيق أول مرة يجب أن يعرف ما يستطيع طلبه، لا أن يرى فراغاً وزراً.
       if (list.isEmpty) {
         return RefreshIndicator(onRefresh: refresh, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
           const DueRow(),
-          EmptyState(glyph: BrandGlyph.car, title: l.emptyCarsTitle, body: l.emptyCarsBody, actionLabel: l.addCar, onAction: () => context.push('/vehicles/add')),
-          const SizedBox(height: SinaatySpace.lg),
-          const ServicesRow(expanded: true),
+          EmptyState(glyph: BrandGlyph.car, title: l.emptyCarsTitle, body: fleet ? l.flImportWhy : l.emptyCarsBody, actionLabel: fleetOrg != null ? l.flImportEntry : l.addCar, onAction: () => fleetOrg != null ? context.push('/fleet/import', extra: fleetOrg) : context.push('/vehicles/add')),
+          if (fleet) Center(child: TextButton(onPressed: () => context.push('/vehicles/add'), child: Text(l.addCar))),
+          if (!fleet) ...[const SizedBox(height: SinaatySpace.lg), const ServicesRow(expanded: true)],
         ]));
       }
       final active = orders.value?.valueOrNull?.where((w) => w.isActive).toList() ?? const <WorkOrder>[];
@@ -37,9 +43,9 @@ class VehiclesScreen extends ConsumerWidget {
           for (final w in active) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: WorkOrderCard(order: w, vehicle: list.where((v) => v.id == w.vehicleId).firstOrNull, onTap: () => context.push('/work-orders/${w.id}'))),
           const SizedBox(height: SinaatySpace.sm),
         ],
-        const ServicesRow(),
-        const SizedBox(height: SinaatySpace.lg),
-        SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'), icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
+        if (!fleet) ...[const ServicesRow(), const SizedBox(height: SinaatySpace.lg)],
+        SectionTitle(l.myCars, trailing: importBtn ?? TextButton.icon(onPressed: () => context.push('/vehicles/add'), icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
+        if (fleet) Align(alignment: AlignmentDirectional.centerStart, child: TextButton.icon(onPressed: () => context.push('/vehicles/add'), icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
         SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.xs), child: Column(children: [for (final v in list) AppListRow(icon: Icons.directions_car_outlined, title: v.title, subtitle: v.subtitle, onTap: () => context.push('/vehicles/${v.id}'))])),
       ]));
     });

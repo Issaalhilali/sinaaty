@@ -14,4 +14,6 @@ abstract interface class FleetRepository {
   /// Idempotent per month on the API (YYYY-MM).
   Future<Result<FleetStatement>> generateStatement(String orgId, String month);
   Future<Result<String>> statementCsv(String id);
+  /// استيراد قائمة مركبات: الخادم يمرّ صفّاً صفّاً ويعيد مصير كلٍّ منها.
+  Future<Result<List<FleetImportRow>>> importVehicles(String orgId, List<({String? vin, String? plate})> rows);
 }

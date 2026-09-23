@@ -4267,6 +4267,54 @@ abstract class L10n {
   /// **'قواعد الصرف'**
   String get flPolicyTitle;
 
+  /// No description provided for @flImportTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد قائمة المركبات'**
+  String get flImportTitle;
+
+  /// No description provided for @flImportEntry.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد قائمة'**
+  String get flImportEntry;
+
+  /// No description provided for @flImportWhy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصق قائمة سياراتك — سطرٌ لكل سيارة: لوحة أو رقم هيكل. السطر الخاطئ لا يوقف الباقي.'**
+  String get flImportWhy;
+
+  /// No description provided for @flImportField.
+  ///
+  /// In ar, this message translates to:
+  /// **'القائمة'**
+  String get flImportField;
+
+  /// No description provided for @flImportAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'استورد {n} مركبة'**
+  String flImportAction(int n);
+
+  /// No description provided for @flImportCreated.
+  ///
+  /// In ar, this message translates to:
+  /// **'أُضيفت'**
+  String get flImportCreated;
+
+  /// No description provided for @flImportExists.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسجّلة سابقاً'**
+  String get flImportExists;
+
+  /// No description provided for @flImportFailed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذّرت'**
+  String get flImportFailed;
+
   /// No description provided for @flPolicyName.
   ///
   /// In ar, this message translates to:

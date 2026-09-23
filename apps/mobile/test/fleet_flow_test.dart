@@ -17,6 +17,7 @@ import 'package:sinaaty/features/auth/presentation/providers.dart';
 import 'package:sinaaty/features/fleet/domain/fleet.dart';
 import 'package:sinaaty/features/fleet/domain/fleet_repository.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_statements_screen.dart';
+import 'package:sinaaty/features/fleet/presentation/fleet_import_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_policy_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/fleet_today_screen.dart';
 import 'package:sinaaty/features/fleet/presentation/providers.dart';
@@ -59,6 +60,8 @@ class FakeFleet implements FleetRepository {
   @override Future<Result<List<FleetStatement>>> statements(String orgId) async => Result.ok([stmt]);
   @override Future<Result<FleetStatement>> statement(String id) async => Result.ok(stmt);
   @override Future<Result<FleetStatement>> generateStatement(String orgId, String month) async { generatedMonth = month; return Result.ok(stmt); }
+  List<({String? vin, String? plate})>? imported;
+  @override Future<Result<List<FleetImportRow>>> importVehicles(String orgId, List<({String? vin, String? plate})> rows) async { imported = rows; return Result.ok([for (final (i, r) in rows.indexed) FleetImportRow(row: i + 1, status: r.plate == 'X' ? 'failed' : i == 1 ? 'exists' : 'created', vin: r.vin, plate: r.plate, errorAr: r.plate == 'X' ? 'اللوحة غير صالحة' : null)]); }
   @override Future<Result<String>> statementCsv(String id) async { copiedCsvId = id; return const Result.ok('رقم الفاتورة,التاريخ,المركبة,الإجمالي\nINV-2026-000201,2026-07-05,TRK-001,8280.00\n'); }
 }
 
@@ -152,6 +155,7 @@ void main() {
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async => null);   // Clipboard.setData resolves in tests
     final r = GoRouter(initialLocation: '/fleet/statements', routes: [
       GoRoute(path: '/fleet/statements', builder: (_, _) => const FleetStatementsScreen()),
+      GoRoute(path: '/fleet/import', builder: (_, _) => const FleetImportScreen(orgId: 'fleet1')),
       GoRoute(path: '/fleet/statements/:id', builder: (_, s) => FleetStatementScreen(id: s.pathParameters['id']!)),
     ]);
     await tester.pumpWidget(app(r)); await tester.pumpAndSettle();
@@ -172,6 +176,15 @@ void main() {
     expect(find.text('نُسخ الكشف — ألصقه في جداولك'), findsOneWidget);
   });
 
+  testWidgets('استيراد قائمة: الصق ثلاثة أسطر → ثلاثة صفوف بمصيرها — والخاطئ يقول لماذا', (tester) async {
+    size(tester);
+    final r = router(); await tester.pumpWidget(app(r)); await tester.pumpAndSettle(); r.push('/fleet/import'); await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'أ ب ج 1234\n4T1B11HK5KU123456\nX'); await tester.pumpAndSettle();
+    await tester.tap(find.text('استورد 3 مركبة')); await tester.pumpAndSettle();
+    expect(fleet.imported?.length, 3); expect(fleet.imported![0].plate, 'أ ب ج 1234'); expect(fleet.imported![1].vin, '4T1B11HK5KU123456');
+    expect(find.text('أُضيفت'), findsWidgets); expect(find.text('مسجّلة سابقاً'), findsWidgets); expect(find.text('اللوحة غير صالحة'), findsOneWidget);
+    expect(find.text('تم'), findsOneWidget);
+  });
   testWidgets('قواعد الصرف: تُقرأ، ويُرى أثرها على مبالغ حقيقية، ثم تُحفظ', (tester) async {
     tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
     fleet = FakeFleet();

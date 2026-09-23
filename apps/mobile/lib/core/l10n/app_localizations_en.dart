@@ -2276,6 +2276,33 @@ class L10nEn extends L10n {
   String get flPolicyTitle => 'Spending rules';
 
   @override
+  String get flImportTitle => 'Import vehicle list';
+
+  @override
+  String get flImportEntry => 'Import list';
+
+  @override
+  String get flImportWhy =>
+      'Paste your list — one car per line: plate or VIN. A bad line does not stop the rest.';
+
+  @override
+  String get flImportField => 'List';
+
+  @override
+  String flImportAction(int n) {
+    return 'Import $n vehicles';
+  }
+
+  @override
+  String get flImportCreated => 'Added';
+
+  @override
+  String get flImportExists => 'Already registered';
+
+  @override
+  String get flImportFailed => 'Failed';
+
+  @override
   String get flPolicyName => 'Fleet policy';
 
   @override

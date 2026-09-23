@@ -2245,6 +2245,33 @@ class L10nAr extends L10n {
   String get flPolicyTitle => 'قواعد الصرف';
 
   @override
+  String get flImportTitle => 'استيراد قائمة المركبات';
+
+  @override
+  String get flImportEntry => 'استيراد قائمة';
+
+  @override
+  String get flImportWhy =>
+      'الصق قائمة سياراتك — سطرٌ لكل سيارة: لوحة أو رقم هيكل. السطر الخاطئ لا يوقف الباقي.';
+
+  @override
+  String get flImportField => 'القائمة';
+
+  @override
+  String flImportAction(int n) {
+    return 'استورد $n مركبة';
+  }
+
+  @override
+  String get flImportCreated => 'أُضيفت';
+
+  @override
+  String get flImportExists => 'مسجّلة سابقاً';
+
+  @override
+  String get flImportFailed => 'تعذّرت';
+
+  @override
   String get flPolicyName => 'سياسة الأسطول';
 
   @override

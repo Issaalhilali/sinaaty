@@ -52,6 +52,10 @@ class FleetRepositoryImpl implements FleetRepository {
   FleetRepositoryImpl(this.api);
   Future<Result<T>> _run<T>(Future<T> Function() f) async { try { return Result.ok(await f()); } catch (e) { return Result.err(mapDioError(e)); } }
 
+  @override Future<Result<List<FleetImportRow>>> importVehicles(String orgId, List<({String? vin, String? plate})> rows) => _run(() async {
+    final d = (await api.dio.post<Map<String, dynamic>>('/fleet/$orgId/vehicles/import', data: {'vehicles': [for (final r in rows) {'vin': ?r.vin, 'plate': ?r.plate}]})).data!;
+    return ((d['results'] as List?) ?? const []).cast<Map<String, dynamic>>().map((j) => FleetImportRow(row: (j['row'] as num).toInt(), status: (j['status'] ?? 'failed') as String, vin: j['vin'] as String?, plate: j['plate'] as String?, errorAr: (j['error_ar'] ?? j['errorAr']) as String?)).toList();
+  });
   @override Future<Result<FleetOverview>> overview(String orgId) => _run(() async => overviewFromJson((await api.dio.get<Map<String, dynamic>>('/fleet/$orgId/overview')).data!));
   @override Future<Result<List<FleetPending>>> pending(String orgId) => _run(() async => (await api.dio.get<List<dynamic>>('/fleet/$orgId/approvals')).data!.cast<Map<String, dynamic>>().map(pendingFromJson).toList());
   @override Future<Result<FleetDecision>> decide(String workOrderId, {required String decision, String? noteAr}) => _run(() async {
