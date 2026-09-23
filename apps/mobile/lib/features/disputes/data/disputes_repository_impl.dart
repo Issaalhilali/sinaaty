@@ -1,6 +1,7 @@
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/api/upload_url.dart';
 import '../../../core/api/api_error_mapper.dart';
 import '../../../core/format/format.dart';
 import '../../../core/result/result.dart';
@@ -43,7 +44,7 @@ class DisputesRepositoryImpl implements DisputesRepository {
     final d = (await api.dio.post<Map<String, dynamic>>('/media/presign', data: {'kind': 'image', 'mime_type': mimeType, 'size_bytes': bytes.length, 'sha256': crypto.sha256.convert(bytes).toString(), 'purpose': 'dispute'})).data!;
     final url = ((d['upload'] as Map?)?['url'] ?? '') as String;
     if (url.isNotEmpty && !url.startsWith('mock://')) {
-      await Dio().put<void>(url, data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': mimeType, 'content-length': bytes.length}));
+      await Dio().put<void>(reachableUploadUrl(url, api.dio.options.baseUrl), data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': mimeType, 'content-length': bytes.length}));
     }
     return d['media_id'] as String;
   });

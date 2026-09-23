@@ -78,7 +78,9 @@ void main() {
     await tester.pumpWidget(app()); await tester.pumpAndSettle();
     await tester.tap(find.byType(Switch)); await tester.pumpAndSettle();
 
-    await tester.tap(find.textContaining('طريق الملك فهد')); await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('طريق الملك فهد').first); await tester.pumpAndSettle();
+    expect(find.text('تقبل هذه المهمة؟'), findsOneWidget, reason: 'لمسة الصف لا تُسند المهمة قبل ورقة تأكيد');
+    await tester.tap(find.text('اقبل المهمة')); await tester.pumpAndSettle();
     expect(tr.jobs['1']?.status, 'assigned');
     await tester.pumpAndSettle();
 
@@ -109,7 +111,9 @@ void main() {
     tr.takenByAnother = true;
     await tester.pumpWidget(app()); await tester.pumpAndSettle();
     await tester.tap(find.byType(Switch)); await tester.pumpAndSettle();
-    await tester.tap(find.textContaining('طريق الملك فهد')); await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('طريق الملك فهد').first); await tester.pumpAndSettle();
+    expect(find.text('تقبل هذه المهمة؟'), findsOneWidget, reason: 'لمسة الصف لا تُسند المهمة قبل ورقة تأكيد');
+    await tester.tap(find.text('اقبل المهمة')); await tester.pumpAndSettle();
     expect(find.text('أُسندت المهمة لسائق آخر.'), findsOneWidget);
   });
 
@@ -120,5 +124,11 @@ void main() {
     expect(find.textContaining('اربط حسابك بمنشأة النقل'), findsOneWidget);
     await tester.tap(find.byType(Switch)); await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/driver_home_light.png'));
+  });
+  test('the default driver camera reaches the platform (no silent null stub)', () async {
+    // على الجهاز: «التقط صورة» لم يفعل شيئاً لأن الافتراضي كان `() async => null` — والصورة شرط التسليم.
+    // في الاختبار لا منصّة، فالدليل أنه **يحاول** فتح الكاميرا: يرمي MissingPluginException بدل أن يعود بـnull بصمت.
+    final c = ProviderContainer(); addTearDown(c.dispose);
+    await expectLater(c.read(driverPickImageProvider)(), throwsA(anything));
   });
 }

@@ -18,6 +18,8 @@ abstract final class Labels {
         'en_route_dropoff' => l.drvActDeliver,
         _ => l.drvActDone,
       };
+  /// حالة السطحة **بصوت السائق**: «السائق في طريقه إليك» تخاطب العميل، ورآها السائق على بطاقته هو.
+  static String driverStatus(L10n l, String s) => switch (s) { 'assigned' => l.drvStatusAssigned, 'en_route_pickup' => l.drvStatusEnRoutePickup, 'picked_up' => l.drvStatusPickedUp, 'en_route_dropoff' => l.drvStatusEnRouteDropoff, _ => transportStatus(l, s) };
   static String transportStatus(L10n l, String s) => switch (s) { 'requested' => l.towStatusRequested, 'searching' => l.towStatusSearching, 'assigned' => l.towStatusAssigned, 'en_route_pickup' => l.towStatusEnRoutePickup, 'picked_up' => l.towStatusPickedUp, 'en_route_dropoff' => l.towStatusEnRouteDropoff, 'delivered' => l.towStatusDelivered, 'completed' => l.towStatusCompleted, 'cancelled' => l.towStatusCancelled, 'failed' => l.towStatusFailed, _ => s };
   static String bidHighlight(L10n l, BidHighlight h) => switch (h) { BidHighlight.cheapest => l.ptCheapest, BidHighlight.fastest => l.ptFastest, BidHighlight.longestWarranty => l.ptLongestWarranty, BidHighlight.nearest => l.srNearestBadge };
   static String terms(L10n l, String s) => switch (s) { 'prepaid' => l.termsPrepaid, 'on_delivery' => l.termsOnDelivery, 'deferred' => l.termsDeferred, 'installments' => l.termsInstallments, 'fleet_monthly' => l.termsFleetMonthly, _ => s };

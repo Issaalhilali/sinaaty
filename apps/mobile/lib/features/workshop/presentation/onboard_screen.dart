@@ -90,7 +90,7 @@ class _OnboardScreenState extends ConsumerState<OnboardScreen> {
     if (bytes == null || !mounted) return;
     setState(() { _busy = true; _error = null; });
     final repo = ref.read(workshopRepositoryProvider);
-    final pre = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: 'x' * 64, purpose: 'kyb');
+    final pre = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: 'x' * 64, purpose: 'kyb_document');
     final p = pre.valueOrNull;
     if (p == null) { if (mounted) setState(() { _busy = false; _error = L10n.of(context).errorGeneric; }); return; }
     await repo.upload(p, bytes, 'image/jpeg');

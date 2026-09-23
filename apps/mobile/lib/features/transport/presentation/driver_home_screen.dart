@@ -92,7 +92,7 @@ class _CurrentJobState extends ConsumerState<_CurrentJob> {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Expanded(child: Text(Labels.transportStatus(l, j.status), style: t.titleLarge?.copyWith(color: Colors.white))),
+          Expanded(child: Text(Labels.driverStatus(l, j.status), style: t.titleLarge?.copyWith(color: Colors.white))),
           SealPill(j.number),
         ]),
         const SizedBox(height: SinaatySpace.md),
@@ -153,6 +153,16 @@ class _Offers extends ConsumerWidget {
   }
 
   Future<void> _accept(BuildContext context, WidgetRef ref, TransportJob o) async {
+    // على الجهاز: لمسةُ الصفّ وحدها كانت تُسند المهمة فوراً — والأوّل يفوز، فلمسةٌ خاطئة تُلزم سائقاً
+    // برحلةٍ لم يقرأها. ورقةٌ تعرض من أين وإلى أين وبكم، وزرٌّ واحد يقبل.
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(l.drvAcceptTitle, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md),
+      KeyValueRow(l.drvPickup, o.pickupAddress ?? o.pickup?.toString() ?? '—'), KeyValueRow(l.drvDropoff, o.dropoffAddress ?? o.dropoff?.toString() ?? '—'),
+      KeyValueRow(l.total, Fmt.meta([Fmt.money(o.quotedPrice, locale: locale), if (o.distanceKm != null) l.drvKm(o.distanceKm!)]), emphasized: true),
+      const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.drvAcceptBtn, icon: Icons.local_shipping_outlined, onPressed: () => Navigator.pop(ctx, true)),
+    ])));
+    if (ok != true || !context.mounted) return;
     final r = await ref.read(transportRepositoryProvider).acceptOffer(o.id);
     if (!context.mounted) return;
     r.when(

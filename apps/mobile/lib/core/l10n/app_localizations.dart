@@ -4069,6 +4069,42 @@ abstract class L10n {
   /// **'لا مهام قريبة الآن'**
   String get drvNoOffersTitle;
 
+  /// No description provided for @drvStatusAssigned.
+  ///
+  /// In ar, this message translates to:
+  /// **'مهمة مُسندة إليك'**
+  String get drvStatusAssigned;
+
+  /// No description provided for @drvStatusEnRoutePickup.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق للاستلام'**
+  String get drvStatusEnRoutePickup;
+
+  /// No description provided for @drvStatusPickedUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'السيارة على سطحتك'**
+  String get drvStatusPickedUp;
+
+  /// No description provided for @drvStatusEnRouteDropoff.
+  ///
+  /// In ar, this message translates to:
+  /// **'في الطريق للتسليم'**
+  String get drvStatusEnRouteDropoff;
+
+  /// No description provided for @drvAcceptTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقبل هذه المهمة؟'**
+  String get drvAcceptTitle;
+
+  /// No description provided for @drvAcceptBtn.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقبل المهمة'**
+  String get drvAcceptBtn;
+
   /// No description provided for @drvNoOffersBody.
   ///
   /// In ar, this message translates to:

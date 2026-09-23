@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/api/upload_url.dart';
 import '../../../core/api/api_error_mapper.dart';
 import '../../../core/result/result.dart';
 import '../../work_orders/data/work_orders_repository_impl.dart' show workOrderFromJson;
@@ -75,7 +76,7 @@ class WorkshopRepositoryImpl implements WorkshopRepository {
   @override Future<Result<void>> requestApproval(String woId) => _run(() async { await api.dio.post<void>('/work-orders/$woId/request-approval', data: {}); });
   @override Future<Result<void>> setCover(String orgId, String mediaId) => _run(() async { await api.dio.put<void>('/organizations/$orgId/branding', data: {'cover_media_id': mediaId}); });
   @override Future<Result<Presigned>> presign({required String mimeType, required int sizeBytes, required String sha256, required String purpose}) => _run(() async { final d = (await api.dio.post<Map<String, dynamic>>('/media/presign', data: {'kind': 'image', 'mime_type': mimeType, 'size_bytes': sizeBytes, 'sha256': sha256, 'purpose': purpose})).data!; return Presigned(mediaId: d['media_id'] as String, uploadUrl: ((d['upload'] as Map?)?['url'] ?? '') as String); });
-  @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) => _run(() async { if (p.uploadUrl.isEmpty || p.uploadUrl.startsWith('mock://')) return; await Dio().put<void>(p.uploadUrl, data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': mimeType, 'content-length': bytes.length})); });
+  @override Future<Result<void>> upload(Presigned p, List<int> bytes, String mimeType) => _run(() async { if (p.uploadUrl.isEmpty || p.uploadUrl.startsWith('mock://')) return; await Dio().put<void>(reachableUploadUrl(p.uploadUrl, api.dio.options.baseUrl), data: Stream.fromIterable([bytes]), options: Options(headers: {'content-type': mimeType, 'content-length': bytes.length})); });
   @override Future<Result<void>> inspect(String woId, NewInspection i) => _run(() async { await api.dio.post<void>('/work-orders/$woId/inspections', data: {'type': i.type, 'odometer_km': ?i.odometerKm, 'fuel_level_pct': ?i.fuelLevelPct, 'checklist': {'angles': i.anglesToMedia}, 'damages': i.damages.map((d) => {'zone': d.zone, 'severity': d.severity, 'note_ar': ?d.noteAr}).toList(), 'media_ids': i.mediaIds}); });
   @override Future<Result<void>> attachMedia(String woId, List<String> mediaIds, {String label = 'progress'}) => _run(() async { await api.dio.post<void>('/work-orders/$woId/media', data: {'media_ids': mediaIds, 'label': label}); });
   @override Future<Result<Set<String>>> invoicedWorkOrderIds(String orgId) => _run(() async {

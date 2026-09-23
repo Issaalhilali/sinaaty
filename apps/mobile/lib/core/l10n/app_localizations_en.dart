@@ -2171,6 +2171,24 @@ class L10nEn extends L10n {
   String get drvNoOffersTitle => 'No jobs nearby';
 
   @override
+  String get drvStatusAssigned => 'Assigned to you';
+
+  @override
+  String get drvStatusEnRoutePickup => 'Heading to pickup';
+
+  @override
+  String get drvStatusPickedUp => 'Car on your truck';
+
+  @override
+  String get drvStatusEnRouteDropoff => 'Heading to drop-off';
+
+  @override
+  String get drvAcceptTitle => 'Take this job?';
+
+  @override
+  String get drvAcceptBtn => 'Accept job';
+
+  @override
   String get drvNoOffersBody =>
       'We will show any tow request that arrives near you.';
 

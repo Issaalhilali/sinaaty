@@ -111,6 +111,12 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       ],
       // السائق يُعرف بملفّه لا بنوع منشأته: قد يعمل تحت شركة نقل أو ورشة لها سطحة، والحقيقة
       // الوحيدة أنه يقود. تبويبٌ واحد يسبق الباقي لأنه كل عمله.
+      // شركة نقل صِرف (logistics): سائقها لا يملك ورشةً — «اليوم» و«الأوامر» و«القطع» شاشاتٌ
+      // فارغة تُشتّته (ميثاق §5.0/2: ثلاثة تبويبات لا خمسة). ورشةٌ لها سطحة تحتفظ بالكل.
+      AppFlavor.partner when isDriver && orgType == 'logistics' => <(String, BrandGlyph, Widget)>[
+        (l.tabDriverJobs, BrandGlyph.towTruck, const DriverHomeScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
+      ],
       AppFlavor.partner => <(String, BrandGlyph, Widget)>[
         if (isDriver) (l.tabDriverJobs, BrandGlyph.towTruck, const DriverHomeScreen()),
         (l.tabToday, BrandGlyph.today, const TodayScreen()),
@@ -143,7 +149,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       subtitle: homeTab && headTitle.isNotEmpty ? (partner && name.isNotEmpty ? name : l.welcomeBack) : null,
       leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        if (partner && !isSupplier) Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
+        if (partner && !isSupplier && orgType != 'logistics') Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
       ]),
       // «الرهيبة تختصر» (كلمة المالك): أدوات الورشة النادرة الاستعمال تسكن هنا لا في الصفحة —
       // المفتاح والفريق والخدمات خلف ⋯، والصفحة لوجه اليوم وحده.

@@ -32,7 +32,7 @@ class _DriverProofScreenState extends ConsumerState<DriverProofScreen> {
     if (bytes == null || !mounted) return;
     setState(() { _busy = true; _error = null; });
     final repo = ref.read(workshopRepositoryProvider);
-    final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha256.convert(bytes).toString(), purpose: 'transport_proof');
+    final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha256.convert(bytes).toString(), purpose: 'proof_of_delivery');
     if (!mounted) return;
     await p.when(
       ok: (pre) async {

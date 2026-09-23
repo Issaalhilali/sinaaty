@@ -2143,6 +2143,24 @@ class L10nAr extends L10n {
   String get drvNoOffersTitle => 'لا مهام قريبة الآن';
 
   @override
+  String get drvStatusAssigned => 'مهمة مُسندة إليك';
+
+  @override
+  String get drvStatusEnRoutePickup => 'في الطريق للاستلام';
+
+  @override
+  String get drvStatusPickedUp => 'السيارة على سطحتك';
+
+  @override
+  String get drvStatusEnRouteDropoff => 'في الطريق للتسليم';
+
+  @override
+  String get drvAcceptTitle => 'تقبل هذه المهمة؟';
+
+  @override
+  String get drvAcceptBtn => 'اقبل المهمة';
+
+  @override
   String get drvNoOffersBody => 'سنعرض لك أي طلب سطحة يصل قرب موقعك.';
 
   @override
