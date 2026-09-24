@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../api/network_state.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/tokens.dart';
 /// Standard page: title, optional actions behind a single "more" menu, body, and ONE primary action in a calm fixed bottom bar.
 class AppScaffold extends StatelessWidget {
@@ -12,7 +14,7 @@ class AppScaffold extends StatelessWidget {
       appBar: AppBar(leading: leading, title: subtitle == null ? Text(title) : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title), Text(subtitle!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: s.onSurfaceVariant))]),
         actions: [?trailing, if (moreItems != null && moreItems!.isNotEmpty) Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: PopupMenuButton<String>(icon: const Icon(Icons.more_horiz), onSelected: onMore, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SinaatySpace.radius)), itemBuilder: (_) => moreItems!))]),
       extendBody: bottom != null,
-      body: SafeArea(bottom: bottom == null && bar == null, child: _Readable(child: body)),
+      body: SafeArea(bottom: bottom == null && bar == null, child: Column(children: [const OfflineBar(), Expanded(child: _Readable(child: body))])),
       bottomNavigationBar: bottom != null ? Column(mainAxisSize: MainAxisSize.min, children: [?bar, bottom!]) : bar,
     );
   }
@@ -26,4 +28,18 @@ class _Readable extends StatelessWidget {
     alignment: Alignment.topCenter,
     child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 720), child: child),
   );
+}
+
+/// شريط «غير متصل» — يظهر حين لا يُرى الخادم ويختفي مع أول ردّ. لا زرّ: التطبيق يعيد المحاولة
+/// بنفسه (السحب للتحديث، وطابور الورشة يُزامن حين تعود الشبكة).
+class OfflineBar extends StatelessWidget {
+  const OfflineBar({super.key});
+  @override Widget build(BuildContext context) => ValueListenableBuilder<bool>(valueListenable: NetworkState.online, builder: (context, online, _) {
+    if (online) return const SizedBox.shrink();
+    final l = L10n.of(context);
+    return Material(color: SinaatyColors.warnSoft, child: Padding(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.lg, vertical: SinaatySpace.sm), child: Row(children: [
+      const Icon(Icons.cloud_off_outlined, size: 18, color: SinaatyColors.warn), const SizedBox(width: SinaatySpace.sm),
+      Expanded(child: Text(l.offlineBar, style: const TextStyle(color: SinaatyColors.warn, fontWeight: FontWeight.w600, fontSize: 13))),
+    ])));
+  });
 }

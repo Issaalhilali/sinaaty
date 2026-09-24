@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../auth/token_store.dart';
 import '../config/app_config.dart';
 import 'api_host_probe.dart';
+import 'network_state.dart';
 
 /// Dio client: base URL, JSON, Accept-Language, bearer token, and refresh-once-on-401 with a single in-flight refresh.
 ///
@@ -20,7 +21,9 @@ class ApiClient {
         dio = Dio(BaseOptions(baseUrl: config.apiV1, connectTimeout: const Duration(seconds: 15), receiveTimeout: const Duration(seconds: 30), headers: {'accept': 'application/json'})) {
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (o, h) async { o.headers['accept-language'] = locale(); if (o.extra['auth'] != false) { final t = await tokens.access(); if (t != null) o.headers['authorization'] = 'Bearer $t'; } h.next(o); },
+      onResponse: (r, h) { NetworkState.online.value = true; h.next(r); },
       onError: (e, h) async {
+        if (e.response != null) NetworkState.online.value = true;   // الخادم ردّ ولو بخطأ — فهو يُرى
         final is401 = e.response?.statusCode == 401; final path = e.requestOptions.path;
         if (is401 && !path.contains('/auth/') && e.requestOptions.extra['retried'] != true) {
           final ok = await _refresh(); if (!ok) { onSessionExpired?.call(); return h.next(e); }
@@ -36,6 +39,7 @@ class ApiClient {
             try { return h.resolve(await dio.fetch(ro)); } catch (err) { return h.next(err is DioException ? err : e); }
           }
         }
+        if (isConn) NetworkState.online.value = false;
         h.next(e);
       },
     ));

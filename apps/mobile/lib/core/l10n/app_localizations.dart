@@ -259,6 +259,12 @@ abstract class L10n {
   /// **'لا يوجد اتصال بالإنترنت. تحقق من الشبكة وأعد المحاولة.'**
   String get errorNetwork;
 
+  /// No description provided for @offlineBar.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير متصل — نعيد المحاولة تلقائياً حين تعود الشبكة.'**
+  String get offlineBar;
+
   /// No description provided for @errorInvalidPhone.
   ///
   /// In ar, this message translates to:

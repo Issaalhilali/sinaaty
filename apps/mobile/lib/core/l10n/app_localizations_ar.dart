@@ -94,6 +94,9 @@ class L10nAr extends L10n {
       'لا يوجد اتصال بالإنترنت. تحقق من الشبكة وأعد المحاولة.';
 
   @override
+  String get offlineBar => 'غير متصل — نعيد المحاولة تلقائياً حين تعود الشبكة.';
+
+  @override
   String get errorInvalidPhone => 'أدخل رقم جوال سعودي صحيح.';
 
   @override

@@ -94,6 +94,10 @@ class L10nEn extends L10n {
       'No internet connection. Check your network and retry.';
 
   @override
+  String get offlineBar =>
+      'Offline — we retry automatically when the network is back.';
+
+  @override
   String get errorInvalidPhone => 'Enter a valid Saudi mobile number.';
 
   @override
