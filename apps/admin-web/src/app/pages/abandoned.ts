@@ -37,7 +37,7 @@ function stage(r: Row): { label: string; tone: string } {
       @else {
         <app-eyebrow>الطابور</app-eyebrow>
         <p class="text-xs text-muted mb-2">الإعلان قرار الورشة، لا الإدارة. من هنا يمكن دفع الإنذار المستحق فقط.</p>
-        <div class="card overflow-hidden"><table class="w-full text-sm">
+        <div class="card overflow-hidden">@if (rows().length === 0) {<p class="text-muted text-sm text-center py-6">لا سيارات جاهزة لم تُستلم الآن — تظهر هنا حين تتجاوز مهلة الاستلام.</p>} @else {<table class="w-full text-sm">
           <thead><tr class="text-muted text-xs"><th class="p-3 text-start">الأمر</th><th class="p-3 text-start">الورشة</th><th class="p-3 text-start">جاهزة منذ</th><th class="p-3 text-start">الحالة</th><th class="p-3 text-start">رسوم الحفظ</th><th class="p-3 text-start">المطالبة</th><th class="p-3"></th></tr></thead>
           <tbody>
             @for (r of rows(); track r.work_order_id) {
@@ -54,7 +54,7 @@ function stage(r: Row): { label: string; tone: string } {
                 </td>
               </tr>
             }
-          </tbody></table></div>
+          </tbody></table>}</div>
         @if (err(); as m) { <p class="text-sm text-bad mt-3">{{ m }}</p> }
       }
     </app-shell>

@@ -21,11 +21,12 @@ type Overview = { orgs: { total: number; active: number; pending_kyb: number }; 
       @if (q.value(); as d) {
         <app-attention-bar [items]="attention()" />
         <div class="grid grid-cols-5 gap-3">
-          <app-kpi [value]="d.work_orders.month" label="أمر عمل هذا الشهر" [sub]="d.work_orders.awaiting_approval + ' بانتظار اعتماد · ' + d.work_orders.in_progress + ' قيد التنفيذ'" />
-          <app-kpi [value]="d.work_orders.approved_within_1h_pct == null ? '—' : d.work_orders.approved_within_1h_pct + '%'" label="اعتماد خلال ساعة (30 يوم)" />
+          <!-- المال والتحقق أولاً (ما يحتاج قراراً)، ثم عدّادات الشهر (ما يُقرأ) — الأهمية قبل الترتيب الزمني. -->
           <a routerLink="/payments"><app-kpi [value]="money(d.money.escrow_held)" label="في الضمان (محفوظ)" [sub]="'محرَّر 30 يوم: ' + money(d.money.released_30d)" /></a>
           <a routerLink="/notes"><app-kpi [value]="d.notes.open" label="سند لأمر ساري" [sub]="d.notes.overdue + ' متأخر · القائم ' + money(d.notes.outstanding)" /></a>
           <a routerLink="/organizations"><app-kpi [value]="d.orgs.pending_kyb" label="KYB بانتظار المراجعة" [sub]="d.orgs.active + ' منشأة نشطة من ' + d.orgs.total" /></a>
+          <app-kpi [value]="d.work_orders.month" label="أمر عمل هذا الشهر" [sub]="d.work_orders.awaiting_approval + ' بانتظار اعتماد · ' + d.work_orders.in_progress + ' قيد التنفيذ'" />
+          <app-kpi [value]="d.work_orders.approved_within_1h_pct == null ? '—' : d.work_orders.approved_within_1h_pct + '%'" label="اعتماد خلال ساعة (30 يوم)" />
         </div>
         <div class="grid grid-cols-[2fr_1fr] gap-4 mt-4">
           <div class="card overflow-hidden"><table class="tbl"><thead><tr><th>التكامل</th><th>آخر 24 س</th><th>نجاح</th><th>فشل</th><th>DLQ</th><th></th></tr></thead><tbody>

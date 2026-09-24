@@ -25,12 +25,12 @@ const HOLD_CONFIRM: Record<HoldAction, string> = { release: 'تحرير', freeze
       @if (approvals.value(); as ap) { @if (ap.length > 0) {
         <div class="card border-warn mb-4 overflow-hidden">
           <div class="p-3 flex items-center gap-2"><app-pill [label]="'' + ap.length" tone="pill-warn" /><b>بانتظار الاعتماد — استردادات تحتاج مدقّقاً ثانياً</b><span class="text-xs text-muted">الطالب لا يعتمد طلبه؛ يجوز له سحبه</span></div>
-          <table class="tbl"><thead><tr><th>المبلغ</th><th>الحجز</th><th>سبب الطالب</th><th>طُلب</th><th>ينتهي</th><th>قرار</th></tr></thead><tbody>
+          @if (ap.length === 0) {<p class="text-muted text-sm text-center py-6">لا طلبات استرداد بانتظار موافقة.</p>} @else {<table class="tbl"><thead><tr><th>المبلغ</th><th>الحجز</th><th>سبب الطالب</th><th>طُلب</th><th>ينتهي</th><th>قرار</th></tr></thead><tbody>
             @for (a of ap; track a.id) {
               <tr><td class="num font-semibold">{{ a.payload.amount ? money(a.payload.amount) : 'كامل المتبقي' }}</td><td class="num text-xs text-muted">{{ short(a.entityId) }}</td><td class="text-sm max-w-[280px] truncate" [title]="a.payload.reason_ar ?? ''">{{ a.payload.reason_ar ?? '—' }}</td><td class="num text-xs text-muted">{{ date(a.requestedAt) }}</td><td class="num text-xs text-muted">{{ date(a.expiresAt) }}</td>
                 <td class="space-x-1 space-x-reverse"><button class="btn-ghost !h-8" (click)="decideDlg.set({ kind: 'approve', a })">اعتماد</button><button class="btn-ghost !h-8 !text-bad" (click)="decideDlg.set({ kind: 'reject', a })">رفض</button></td></tr>
             }
-          </tbody></table>
+          </tbody></table>}
         </div>
       } }
       <div class="grid grid-cols-[1fr_300px] gap-4 mb-4">

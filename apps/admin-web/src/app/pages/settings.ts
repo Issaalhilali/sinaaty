@@ -18,10 +18,10 @@ type Setting = { key: string; value: unknown; updatedBy: string | null; updatedA
       @if (q.isLoading() && !q.value()) { <app-loading /> }
       @if (q.error(); as e) { <app-error-box [error]="e" (retry)="q.reload()" /> }
       @if (q.value(); as rows) {
-        <div class="card overflow-hidden"><table class="tbl"><thead><tr><th>المفتاح</th><th>القيمة (JSON)</th><th>آخر تعديل</th><th></th></tr></thead><tbody>
+        <div class="card overflow-hidden">@if (rows.length === 0) {<p class="text-muted text-sm text-center py-6">لا إعدادات — تُحمَّل من الخادم.</p>} @else {<table class="tbl"><thead><tr><th>المفتاح</th><th>القيمة (JSON)</th><th>آخر تعديل</th><th></th></tr></thead><tbody>
           @for (s of rows; track s.key) { <tr><td class="num font-semibold">{{ s.key }}</td><td class="num text-xs max-w-[520px] truncate" dir="ltr">{{ json(s.value) }}</td><td class="num text-muted">{{ date(s.updatedAt) }}</td><td><button class="btn-ghost !h-8" (click)="startEdit(s.key, json(s.value))">تعديل</button></td></tr> }
           <tr><td colspan="4" class="bg-[#F7F9F7]"><div class="flex gap-2 items-center"><input class="input !h-9 max-w-xs num" dir="ltr" placeholder="new.setting_key" [(ngModel)]="newKey" /><button class="btn-ghost !h-9" [disabled]="!keyOk(newKey)" (click)="startEdit(newKey, '&quot;&quot;'); newKey = ''">إضافة مفتاح</button></div></td></tr>
-        </tbody></table></div>
+        </tbody></table>}</div>
       }
       @if (edit(); as e) {
         <p-dialog [visible]="true" [modal]="true" [closable]="false" [draggable]="false" [style]="{ width: '32rem', maxWidth: '95vw' }">
