@@ -2199,6 +2199,16 @@ class L10nEn extends L10n {
   String get drvNoOffersTitle => 'No jobs nearby';
 
   @override
+  String get drvLastDelivered => 'Last delivery — done';
+
+  @override
+  String get drvMoneyAfterInvoice => 'You get paid once the invoice is issued';
+
+  @override
+  String get drvMoneyInvoiced =>
+      'Invoice issued — the amount is on its way to your wallet';
+
+  @override
   String get drvStatusAssigned => 'Assigned to you';
 
   @override

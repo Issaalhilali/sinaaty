@@ -2170,6 +2170,15 @@ class L10nAr extends L10n {
   String get drvNoOffersTitle => 'لا مهام قريبة الآن';
 
   @override
+  String get drvLastDelivered => 'آخر تسليم — سُلّمت';
+
+  @override
+  String get drvMoneyAfterInvoice => 'المبلغ يصلك بعد صدور الفاتورة';
+
+  @override
+  String get drvMoneyInvoiced => 'الفاتورة صدرت — المبلغ في طريقه إلى محفظتك';
+
+  @override
   String get drvStatusAssigned => 'مهمة مُسندة إليك';
 
   @override

@@ -4117,6 +4117,24 @@ abstract class L10n {
   /// **'لا مهام قريبة الآن'**
   String get drvNoOffersTitle;
 
+  /// No description provided for @drvLastDelivered.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر تسليم — سُلّمت'**
+  String get drvLastDelivered;
+
+  /// No description provided for @drvMoneyAfterInvoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'المبلغ يصلك بعد صدور الفاتورة'**
+  String get drvMoneyAfterInvoice;
+
+  /// No description provided for @drvMoneyInvoiced.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفاتورة صدرت — المبلغ في طريقه إلى محفظتك'**
+  String get drvMoneyInvoiced;
+
   /// No description provided for @drvStatusAssigned.
   ///
   /// In ar, this message translates to:

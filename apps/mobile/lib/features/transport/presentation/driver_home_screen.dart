@@ -39,6 +39,10 @@ class DriverHomeScreen extends ConsumerWidget {
             if (current != null)
               _CurrentJob(job: current)
             else ...[
+              // بعد التسليم كان السائق يعود إلى شاشةٍ فارغة بلا كلمة عن ماله (design-audit/CORE_USER_JOURNEYS.md J6).
+              if (jobs.where((j) => j.status == 'delivered' || j.status == 'completed').firstOrNull case final last?) ...[
+                _LastDelivered(job: last, locale: locale), const SizedBox(height: SinaatySpace.lg),
+              ],
               SectionTitle(l.drvNearby),
               _Offers(online: d.online, canAccept: d.canAcceptJobs, locale: locale),
             ],
@@ -181,6 +185,25 @@ class _Note extends StatelessWidget {
     return SectionCard(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Icon(Icons.info_outline, size: 18, color: SinaatyColors.brass), const SizedBox(width: 8),
       Expanded(child: Text(text, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant))),
+    ]));
+  }
+}
+
+/// ورقة إغلاق: رقم المهمة، المبلغ، وما يحدث لماله — «تصلك بعد الفاتورة» أو «الفاتورة صدرت».
+class _LastDelivered extends StatelessWidget {
+  final TransportJob job; final String locale;
+  const _LastDelivered({required this.job, required this.locale});
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final t = Theme.of(context).textTheme; final c = Theme.of(context).colorScheme;
+    return SectionCard(child: Row(children: [
+      Container(width: 44, height: 44, alignment: Alignment.center, decoration: BoxDecoration(color: c.primaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(Icons.check_circle_outline, color: c.primary)),
+      const SizedBox(width: SinaatySpace.md),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(l.drvLastDelivered, style: t.titleSmall),
+        Text(Fmt.meta([job.number, job.invoice != null ? l.drvMoneyInvoiced : l.drvMoneyAfterInvoice]), style: t.bodySmall?.copyWith(color: c.onSurfaceVariant), maxLines: 2),
+      ])),
+      const SizedBox(width: SinaatySpace.sm),
+      MoneyText(Fmt.money(job.quotedPrice, locale: locale)),
     ]));
   }
 }
