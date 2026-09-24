@@ -89,7 +89,8 @@ class HomeScreen extends ConsumerWidget {
         ],
 
         const SizedBox(height: SinaatySpace.xl),
-        SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'),
+        // عنوانٌ فوق لا شيء حين يفشل الجلب يوحي بفراغ: يُخفى حتى يعود ما يُعرض.
+        if (!(carsUnknown && vehicles.isEmpty)) SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'),
             icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
         if (vehicles.isEmpty && !carsUnknown)
           // دعوةٌ في صفٍّ لا شاشةُ فراغ: حالةُ الفراغ الكاملة (دائرةٌ بقطر ١٣٢ وزرٌّ عريض) تصلح
