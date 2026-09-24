@@ -35,7 +35,7 @@ const _icons = <String, BrandGlyph>{
 /// تستقبله طلباً عادياً وتسعّره، فالخدمة الجديدة تعمل يوم إطلاقها لا بعد بناءٍ آخر.
 Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles,
     {Future<Uint8List?> Function()? pickImage, Here? here, String? preset, Uint8List? voiceNote}) async {
-  final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+  final l = L10n.of(context);
   final Here loc = here ?? ref.read(hereProvider);
   final note = TextEditingController(text: preset ?? ''); final manual = TextEditingController();
   String? vehicleId = vehicles.isNotEmpty ? vehicles.first.id : null;
@@ -216,6 +216,6 @@ Future<void> openFixCarSheet(BuildContext context, WidgetRef ref, List<Vehicle> 
   if (!context.mounted) return;
   r.when(
     ok: (req) { ref.invalidate(myServiceRequestsProvider); context.push('/service-requests/${req.id}'); },
-    err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    err: (f) => showFailure(context, f),
   );
 }

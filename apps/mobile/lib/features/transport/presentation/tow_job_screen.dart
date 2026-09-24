@@ -22,7 +22,7 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
   void _refresh() { ref.invalidate(towJobProvider(widget.id)); ref.invalidate(myTowJobsProvider); }
 
   Future<void> _cancel(TransportJob j) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final reason = TextEditingController();
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(l.towCancelTitle, style: Theme.of(ctx).textTheme.titleLarge),
@@ -36,7 +36,7 @@ class _TowJobScreenState extends ConsumerState<TowJobScreen> {
     final res = await ref.read(transportRepositoryProvider).cancel(j.id, reasonAr: reason.text.trim().isEmpty ? null : reason.text.trim());
     if (!mounted) return;
     setState(() => _busy = false);
-    res.when(ok: (_) => _refresh(), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    res.when(ok: (_) => _refresh(), err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {

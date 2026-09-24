@@ -113,7 +113,7 @@ class _AvailabilityBannerState extends ConsumerState<AvailabilityBanner> {
             setState(() => _busy = true);
             final r = await ref.read(workshopRepositoryProvider).setAvailability(org.id, accepting: true);
             if (!mounted) return; setState(() => _busy = false);
-            r.when(ok: (_) => ref.invalidate(myOrgsProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
+            r.when(ok: (_) => ref.invalidate(myOrgsProvider), err: (f) => showFailure(context, f));
           },
           child: Text(l.avResume),
         ),

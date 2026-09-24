@@ -14,7 +14,7 @@ import 'providers.dart';
 /// One sheet opens a dispute from a work order or a part order: what kind of problem, what happened,
 /// optional photos. Opening freezes the held amount — the sheet says so before the button.
 Future<void> openDisputeSheet(BuildContext context, WidgetRef ref, {String? workOrderId, String? partOrderId, Future<Uint8List?> Function()? pickImage}) async {
-  final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+  final l = L10n.of(context);
   final desc = TextEditingController(); var category = 'quality'; final photos = <Uint8List>[];
 
   Future<Uint8List?> capture() async {
@@ -54,6 +54,6 @@ Future<void> openDisputeSheet(BuildContext context, WidgetRef ref, {String? work
   if (!context.mounted) return;
   r.when(
     ok: (d) { ref.invalidate(myDisputesProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.dsOpened))); context.push('/disputes/${d.id}'); },
-    err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    err: (f) => showFailure(context, f),
   );
 }

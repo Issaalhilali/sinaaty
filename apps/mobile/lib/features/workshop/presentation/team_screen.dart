@@ -29,7 +29,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
         'owner' => l.roleOwner, 'manager' => l.roleManager, 'technician' => l.roleTechnician, 'accountant' => l.roleAccountant, _ => r };
 
   Future<void> _add() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final phone = TextEditingController(); var role = 'technician'; String? error;
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true,
@@ -56,11 +56,11 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
     final r = await ref.read(workshopRepositoryProvider).addMember(org, phone: normalizeSaudiPhone(phone.text)!, role: role);
     if (!mounted) return;
     setState(() => _busy = false);
-    r.when(ok: (_) => ref.invalidate(_membersProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (_) => ref.invalidate(_membersProvider), err: (f) => showFailure(context, f));
   }
 
   Future<void> _remove(OrgMember m) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (c) => Padding(
       padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl),
@@ -76,7 +76,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> {
     if (ok != true || !mounted) return;
     final r = await ref.read(workshopRepositoryProvider).removeMember(org, m.userId);
     if (!mounted) return;
-    r.when(ok: (_) => ref.invalidate(_membersProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (_) => ref.invalidate(_membersProvider), err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {

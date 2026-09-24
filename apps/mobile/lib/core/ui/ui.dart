@@ -15,3 +15,4 @@ export 'widgets/brand_icons.dart';
 export 'widgets/sheet_body.dart';
 export 'widgets/stale_notice.dart';
 export 'widgets/live_countdown.dart';
+export 'widgets/failure_notice.dart';

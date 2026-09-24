@@ -81,13 +81,13 @@ class AccountScreen extends ConsumerWidget {
       clearEmail: e.isEmpty && me?.email != null,          // مسح الحقل = سحب البريد من الحساب
     );
     if (!context.mounted) return;
-    r.when(ok: (_) {}, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
+    r.when(ok: (_) {}, err: (f) => showFailure(context, f));
   }
 }
 
 /// ورقة تأكيد الحذف — تقول الصدق كله قبل النقرة: ما يُمحى، ما يبقى نظاماً، ومتى يُرفض.
 Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-  final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+  final l = L10n.of(context);
   final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (c) {
     final t = Theme.of(c);
     return Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl),
@@ -108,7 +108,7 @@ Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
   r.when(
     ok: (_) => ref.read(authControllerProvider.notifier).signOut(),
     // الرفض على التزامٍ مفتوح يصل بنصّه: «عندك أمر إصلاح جارٍ…» — رسالة الخادم تسمّي العائق
-    err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    err: (f) => showFailure(context, f),
   );
 }
 

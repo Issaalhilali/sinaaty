@@ -11,7 +11,7 @@ Future<void> startQrInstall(BuildContext context, WidgetRef ref, {String? token}
   final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final repo = ref.read(partsRepositoryProvider);
   final qr = token ?? await ref.read(qrScannerProvider).scan(); if (qr == null) return;
   final v = await repo.verify(qr); if (!context.mounted) return;
-  await v.when(err: (f) async => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))), ok: (sv) async {
+  await v.when(err: (f) async => showFailure(context, f), ok: (sv) async {
     final orders = ((await ref.read(orgOrdersProvider.future)).valueOrNull ?? []).where((w) => w.isActive && w.items.any((i) => i.type == 'part')).toList();
     if (!context.mounted) return;
     String? itemId; var labor = 180;
@@ -27,6 +27,6 @@ Future<void> startQrInstall(BuildContext context, WidgetRef ref, {String? token}
     ]))));
     if (go != true || itemId == null || !context.mounted) return;
     final r = await repo.install(qrToken: qr, workOrderItemId: itemId!, laborWarrantyDays: labor); if (!context.mounted) return;
-    r.when(ok: (w) { ref.invalidate(warrantiesProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.ptInstalled} · ${w.number}'))); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (w) { ref.invalidate(warrantiesProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.ptInstalled} · ${w.number}'))); }, err: (f) => showFailure(context, f));
   });
 }

@@ -14,7 +14,6 @@ import 'providers.dart';
 /// [preset] اسم القطعة كما فهمه المساعد — الورقة تُفتح جاهزةً بدل أن يكتبه مرتين.
 Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehicle> vehicles, {String? preset}) async {
   final l = L10n.of(context);
-  final locale = Localizations.localeOf(context).languageCode;
   final name = TextEditingController(text: preset ?? '');
   final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'};
   String? vehicleId = vehicles.length == 1 ? vehicles.first.id : null;
@@ -57,6 +56,6 @@ Future<void> openPartRequestSheet(BuildContext context, WidgetRef ref, List<Vehi
   if (!context.mounted) return;
   res.when(
     ok: (r) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${r.id}'); },
-    err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+    err: (f) => showFailure(context, f),
   );
 }

@@ -22,7 +22,7 @@ class _FleetStatementsScreenState extends ConsumerState<FleetStatementsScreen> {
   bool _busy = false;
 
   Future<void> _generate() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final now = DateTime.now(); final month = '${now.year}-${now.month.toString().padLeft(2, '0')}';
     setState(() => _busy = true);
@@ -31,7 +31,7 @@ class _FleetStatementsScreenState extends ConsumerState<FleetStatementsScreen> {
     setState(() => _busy = false);
     r.when(
       ok: (s) { ref.invalidate(fleetStatementsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.flStatementGenerated))); context.push('/fleet/statements/${s.id}'); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 
@@ -64,12 +64,12 @@ class FleetStatementScreen extends ConsumerWidget {
   const FleetStatementScreen({super.key, required this.id});
 
   Future<void> _copyCsv(BuildContext context, WidgetRef ref) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final r = await ref.read(fleetRepositoryProvider).statementCsv(id);
     if (!context.mounted) return;
     await r.when(
       ok: (csv) async { await Clipboard.setData(ClipboardData(text: csv)); if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.flCsvCopied))); },
-      err: (f) async => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) async => showFailure(context, f),
     );
   }
 

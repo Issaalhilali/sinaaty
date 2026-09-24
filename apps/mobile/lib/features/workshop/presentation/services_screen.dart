@@ -24,7 +24,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   bool _busy = false;
 
   Future<void> _add() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final name = TextEditingController(); final price = TextEditingController(); final days = TextEditingController(text: '0');
     var type = 'labor';
@@ -57,15 +57,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         nameAr: name.text.trim(), unitPrice: double.parse(price.text).toStringAsFixed(2), itemType: type, warrantyDays: int.tryParse(days.text) ?? 0);
     if (!mounted) return;
     setState(() => _busy = false);
-    r.when(ok: (_) => ref.invalidate(serviceItemsProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (_) => ref.invalidate(serviceItemsProvider), err: (f) => showFailure(context, f));
   }
 
   Future<void> _remove(OrgServiceItem it) async {
-    final locale = Localizations.localeOf(context).languageCode;
     final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final r = await ref.read(workshopRepositoryProvider).removeServiceItem(org, it.id);
     if (!mounted) return;
-    r.when(ok: (_) => ref.invalidate(serviceItemsProvider), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (_) => ref.invalidate(serviceItemsProvider), err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {

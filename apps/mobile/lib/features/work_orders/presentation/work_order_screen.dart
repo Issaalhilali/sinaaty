@@ -94,7 +94,7 @@ class WorkOrderScreen extends ConsumerWidget {
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (c) => Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.confirmReceipt, style: Theme.of(c).textTheme.titleLarge), const SizedBox(height: SinaatySpace.sm), Text(l.confirmReceiptHint), const SizedBox(height: SinaatySpace.xl), PrimaryButton(label: l.confirmReceipt, onPressed: () => Navigator.pop(c, true))])));
     if (ok != true || !context.mounted) return;
     final r = await ref.read(workOrdersRepositoryProvider).confirmReceipt(id); if (!context.mounted) return;
-    r.when(ok: (_) { ref.invalidate(workOrderProvider(id)); ref.invalidate(workOrderTimelineProvider(id)); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
+    r.when(ok: (_) { ref.invalidate(workOrderProvider(id)); ref.invalidate(workOrderTimelineProvider(id)); }, err: (f) => showFailure(context, f));
   }
 }
 class _Timeline extends StatelessWidget {
@@ -141,14 +141,14 @@ class _RatingCardState extends ConsumerState<_RatingCard> {
   @override void dispose() { _comment.dispose(); super.dispose(); }
 
   Future<void> _submit() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     setState(() => _busy = true);
     final r = await ref.read(workOrdersRepositoryProvider).submitReview(widget.workOrderId, rating: _stars, commentAr: _comment.text.trim().isEmpty ? null : _comment.text.trim());
     if (!mounted) return;
     setState(() => _busy = false);
     r.when(
       ok: (_) => setState(() => _mine = MyReview(rating: _stars)),
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
     if (_mine != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.rvThanks)));
   }

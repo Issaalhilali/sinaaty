@@ -193,12 +193,11 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
   Future<void> _setCoverPhoto() async {
     final org = ref.read(myOrgsProvider).value?.firstOrNull;
     if (org == null) return;
-    final locale = Localizations.localeOf(context).languageCode;
     final x = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 1600);
     if (x == null || !mounted) return;
     final bytes = await x.readAsBytes();
     final repo = ref.read(workshopRepositoryProvider);
-    void fail(Failure f) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))); }
+    void fail(Failure f) { if (mounted) showFailure(context, f); }
     final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha256.convert(bytes).toString(), purpose: 'org_logo');
     final pre = p.valueOrNull; if (pre == null) { p.when(ok: (_) {}, err: fail); return; }
     final up = await repo.upload(pre, bytes, 'image/jpeg');
@@ -215,12 +214,11 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
   Future<void> _toggleAvailability() async {
     final org = ref.read(myOrgsProvider).value?.firstOrNull;
     if (org == null) return;
-    final locale = Localizations.localeOf(context).languageCode;
     final r = await ref.read(workshopRepositoryProvider).setAvailability(org.id, accepting: !org.acceptingRequests);
     if (!mounted) return;
     r.when(
       ok: (accepting) { ref.invalidate(myOrgsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(accepting ? L10n.of(context).avOn : L10n.of(context).avOff))); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 

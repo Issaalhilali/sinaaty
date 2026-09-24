@@ -17,7 +17,7 @@ class VehicleScreen extends ConsumerWidget {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final p = ref.watch(passportProvider(id)); final orders = ref.watch(workOrdersProvider);
     return AppScaffold(title: p.value?.valueOrNull?.vehicle.title ?? l.carPassport,
       moreItems: [PopupMenuItem(value: 'share', child: Text(l.shareCarPassport))],
-      onMore: (v) async { if (v != 'share') return; final r = await ref.read(vehiclesRepositoryProvider).shareLink(id); if (!context.mounted) return; r.when(ok: (url) async { await Clipboard.setData(ClipboardData(text: url)); if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(url))); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale))))); },
+      onMore: (v) async { if (v != 'share') return; final r = await ref.read(vehiclesRepositoryProvider).shareLink(id); if (!context.mounted) return; r.when(ok: (url) async { await Clipboard.setData(ClipboardData(text: url)); if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(url))); }, err: (f) => showFailure(context, f)); },
       body: AsyncResultView<VehiclePassport>(value: p, onRetry: () => ref.invalidate(passportProvider(id)), builder: (pp) {
         final v = pp.vehicle; final mine = orders.value?.valueOrNull?.where((w) => w.vehicleId == id).toList() ?? [];
         return ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.xl), children: [

@@ -49,7 +49,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
           err: (_) => setState(() => _pendingPaymentId = p.paymentId));
       },
       // الفشل قبل إنشاء العملية: لا مال تحرّك — رسالةٌ عابرة تكفي والزرّ يبقى.
-      err: (f) async => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+      err: (f) async => showFailure(context, f));
     await task; if (mounted) setState(() => _busy = false);
   }
   @override Widget build(BuildContext context) {

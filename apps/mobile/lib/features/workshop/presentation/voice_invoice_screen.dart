@@ -63,7 +63,7 @@ class _VoiceInvoiceScreenState extends ConsumerState<VoiceInvoiceScreen> with Si
   }
 
   Future<void> _apply() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final n = _note!; final items = <NewItem>[];
     for (final (i, p) in n.items.indexed) {
       final price = double.tryParse(_prices[i].text) ?? 0;
@@ -77,7 +77,7 @@ class _VoiceInvoiceScreenState extends ConsumerState<VoiceInvoiceScreen> with Si
       ref.invalidate(workOrderProvider(widget.workOrderId)); ref.invalidate(workOrderTimelineProvider(widget.workOrderId));
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.voApplied)));
       context.pop();
-    }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    }, err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {

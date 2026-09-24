@@ -45,7 +45,7 @@ class _FleetTodayScreenState extends ConsumerState<FleetTodayScreen> {
     setState(() => _busy = false);
     res.when(
       ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(decision == 'approved' ? l.flDecided : l.flRejectedDone))); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 

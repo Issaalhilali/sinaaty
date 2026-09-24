@@ -23,10 +23,10 @@ class _PartRequestScreenState extends ConsumerState<PartRequestScreen> {
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.ptAcceptBid, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: 4), Text('${Fmt.money(b.unitPrice, locale: locale)} × ${b.quantity} · ${Labels.condition(l, b.condition)}${b.warrantyDays > 0 ? ' · ${l.warrantyDays(b.warrantyDays)}' : ''}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md), if (hasTrade) RadioGroup<String>(groupValue: terms, onChanged: (v) => setS(() => terms = v!), child: Column(children: [RadioListTile<String>(value: 'deferred', title: Text(l.ptTermsDeferred), contentPadding: EdgeInsets.zero), RadioListTile<String>(value: 'prepaid', title: Text(l.ptTermsPrepaid), contentPadding: EdgeInsets.zero)])) else Text(l.ptTermsPrepaid), const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.ptAcceptBid, onPressed: () => Navigator.pop(ctx, true))]))));
     if (ok != true || !mounted) return; setState(() => _busy = true);
     final res = await ref.read(partsRepositoryProvider).accept(r.id, b.id, paymentTerms: terms); if (!mounted) return; setState(() => _busy = false);
-    res.when(ok: (o) { _refresh(); ref.invalidate(myPartOrdersProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.ptAccepted))); context.pushReplacement('/parts/orders/${o.id}'); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    res.when(ok: (o) { _refresh(); ref.invalidate(myPartOrdersProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.ptAccepted))); context.pushReplacement('/parts/orders/${o.id}'); }, err: (f) => showFailure(context, f));
   }
   Future<void> _bid(PartRequest r, PartBid? mine) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final org = ref.read(currentOrgIdProvider); if (org == null) return;
+    final l = L10n.of(context); final org = ref.read(currentOrgIdProvider); if (org == null) return;
     final price = TextEditingController(text: mine?.unitPrice.replaceAll('.00', '') ?? ''); final eta = TextEditingController(text: mine?.etaHours?.toString() ?? '24'); final warranty = TextEditingController(text: mine?.warrantyDays.toString() ?? '30'); final notes = TextEditingController(text: mine?.notesAr ?? ''); var cond = mine?.condition ?? r.acceptedConditions.first;
     final photos = <String>[...?mine?.mediaIds]; var uploading = false;
     final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -52,7 +52,7 @@ class _PartRequestScreenState extends ConsumerState<PartRequestScreen> {
     ]))));
     if (ok != true || !mounted) return; setState(() => _busy = true);
     final res = await ref.read(partsRepositoryProvider).bid(r.id, orgId: org, condition: cond, unitPrice: price.text.trim(), etaHours: int.tryParse(eta.text), warrantyDays: int.tryParse(warranty.text) ?? 0, notesAr: notes.text.trim().isEmpty ? null : notes.text.trim(), mediaIds: photos); if (!mounted) return; setState(() => _busy = false);
-    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.spBidSent))); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.spBidSent))); }, err: (f) => showFailure(context, f));
   }
   /// يصوّر ويرفع ويعيد معرّف الوسيط — أو null إن أُلغي أو فشل الرفع.
   /// [pickImage] محقونة كي تعمل الاختبارات والمحاكيات بلا كاميرا (نفس نمط فحص الاستلام).

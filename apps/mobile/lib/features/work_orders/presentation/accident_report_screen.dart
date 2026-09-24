@@ -41,7 +41,7 @@ class _AccidentReportScreenState extends ConsumerState<AccidentReportScreen> {
   }
 
   Future<void> _link() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final org = ref.read(currentOrgIdProvider);
     if (_preview == null) return;
     // Never fail silently: if the membership has not loaded yet, say so instead of a dead button.
@@ -52,18 +52,17 @@ class _AccidentReportScreenState extends ConsumerState<AccidentReportScreen> {
     setState(() => _busy = false);
     r.when(
       ok: (_) { setState(() => _preview = null); _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.accLinked))); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 
   Future<void> _submitRepair(AccidentReport report) async {
-    final locale = Localizations.localeOf(context).languageCode;
     setState(() => _busy = true);
     final r = await ref.read(accidentsRepositoryProvider).submitRepair(report.id!);
     if (!mounted) return;
     setState(() => _busy = false);
     r.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).accSubmitted))); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+      err: (f) => showFailure(context, f));
   }
 
   /// One tap from the assessor's report to work-order lines (backlog 53): the advisor prices each

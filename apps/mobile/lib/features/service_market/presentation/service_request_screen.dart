@@ -32,29 +32,29 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
   String _when(L10n l, String? w) => switch (w) { 'now' => l.srNow, 'this_week' => l.srThisWeek, _ => l.srToday };
 
   Future<void> _accept(ServiceOffer o) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     setState(() => _busy = true);
     final r = await ref.read(serviceMarketRepositoryProvider).accept(widget.id, offerId: o.id);
     if (!mounted) return;
     setState(() => _busy = false);
     r.when(
       ok: (woId) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.srAccepted))); context.push('/work-orders/$woId'); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 
   Future<void> _widen(ServiceRequest r) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final next = r.radiusKm < 100 ? 100 : 150;
     setState(() => _busy = true);
     final res = await ref.read(serviceMarketRepositoryProvider).widen(widget.id, radiusKm: next);
     if (!mounted) return;
     setState(() => _busy = false);
-    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.srWidened))); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.srWidened))); }, err: (f) => showFailure(context, f));
   }
 
   Future<void> _respond(ServiceRequest r) async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     final diagnosis = TextEditingController(); final min = TextEditingController(); final max = TextEditingController();
     var type = 'estimate'; var avail = 'today';
     final mine = r.offers.firstOrNull;   // the workshop view carries only its own offer
@@ -100,7 +100,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       availability: avail);
     if (!mounted) return;
     setState(() => _busy = false);
-    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.srOfferSent))); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.srOfferSent))); }, err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {
@@ -113,7 +113,7 @@ class _ServiceRequestScreenState extends ConsumerState<ServiceRequestScreen> {
       primaryAction: widget.workshop && r != null && r.open ? PrimaryButton(label: l.srRespond, icon: Icons.local_offer_outlined, loading: _busy, onPressed: _busy ? null : () => _respond(r)) : null,
       moreItems: !widget.workshop && r != null && r.open ? [PopupMenuItem(value: 'cancel', child: Text(l.srCancelRequest))] : null,
       // الخطأ يُقال لا يُبتلع: زرّ إلغاءٍ فشل بصمت تركه العميل مقتنعاً أن طلبه أُلغي وهو حيّ يجمع العروض.
-      onMore: (val) async { if (val == 'cancel' && !_busy) { final res = await ref.read(serviceMarketRepositoryProvider).cancel(widget.id); if (mounted) res.when(ok: (_) => _refresh(), err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode))))); } },
+      onMore: (val) async { if (val == 'cancel' && !_busy) { final res = await ref.read(serviceMarketRepositoryProvider).cancel(widget.id); if (mounted) res.when(ok: (_) => _refresh(), err: (f) => showFailure(context, f)); } },
       body: AsyncResultView<ServiceRequest>(value: v, onRetry: _refresh, builder: (r) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [

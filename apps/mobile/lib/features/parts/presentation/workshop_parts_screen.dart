@@ -35,7 +35,7 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
     ]))));
     if (ok != true || !mounted) return;
     final r = await ref.read(partsRepositoryProvider).buyNow(orgId: ref.read(currentOrgIdProvider), paymentTerms: terms, items: [(inventoryId: o.inventoryId, quantity: qty)]); if (!mounted) return;
-    r.when(ok: (order) { ref.invalidate(myPartOrdersProvider); ref.invalidate(buyerTradeAccountsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.ptOrderPlaced} · ${order.number}'))); context.push('/parts/orders/${order.id}'); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (order) { ref.invalidate(myPartOrdersProvider); ref.invalidate(buyerTradeAccountsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.ptOrderPlaced} · ${order.number}'))); context.push('/parts/orders/${order.id}'); }, err: (f) => showFailure(context, f));
   }
   Future<void> _auction() async {
     final l = L10n.of(context); final name = TextEditingController(); final conds = {'oem_new', 'aftermarket_new', 'used_scrapyard'}; var minutes = 60;
@@ -54,7 +54,7 @@ class _WorkshopPartsScreenState extends ConsumerState<WorkshopPartsScreen> {
     // من لم يمنح الموقع يبقى على السلوك القديم.
     final here = await ref.read(hereProvider).ifGranted(); if (!mounted) return;
     final r = await ref.read(partsRepositoryProvider).createRequest(orgId: ref.read(currentOrgIdProvider), vin: _lastVin, partNameAr: name.text.trim(), acceptedConditions: conds.toList(), biddingMinutes: minutes, lat: here?.lat, lng: here?.lng); if (!mounted) return;
-    r.when(ok: (req) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${req.id}'); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))));
+    r.when(ok: (req) { ref.invalidate(myPartRequestsProvider); context.push('/parts/requests/${req.id}'); }, err: (f) => showFailure(context, f));
   }
   @override Widget build(BuildContext context) {
     final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final s = Theme.of(context).colorScheme;

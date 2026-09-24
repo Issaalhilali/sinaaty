@@ -172,7 +172,7 @@ class _Offers extends ConsumerWidget {
     r.when(
       ok: (_) { ref.invalidate(driverJobsProvider); ref.invalidate(driverOffersProvider); },
       // «أُسندت لسائق آخر» ليست خطأً في التطبيق — هو سباقٌ خسره، ويُقال كما هو.
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(Localizations.localeOf(context).languageCode)))),
+      err: (f) => showFailure(context, f),
     );
   }
 }

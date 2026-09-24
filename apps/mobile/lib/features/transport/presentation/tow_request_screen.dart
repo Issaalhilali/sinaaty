@@ -52,7 +52,7 @@ class _TowRequestScreenState extends ConsumerState<TowRequestScreen> {
   }
 
   Future<void> _submit() async {
-    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode;
+    final l = L10n.of(context);
     setState(() => _busy = true);
     final res = await ref.read(transportRepositoryProvider).createJob(
       type: _type, pickup: _pickup!, dropoff: _dropoff!, vehicleId: _vehicleId, workOrderId: widget.workOrderId,
@@ -64,7 +64,7 @@ class _TowRequestScreenState extends ConsumerState<TowRequestScreen> {
     setState(() => _busy = false);
     res.when(
       ok: (job) { ref.invalidate(myTowJobsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.towRequested))); context.pushReplacement('/tow/${job.id}'); },
-      err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))),
+      err: (f) => showFailure(context, f),
     );
   }
 

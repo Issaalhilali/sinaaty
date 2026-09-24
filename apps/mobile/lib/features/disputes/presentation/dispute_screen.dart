@@ -49,7 +49,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
     final r = await repo.message(widget.id, bodyAr: body, mediaIds: mediaIds);
     if (!mounted) return;
     setState(() => _busy = false);
-    r.when(ok: (_) { _msg.clear(); _refresh(); }, err: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message(locale)))));
+    r.when(ok: (_) { _msg.clear(); _refresh(); }, err: (f) => showFailure(context, f));
   }
 
   @override Widget build(BuildContext context) {
