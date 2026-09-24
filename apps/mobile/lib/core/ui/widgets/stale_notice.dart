@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../api/network_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../result/result.dart';
 import '../../theme/tokens.dart';
@@ -27,7 +28,8 @@ class StaleNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!sources.any(_failed)) return const SizedBox.shrink();
+    // حين يقول شريط «غير متصل» كلمته لا نكرّرها تحته — إشعارٌ واحد لسببٍ واحد.
+    if (!sources.any(_failed) || !NetworkState.online.value) return const SizedBox.shrink();
     final l = L10n.of(context); final s = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: SinaatySpace.md),

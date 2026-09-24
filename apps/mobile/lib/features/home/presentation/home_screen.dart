@@ -37,6 +37,8 @@ class HomeScreen extends ConsumerWidget {
     final locale = Localizations.localeOf(context).languageCode;
     final vSrc = ref.watch(vehiclesProvider), oSrc = ref.watch(workOrdersProvider);
     final vehicles = vSrc.value?.valueOrNull ?? const <Vehicle>[];
+    // فشل الجلب ليس «لا سيارات»: بلا شبكة كانت الرئيسية تقول «لا توجد سيارات بعد — أضف سيارتك» (كذبٌ رُصد على المحاكي ٢٤/٩).
+    final carsUnknown = vSrc.value == null || !vSrc.value!.isOk;
     final orders = oSrc.value?.valueOrNull ?? const <WorkOrder>[];
     final shops = ref.watch(sm.nearbyShopsProvider).value ?? const <NearbyShop>[];
     final live = orders.where((w) => w.isActive).toList()
@@ -89,7 +91,7 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: SinaatySpace.xl),
         SectionTitle(l.myCars, trailing: TextButton.icon(onPressed: () => context.push('/vehicles/add'),
             icon: const Icon(Icons.add, size: 18), label: Text(l.addCar))),
-        if (vehicles.isEmpty)
+        if (vehicles.isEmpty && !carsUnknown)
           // دعوةٌ في صفٍّ لا شاشةُ فراغ: حالةُ الفراغ الكاملة (دائرةٌ بقطر ١٣٢ وزرٌّ عريض) تصلح
           // لشاشةٍ خالية، أما هنا فهي قسمٌ من صفحةٍ عامرة — كانت تلتهم ثلثها بلا داعٍ.
           SectionCard(child: InkWell(
