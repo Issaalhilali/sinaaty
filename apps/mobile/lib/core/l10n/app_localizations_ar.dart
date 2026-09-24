@@ -2173,10 +2173,7 @@ class L10nAr extends L10n {
   String get drvLastDelivered => 'آخر تسليم — سُلّمت';
 
   @override
-  String get drvMoneyAfterInvoice => 'المبلغ يصلك بعد صدور الفاتورة';
-
-  @override
-  String get drvMoneyInvoiced => 'الفاتورة صدرت — المبلغ في طريقه إلى محفظتك';
+  String get drvMoneyToWallet => 'المبلغ يُضاف إلى محفظتك بعد الفاتورة';
 
   @override
   String get drvStatusAssigned => 'مهمة مُسندة إليك';

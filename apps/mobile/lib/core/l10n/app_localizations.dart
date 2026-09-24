@@ -4123,17 +4123,11 @@ abstract class L10n {
   /// **'آخر تسليم — سُلّمت'**
   String get drvLastDelivered;
 
-  /// No description provided for @drvMoneyAfterInvoice.
+  /// No description provided for @drvMoneyToWallet.
   ///
   /// In ar, this message translates to:
-  /// **'المبلغ يصلك بعد صدور الفاتورة'**
-  String get drvMoneyAfterInvoice;
-
-  /// No description provided for @drvMoneyInvoiced.
-  ///
-  /// In ar, this message translates to:
-  /// **'الفاتورة صدرت — المبلغ في طريقه إلى محفظتك'**
-  String get drvMoneyInvoiced;
+  /// **'المبلغ يُضاف إلى محفظتك بعد الفاتورة'**
+  String get drvMoneyToWallet;
 
   /// No description provided for @drvStatusAssigned.
   ///

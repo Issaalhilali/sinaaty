@@ -200,7 +200,8 @@ class _LastDelivered extends StatelessWidget {
       const SizedBox(width: SinaatySpace.md),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l.drvLastDelivered, style: t.titleSmall),
-        Text(Fmt.meta([job.number, job.invoice != null ? l.drvMoneyInvoiced : l.drvMoneyAfterInvoice]), style: t.bodySmall?.copyWith(color: c.onSurfaceVariant), maxLines: 2),
+        // قائمة المهام لا تحمل حالة الفاتورة (يحملها تفصيل المهمة وحده) — فلا نزعم «صدرت» ولا «لم تصدر»؛ جملةٌ صادقة في الحالتين.
+        Text(Fmt.meta([job.number, l.drvMoneyToWallet]), style: t.bodySmall?.copyWith(color: c.onSurfaceVariant), maxLines: 2),
       ])),
       const SizedBox(width: SinaatySpace.sm),
       MoneyText(Fmt.money(job.quotedPrice, locale: locale)),
