@@ -2968,6 +2968,12 @@ class L10nAr extends L10n {
   String get srvFix => 'إصلاح';
 
   @override
+  String get srvMore => 'خدمات أخرى';
+
+  @override
+  String get srvMoreTitle => 'ماذا تحتاج أيضاً؟';
+
+  @override
   String get srvPart => 'قطع غيار';
 
   @override

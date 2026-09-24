@@ -46,58 +46,37 @@ class ServicesRow extends ConsumerWidget {
       ],
     ];
     if (items.isEmpty) return const SizedBox.shrink();
+    // الحلقة أولاً: إصلاح · قطعة · سطحة على ورقة واحدة بثلاثة أبواب متساوية. ما عداها خدماتٌ نادرة
+    // (فحص قبل الشراء، صيانة دورية، بطارية وطريق) تُطلب من «خدمات أخرى» — لا ست بطاقات متطابقة تنافس
+    // البطل وتساوي بين ما يُطلب كل يوم وما يُطلب كل عام (design-audit/UX_PROBLEMS.md §1، القرار D4).
+    final primary = items.take(3).toList(); final extras = items.skip(3).toList();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SectionTitle(l.servicesTitle),
-      // شبكةٌ من ثلاثة أعمدة: ستُّ خدماتٍ في صفّين متساويي الارتفاع بلا حسابٍ يدوي.
-      GridView.count(
-        crossAxisCount: 3, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: SinaatySpace.md, crossAxisSpacing: SinaatySpace.md, childAspectRatio: .84,
-        children: [for (final s in items) _Tile(icon: s.icon, label: s.label, body: null, onTap: s.onTap)],
-      ),
+      SectionTitle(l.servicesTitle, trailing: extras.isEmpty ? null : TextButton(onPressed: () => _showExtras(context, extras), child: Text(l.srvMore))),
+      SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.xs, vertical: SinaatySpace.sm), child: Row(children: [
+        for (final it in primary) Expanded(child: _Door(icon: it.icon, label: it.label, onTap: it.onTap)),
+      ])),
     ]);
+  }
+
+  static Future<void> _showExtras(BuildContext context, List<({BrandGlyph icon, String label, String? body, VoidCallback onTap})> extras) {
+    final l = L10n.of(context);
+    return showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(l.srvMoreTitle, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.sm),
+      RowGroup(children: [for (final e in extras) AppListRow(brandIcon: e.icon, title: e.label, subtitle: e.body, onTap: () { Navigator.pop(ctx); e.onTap(); })]),
+    ])));
   }
 }
 
-class _Tile extends StatelessWidget {
-  final BrandGlyph icon; final String label; final String? body; final VoidCallback onTap;
-  const _Tile({required this.icon, required this.label, this.body, required this.onTap});
+/// بابٌ من ثلاثة: أيقونة العلامة في دائرة الختم الناعمة، والاسم تحتها بسطرين كحدٍّ أقصى.
+class _Door extends StatelessWidget {
+  final BrandGlyph icon; final String label; final VoidCallback onTap;
+  const _Door({required this.icon, required this.label, required this.onTap});
   @override Widget build(BuildContext context) {
     final s = Theme.of(context).colorScheme; final t = Theme.of(context).textTheme;
-    return Material(
-      color: s.surface, borderRadius: BorderRadius.circular(SinaatySpace.radius),
-      child: InkWell(
-        onTap: onTap, borderRadius: BorderRadius.circular(SinaatySpace.radius),
-        // ثلاثُ بطاقاتٍ **متطابقة**: أيقونة في الوسط واسمٌ من كلمةٍ تحتها. الأسماء الطويلة
-        // («أطلب قطعة غيار») كانت تلتفّ سطرين فتعلو البطاقةُ أختيها ويختلّ الصف كله؛
-        // والاسم القصير يقول الخدمة نفسها. (كلمة المالك: غير متوازنة ونفس الأسلوب.)
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.lg),
-          // `mainAxisSize.min` + `Flexible` على النص: البلاطة تفيض ٧٫٥px على المقاسات التي
-          // يكبر فيها الخط (تكبير النظام، أو شاشة أضيق) — والمرونة تحلّها بلا رقمٍ سحري.
-          child: Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-            // أيقونةٌ على قرصٍ متدرّج بلون الهوية بدل مربّعٍ باهتٍ بخطٍّ رفيع: الحجم أكبر،
-            // والتباين أقوى، والقرص يعطي الأيقونة وزناً تراه العين من بعيد (كلمة المالك:
-            // غيّر الأيقونات للأفضل). لا ظلال — تدرّجٌ ولمسةُ نحاسٍ واحدة.
-            Container(
-              width: 56, height: 56, alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(begin: Alignment.topRight, end: Alignment.bottomLeft,
-                    colors: [s.primary, SinaatyColors.sealInk]),
-              ),
-              child: BrandIcon(icon, size: 30, color: Colors.white, accent: SinaatyColors.brass),
-            ),
-            const SizedBox(height: SinaatySpace.sm),
-            // «فحص قبل الشراء» لا يسع ثلث العرض في سطر: سطران يحفظان الاسم كاملاً — وبتره
-            // إلى «فحص قبل الشـ...» يخفي الخدمة نفسها (نفس درس بطاقات الأمر).
-            Flexible(child: Text(label, style: t.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
-            if (body != null) ...[
-              const SizedBox(height: 2),
-              Text(body!, style: t.bodySmall?.copyWith(color: s.onSurfaceVariant, height: 1.4), maxLines: 2, textAlign: TextAlign.center),
-            ],
-          ]),
-        ),
-      ),
-    );
+    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(SinaatySpace.radius), child: Padding(padding: const EdgeInsets.symmetric(vertical: SinaatySpace.md, horizontal: SinaatySpace.xs), child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(width: 56, height: 56, alignment: Alignment.center, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer), child: BrandIcon(icon, size: 30, color: s.primary, accent: SinaatyColors.brass)),
+      const SizedBox(height: SinaatySpace.sm),
+      Text(label, style: t.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
+    ])));
   }
 }

@@ -136,7 +136,7 @@ class _AskHero extends ConsumerWidget {
         const SizedBox(height: 6),
         Text(l.askBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
         const SizedBox(height: SinaatySpace.lg),
-        SealButton(label: l.askAnalyze, icon: Icons.auto_awesome, onPressed: () => context.push('/ask')),
+        SealButton(label: l.askAnalyze, icon: Icons.mic_none_outlined, onPressed: () => context.push('/ask')),
       ])),
       const SizedBox(height: SinaatySpace.lg),
       const ServicesRow(),
@@ -188,17 +188,20 @@ class _VehicleCard extends StatelessWidget {
 class _AssistCard extends StatelessWidget {
   final L10n l; final TextTheme t;
   const _AssistCard({required this.l, required this.t});
-  @override Widget build(BuildContext context) => SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Container(width: 40, height: 40, alignment: Alignment.center,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: .14)),
-              child: const Icon(Icons.auto_awesome, color: SinaatyColors.brass, size: 21)),
-          const SizedBox(width: SinaatySpace.md),
-          Expanded(child: Text(l.askTitle, style: t.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w800))),
-        ]),
-        const SizedBox(height: SinaatySpace.sm),
-        Text(l.askBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.7)),
-        const SizedBox(height: SinaatySpace.lg),
-        SealButton(label: l.askAnalyze, icon: Icons.auto_awesome, onPressed: () => context.push('/ask')),
-      ]));
+  /// حين يكون على الشاشة أمرٌ ينتظر العميل فهو البطل الوحيد (القاعدة D3: ختمٌ واحد لكل شاشة) —
+  /// والمساعد يصير ورقةً هادئة بزرٍّ ثانوي، لا ختماً ثانياً ينافسه.
+  @override Widget build(BuildContext context) {
+    final s = Theme.of(context).colorScheme;
+    return SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Container(width: 40, height: 40, alignment: Alignment.center, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer), child: Icon(Icons.mic_none_outlined, color: s.primary, size: 22)),
+        const SizedBox(width: SinaatySpace.md),
+        Expanded(child: Text(l.askTitle, style: t.titleMedium)),
+      ]),
+      const SizedBox(height: SinaatySpace.sm),
+      Text(l.askBody, style: t.bodyMedium?.copyWith(color: s.onSurfaceVariant)),
+      const SizedBox(height: SinaatySpace.md),
+      PrimaryButton(label: l.askAnalyze, icon: Icons.mic_none_outlined, secondary: true, onPressed: () => context.push('/ask')),
+    ]));
+  }
 }

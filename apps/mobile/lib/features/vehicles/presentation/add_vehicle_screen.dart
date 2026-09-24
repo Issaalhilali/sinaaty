@@ -80,7 +80,7 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
           // ما قُرئ يُقال صراحةً: من يرى «قرأتُ ٣ حقول» يعرف أن الرابع عليه هو.
           SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
-              const Icon(Icons.auto_awesome, size: 18, color: SinaatyColors.seal), const SizedBox(width: 8),
+              const Icon(Icons.document_scanner_outlined, size: 18, color: SinaatyColors.seal), const SizedBox(width: 8),
               Expanded(child: Text(l.istRead(read.found), style: t.bodyMedium)),
             ]),
             // سطر التأكيد: يرى «تويوتا كامري · 2019» فيعرف أن الورقة المصوَّرة ورقة سيارته.

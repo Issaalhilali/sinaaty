@@ -5617,6 +5617,18 @@ abstract class L10n {
   /// **'إصلاح'**
   String get srvFix;
 
+  /// No description provided for @srvMore.
+  ///
+  /// In ar, this message translates to:
+  /// **'خدمات أخرى'**
+  String get srvMore;
+
+  /// No description provided for @srvMoreTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا تحتاج أيضاً؟'**
+  String get srvMoreTitle;
+
   /// No description provided for @srvPart.
   ///
   /// In ar, this message translates to:

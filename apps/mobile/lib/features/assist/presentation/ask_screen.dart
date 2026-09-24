@@ -111,7 +111,7 @@ class _AskScreenState extends ConsumerState<AskScreen> {
         ),
       ]),
       primaryAction: _result == null
-          ? PrimaryButton(label: l.askAnalyze, icon: Icons.auto_awesome, loading: _busy, onPressed: _busy ? null : _analyze)
+          ? PrimaryButton(label: l.askAnalyze, icon: Icons.mic_none_outlined, loading: _busy, onPressed: _busy ? null : _analyze)
           : null,
     );
   }

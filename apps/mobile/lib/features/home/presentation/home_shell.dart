@@ -8,6 +8,7 @@ import '../../../core/di/core_providers.dart';
 import '../../../core/flags/feature_flags.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/result/result.dart';
+import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../../../core/voice/assistant.dart';
 import '../../../core/voice/voice_input.dart';
@@ -149,12 +150,14 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       subtitle: homeTab && headTitle.isNotEmpty ? (partner && name.isNotEmpty ? name : l.welcomeBack) : null,
       leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        // الإشعار المستمر «مثل التوصيل» لا يُخبَّأ خلف قائمة: جرسٌ في الرأس بعدّاده (القرار D7).
+        if (flavor == AppFlavor.customer) IconButton(tooltip: l.notifications, onPressed: () => unawaited(context.push('/notifications')), icon: Badge(isLabelVisible: unread > 0, backgroundColor: SinaatyColors.brass, textColor: Colors.white, label: Text('$unread'), child: const Icon(Icons.notifications_none_outlined))),
         if (partner && !isSupplier && orgType != 'logistics') Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
       ]),
       // «الرهيبة تختصر» (كلمة المالك): أدوات الورشة النادرة الاستعمال تسكن هنا لا في الصفحة —
       // المفتاح والفريق والخدمات خلف ⋯، والصفحة لوجه اليوم وحده.
       moreItems: [
-        PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)),
+        if (flavor != AppFlavor.customer) PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)),
         if (partner && !isSupplier) ...[
           PopupMenuItem(value: 'availability', child: Text((ref.watch(myOrgsProvider).value?.firstOrNull?.acceptingRequests ?? true) ? l.avMenuOn : l.avMenuOff)),
           PopupMenuItem(value: 'team', child: Text(l.wsTeam)),

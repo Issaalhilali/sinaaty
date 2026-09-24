@@ -59,7 +59,8 @@ class WorkOrderCard extends StatelessWidget {
     final l = L10n.of(context); final t = Theme.of(context).textTheme; final s = Theme.of(context).colorScheme;
     final tone = switch (order.status) { 'awaiting_approval' => BadgeTone.brass, 'ready' || 'delivered' => BadgeTone.seal, 'cancelled' || 'disputed' => BadgeTone.bad, _ => BadgeTone.plain };
     final step = woFlow.indexOf(order.status == 'approved' || order.status == 'awaiting_parts' ? 'in_progress' : order.status); final locale = Localizations.localeOf(context).languageCode;
-    if (order.awaitingApproval || order.status == 'ready') {
+    // البطل لكل حالةٍ تنتظر العميل: اعتماد، استلام، أو تأكيد بعد التسليم — لا للاعتماد والجاهز وحدهما.
+    if (order.awaitingApproval || order.status == 'ready' || order.status == 'delivered') {
       return GestureDetector(onTap: onTap, child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.titleAr ?? l.workOrder, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 2, overflow: TextOverflow.ellipsis), const SizedBox(height: 2), Text(Fmt.meta([vehicle?.title, order.number]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), const SizedBox(width: 8), SealPill(Labels.woStatus(l, order.status))]),
         const SizedBox(height: SinaatySpace.md), MoneyText(Fmt.money(order.total, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white)),

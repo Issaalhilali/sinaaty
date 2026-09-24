@@ -3007,6 +3007,12 @@ class L10nEn extends L10n {
   String get srvFix => 'Repair';
 
   @override
+  String get srvMore => 'Other services';
+
+  @override
+  String get srvMoreTitle => 'What else do you need?';
+
+  @override
   String get srvPart => 'Parts';
 
   @override
