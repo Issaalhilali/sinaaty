@@ -214,6 +214,9 @@ class L10nAr extends L10n {
   String get approveTitle => 'اعتماد أمر الإصلاح';
 
   @override
+  String get approveMeaningTitle => 'ماذا يعني اعتمادك؟';
+
+  @override
   String get approveHint =>
       'توقيعك يثبّت هذا السعر — أي تعديل يصلك كنسخة جديدة.';
 
@@ -1035,6 +1038,13 @@ class L10nAr extends L10n {
 
   @override
   String get spInventory => 'المخزون';
+
+  @override
+  String get spNoInventoryTitle => 'لا أصناف في مخزنك بعد';
+
+  @override
+  String get spNoInventoryBody =>
+      'أضف قطعك من الكتالوج أو ابدأ بملصقات QR لقطعٍ عندك.';
 
   @override
   String spItems(int n) {

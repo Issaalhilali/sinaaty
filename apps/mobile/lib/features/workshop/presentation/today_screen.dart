@@ -56,7 +56,8 @@ class TodayScreen extends ConsumerWidget {
         // «بانتظار اعتماد العميل» انتقل إلى صندوق «ما يحتاجك الآن» ومعه طريق إليه — ورقمٌ يُعرض مرتين
         // على شاشة واحدة ضجيج لا معلومة. يبقى هنا ما يُقرأ ولا يُفعل: كم سيارة عندي، وكم مالي جاهز.
         Row(children: [_Kpi(value: '${active.length}', label: l.wsInShop), const SizedBox(width: 10), _Kpi(value: availableValue == null ? '—' : Fmt.money(availableValue, locale: locale).split(' ').first.replaceAll(RegExp(r'\.00$'), ''), label: l.wsReadyToPayout)]),
-        if (hero != null) ...[const SizedBox(height: SinaatySpace.md), _HeroAction(order: hero)],
+        // ختمٌ واحد لكل شاشة (D3): إن كانت طلبات الحيّ تحمل الختم صار أمر الورشة ورقةً بزرّه، لا ختماً ثانياً.
+        if (hero != null) ...[const SizedBox(height: SinaatySpace.md), _HeroAction(order: hero, seal: (ref.watch(sm.nearbyServiceRequestsProvider).value?.valueOrNull ?? const <ServiceRequest>[]).isEmpty)],
         SectionTitle(l.wsTodayCars, trailing: TextButton(onPressed: () => context.push('/ws/orders'), child: Text(l.wsAll))),
         SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final w in active.take(6)) AppListRow(icon: Icons.directions_car_outlined, title: w.carLine, subtitle: Fmt.meta([if (w.knowsCar) w.titleAr, Fmt.date(w.createdAt, locale: locale)]), trailing: StatusBadge(Labels.woStatus(l, w.status), tone: w.awaitingApproval ? BadgeTone.brass : w.status == 'ready' ? BadgeTone.seal : BadgeTone.plain), onTap: () => context.push('/ws/orders/${w.id}'))])),
       ]));
@@ -66,10 +67,19 @@ class TodayScreen extends ConsumerWidget {
 }
 class _Kpi extends StatelessWidget { final String value; final String label; const _Kpi({required this.value, required this.label}); @override Widget build(BuildContext context) => Expanded(child: SectionCard(padding: const EdgeInsets.fromLTRB(14, 12, 14, 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 22, fontFeatures: const [FontFeature.tabularFigures()])), Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant), maxLines: 2)]))); }
 class _HeroAction extends ConsumerWidget {
-  final WorkOrder order; const _HeroAction({required this.order});
+  final WorkOrder order; final bool seal; const _HeroAction({required this.order, this.seal = true});
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final t = Theme.of(context).textTheme;
     final (label, hint) = switch (order.status) { 'draft' => (l.wsReceive, l.wsInspect), 'received' => (l.wsInspect, l.wsAngles), 'inspecting' => (l.wsRequestApproval, l.wsWaitingCustomer), 'approved' || 'awaiting_parts' => (l.wsStart, l.wsCustomerApprovedHint), 'in_progress' => (l.wsQuality, ''), 'quality_check' => (l.wsReady, ''), 'ready' => (l.wsDeliver, ''), _ => (Labels.woStatus(l, order.status), '') };
+    if (!seal) {
+      final c = Theme.of(context).colorScheme;
+      return Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm), child: SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(order.carLine, style: t.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(Fmt.meta([l.wsNeedsAction, if (order.knowsCar) order.titleAr]), style: t.bodySmall?.copyWith(color: c.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
+        if (hint.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: Text(hint, style: t.bodyMedium?.copyWith(color: c.onSurfaceVariant))),
+        const SizedBox(height: SinaatySpace.md), PrimaryButton(label: label, onPressed: () => context.push('/ws/orders/${order.id}')),
+      ])));
+    }
     return Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm), child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(order.carLine, style: t.titleLarge?.copyWith(color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis), Text(Fmt.meta([l.wsNeedsAction, if (order.knowsCar) order.titleAr]), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)), maxLines: 1, overflow: TextOverflow.ellipsis)])), SealPill(Labels.woStatus(l, order.status))]),
       if (hint.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 8), child: Text(hint, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .9)))),

@@ -148,6 +148,8 @@ void main() {
   testWidgets('scrapyard makes QR labels: part registered under its own name → batch → one QR per label', (tester) async {
     size(tester); parts.currentOrg = 'scrap';
     await tester.pumpWidget(app(router('/sales'), orgType: 'scrapyard')); await tester.pumpAndSettle();
+    // «مبيعاتي» بشرائح: الملصقات في شريحة «المخزون» — نقرةٌ واحدة لا أربع تمريرات.
+    await tester.tap(find.text('المخزون')); await tester.pumpAndSettle();
     expect(find.text('أصدر دفعة QR'), findsNothing, reason: 'زر الوكيل لا يظهر للتشليح');
     await tester.tap(find.text('ملصقات QR')); await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextField, 'اسم القطعة'), 'دينمو كامري مستعمل'); await tester.enterText(find.widgetWithText(TextField, 'عدد الملصقات'), '3');
@@ -211,6 +213,7 @@ void main() {
   testWidgets('distributor sales: trade account pending → approve sheet → active; dark golden', (tester) async {
     size(tester); parts.tas = [const TradeAccount(id: 'ta1', sellerOrgId: 'dist', buyerOrgId: 'ws1', status: 'pending', creditLimit: '0.00', outstanding: '0.00', available: '0.00', paymentTermsDays: 30, discountBps: 0, counterpartyAr: 'ورشة النور')];
     await tester.pumpWidget(app(router('/sales'), orgType: 'parts_distributor', dark: true)); await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('حسابات آجلة')); await tester.pumpAndSettle();   // شريحة الحسابات (تحمل عدّاد المعلّق)
     expect(find.text('حسابات آجلة'), findsWidgets); expect(find.text('اعتمد الحساب (1)'), findsOneWidget);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/supplier_sales_dark.png'));
     await tester.tap(find.text('اعتمد الحساب (1)')); await tester.pumpAndSettle(); await tester.tap(find.text('اعتمد الحساب').last); await tester.pumpAndSettle();

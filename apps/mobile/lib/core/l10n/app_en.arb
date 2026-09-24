@@ -86,6 +86,7 @@
   "subtotal": "Subtotal",
   "approveNow": "Review & approve",
   "approveTitle": "Approve repair order",
+  "approveMeaningTitle": "What your approval means",
   "approveHint": "Your signature locks this price — any change reaches you as a new version.",
   "approveWithNafath": "Approve with Nafath",
   "approveWithOtp": "Approve with SMS code",
@@ -472,6 +473,8 @@
   "spCreditLimit": "Credit limit",
   "spTermsDays": "Payment terms (days)",
   "spInventory": "Inventory",
+  "spNoInventoryTitle": "Nothing in stock yet",
+  "spNoInventoryBody": "Add parts from the catalog, or start with QR labels for parts you have.",
   "spItems": "{n} items",
   "@spItems": {
     "placeholders": {

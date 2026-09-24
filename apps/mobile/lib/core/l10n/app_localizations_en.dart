@@ -214,6 +214,9 @@ class L10nEn extends L10n {
   String get approveTitle => 'Approve repair order';
 
   @override
+  String get approveMeaningTitle => 'What your approval means';
+
+  @override
   String get approveHint =>
       'Your signature locks this price — any change reaches you as a new version.';
 
@@ -1040,6 +1043,13 @@ class L10nEn extends L10n {
 
   @override
   String get spInventory => 'Inventory';
+
+  @override
+  String get spNoInventoryTitle => 'Nothing in stock yet';
+
+  @override
+  String get spNoInventoryBody =>
+      'Add parts from the catalog, or start with QR labels for parts you have.';
 
   @override
   String spItems(int n) {

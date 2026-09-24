@@ -487,6 +487,12 @@ abstract class L10n {
   /// **'اعتماد أمر الإصلاح'**
   String get approveTitle;
 
+  /// No description provided for @approveMeaningTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ماذا يعني اعتمادك؟'**
+  String get approveMeaningTitle;
+
   /// No description provided for @approveHint.
   ///
   /// In ar, this message translates to:
@@ -2028,6 +2034,18 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'المخزون'**
   String get spInventory;
+
+  /// No description provided for @spNoInventoryTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا أصناف في مخزنك بعد'**
+  String get spNoInventoryTitle;
+
+  /// No description provided for @spNoInventoryBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف قطعك من الكتالوج أو ابدأ بملصقات QR لقطعٍ عندك.'**
+  String get spNoInventoryBody;
 
   /// No description provided for @spItems.
   ///

@@ -40,6 +40,14 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(minimumSize: const Size(48, 48), textStyle: const TextStyle(fontFamily: fontFamily, fontWeight: FontWeight.w600))),
       inputDecorationTheme: InputDecorationTheme(filled: true, fillColor: scheme.surface, contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18), border: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.outline)), enabledBorder: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.outline)), focusedBorder: OutlineInputBorder(borderRadius: r, borderSide: BorderSide(color: scheme.primary, width: 2)), errorBorder: OutlineInputBorder(borderRadius: r, borderSide: const BorderSide(color: SinaatyColors.bad)), hintStyle: TextStyle(color: scheme.onSurfaceVariant)),
       navigationBarTheme: NavigationBarThemeData(backgroundColor: scheme.surface, indicatorColor: scheme.primaryContainer, height: 72, elevation: 0, surfaceTintColor: Colors.transparent, iconTheme: WidgetStateProperty.resolveWith((st) => IconThemeData(size: 24, color: st.contains(WidgetState.selected) ? scheme.onPrimaryContainer : scheme.onSurfaceVariant)), labelTextStyle: WidgetStateProperty.resolveWith((st) => TextStyle(fontFamily: fontFamily, fontSize: 12, fontWeight: st.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500, color: st.contains(WidgetState.selected) ? scheme.onSurface : scheme.onSurfaceVariant))),
+      // الشرائح: المختار بأخضر الختم الناعم — النحاس للهوية والوثائق، لا للاختيار (COLOR_SYSTEM.md).
+      segmentedButtonTheme: SegmentedButtonThemeData(style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((st) => st.contains(WidgetState.selected) ? scheme.primaryContainer : scheme.surface),
+        foregroundColor: WidgetStateProperty.resolveWith((st) => st.contains(WidgetState.selected) ? scheme.onPrimaryContainer : scheme.onSurfaceVariant),
+        side: WidgetStatePropertyAll(BorderSide(color: scheme.outlineVariant)),
+        textStyle: const WidgetStatePropertyAll(TextStyle(fontFamily: fontFamily, fontSize: 13.5, fontWeight: FontWeight.w600)),
+        minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+      )),
       dividerTheme: DividerThemeData(color: scheme.outlineVariant, thickness: 1, space: 1),
       snackBarTheme: SnackBarThemeData(behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: r)),
       // سلّم أهدأ درجةً (شكوى المالك: «بعض الجمل كبيرة، وحجم لا يناسب الشاشات») —

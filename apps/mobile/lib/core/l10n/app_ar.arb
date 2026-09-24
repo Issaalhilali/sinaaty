@@ -86,6 +86,7 @@
   "subtotal": "المجموع قبل الضريبة",
   "approveNow": "راجع واعتمد",
   "approveTitle": "اعتماد أمر الإصلاح",
+  "approveMeaningTitle": "ماذا يعني اعتمادك؟",
   "approveHint": "توقيعك يثبّت هذا السعر — أي تعديل يصلك كنسخة جديدة.",
   "approveWithNafath": "اعتماد عبر نفاذ",
   "approveWithOtp": "اعتماد برمز التحقق",
@@ -472,6 +473,8 @@
   "spCreditLimit": "الحد الائتماني",
   "spTermsDays": "مدة السداد (أيام)",
   "spInventory": "المخزون",
+  "spNoInventoryTitle": "لا أصناف في مخزنك بعد",
+  "spNoInventoryBody": "أضف قطعك من الكتالوج أو ابدأ بملصقات QR لقطعٍ عندك.",
   "spItems": "{n} صنف",
   "@spItems": {
     "placeholders": {
