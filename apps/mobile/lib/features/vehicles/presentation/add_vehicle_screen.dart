@@ -56,7 +56,7 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
     final vin = _vin.text.trim().toUpperCase(); final plate = _plate.text.trim();
     if (vin.isEmpty && plate.isEmpty) { setState(() => _error = l.addCarNeedOne); return; }
     setState(() { _busy = true; _error = null; });
-    final r = await ref.read(vehiclesRepositoryProvider).add(vin: vin.isEmpty ? null : vin, plate: plate.isEmpty ? null : plate);
+    final r = await ref.read(vehiclesRepositoryProvider).add(vin: vin.isEmpty ? null : vin, plate: plate.isEmpty ? null : plate, ownerOrgId: ref.read(vehiclesOrgProvider));
     if (!mounted) return; setState(() => _busy = false);
     r.when(ok: (_) { ref.invalidate(vehiclesProvider); context.pop(); },
         err: (f) => setState(() => _error = f.message(Localizations.localeOf(context).languageCode)));

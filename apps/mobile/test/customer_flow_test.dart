@@ -80,8 +80,8 @@ class FakeBilling implements BillingRepository {
   @override Future<Result<PromissoryNote>> note(String id) async => const Result.err(UnknownFailure());
 }
 class FakeVehicles implements VehiclesRepository {
-  @override Future<Result<List<Vehicle>>> list() async => const Result.ok([Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)]);
-  @override Future<Result<Vehicle>> add({String? vin, String? plate}) async => const Result.err(UnknownFailure());
+  @override Future<Result<List<Vehicle>>> list({String? orgId}) async => const Result.ok([Vehicle(id: 'v1', vin: 'JTDKN3DU0A0123456', plate: 'أ ب ج 4821', makeAr: 'تويوتا', modelAr: 'كامري', year: 2019, odometerKm: 84250)]);
+  @override Future<Result<Vehicle>> add({String? vin, String? plate, String? ownerOrgId}) async => const Result.err(UnknownFailure());
   @override Future<Result<VehiclePassport>> passport(String id) async => const Result.err(UnknownFailure());
   @override Future<Result<String>> shareLink(String id) async => const Result.err(UnknownFailure());
 }

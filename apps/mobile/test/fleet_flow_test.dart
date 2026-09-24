@@ -155,7 +155,6 @@ void main() {
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async => null);   // Clipboard.setData resolves in tests
     final r = GoRouter(initialLocation: '/fleet/statements', routes: [
       GoRoute(path: '/fleet/statements', builder: (_, _) => const FleetStatementsScreen()),
-      GoRoute(path: '/fleet/import', builder: (_, _) => const FleetImportScreen(orgId: 'fleet1')),
       GoRoute(path: '/fleet/statements/:id', builder: (_, s) => FleetStatementScreen(id: s.pathParameters['id']!)),
     ]);
     await tester.pumpWidget(app(r)); await tester.pumpAndSettle();
@@ -178,7 +177,8 @@ void main() {
 
   testWidgets('استيراد قائمة: الصق ثلاثة أسطر → ثلاثة صفوف بمصيرها — والخاطئ يقول لماذا', (tester) async {
     size(tester);
-    final r = router(); await tester.pumpWidget(app(r)); await tester.pumpAndSettle(); r.push('/fleet/import'); await tester.pumpAndSettle();
+    final r = GoRouter(initialLocation: '/fleet/import', routes: [GoRoute(path: '/fleet/import', builder: (_, _) => const FleetImportScreen(orgId: 'fleet1'))]);
+    await tester.pumpWidget(app(r)); await tester.pumpAndSettle(); expect(find.byType(FleetImportScreen), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'أ ب ج 1234\n4T1B11HK5KU123456\nX'); await tester.pumpAndSettle();
     await tester.tap(find.text('استورد 3 مركبة')); await tester.pumpAndSettle();
     expect(fleet.imported?.length, 3); expect(fleet.imported![0].plate, 'أ ب ج 1234'); expect(fleet.imported![1].vin, '4T1B11HK5KU123456');

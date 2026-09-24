@@ -29,8 +29,8 @@ class _Assist implements AssistRepository {
 }
 
 class _Vehicles implements VehiclesRepository {
-  @override Future<Result<List<Vehicle>>> list() async => const Result.ok([]);
-  @override Future<Result<Vehicle>> add({String? vin, String? plate}) async => const Result.err(UnknownFailure());
+  @override Future<Result<List<Vehicle>>> list({String? orgId}) async => const Result.ok([]);
+  @override Future<Result<Vehicle>> add({String? vin, String? plate, String? ownerOrgId}) async => const Result.err(UnknownFailure());
   @override Future<Result<VehiclePassport>> passport(String id) async => const Result.err(UnknownFailure());
   @override Future<Result<String>> shareLink(String id) async => const Result.err(UnknownFailure());
 }

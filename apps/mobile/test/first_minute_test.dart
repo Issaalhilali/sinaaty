@@ -42,8 +42,8 @@ class _Auth implements AuthRepository {
 class _Vehicles implements VehiclesRepository {
   final List<Vehicle> cars; final bool fail;
   _Vehicles(this.cars, {this.fail = false});
-  @override Future<Result<List<Vehicle>>> list() async => fail ? const Result.err(NetworkFailure()) : Result.ok(cars);
-  @override Future<Result<Vehicle>> add({String? vin, String? plate}) async => const Result.err(UnknownFailure());
+  @override Future<Result<List<Vehicle>>> list({String? orgId}) async => fail ? const Result.err(NetworkFailure()) : Result.ok(cars);
+  @override Future<Result<Vehicle>> add({String? vin, String? plate, String? ownerOrgId}) async => const Result.err(UnknownFailure());
   @override Future<Result<VehiclePassport>> passport(String id) async => const Result.err(UnknownFailure());
   @override Future<Result<String>> shareLink(String id) async => const Result.err(UnknownFailure());
 }
