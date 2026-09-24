@@ -3,21 +3,20 @@ import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
 /// The card: soft paper, hairline, and a gentle two-layer shadow (concept: --shadow). Optional seal glow corner.
 class SectionCard extends StatelessWidget {
-  final Widget child; final EdgeInsetsGeometry padding; final VoidCallback? onTap; final bool glow;
+  final Widget child; final EdgeInsetsGeometry padding; final VoidCallback? onTap;
+  /// [glow] بقي في التوقيع كي لا تنكسر النداءات؛ لم يعد يرسم شيئاً — الورقة لا تتوهّج، البطل وحده.
+  final bool glow;
   const SectionCard({super.key, required this.child, this.padding = const EdgeInsets.all(SinaatySpace.lg), this.onTap, this.glow = false});
+  /// ورقة: أبيض بحدٍّ رفيع وزاوية 14، بلا ظلّ. الحدّ يفصلها عن الأرضية (1.13:1 لا يكفي وحده؛ `line` يكفي).
   @override Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark; final s = Theme.of(context).colorScheme;
-    return DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(SinaatySpace.radiusLg), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: dark ? .35 : .05), blurRadius: 2, offset: const Offset(0, 1)), BoxShadow(color: (dark ? Colors.black : SinaatyColors.ink).withValues(alpha: dark ? .45 : .10), blurRadius: 28, spreadRadius: -12, offset: const Offset(0, 14))]),
-      child: Card(clipBehavior: Clip.antiAlias, child: Stack(children: [
-        if (glow) PositionedDirectional(end: -60, bottom: -60, child: IgnorePointer(child: Container(width: 220, height: 220, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [s.primaryContainer.withValues(alpha: dark ? .55 : .9), s.primaryContainer.withValues(alpha: 0)], stops: const [0, .7]))))),
-        InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
-      ])));
+    final s = Theme.of(context).colorScheme;
+    return Material(color: s.surface, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SinaatySpace.radiusCard), side: BorderSide(color: s.outlineVariant)), clipBehavior: Clip.antiAlias,
+      child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)));
   }
 }
-/// Eyebrow section title (concept .eyebrow): small, tracked, seal-colored — calm hierarchy without heavy headings.
 class SectionTitle extends StatelessWidget {
   final String text; final Widget? trailing; const SectionTitle(this.text, {super.key, this.trailing});
-  @override Widget build(BuildContext context) => Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm, top: SinaatySpace.xs), child: Row(children: [Container(width: 3, height: 14, margin: const EdgeInsetsDirectional.only(end: 8), decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(2))), Expanded(child: Text(text, style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700, letterSpacing: .2, color: Theme.of(context).colorScheme.onSurfaceVariant))), ?trailing]));
+  @override Widget build(BuildContext context) => Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm, top: SinaatySpace.xs), child: Row(children: [Container(width: 3, height: 14, margin: const EdgeInsetsDirectional.only(end: 8), decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(2))), Expanded(child: Text(text, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: SinaatyColors.ink2))), ?trailing]));
 }
 /// Money with a quiet currency: "1,368.50" big, "ر.س" small — numbers are the hero on financial screens.
 class MoneyText extends StatelessWidget {

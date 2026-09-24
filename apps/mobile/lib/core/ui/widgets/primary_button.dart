@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/tokens.dart';
 /// The one big obvious button per screen: seal fill with a soft seal-tinted shadow. Spinner while loading; never blocks the screen.
 class PrimaryButton extends StatelessWidget {
   final String label; final VoidCallback? onPressed; final bool loading; final IconData? icon; final bool secondary;
@@ -11,6 +10,7 @@ class PrimaryButton extends StatelessWidget {
         // العنوان الطويل بخطٍّ عريض يلين بدل أن يفيض عن الزرّ بمخططٍ أصفر على الأجهزة الضيقة
         Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis))]);
     if (secondary) return OutlinedButton(onPressed: loading ? null : onPressed, child: child);
-    return DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(SinaatySpace.radius), boxShadow: onPressed == null ? const [] : [BoxShadow(color: s.primary.withValues(alpha: .28), blurRadius: 18, offset: const Offset(0, 8))]), child: FilledButton(onPressed: loading ? null : onPressed, child: child));
+    // بلا توهّج: اللون والحجم يكفيان زرّاً رئيسياً؛ الظلّ الوحيد في المنتج للبطل (design-system/SPACING_SYSTEM.md).
+    return FilledButton(onPressed: loading ? null : onPressed, child: child);
   }
 }

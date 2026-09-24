@@ -6,8 +6,8 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({super.key, required this.title, required this.body, this.primaryAction, this.moreItems, this.onMore, this.bottom, this.leading, this.subtitle, this.trailing});
   @override
   Widget build(BuildContext context) {
-    final s = Theme.of(context).colorScheme; final dark = Theme.of(context).brightness == Brightness.dark;
-    final bar = primaryAction == null ? null : DecoratedBox(decoration: BoxDecoration(color: s.surface, border: Border(top: BorderSide(color: s.outlineVariant.withValues(alpha: .6))), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: dark ? .4 : .06), blurRadius: 24, offset: const Offset(0, -8))]), child: SafeArea(top: false, child: Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 12, SinaatySpace.lg, 12), child: SizedBox(width: double.infinity, child: primaryAction))));
+    final s = Theme.of(context).colorScheme;
+    final bar = primaryAction == null ? null : DecoratedBox(decoration: BoxDecoration(color: s.surface, border: Border(top: BorderSide(color: s.outlineVariant))), child: SafeArea(top: false, child: Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 12, SinaatySpace.lg, 12), child: SizedBox(width: double.infinity, child: primaryAction))));
     return Scaffold(
       appBar: AppBar(leading: leading, title: subtitle == null ? Text(title) : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [Text(title), Text(subtitle!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: s.onSurfaceVariant))]),
         actions: [?trailing, if (moreItems != null && moreItems!.isNotEmpty) Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: PopupMenuButton<String>(icon: const Icon(Icons.more_horiz), onSelected: onMore, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SinaatySpace.radius)), itemBuilder: (_) => moreItems!))]),

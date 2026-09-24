@@ -10,4 +10,17 @@ class InlineError extends StatelessWidget {
   ])));
 }
 /// Non-blocking loading (charter #7).
-class InlineLoading extends StatelessWidget { const InlineLoading({super.key}); @override Widget build(BuildContext context) => const Center(child: Padding(padding: EdgeInsets.all(SinaatySpace.xl), child: CircularProgressIndicator())); }
+/// التحميل هيكلٌ لا دوّار: الشاشة تحتفظ بشكلها (بطل + ثلاثة صفوف) فلا «يقفز» المحتوى حين يصل،
+/// ولا يحجب الانتظارُ الشاشةَ كلها (ميثاق §5.0/7). ساكن عمداً — لا shimmer — احتراماً لتقليل الحركة.
+class InlineLoading extends StatelessWidget {
+  final bool hero; const InlineLoading({super.key, this.hero = true});
+  @override Widget build(BuildContext context) {
+    final c = Theme.of(context).colorScheme.surfaceContainerHighest;
+    Widget block(double h, {double w = double.infinity, double r = 8}) => Container(height: h, width: w, decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(r)));
+    return Semantics(label: 'loading', child: Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.md, SinaatySpace.lg, SinaatySpace.lg), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (hero) ...[block(150, r: SinaatySpace.radiusHero), const SizedBox(height: SinaatySpace.xl)],
+      block(14, w: 120), const SizedBox(height: SinaatySpace.md),
+      for (var i = 0; i < 3; i++) ...[Row(children: [block(44, w: 44, r: 12), const SizedBox(width: SinaatySpace.md), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [block(14, w: 160), const SizedBox(height: 6), block(12, w: 100)]))]), const SizedBox(height: SinaatySpace.lg)],
+    ])));
+  }
+}

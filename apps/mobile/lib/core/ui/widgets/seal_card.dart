@@ -7,8 +7,8 @@ class SealCard extends StatelessWidget {
   final Widget child; final EdgeInsetsGeometry padding;
   const SealCard({super.key, required this.child, this.padding = const EdgeInsets.fromLTRB(20, 18, 20, 18)});
   @override Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(SinaatySpace.radiusLg + 4), boxShadow: [BoxShadow(color: SinaatyColors.sealDeep.withValues(alpha: .55), blurRadius: 40, spreadRadius: -18, offset: const Offset(0, 24))]),
-    child: ClipRRect(borderRadius: BorderRadius.circular(SinaatySpace.radiusLg + 4), child: Stack(children: [
+    decoration: BoxDecoration(borderRadius: BorderRadius.circular(SinaatySpace.radiusHero), boxShadow: SinaatyShadow.hero),
+    child: ClipRRect(borderRadius: BorderRadius.circular(SinaatySpace.radiusHero), child: Stack(children: [
       const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(center: Alignment(1, -1.2), radius: 1.6, colors: [Color(0xFF137A61), SinaatyColors.seal, SinaatyColors.sealDeep], stops: [0, .4, 1])))),
       Positioned.fill(child: CustomPaint(painter: _HatchPainter())),
       PositionedDirectional(end: -90, bottom: -140, child: Container(width: 260, height: 260, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [SinaatyColors.dSeal.withValues(alpha: .45), SinaatyColors.dSeal.withValues(alpha: 0)], stops: const [0, .65])))),

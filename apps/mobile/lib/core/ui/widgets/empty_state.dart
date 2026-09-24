@@ -10,10 +10,10 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context); final s = t.colorScheme;
     return Center(child: Padding(padding: const EdgeInsets.all(SinaatySpace.xxl), child: Column(mainAxisSize: MainAxisSize.min, children: [
-      SizedBox(width: 132, height: 132, child: Stack(alignment: Alignment.center, children: [
-        Container(width: 132, height: 132, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer.withValues(alpha: .35))),
-        Container(width: 96, height: 96, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer.withValues(alpha: .6))),
-        Container(width: 64, height: 64, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primary, boxShadow: [BoxShadow(color: s.primary.withValues(alpha: .35), blurRadius: 18, offset: const Offset(0, 8))]), child: glyph != null ? Center(child: BrandIcon(glyph!, size: 34, color: s.onPrimary, accent: Colors.white.withValues(alpha: .85))) : Icon(icon, color: s.onPrimary, size: 30)),
+      // دائرة واحدة (كانت ثلاثاً بتوهّج): الفراغ يُعلّم بجملته وزرّه، لا بزخرفته.
+      SizedBox(width: 96, height: 96, child: Stack(alignment: Alignment.center, children: [
+        Container(width: 96, height: 96, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer)),
+        Container(width: 60, height: 60, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primary), child: glyph != null ? Center(child: BrandIcon(glyph!, size: 34, color: s.onPrimary, accent: Colors.white.withValues(alpha: .85))) : Icon(icon, color: s.onPrimary, size: 30)),
       ])),
       const SizedBox(height: SinaatySpace.xl), Text(title, style: t.textTheme.titleLarge, textAlign: TextAlign.center),
       if (body.isNotEmpty) ...[const SizedBox(height: SinaatySpace.sm), Text(body, style: t.textTheme.bodyMedium?.copyWith(color: s.onSurfaceVariant), textAlign: TextAlign.center)],
