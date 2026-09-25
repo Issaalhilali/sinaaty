@@ -179,7 +179,7 @@ async function onboard(row, zones) {
               NULL, ${JSON.stringify(auditRow.after)}::jsonb, NULL, ${prevHash}, ${auditHash(prevHash, auditRow)})`;
 
     return { action: existing ? 'updated' : 'created', id: org.id, name: org.tradeNameAr ?? org.legalNameAr, zone, owner: ownerPhone, plan: plan?.code ?? null };
-  });
+  }, { timeout: 60_000, maxWait: 15_000 });
 }
 
 const rows = JSON.parse(readFileSync(file, 'utf8'));
