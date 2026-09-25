@@ -349,6 +349,36 @@ abstract class L10n {
   /// **'ماذا تحتاج؟'**
   String get servicesTitle;
 
+  /// No description provided for @homeHeroCta.
+  ///
+  /// In ar, this message translates to:
+  /// **'اطلب إصلاح'**
+  String get homeHeroCta;
+
+  /// No description provided for @homeHeroTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'عطلٌ في سيارتك؟'**
+  String get homeHeroTitle;
+
+  /// No description provided for @homeHeroBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'صف العطل بكلمتين وصورة — وتصلك عروض الورش القريبة بسعرها.'**
+  String get homeHeroBody;
+
+  /// No description provided for @homeHeroNoCarTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'أضف سيارتك لتبدأ'**
+  String get homeHeroNoCarTitle;
+
+  /// No description provided for @homeHeroNoCarBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهيكل أو اللوحة — دقيقة واحدة.'**
+  String get homeHeroNoCarBody;
+
   /// No description provided for @emptyCarsServices.
   ///
   /// In ar, this message translates to:
@@ -3709,36 +3739,6 @@ abstract class L10n {
   /// **'أعد الرفع'**
   String get voRetryUpload;
 
-  /// No description provided for @assistantTooltip.
-  ///
-  /// In ar, this message translates to:
-  /// **'المساعد الصوتي'**
-  String get assistantTooltip;
-
-  /// No description provided for @assistantTitle.
-  ///
-  /// In ar, this message translates to:
-  /// **'تكلّم — أنا أسمع'**
-  String get assistantTitle;
-
-  /// No description provided for @assistantAck.
-  ///
-  /// In ar, this message translates to:
-  /// **'حاضر —'**
-  String get assistantAck;
-
-  /// No description provided for @assistantTryCustomer.
-  ///
-  /// In ar, this message translates to:
-  /// **'لم أفهم — جرّب: «اطلب سطحة» أو «أصلح سيارتي»'**
-  String get assistantTryCustomer;
-
-  /// No description provided for @assistantTryPartner.
-  ///
-  /// In ar, this message translates to:
-  /// **'لم أفهم — جرّب: «أمر جديد» أو «الطلبات القريبة»'**
-  String get assistantTryPartner;
-
   /// No description provided for @voDevTyped.
   ///
   /// In ar, this message translates to:
@@ -4888,7 +4888,7 @@ abstract class L10n {
   /// No description provided for @welcome1Title.
   ///
   /// In ar, this message translates to:
-  /// **'قول وش فيها.. والعروض تجيك'**
+  /// **'طلبٌ واحد.. وتجيك عروض الورش'**
   String get welcome1Title;
 
   /// No description provided for @welcome1Body.
@@ -5736,66 +5736,6 @@ abstract class L10n {
   /// In ar, this message translates to:
   /// **'السيارة ما تشتغل — أحتاج مساعدة في موقعي'**
   String get srvPresetRoadside;
-
-  /// No description provided for @askTitle.
-  ///
-  /// In ar, this message translates to:
-  /// **'وش فيها سيارتك؟'**
-  String get askTitle;
-
-  /// No description provided for @askBody.
-  ///
-  /// In ar, this message translates to:
-  /// **'اكتبها بكلامك أو قُلها — نفهمها ونرسلها للمكان الصح.'**
-  String get askBody;
-
-  /// No description provided for @askHint.
-  ///
-  /// In ar, this message translates to:
-  /// **'مثال: سيارتي ما تشتغل من الصبح'**
-  String get askHint;
-
-  /// No description provided for @askAnalyze.
-  ///
-  /// In ar, this message translates to:
-  /// **'حلّل وأرسل'**
-  String get askAnalyze;
-
-  /// No description provided for @askThinking.
-  ///
-  /// In ar, this message translates to:
-  /// **'نقرأ وصفك…'**
-  String get askThinking;
-
-  /// No description provided for @askSendRepair.
-  ///
-  /// In ar, this message translates to:
-  /// **'أرسلها للورش القريبة'**
-  String get askSendRepair;
-
-  /// No description provided for @askSendPart.
-  ///
-  /// In ar, this message translates to:
-  /// **'أرسلها لمحلات القطع'**
-  String get askSendPart;
-
-  /// No description provided for @askSendTow.
-  ///
-  /// In ar, this message translates to:
-  /// **'اطلب سطحة الآن'**
-  String get askSendTow;
-
-  /// No description provided for @askEdit.
-  ///
-  /// In ar, this message translates to:
-  /// **'مو هذا اللي أقصده'**
-  String get askEdit;
-
-  /// No description provided for @askUrgent.
-  ///
-  /// In ar, this message translates to:
-  /// **'عاجل'**
-  String get askUrgent;
 
   /// No description provided for @cdEnded.
   ///

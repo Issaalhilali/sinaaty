@@ -140,6 +140,22 @@ class L10nEn extends L10n {
   String get servicesTitle => 'What do you need?';
 
   @override
+  String get homeHeroCta => 'Request a repair';
+
+  @override
+  String get homeHeroTitle => 'Car trouble?';
+
+  @override
+  String get homeHeroBody =>
+      'Describe the fault in a few words and a photo — nearby workshops send priced offers.';
+
+  @override
+  String get homeHeroNoCarTitle => 'Add your car to start';
+
+  @override
+  String get homeHeroNoCarBody => 'VIN or plate — one minute.';
+
+  @override
   String get emptyCarsServices => 'Here is what we can do for you:';
 
   @override
@@ -1969,23 +1985,6 @@ class L10nEn extends L10n {
   String get voRetryUpload => 'Retry upload';
 
   @override
-  String get assistantTooltip => 'Voice assistant';
-
-  @override
-  String get assistantTitle => 'Speak — I am listening';
-
-  @override
-  String get assistantAck => 'On it —';
-
-  @override
-  String get assistantTryCustomer =>
-      'Did not catch that — try: “order a tow” or “fix my car”';
-
-  @override
-  String get assistantTryPartner =>
-      'Did not catch that — try: “new order” or “nearby requests”';
-
-  @override
   String get voDevTyped =>
       'Dev environment — dictation unavailable on the simulator';
 
@@ -3074,37 +3073,6 @@ class L10nEn extends L10n {
   @override
   String get srvPresetRoadside =>
       'My car won\'t start — I need help at my location';
-
-  @override
-  String get askTitle => 'What\'s wrong with your car?';
-
-  @override
-  String get askBody =>
-      'Type it or say it — we understand it and send it to the right place.';
-
-  @override
-  String get askHint => 'Example: my car won\'t start this morning';
-
-  @override
-  String get askAnalyze => 'Analyze & send';
-
-  @override
-  String get askThinking => 'Reading your description…';
-
-  @override
-  String get askSendRepair => 'Send to nearby workshops';
-
-  @override
-  String get askSendPart => 'Send to parts shops';
-
-  @override
-  String get askSendTow => 'Request a tow now';
-
-  @override
-  String get askEdit => 'That\'s not what I meant';
-
-  @override
-  String get askUrgent => 'Urgent';
 
   @override
   String get cdEnded => 'Time is up';

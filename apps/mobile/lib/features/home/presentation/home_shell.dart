@@ -10,9 +10,6 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/result/result.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
-import '../../../core/voice/assistant.dart';
-import '../../../core/voice/voice_input.dart';
-import '../../../core/voice/voice_sheet.dart';
 import 'package:go_router/go_router.dart';
 import '../domain/effective_flavor.dart';
 import '../../account/presentation/account_screen.dart';
@@ -180,9 +177,7 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
         if (partner) const IncomingBanner(),
         FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i),
           items: [for (final t in tabs) (icon: t.$2, label: t.$1)],
-          trailing: ref.watch(voiceDeadProvider) ? null : IconButton(
-              tooltip: l.assistantTooltip, icon: const Icon(Icons.mic_none),
-              onPressed: () => _assistant(l, tabs, partner: partner && !isSupplier))),
+          ),
       ]));
   }
 
@@ -221,40 +216,5 @@ class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserv
       err: (f) => showFailure(context, f),
     );
   }
-
-  /// One sentence in → the right screen out. Money and legal actions are never voice-executed;
-  /// the assistant delivers the user to the action, the action keeps its own explicit tap.
-  Future<void> _assistant(L10n l, List<(String, BrandGlyph, Widget)> tabs, {required bool partner}) async {
-    final said = await showVoiceSheet(context, ref, title: l.assistantTitle);
-    if (said == null || said.trim().isEmpty || !mounted) return;
-    final cmd = parseAssistant(said, partner: partner);
-    if (cmd == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(partner ? l.assistantTryPartner : l.assistantTryCustomer)));
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l.assistantAck} ${cmd.labelAr}'), duration: const Duration(seconds: 2)));
-    switch (cmd.target) {
-      case AssistantTarget.tow: unawaited(context.push('/tow/new'));
-      case AssistantTarget.warranties: unawaited(context.push('/warranties'));
-      case AssistantTarget.notifications: unawaited(context.push('/notifications'));
-      case AssistantTarget.newOrder: unawaited(context.push('/ws/new'));
-      case AssistantTarget.nearbyRequests: unawaited(context.push('/ws/service-requests'));
-      default: _goTab(cmd.target, l, tabs);
-    }
-  }
-
-  void _goTab(AssistantTarget t, L10n l, List<(String, BrandGlyph, Widget)> tabs) {
-    final label = switch (t) {
-      AssistantTarget.wallet => l.tabWallet,
-      AssistantTarget.vehicles => l.tabMyCars,
-      AssistantTarget.account => l.tabAccount,
-      AssistantTarget.serviceRequest || AssistantTarget.partRequest => l.tabRequest,
-      AssistantTarget.ordersTab => l.tabOrders,
-      AssistantTarget.partsTab => l.tabParts,
-      AssistantTarget.today => l.tabToday,
-      _ => null,
-    };
-    final i = label == null ? -1 : tabs.indexWhere((x) => x.$1 == label);
-    if (i >= 0) setState(() => _index = i);
-  }
 }
+

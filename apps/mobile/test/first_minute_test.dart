@@ -101,7 +101,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await t.pumpWidget(app(auth: _Auth(), cars: const [], initial: '/welcome'));
     await t.pumpAndSettle();
-    expect(find.text('قول وش فيها.. والعروض تجيك'), findsOneWidget);
+    expect(find.text('طلبٌ واحد.. وتجيك عروض الورش'), findsOneWidget);
     await t.tap(find.text('التالي')); await t.pumpAndSettle();
     expect(find.text('فلوسك محفوظة بضمان'), findsOneWidget);
     await t.tap(find.text('التالي')); await t.pumpAndSettle();
@@ -171,7 +171,7 @@ void main() {
     ];
     await t.pumpWidget(app(auth: _Auth(nameAr: 'مشعل'), cars: cars));
     await t.pump(); await signIn(t);
-    // القائمة تبني كسولاً وقد طالت بست خدمات: نمرّر إلى قسم السيارات كما يفعل صاحبها
+    // القائمة تبني كسولاً: نمرّر إلى قسم السيارات كما يفعل صاحبها.
     await t.scrollUntilVisible(find.text('تويوتا كامري 2019'), 300, scrollable: find.byType(Scrollable).first);
     expect(find.text('2 ضمان ساري'), findsOneWidget);
     expect(find.textContaining('آخر صيانة'), findsOneWidget);

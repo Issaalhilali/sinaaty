@@ -75,13 +75,11 @@ class HomeScreen extends ConsumerWidget {
               ])),
           ],
           const SizedBox(height: SinaatySpace.lg),
-          // **الباب الأول** حتى مع وجود أوامر جارية: من لا يعرف ما يريد يصف عطله بكلامه.
-          _AssistCard(l: l, t: t),
-          const SizedBox(height: SinaatySpace.lg),
+          // الأبواب الثلاثة تبقى ظاهرة حتى مع وجود أمرٍ جارٍ: من عنده سيارة ثانية يطلب لها بلا انتظار.
           const ServicesRow(),
         ] else
           // لا شيء جارٍ: السؤال نفسه يتصدّر بحجمه الكامل بدل صفٍّ صغير فوق فراغ.
-          _AskHero(vehicles: vehicles),
+          _CarHero(vehicles: vehicles),
 
         if (shops.isNotEmpty) ...[
           const SizedBox(height: SinaatySpace.xl),
@@ -126,20 +124,24 @@ class HomeScreen extends ConsumerWidget {
 }
 
 /// السؤال حين لا شيء يجري — سطح الختم، وسؤالٌ بلسان صاحب السيارة، وخدماتٌ تحته.
-class _AskHero extends ConsumerWidget {
+/// البطل حين لا أمرَ ينتظر العميل: **سيارته** وفعلٌ واحد — «اطلب إصلاح». لا محلّل ولا مساعد ذكي:
+/// المنتج رحلة (سيارة → عطل → عروض → أمر موقّع → دفع محفوظ)، والذكاء يعمل خلف الستار لا على الشاشة (قرار المالك ٢٥ سبتمبر).
+class _CarHero extends ConsumerWidget {
   final List<Vehicle> vehicles;
-  const _AskHero({required this.vehicles});
-
+  const _CarHero({required this.vehicles});
+  /// بطاقة الختم الوحيدة حين لا ينتظر العميل شيء: سؤالٌ وفعلٌ — بلا تكرار اسم السيارة (يظهر
+  /// أصلاً في «سياراتي» أسفل الصفحة) وبلا نصٍّ يتكرّر مرّتين في البطاقة نفسها.
   @override Widget build(BuildContext context, WidgetRef ref) {
-    final l = L10n.of(context); final t = Theme.of(context).textTheme;
+    final l = L10n.of(context); final t = Theme.of(context).textTheme; final car = vehicles.firstOrNull;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        // بابٌ واحد للجميع: من لا سيارة له ومن له سيارات — كلاهما يبدأ بوصف مشكلته.
-        Text(l.askTitle, style: t.headlineSmall?.copyWith(color: Colors.white)),
-        const SizedBox(height: 6),
-        Text(l.askBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .82), height: 1.55)),
+      SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(car == null ? l.homeHeroNoCarTitle : l.homeHeroTitle, style: t.titleLarge?.copyWith(color: Colors.white)),
+        const SizedBox(height: SinaatySpace.sm),
+        Text(car == null ? l.homeHeroNoCarBody : l.homeHeroBody, style: t.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .85), height: 1.55)),
         const SizedBox(height: SinaatySpace.lg),
-        SealButton(label: l.askAnalyze, icon: Icons.mic_none_outlined, onPressed: () => context.push('/ask')),
+        car == null
+            ? SealButton(label: l.addCar, icon: Icons.add, onPressed: () => context.push('/vehicles/add'))
+            : SealButton(label: l.homeHeroCta, icon: Icons.build_outlined, onPressed: () => openFixCarSheet(context, ref, vehicles)),
       ])),
       const SizedBox(height: SinaatySpace.lg),
       const ServicesRow(),
@@ -147,7 +149,6 @@ class _AskHero extends ConsumerWidget {
   }
 }
 
-/// بطاقة سيارةٍ تعرف صاحبها: آخر صيانة، الضمانات السارية، أو الإصلاح الجاري الآن.
 class _VehicleCard extends StatelessWidget {
   final Vehicle v;
   const _VehicleCard({required this.v});
@@ -183,28 +184,5 @@ class _VehicleCard extends StatelessWidget {
         Icon(Icons.chevron_left, color: cs.onSurfaceVariant),
       ]),
     ));
-  }
-}
-
-
-/// بطاقة الصدارة: سؤالٌ واحد يفتح كل المسارات.
-class _AssistCard extends StatelessWidget {
-  final L10n l; final TextTheme t;
-  const _AssistCard({required this.l, required this.t});
-  /// حين يكون على الشاشة أمرٌ ينتظر العميل فهو البطل الوحيد (القاعدة D3: ختمٌ واحد لكل شاشة) —
-  /// والمساعد يصير ورقةً هادئة بزرٍّ ثانوي، لا ختماً ثانياً ينافسه.
-  @override Widget build(BuildContext context) {
-    final s = Theme.of(context).colorScheme;
-    return SectionCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Container(width: 40, height: 40, alignment: Alignment.center, decoration: BoxDecoration(shape: BoxShape.circle, color: s.primaryContainer), child: Icon(Icons.mic_none_outlined, color: s.primary, size: 22)),
-        const SizedBox(width: SinaatySpace.md),
-        Expanded(child: Text(l.askTitle, style: t.titleMedium)),
-      ]),
-      const SizedBox(height: SinaatySpace.sm),
-      Text(l.askBody, style: t.bodyMedium?.copyWith(color: s.onSurfaceVariant)),
-      const SizedBox(height: SinaatySpace.md),
-      PrimaryButton(label: l.askAnalyze, icon: Icons.mic_none_outlined, secondary: true, onPressed: () => context.push('/ask')),
-    ]));
   }
 }

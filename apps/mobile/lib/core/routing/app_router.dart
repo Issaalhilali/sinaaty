@@ -43,7 +43,6 @@ import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import '../ui/ui.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
-import '../../features/assist/presentation/ask_screen.dart';
 import '../../features/explore/presentation/explore_screen.dart';
 import '../../features/explore/presentation/guest_org_screen.dart';
 import '../config/app_config.dart';
@@ -83,7 +82,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/invoices/:id', builder: (_, s) => InvoiceScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notes/:id', builder: (_, s) => NoteScreen(id: s.pathParameters['id']!)),
       GoRoute(path: '/notifications', builder: (_, _) => const InboxScreen()),
-      GoRoute(path: '/ask', builder: (_, _) => const AskScreen()),
       GoRoute(path: '/ws/new', builder: (_, _) => const NewOrderScreen()),
       // المحفظة كانت تبويباً؛ صارت داخل «حسابي» بعد تقليص التبويبات إلى ثلاثة — فتحتاج عنواناً.
       GoRoute(path: '/wallet', builder: (_, _) => const _WalletRoute()),

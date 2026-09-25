@@ -168,7 +168,7 @@ void main() {
 
     // العقد الجديد (بعد أن ظهرت نافذة «اسمح بتسجيل الصوت» فوق أول شاشة على أندرويد): فحص القدرة
     // **هو نفسه** ما يطلب الإذن، فلا يُشغَّل عند البناء. المدخل موجود حتى تُثبت محاولةٌ صادقة أن
-    // الجهاز لا يُملي — وعندها يختفي من كل مكان (مثبَّت في assistant_test).
+    // الجهاز لا يُملي — وعندها يختفي من كل مكان.
     await tester.pumpWidget(partnerApp('/ws/orders/wo1', voice: FakeVoice(available: false))); await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.more_horiz)); await tester.pumpAndSettle();
     expect(find.text('أملِ البنود صوتاً'), findsOneWidget, reason: 'لا إذن يُطلب لمجرد فتح أمر عمل');
