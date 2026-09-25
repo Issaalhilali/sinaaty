@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/ui/ui.dart';
 import '../domain/parts.dart';
+import 'labels_pdf.dart';
 import 'providers.dart';
 
 /// ملصقات دفعةٍ واحدة: رمز QR لكل قطعة مع رقمها التسلسلي — يُصوَّر أو يُطبع ويُلصق على القطعة.
@@ -14,13 +16,23 @@ class PartLabelsScreen extends ConsumerWidget {
   const PartLabelsScreen({super.key, required this.orgId, required this.batch, this.partName});
   @override Widget build(BuildContext context, WidgetRef ref) {
     final l = L10n.of(context); final key = (orgId: orgId, batch: batch); final v = ref.watch(partLabelsProvider(key));
-    return AppScaffold(title: l.spLabelsTitle, body: AsyncResultView<List<PartLabel>>(value: v, onRetry: () => ref.invalidate(partLabelsProvider(key)), builder: (rows) {
+    final rows0 = v.value?.valueOrNull ?? const <PartLabel>[];
+    return AppScaffold(title: l.spLabelsTitle,
+      // الفعل الثانوي الوحيد: ورقة A4 تُطبع أو تُشارك (واتساب/الطابعة) — الملصق لا يُلصق من الشاشة.
+      trailing: rows0.isEmpty ? null : IconButton(tooltip: l.spShareLabels, icon: const Icon(Icons.ios_share_outlined), onPressed: () => _share(context, rows0)),
+      body: AsyncResultView<List<PartLabel>>(value: v, onRetry: () => ref.invalidate(partLabelsProvider(key)), builder: (rows) {
       if (rows.isEmpty) return EmptyState(icon: Icons.qr_code_2, title: l.spLabelsTitle, body: l.spLabelsEmpty);
       return ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
         SectionTitle(l.spLabelsCount(rows.length), trailing: Text(batch, style: Theme.of(context).textTheme.bodySmall)),
         GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), mainAxisSpacing: SinaatySpace.md, crossAxisSpacing: SinaatySpace.md, childAspectRatio: .68, children: [for (final r in rows) _LabelTile(label: r, partName: partName)]),
       ]);
     }));
+  }
+
+  Future<void> _share(BuildContext context, List<PartLabel> rows) async {
+    final l = L10n.of(context);
+    final bytes = await buildLabelsPdf(labels: rows, partName: partName, batch: batch, scanLine: l.spScanToVerify, brand: l.appName);
+    await Printing.sharePdf(bytes: bytes, filename: 'labels-$batch.pdf');
   }
 }
 

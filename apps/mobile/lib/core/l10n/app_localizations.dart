@@ -2083,6 +2083,12 @@ abstract class L10n {
   /// **'ملصقات القطع'**
   String get spLabelsTitle;
 
+  /// No description provided for @spShareLabels.
+  ///
+  /// In ar, this message translates to:
+  /// **'شارك الملصقات (PDF)'**
+  String get spShareLabels;
+
   /// No description provided for @spLabelPartName.
   ///
   /// In ar, this message translates to:

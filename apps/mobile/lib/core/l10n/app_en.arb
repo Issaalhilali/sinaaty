@@ -488,6 +488,7 @@
   "spIssueSerials": "Issue QR batch",
   "spLabels": "QR labels",
   "spLabelsTitle": "Part labels",
+  "spShareLabels": "Share labels (PDF)",
   "spLabelPartName": "Part name",
   "spLabelCount": "Number of labels",
   "spLabelsHint": "Each label carries a unique code — whoever scans it knows the part came from you.",

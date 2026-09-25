@@ -1073,6 +1073,9 @@ class L10nEn extends L10n {
   String get spLabelsTitle => 'Part labels';
 
   @override
+  String get spShareLabels => 'Share labels (PDF)';
+
+  @override
   String get spLabelPartName => 'Part name';
 
   @override

@@ -47,6 +47,8 @@ dependencies:
   geolocator: ^14.0.2
   url_launcher: ^6.3.2
   qr_flutter: ^4.1.0
+  pdf: ^3.13.1
+  printing: ^5.15.1
 
 dev_dependencies:
   # مؤقّتات وهمية: نختبر «يشفي نفسه بعد ٣ث» بلا أن ينتظر المختبر ثلاث ثوانٍ حقيقية.

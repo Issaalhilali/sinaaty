@@ -1067,6 +1067,9 @@ class L10nAr extends L10n {
   String get spLabelsTitle => 'ملصقات القطع';
 
   @override
+  String get spShareLabels => 'شارك الملصقات (PDF)';
+
+  @override
   String get spLabelPartName => 'اسم القطعة';
 
   @override

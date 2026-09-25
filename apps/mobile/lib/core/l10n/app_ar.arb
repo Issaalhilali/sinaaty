@@ -488,6 +488,7 @@
   "spIssueSerials": "أصدر دفعة QR",
   "spLabels": "ملصقات QR",
   "spLabelsTitle": "ملصقات القطع",
+  "spShareLabels": "شارك الملصقات (PDF)",
   "spLabelPartName": "اسم القطعة",
   "spLabelCount": "عدد الملصقات",
   "spLabelsHint": "كل ملصق يحمل رمزاً فريداً — من يمسحه يعرف أن القطعة من عندك.",
