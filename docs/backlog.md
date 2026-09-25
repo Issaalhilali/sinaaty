@@ -122,3 +122,12 @@
   `POST /fleet/:org/vehicles/import` جاهز (المدير يضيف سيارةً سيارة اليوم)؛ وتبويب «سياراتي» للأسطول
   هو شاشة العميل بخدماتها الست («فحص قبل الشراء»…) — تحتاج قراءةً بعين مدير أسطول لا مالك سيارة.
 - **خطأ صامت في السجل**: «Bad state: Using ref when a widget is about to or has been unmounted» يُطبع مرةً عند الدخول (partner، ٢٣ سبتمبر) — لا أثر مرئي؛ يُبحث عن الودجت الذي يقرأ ref في dispose.
+
+## Supabase وانحراف المخطط (٢٥ سبتمبر ٢٠٢٦)
+
+- **Supabase موصول**: المشروع `gjhhdzrbtiqyzfpkqasb` في **سيول (ap-northeast-2)**؛ الاتصال المباشر IPv6 فقط، والـpooler
+  `aws-0-ap-northeast-2.pooler.supabase.com:6543`. الهجرات الـ١٥ طُبّقت والبذور زُرعت (`tools/supabase-db.sh deploy`).
+  الهجرة `org_vat_format` توقّفت أول مرة على صفٍّ قديم برقم ضريبي باطل — أُصلح الصف وأُضيف وضع `resolve` للسكربت.
+- **انحراف قائم في المحلي وSupabase معاً**: `prisma migrate diff` يرى فرقاً في `org_service_items` (المفتاح الأجنبي
+  والفهرس `idx_org_service_items_org`) بين `schema.prisma` والقاعدة — يحتاج مواءمة الهجرة `20260829150000` مع النموذج.
+- تذكير الـADR-0008: لا منطقة داخل السعودية — تطوير/تجربة فقط حتى تُحسم الاستضافة المحلية.

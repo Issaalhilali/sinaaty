@@ -31,3 +31,10 @@ phone numbers) which falls under PDPL data-residency expectations (see PRD §8, 
 - `apps/api/.env.supabase` (gitignored) + `tools/supabase-db.sh deploy|status|psql`.
 - Env schema already separates `DATABASE_URL` / `DIRECT_DATABASE_URL`.
 - Nothing in domain/application code references Supabase.
+
+## تحديث ٢٥ سبتمبر ٢٠٢٦ — موصول فعلاً
+- المشروع `gjhhdzrbtiqyzfpkqasb` يعمل في **سيول (ap-northeast-2)**. الاتصال المباشر (`db.<ref>.supabase.co:5432`) **IPv6 فقط**؛ التطبيق يستعمل الـpooler
+  `aws-0-ap-northeast-2.pooler.supabase.com:6543` (`SUPABASE_POOLER_HOST` في `.env.supabase`).
+- الهجرات الـ١٥ + البذور طُبّقت عبر `tools/supabase-db.sh deploy`؛ الهجرة `org_vat_format` توقّفت أول مرة على صفٍّ قديم برقم ضريبي باطل
+  (بذور أغسطس) — أُصلح الصف وأُضيف `tools/supabase-db.sh resolve <migration>` لهذه الحالة.
+- المشروع يتوقّف (Paused) بعد أسبوع خمول على الخطة المجانية ويختفي مضيفه من DNS — العرض: «تعذّر الوصول» في كل شيء. الاستعادة من اللوحة بيد المالك.

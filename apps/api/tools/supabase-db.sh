@@ -3,6 +3,7 @@
 #   tools/supabase-db.sh deploy   → migrate deploy + seed + drift-check
 #   tools/supabase-db.sh status   → migration status + extension check
 #   tools/supabase-db.sh psql     → open psql on the direct connection
+#   tools/supabase-db.sh resolve <migration> → mark a half-applied migration rolled back (after fixing the rows)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 [ -f .env.supabase ] || { echo "missing apps/api/.env.supabase"; exit 1; }
@@ -35,6 +36,8 @@ case "${1:-status}" in
   status)
     pnpm exec prisma migrate status || true
     psql "$DIRECT_DATABASE_URL" -tAc "select extname||' '||extversion from pg_extension where extname in ('postgis','pg_trgm','pgcrypto','citext') order by 1";;
+  # migration failed half-way (e.g. a CHECK violated by old rows): fix the rows, then mark it rolled back and deploy again
+  resolve) pnpm exec prisma migrate resolve --rolled-back "${2:?migration name}";;
   psql) psql "$DIRECT_DATABASE_URL";;
-  *) echo "usage: $0 deploy|status|psql"; exit 1;;
+  *) echo "usage: $0 deploy|status|psql|resolve <migration>"; exit 1;;
 esac
