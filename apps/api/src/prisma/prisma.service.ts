@@ -9,7 +9,10 @@ import { Logger } from 'nestjs-pino';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly logger: Logger) {
-    super({ log: process.env['NODE_ENV'] === 'test' ? [] : ['warn', 'error'] });
+    // المعاملة التفاعلية بمهلة Prisma الافتراضية (٥ ثوانٍ) تنفجر على قاعدةٍ بعيدة (Supabase سيول ~٢٠٠ms
+    // لكل رحلة، وإنشاء أمر العمل عشرات الاستعلامات في معاملة واحدة → «Transaction already closed» و500 عامة).
+    // المهلة تُقرأ من البيئة كي تبقى قصيرة في الاختبار وطويلة عند البعد؛ الافتراضي ٣٠ ثانية.
+    super({ log: process.env['NODE_ENV'] === 'test' ? [] : ['warn', 'error'], transactionOptions: { timeout: Number(process.env['PRISMA_TX_TIMEOUT_MS'] ?? 30_000), maxWait: Number(process.env['PRISMA_TX_MAX_WAIT_MS'] ?? 10_000) } });
   }
 
   async onModuleInit(): Promise<void> {
