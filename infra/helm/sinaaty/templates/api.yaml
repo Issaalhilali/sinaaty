@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: {{ .Release.Name }}-api, labels: { {{- include "sinaaty.labels" . | nindent 4 }} } }
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector: { matchLabels: { app: {{ .Release.Name }}-api } }
+  template:
+    metadata: { labels: { app: {{ .Release.Name }}-api } }
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.registry }}/api:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports: [{ containerPort: {{ .Values.api.port }} }]
+          env:
+            {{- range $k, $v := .Values.api.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          envFrom:
+            - secretRef: { name: {{ .Values.secretName }} }
+          # Liveness must not depend on the database: a DB blip should not restart every pod.
+          livenessProbe:  { httpGet: { path: /v1/health, port: {{ .Values.api.port }} }, initialDelaySeconds: 25, periodSeconds: 20 }
+          readinessProbe: { httpGet: { path: /v1/health, port: {{ .Values.api.port }} }, initialDelaySeconds: 10, periodSeconds: 10 }
+          resources: {{- toYaml .Values.api.resources | nindent 12 }}
+          securityContext: { runAsNonRoot: true, allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: ["ALL"] } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: {{ .Release.Name }}-api }
+spec:
+  selector: { app: {{ .Release.Name }}-api }
+  ports: [{ port: 80, targetPort: {{ .Values.api.port }} }]

@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/format/format.dart';
+import '../../../core/result/result.dart';
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/labels.dart';
+import '../../../core/theme/tokens.dart';
+import '../../../core/ui/ui.dart';
+import '../../workshop/presentation/providers.dart';
+import '../domain/parts.dart';
+import 'providers.dart';
+/// Supplier «طلبات»: requests near me — the one ending soonest as SealCard with lowest bid + my bid state, then the list.
+class SupplierRequestsScreen extends ConsumerWidget {
+  const SupplierRequestsScreen({super.key});
+  @override Widget build(BuildContext context, WidgetRef ref) {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final v = ref.watch(incomingRequestsProvider); final org = ref.watch(currentOrgIdProvider);
+    return AsyncResultView<List<PartRequest>>(value: v, onRetry: () => ref.invalidate(incomingRequestsProvider), builder: (all) {
+      final ordered = supplierInbox(all); final hot = ordered.where((r) => r.open).firstOrNull; final rest = ordered.where((r) => r != hot).toList();
+      if (all.isEmpty) return EmptyState(icon: Icons.gavel_outlined, title: l.spNoRequests.split(' —').first, body: l.spNoRequestsBody);
+      return RefreshIndicator(onRefresh: () async => ref.invalidate(incomingRequestsProvider), child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
+        if (hot != null) GestureDetector(onTap: () => context.push('/parts/requests/${hot.id}'), child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(hot.partNameAr, style: t.titleLarge?.copyWith(color: Colors.white)), Text('${hot.number}${hot.vin != null ? ' · VIN ${hot.vin!.substring(hot.vin!.length - 6)}' : ''}', style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), SealPill.widget(LiveCountdown(until: hot.biddingEndsAt, urgentTint: false, style: t.bodySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)), icon: Icons.timer_outlined)]), const SizedBox(height: SinaatySpace.md), hot.bidsCount == 0 ? Text(l.spBeFirst, style: t.titleMedium?.copyWith(color: Colors.white)) : Row(crossAxisAlignment: CrossAxisAlignment.end, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.ptLowest, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))), MoneyText(Fmt.money(hot.lowestBid ?? '0', locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white))])), SealPill(l.ptBidsCount(hot.bidsCount), icon: Icons.local_offer_outlined)]), const SizedBox(height: SinaatySpace.lg), SealButton(label: hot.myBidStatus != null || hot.bids.any((b) => b.supplierOrgId == org) ? l.spUpdateBid : l.spBid, icon: Icons.gavel_outlined, onPressed: () => context.push('/parts/requests/${hot.id}'))]))),
+        if (rest.isNotEmpty) ...[const SizedBox(height: SinaatySpace.sm), SectionTitle(l.spIncoming),
+        SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final r in rest) AppListRow(icon: Icons.gavel_outlined, title: r.partNameAr, subtitle: Fmt.meta([r.number, r.open ? Labels.endsIn(l, r.remaining) : l.ptEnded, if (r.lowestBid != null) '${l.ptLowest} ${Fmt.money(r.lowestBid!, locale: locale)}']), trailing: StatusBadge(r.status == 'awarded' ? ((r.myBidStatus ?? (r.bids.any((b) => b.supplierOrgId == org && b.status == 'accepted') ? 'accepted' : null)) == 'accepted' ? l.spWon : l.spLost) : l.ptBidsCount(r.bidsCount), tone: r.status == 'awarded' && r.myBidStatus == 'accepted' ? BadgeTone.seal : r.open ? BadgeTone.brass : BadgeTone.plain), onTap: () => context.push('/parts/requests/${r.id}'))]))],
+      ]));
+    });
+  }
+}
+/// Supplier «مبيعاتي»: orders to fulfil (primary), trade accounts (distributor), inventory + QR batches.
+class SupplierSalesScreen extends ConsumerStatefulWidget {
+  const SupplierSalesScreen({super.key});
+  @override ConsumerState<SupplierSalesScreen> createState() => _SupplierSalesState();
+}
+
+/// ثلاثة مواضيع كانت قائمةً واحدة طويلة (عشرة طلبات ثم الحسابات ثم المخزون ثم QR على بُعد أربع تمريرات —
+/// design-audit/UX_PROBLEMS.md §9). الآن شرائح: للتجهيز · الحسابات (للوكيل) · المخزون — والشاشة تُفتح على ما يُفعل اليوم.
+class _SupplierSalesState extends ConsumerState<SupplierSalesScreen> {
+  int _seg = 0;
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final orders = ref.watch(supplierOrdersProvider); final tas = ref.watch(sellerTradeAccountsProvider).value?.valueOrNull ?? const <TradeAccount>[]; final inv = ref.watch(supplierInventoryProvider).value?.valueOrNull ?? const <InventoryItem>[]; final info = ref.watch(currentOrgInfoProvider).value; final isDistributor = info?.type == 'parts_distributor' || info?.type == 'parts_brand_agent';
+    return AsyncResultView<List<PartOrder>>(value: orders, onRetry: () => ref.invalidate(supplierOrdersProvider), builder: (all) {
+      final todo = all.where((o) => const {'paid', 'preparing', 'shipped'}.contains(o.status)).toList(); final outstanding = tas.fold<double>(0, (a, x) => a + (double.tryParse(x.outstanding) ?? 0)); final pending = tas.where((a) => a.status == 'pending').toList();
+      final segs = <(int, String)>[(0, l.spOrdersToFulfil), if (isDistributor) (1, l.spTradeAccounts), (2, l.spInventory)];
+      final seg = segs.any((x) => x.$1 == _seg) ? _seg : 0;
+      return RefreshIndicator(onRefresh: () async { ref.invalidate(supplierOrdersProvider); ref.invalidate(sellerTradeAccountsProvider); ref.invalidate(supplierInventoryProvider); }, child: ListView(padding: EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, SinaatySpace.bottomClearance(context)), children: [
+        SegmentedButton<int>(showSelectedIcon: false, segments: [for (final x in segs) ButtonSegment(value: x.$1, label: Text(x.$1 == 0 && todo.isNotEmpty ? '${x.$2} · ${todo.length}' : x.$1 == 1 && pending.isNotEmpty ? '${x.$2} · ${pending.length}' : x.$2))], selected: {seg}, onSelectionChanged: (v) => setState(() => _seg = v.first)),
+        const SizedBox(height: SinaatySpace.lg),
+        if (seg == 0) ...[
+          if (all.isEmpty) EmptyState(icon: Icons.inventory_2_outlined, title: l.spNoOrders, body: '') else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final o in [...todo, ...all.where((x) => !todo.contains(x))].take(12)) AppListRow(icon: Icons.inventory_2_outlined, title: o.items.firstOrNull?.descriptionAr ?? o.number, subtitle: Fmt.meta([if (o.items.firstOrNull?.descriptionAr != null) o.number, Fmt.money(o.total, locale: locale), if (o.paymentTerms == 'deferred') l.termsDeferred]), trailing: StatusBadge(Labels.partOrderStatus(l, o.status), tone: todo.contains(o) ? BadgeTone.brass : o.isActive ? BadgeTone.seal : BadgeTone.plain), onTap: () => context.push('/parts/orders/${o.id}'))])),
+        ] else if (seg == 1) ...[
+          Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.md), child: SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [Expanded(child: Text(l.spTradeAccounts, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white))), SealPill('${tas.where((a) => a.status == 'active').length}', icon: Icons.store_outlined)]), Text(l.securedByNote, style: TextStyle(color: Colors.white.withValues(alpha: .8), fontSize: 13)), const SizedBox(height: SinaatySpace.sm), Text(l.ptTradeOutstanding, style: TextStyle(color: Colors.white.withValues(alpha: .8), fontSize: 12)), MoneyText(Fmt.money(outstanding.toStringAsFixed(2), locale: locale), hero: true, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)), if (pending.isNotEmpty) ...[const SizedBox(height: SinaatySpace.md), SealButton(label: '${l.spApprove} (${pending.length})', icon: Icons.how_to_reg_outlined, onPressed: () => _approve(context, ref, pending.first))]]))),
+          if (tas.isEmpty) Text(l.spNoTrade, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [for (final a in tas) AppListRow(icon: Icons.store_outlined, title: a.counterpartyAr ?? a.buyerOrgId, subtitle: a.status == 'active' ? '${l.ptTradeOutstanding} ${Fmt.money(a.outstanding, locale: locale)} / ${Fmt.money(a.creditLimit, locale: locale)} · ${a.paymentTermsDays} يوم' : l.ptTradePending, trailing: a.status == 'pending' ? SizedBox(height: 34, child: FilledButton.tonal(style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12), minimumSize: Size.zero), onPressed: () => _approve(context, ref, a), child: Text(l.spApprove))) : StatusBadge(a.status == 'active' ? l.noteStatusIssued : a.status, tone: a.status == 'active' ? BadgeTone.seal : BadgeTone.plain))])),
+        ] else ...[
+          SectionTitle(l.spInventory, trailing: isDistributor ? TextButton.icon(onPressed: () => _issueSerials(context, ref), icon: const Icon(Icons.qr_code_2, size: 18), label: Text(l.spIssueSerials)) : TextButton.icon(onPressed: () => _makeLabels(context, ref), icon: const Icon(Icons.qr_code_2, size: 18), label: Text(l.spLabels))),
+          // مخزنٌ فارغ يُعلّم لا يعدّ: «0 صنف · الكمية 0» صفران لا يقولان ماذا تفعل.
+          if (inv.isEmpty) EmptyState(icon: Icons.warehouse_outlined, title: l.spNoInventoryTitle, body: l.spNoInventoryBody) else SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm), child: RowGroup(children: [AppListRow(icon: Icons.warehouse_outlined, title: l.spItems(inv.length), subtitle: '${l.ptQty}: ${inv.fold<int>(0, (a, i) => a + i.quantity)}'), for (final i in inv.take(5)) AppListRow(title: i.titleAr, subtitle: Fmt.meta([i.partNumber, Labels.condition(l, i.condition), if (i.price != null) Fmt.money(i.price!, locale: locale)]), trailing: StatusBadge('${i.quantity - i.reservedQty}', tone: i.quantity - i.reservedQty > 0 ? BadgeTone.seal : BadgeTone.bad))])),
+        ],
+      ]));
+    });
+  }
+}
+
+/// الأفعال الثلاثة (اعتماد حساب، دفعة QR، ملصقات) دوالّ على مستوى الملف تشاركها الحالة والاختبارات.
+Future<void> _approve(BuildContext context, WidgetRef ref, TradeAccount a) async {
+    final l = L10n.of(context); final limit = TextEditingController(text: '5000'); final days = TextEditingController(text: '30');
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.spApprove, style: Theme.of(ctx).textTheme.titleLarge), Text(a.counterpartyAr ?? '', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md), TextField(controller: limit, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spCreditLimit, suffixText: 'ر.س')), const SizedBox(height: SinaatySpace.md), TextField(controller: days, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spTermsDays)), const SizedBox(height: SinaatySpace.sm), Text(l.noteHint, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant, fontSize: 13)), const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.spApprove, icon: Icons.verified_outlined, onPressed: () => Navigator.pop(ctx, true))])));
+    if (ok != true || !context.mounted) return;
+    final r = await ref.read(partsRepositoryProvider).approveTradeAccount(a.id, creditLimit: limit.text.trim(), termsDays: int.tryParse(days.text) ?? 30); if (!context.mounted) return;
+    r.when(ok: (_) => ref.invalidate(sellerTradeAccountsProvider), err: (f) => showFailure(context, f));
+  }
+Future<void> _issueSerials(BuildContext context, WidgetRef ref) async {
+    final l = L10n.of(context); final cat = TextEditingController(); final count = TextEditingController(text: '50'); final org = ref.read(currentOrgIdProvider); if (org == null) return;
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.spIssueSerials, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: SinaatySpace.md), TextField(controller: cat, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spCatalogId)), const SizedBox(height: SinaatySpace.md), TextField(controller: count, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spCount)), const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.spIssueSerials, icon: Icons.qr_code_2, onPressed: () => Navigator.pop(ctx, true))])));
+    if (ok != true || !context.mounted) return;
+    final r = await ref.read(partsRepositoryProvider).issueSerials(orgId: org, catalogId: cat.text.trim(), count: int.tryParse(count.text) ?? 1); if (!context.mounted) return;
+    r.when(ok: (b) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.spSerialsIssued(b.issued, b.batchCode)))); context.push('/sp/labels/${b.batchCode}?org=$org'); }, err: (f) => showFailure(context, f));
+  }
+/// التشليح والمحل: قطعةٌ باسمهم + دفعة ملصقات في خطوةٍ واحدة — لا كتالوج ولا رقم صنف يُحفظ.
+Future<void> _makeLabels(BuildContext context, WidgetRef ref) async {
+    final l = L10n.of(context); final name = TextEditingController(); final count = TextEditingController(text: '10'); final org = ref.read(currentOrgIdProvider); final info = ref.read(currentOrgInfoProvider).value; if (org == null) return;
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.spLabelsTitle, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: 4), Text(l.spLabelsHint, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md), TextField(controller: name, decoration: InputDecoration(labelText: l.spLabelPartName)), const SizedBox(height: SinaatySpace.sm), TextField(controller: count, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l.spLabelCount)), const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.spMakeLabels, onPressed: () => Navigator.pop(ctx, true))])));
+    if (ok != true || !context.mounted || name.text.trim().length < 2) return;
+    final repo = ref.read(partsRepositoryProvider); final brand = (info?.nameAr ?? '').trim().length >= 2 ? info!.nameAr.trim() : org.substring(0, org.length.clamp(0, 8));
+    final cat = await repo.createOwnPart(orgId: org, brand: brand, nameAr: name.text.trim()); if (!context.mounted) return;
+    final r = await cat.when(ok: (id) => repo.issueSerials(orgId: org, catalogId: id, count: (int.tryParse(count.text) ?? 1).clamp(1, 500)), err: (f) async => Result<({int issued, String batchCode})>.err(f)); if (!context.mounted) return;
+    r.when(ok: (b) => context.push('/sp/labels/${b.batchCode}?org=$org&name=${Uri.encodeComponent(name.text.trim())}'), err: (f) => showFailure(context, f));
+  }

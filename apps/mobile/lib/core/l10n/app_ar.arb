@@ -1,0 +1,1394 @@
+{
+  "@@locale": "ar",
+  "appName": "صناعية",
+  "tabMyCars": "سياراتي",
+  "tabRequest": "اطلب",
+  "tabWallet": "محفظتي",
+  "tabAccount": "حسابي",
+  "tabToday": "اليوم",
+  "tabOrders": "الأوامر",
+  "tabParts": "القطع",
+  "tabRequests": "طلبات",
+  "tabMySales": "مبيعاتي",
+  "loginTitle": "ادخل بجوالك",
+  "loginSubtitle": "نرسل لك رمز تحقق لمرة واحدة",
+  "phoneLabel": "رقم الجوال",
+  "phoneHint": "05xxxxxxxx",
+  "sendCode": "أرسل الرمز",
+  "otpTitle": "أدخل رمز التحقق",
+  "otpSubtitle": "أرسلنا رمزاً من 6 أرقام إلى {phone}",
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "verify": "تحقق",
+  "resendCode": "إعادة الإرسال",
+  "loginWithNafath": "الدخول عبر نفاذ",
+  "logout": "تسجيل الخروج",
+  "addYourName": "أضف اسمك",
+  "editName": "تعديل الاسم",
+  "yourName": "الاسم الكامل",
+  "save": "حفظ",
+  "errorGeneric": "حدث خطأ غير متوقع، حاول مرة أخرى.",
+  "errorNetwork": "لا يوجد اتصال بالإنترنت. تحقق من الشبكة وأعد المحاولة.",
+  "offlineBar": "غير متصل — نعيد المحاولة تلقائياً حين تعود الشبكة.",
+  "errorInvalidPhone": "أدخل رقم جوال سعودي صحيح.",
+  "retry": "أعد المحاولة",
+  "cancel": "إلغاء",
+  "continueLabel": "متابعة",
+  "emptyCarsTitle": "لا توجد سيارات بعد",
+  "emptyCarsBody": "أضف سيارتك برقم الهيكل أو اللوحة لتبدأ.",
+  "addCar": "أضف سيارة",
+  "welcomeBack": "أهلاً بعودتك",
+  "todayEmpty": "لا توجد أوامر اليوم — أنشئ أول أمر إصلاح.",
+  "newWorkOrder": "أمر عمل جديد",
+  "comingSoon": "قريباً",
+  "activeOrders": "أوامر الإصلاح الحالية",
+  "noActiveOrders": "لا توجد أوامر إصلاح حالياً",
+  "servicesTitle": "ماذا تحتاج؟",
+  "homeHeroCta": "اطلب إصلاح",
+  "homeHeroTitle": "عطلٌ في سيارتك؟",
+  "homeHeroBody": "صف العطل بكلمتين وصورة — وتصلك عروض الورش القريبة بسعرها.",
+  "homeHeroNoCarTitle": "أضف سيارتك لتبدأ",
+  "homeHeroNoCarBody": "رقم الهيكل أو اللوحة — دقيقة واحدة.",
+  "emptyCarsServices": "وهذا ما نقدّمه لك:",
+  "myCars": "سياراتي",
+  "vinLabel": "رقم الهيكل (VIN)",
+  "plateLabel": "رقم اللوحة",
+  "addCarTitle": "أضف سيارتك",
+  "addCarSubtitle": "رقم الهيكل يعرّف سيارتك بنوعها وموديلها. وتكفي اللوحة وحدها للبدء — بأي ترتيب: «أ ب ج 1234» أو «1234 أ ب ج».",
+  "addCarSubmit": "إضافة السيارة",
+  "addCarNeedOne": "أدخل رقم الهيكل أو رقم اللوحة.",
+  "carPassport": "سجل السيارة",
+  "noPassportEvents": "سيظهر هنا كل ما يحدث لسيارتك: صيانة، قطع، فحوصات.",
+  "odometer": "العدّاد",
+  "km": "كم",
+  "shareCarPassport": "مشاركة سجل السيارة",
+  "workOrder": "أمر إصلاح",
+  "workOrderNumber": "أمر إصلاح {number}",
+  "@workOrderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "timeline": "المتابعة",
+  "photos": "الصور",
+  "photosCount": "{count} صور",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "items": "البنود",
+  "total": "الإجمالي",
+  "vat": "ضريبة القيمة المضافة 15%",
+  "subtotal": "المجموع قبل الضريبة",
+  "approveNow": "راجع واعتمد",
+  "approveTitle": "اعتماد أمر الإصلاح",
+  "approveMeaningTitle": "ماذا يعني اعتمادك؟",
+  "approveHint": "توقيعك يثبّت هذا السعر — أي تعديل يصلك كنسخة جديدة.",
+  "approveWithNafath": "اعتماد عبر نفاذ",
+  "approveWithOtp": "اعتماد برمز التحقق",
+  "nafathPickNumber": "افتح تطبيق نفاذ واختر الرقم",
+  "nafathWaiting": "بانتظار موافقتك في نفاذ…",
+  "approved": "تم الاعتماد — الورشة تبدأ العمل",
+  "declineOrder": "لا أوافق",
+  "declineReason": "سبب عدم الموافقة",
+  "versionN": "النسخة {n}",
+  "@versionN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "changeReason": "سبب التعديل: {reason}",
+  "@changeReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmReceipt": "استلمت سيارتي",
+  "confirmReceiptHint": "بتأكيدك يُحوَّل المبلغ المحفوظ للورشة.",
+  "payNow": "ادفع الآن",
+  "payInvoice": "دفع الفاتورة",
+  "invoice": "فاتورة",
+  "invoiceNumber": "فاتورة {number}",
+  "@invoiceNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "مدفوعة",
+  "due": "مستحقة",
+  "dueOn": "تستحق في {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHeld": "المبلغ محفوظ",
+  "payWithMada": "مدى",
+  "payWithApplePay": "Apple Pay",
+  "paymentDone": "تم الدفع — شكراً لك",
+  "paymentFailed": "لم يكتمل الدفع، حاول مرة أخرى.",
+  "paySheetTitle": "اختر طريقة الدفع",
+  "invoices": "الفواتير",
+  "notes": "سندات لأمر",
+  "note": "سند لأمر",
+  "noteNumber": "سند {number}",
+  "@noteNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "outstanding": "المتبقي",
+  "noteClosedHint": "أُغلق السند وصدرت المخالصة",
+  "settlement": "مخالصة",
+  "overdue": "متأخر",
+  "noteHint": "سند إلكتروني موثّق عبر نافذ — يُغلق تلقائياً عند سدادك.",
+  "walletEmptyTitle": "لا توجد فواتير أو سندات",
+  "walletEmptyBody": "ستظهر هنا فواتيرك ومدفوعاتك وسنداتك ومخالصاتك.",
+  "notifications": "الإشعارات",
+  "notificationsEmpty": "لا توجد إشعارات بعد",
+  "notificationsEmptyBody": "كل ما يخص سياراتك وفواتيرك وضماناتك سيصلك هنا أولاً بأول.",
+  "markAllRead": "تعليم الكل كمقروء",
+  "language": "اللغة",
+  "arabic": "العربية",
+  "english": "English",
+  "phone": "الجوال",
+  "nafathVerifiedLabel": "موثّق بنفاذ",
+  "notVerified": "غير موثّق",
+  "requestSoonTitle": "اطلب خدمة أو قطعة",
+  "requestSoonBody": "قريباً: اطلب فحصاً، قطعة بالمزاد العكسي، أو سطحة — من هنا.",
+  "viewDocument": "عرض المستند",
+  "viewInvoice": "عرض الفاتورة",
+  "statusDraft": "مسودة",
+  "statusReceived": "تم الاستلام",
+  "statusInspecting": "قيد الفحص",
+  "statusAwaitingApproval": "بانتظار اعتمادك",
+  "statusApproved": "معتمد",
+  "statusAwaitingParts": "بانتظار القطع",
+  "statusInProgress": "قيد التنفيذ",
+  "statusQualityCheck": "فحص الجودة",
+  "statusReady": "جاهزة للاستلام",
+  "statusDelivered": "تم التسليم",
+  "statusClosed": "مغلق",
+  "statusCancelled": "ملغى",
+  "statusDisputed": "نزاع",
+  "statusAbandoned": "مهجورة",
+  "invStatusIssued": "مستحقة",
+  "invStatusPaid": "مدفوعة",
+  "invStatusPartiallyPaid": "مدفوعة جزئياً",
+  "invStatusVoid": "ملغاة",
+  "invStatusOverdue": "متأخرة",
+  "invStatusRefunded": "مستردّة",
+  "noteStatusIssued": "ساري",
+  "noteStatusPartiallySettled": "مسدد جزئياً",
+  "noteStatusClosed": "مغلق",
+  "noteStatusInEnforcement": "قيد التنفيذ",
+  "noteStatusCancelled": "ملغى",
+  "noteStatusPending": "بانتظار الإصدار",
+  "signedByNafath": "موقّع بنفاذ",
+  "signedByOtp": "موقّع برمز التحقق",
+  "securedByNote": "مضمون بسند",
+  "termsPrepaid": "دفع مقدّم",
+  "termsOnDelivery": "الدفع عند الاستلام",
+  "termsDeferred": "دفع آجل",
+  "termsInstallments": "أقساط",
+  "termsFleetMonthly": "كشف شهري",
+  "loading": "جارٍ التحميل…",
+  "somethingWrong": "تعذّر التحميل",
+  "noOrdersForCar": "لا توجد أوامر إصلاح لهذه السيارة",
+  "checkIn": "فحص الاستلام",
+  "checkOut": "فحص التسليم",
+  "damages": "{count} ملاحظات",
+  "@damages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "codeLabel": "رمز التحقق",
+  "invalidCode": "أدخل الرمز المكوّن من 6 أرقام",
+  "payAmount": "ادفع {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "warrantyDays": "ضمان {days} يوم",
+  "@warrantyDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "nafathNumber": "الرقم في نفاذ",
+  "approveDone": "تم",
+  "approveNotPending": "لا يوجد ما يتطلب اعتمادك في هذا الأمر الآن — حالته موضحة أعلاه.",
+  "payHint": "الدفع آمن — يبقى المبلغ محفوظاً حتى تستلم سيارتك.",
+  "clearanceIssued": "صدرت المخالصة {number}",
+  "@clearanceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmApproval": "تأكيد الاعتماد",
+  "wsToday": "اليوم",
+  "wsInShop": "سيارات في الورشة",
+  "wsAwaitingCustomer": "بانتظار اعتماد العميل",
+  "wsReadyToPayout": "ر.س جاهز للتحويل",
+  "wsNeedsAction": "يحتاج تصرّفك الآن",
+  "wsTodayCars": "سيارات اليوم",
+  "wsAll": "عرض الكل",
+  "wsNewOrder": "أمر جديد",
+  "wsNoOrders": "لا توجد أوامر بعد",
+  "wsNoOrdersBody": "أنشئ أول أمر إصلاح: امسح اللوحة أو أدخل رقم الهيكل، أضف البنود، وأرسله للعميل.",
+  "wsStart": "ابدأ العمل",
+  "wsReceive": "استلام السيارة",
+  "wsInspect": "فحص الاستلام",
+  "wsRequestApproval": "أرسل للعميل للاعتماد",
+  "wsQuality": "إلى فحص الجودة",
+  "wsReady": "جاهزة للاستلام",
+  "wsDeliver": "تم التسليم",
+  "wsIssueInvoice": "إصدار الفاتورة",
+  "wsAddPhoto": "أضف صورة",
+  "wsWaitingCustomer": "بانتظار اعتماد العميل — لا يبدأ العمل قبل موافقته",
+  "wsCustomerPhone": "جوال العميل",
+  "wsTitle": "وصف مختصر للعمل",
+  "wsTitleHint": "مثال: سمكرة رفرف أمامي",
+  "wsItems": "البنود",
+  "wsAddItem": "أضف بنداً",
+  "wsItemDesc": "الوصف",
+  "wsItemPrice": "السعر",
+  "wsItemQty": "الكمية",
+  "wsLabor": "أجور",
+  "wsPart": "قطعة",
+  "wsWarranty": "ضمان (أيام)",
+  "wsPaymentTerms": "شروط الدفع",
+  "wsCreate": "إنشاء الأمر",
+  "wsEstimate": "التقدير",
+  "wsAngles": "8 زوايا",
+  "wsAngleOf": "{done} / {total}",
+  "@wsAngleOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wsShootNext": "صوّر الزاوية التالية",
+  "wsSubmitInspection": "حفظ فحص الاستلام",
+  "wsDamages": "ملاحظات الهيكل",
+  "wsAddDamage": "أضف ملاحظة",
+  "wsNoDamages": "لا ملاحظات على الهيكل بعد — سجّل أي خدش أو ضرر قبل بدء العمل؛ يحميك ويحمي العميل.",
+  "wsFuel": "الوقود %",
+  "wsZone": "الموضع",
+  "wsSeverity": "الشدة",
+  "wsMinor": "بسيط",
+  "wsModerate": "متوسط",
+  "wsSevere": "شديد",
+  "wsOffline": "بلا إنترنت — سيُرسل تلقائياً عند عودة الاتصال",
+  "wsPendingSync": "{count} إجراء بانتظار المزامنة",
+  "@wsPendingSync": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSynced": "تمت المزامنة",
+  "wsWalletHeld": "محفوظ حتى تأكيد العملاء",
+  "wsWalletAvailable": "متاح للتحويل",
+  "wsWalletTransit": "قيد التحويل للبنك",
+  "wsPayouts": "التحويلات",
+  "wsNoPayouts": "لا توجد تحويلات بعد — تُجدول تلقائياً عند توفّر رصيد.",
+  "wsPartsSoon": "قطع لهذه السيارة",
+  "wsPartsSearchHint": "أدخل رقم الهيكل في الأعلى لترى القطع المتوفرة لسيارتك بأسعارها الحية.",
+  "wsPartsSoonBody": "قريباً: ابحث برقم الهيكل، اشترِ من الوكلاء بحساب آجل مضمون، أو افتح مزاداً على التشاليح.",
+  "wsOrders": "الأوامر",
+  "wsActive": "الحالية",
+  "wsDone": "المنتهية",
+  "wsAngleFront": "أمام",
+  "wsAngleFrontRight": "أمام يمين",
+  "wsAngleRight": "يمين",
+  "wsAngleRearRight": "خلف يمين",
+  "wsAngleRear": "خلف",
+  "wsAngleRearLeft": "خلف يسار",
+  "wsAngleLeft": "يسار",
+  "wsAngleFrontLeft": "أمام يسار",
+  "wsCustomer": "العميل",
+  "wsPhotoAdded": "أُضيفت الصورة",
+  "wsInvoiceIssued": "صدرت الفاتورة {number}",
+  "@wsInvoiceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "wsCustomerApprovedHint": "اعتمد العميل — ابدأ العمل وارفع أول صورة.",
+  "ptParts": "القطع",
+  "ptSearchByVin": "ابحث برقم الهيكل",
+  "ptVinHint": "17 خانة",
+  "ptOffers": "عروض مطابقة لهذه السيارة",
+  "ptNoOffers": "لا توجد قطع مطابقة الآن — افتح مزاداً ليصلك عرض من التشاليح والمحلات القريبة.",
+  "ptOpenAuction": "اطلب بالمزاد العكسي",
+  "ptBuyNow": "اشترِ الآن",
+  "ptTradePrice": "سعر الورش",
+  "ptRetailPrice": "سعر التجزئة",
+  "ptGenuineQr": "QR أصالة",
+  "ptLeadHours": "يصل خلال {h} س",
+  "@ptLeadHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptCondOem": "أصلي وكالة",
+  "ptCondAftermarket": "بديل معتمد",
+  "ptCondUsed": "مستعمل تشليح",
+  "ptCondRefurb": "مجدَّد",
+  "ptQty": "الكمية",
+  "ptTermsPrepaid": "دفع الآن — المبلغ محفوظ حتى تستلم",
+  "ptTermsDeferred": "آجل على الحساب المضمون — يصدر سند لأمر",
+  "ptOrderPlaced": "تم الطلب",
+  "ptMyRequests": "طلباتي بالمزاد",
+  "ptMyOrders": "طلبات القطع",
+  "ptPartName": "اسم القطعة",
+  "ptPartNameHint": "مثال: دسكات أمامية",
+  "ptAcceptedConditions": "الحالات المقبولة",
+  "ptBiddingMinutes": "مدة المزاد (دقيقة)",
+  "ptSend": "أرسل الطلب",
+  "ptBids": "العروض",
+  "ptBidsCount": "{n} عروض",
+  "@ptBidsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ptLowest": "أقل عرض",
+  "ptNoBidsShort": "لا عروض بعد",
+  "ptEndsIn": "ينتهي خلال {m} د",
+  "@ptEndsIn": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInHours": "ينتهي خلال {h} ساعة",
+  "@ptEndsInHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInDays": "ينتهي خلال {d} يوم",
+  "@ptEndsInDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEnded": "انتهى",
+  "ptAcceptBid": "اقبل هذا العرض",
+  "ptAccepted": "تم القبول — أُنشئ طلب الشراء",
+  "ptNoBidsYet": "لم تصل عروض بعد — ننبّه المورّدين القريبين.",
+  "ptTradeAccount": "الحساب الآجل المضمون",
+  "ptTradeAvailable": "المتاح",
+  "ptTradeOutstanding": "القائم",
+  "ptTradeLimit": "الحد",
+  "ptRequestTrade": "اطلب حساباً آجلاً",
+  "ptTradePending": "بانتظار موافقة المورّد",
+  "ptScanQr": "امسح QR القطعة",
+  "ptScanHint": "وجّه الكاميرا نحو ملصق QR على القطعة الأصلية",
+  "ptVerifyGenuine": "قطعة أصلية موثّقة",
+  "ptVerifyFake": "غير موثّقة",
+  "ptVerifyAlert": "تنبيه: مسح متكرر",
+  "ptInstallOn": "ركّبها في أمر العمل",
+  "ptChooseItem": "اختر بند القطعة",
+  "ptInstalled": "تم التركيب — صدر ضمان القطعة + التركيب",
+  "ptLaborWarranty": "ضمان التركيب (أيام)",
+  "ptWarranties": "الضمانات",
+  "ptWarrantyPart": "قطعة",
+  "ptWarrantyLabor": "تركيب",
+  "ptWarrantyBoth": "قطعة + تركيب",
+  "ptValidUntil": "ساري حتى {date}",
+  "@ptValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "ptExpired": "منتهٍ",
+  "spRequests": "طلبات",
+  "spSales": "مبيعاتي",
+  "spIncoming": "طلبات قريبة منك",
+  "spNoRequests": "لا توجد طلبات الآن — ستصلك إشعارات عند وجود طلب قريب يناسب قطعك.",
+  "spHot": "الأقرب للانتهاء",
+  "spBid": "قدّم عرضك",
+  "spYourBid": "عرضك",
+  "spUpdateBid": "عدّل عرضك",
+  "spPrice": "سعرك",
+  "spEta": "التسليم خلال (ساعات)",
+  "spWarrantyDays": "ضمان (أيام)",
+  "spNotes": "ملاحظات",
+  "spBidSent": "أُرسل عرضك — سنخبرك عند القبول",
+  "spWon": "قُبل عرضك",
+  "spNoRequestsBody": "ستصلك إشعارات فور وجود طلب قريب يناسب قطعك — لا حاجة للمتابعة اليدوية.",
+  "spLost": "لم يُقبل",
+  "spOrdersToFulfil": "طلبات للتجهيز",
+  "spPreparing": "جهّز",
+  "spShip": "شُحن",
+  "spDeliver": "تم التسليم",
+  "spDelivered": "مُسلَّم",
+  "spTradeAccounts": "حسابات آجلة",
+  "spApprove": "اعتمد الحساب",
+  "spCreditLimit": "الحد الائتماني",
+  "spTermsDays": "مدة السداد (أيام)",
+  "spInventory": "المخزون",
+  "spNoInventoryTitle": "لا أصناف في مخزنك بعد",
+  "spNoInventoryBody": "أضف قطعك من الكتالوج أو ابدأ بملصقات QR لقطعٍ عندك.",
+  "spItems": "{n} صنف",
+  "@spItems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spSerials": "أرقام QR",
+  "spIssueSerials": "أصدر دفعة QR",
+  "spLabels": "ملصقات QR",
+  "spLabelsTitle": "ملصقات القطع",
+  "spShareLabels": "شارك الملصقات (PDF)",
+  "spLabelPartName": "اسم القطعة",
+  "spLabelCount": "عدد الملصقات",
+  "spLabelsHint": "كل ملصق يحمل رمزاً فريداً — من يمسحه يعرف أن القطعة من عندك.",
+  "spMakeLabels": "أنشئ الملصقات",
+  "spScanToVerify": "امسح للتحقق · صناعية",
+  "spLabelsEmpty": "لا ملصقات في هذه الدفعة.",
+  "spLabelsCount": "{n} ملصق",
+  "@spLabelsCount": {"placeholders": {"n": {"type": "int"}}},
+  "spSerialsIssued": "صدرت {n} أرقام — دفعة {batch}",
+  "@spSerialsIssued": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "batch": {
+        "type": "String"
+      }
+    }
+  },
+  "spCatalogId": "معرّف القطعة في الكتالوج",
+  "spCount": "العدد",
+  "spAwaitingPayment": "بانتظار الدفع",
+  "spPaid": "مدفوع",
+  "spConfirmed": "مؤكَّد",
+  "spCancelled": "ملغى",
+  "spDisputed": "نزاع",
+  "spReturned": "مرتجع",
+  "spNoOrders": "لا توجد طلبات بعد",
+  "spNoTrade": "لا توجد حسابات آجلة — تأتي طلبات الورش هنا للاعتماد.",
+  "spBeFirst": "لا عروض بعد — كن الأول",
+  "reqHubTitle": "كيف نساعدك؟",
+  "reqHubBody": "اختر ما تحتاجه الآن — نتكفّل بالباقي.",
+  "reqPart": "أطلب قطعة غيار",
+  "reqPartBody": "نرسل طلبك للورش والتشاليح والوكلاء، وتختار أنت أفضل عرض.",
+  "reqTow": "أطلب سطحة",
+  "reqTowBody": "نقل سيارتك إلى الورشة بسعر معروف مسبقاً.",
+  "reqMyRequests": "طلبات القطع",
+  "reqMyTows": "طلبات السطحة",
+  "reqPartVehicle": "السيارة",
+  "reqPartAnyVehicle": "بدون تحديد سيارة",
+  "reqPartSend": "أرسل الطلب",
+  "towTitle": "سطحة",
+  "towRequestAction": "أطلب السطحة",
+  "towRequested": "أرسلنا طلبك — سيصلك السائق قريباً.",
+  "towNoHiddenFees": "سعر واضح مسبقاً",
+  "towQuoteHint": "حدّد موقع سيارتك والوجهة ليظهر السعر.",
+  "towCalculating": "نحسب السعر…",
+  "towQuoteLine": "{km} كم · وصول خلال {minutes} دقيقة تقريباً",
+  "@towQuoteLine": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towVehicle": "سيارتك",
+  "towNoVehicle": "بدون تحديد سيارة",
+  "towFrom": "من أين؟",
+  "towTo": "إلى أين؟",
+  "towPickupAddress": "وصف الموقع",
+  "towPickupHint": "مثال: طريق الملك فهد، بعد مخرج 12",
+  "towDropoffAddress": "وصف الوجهة",
+  "towDropoffHint": "مثال: ورشة النور — الصناعية الثانية",
+  "towLocationLink": "رابط الموقع أو الإحداثيات",
+  "towLinkHelp": "الصق رابط الموقع من الخرائط، أو اكتب الإحداثيات.",
+  "towLinkUnreadable": "لم نتمكن من قراءة الموقع — الصق الرابط الكامل أو الإحداثيات.",
+  "towTruckType": "نوع السطحة",
+  "towTypeFlatbed": "سطحة عادية",
+  "towTypeWheelLift": "رافعة عجلات",
+  "towTypeHeavy": "سطحة ثقيلة",
+  "towNotes": "ملاحظات",
+  "towNotesHint": "مثال: السيارة لا تدور",
+  "towProgress": "مسار الطلب",
+  "towRoute": "المسار",
+  "towDriver": "السائق",
+  "towEta": "{minutes} دقيقة",
+  "@towEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towKm": "{km} كم",
+  "@towKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "towRequestedAt": "وقت الطلب",
+  "towCancelTitle": "إلغاء طلب السطحة",
+  "towCancelBody": "يمكن الإلغاء قبل تحميل السيارة فقط.",
+  "towCancelReason": "السبب (اختياري)",
+  "towCancelAction": "إلغاء الطلب",
+  "towStatusRequested": "بانتظار سائق",
+  "towStatusSearching": "نبحث عن أقرب سطحة",
+  "towStatusAssigned": "تم تعيين سائق",
+  "towStatusEnRoutePickup": "السائق في طريقه إليك",
+  "towStatusPickedUp": "سيارتك على السطحة",
+  "towStatusEnRouteDropoff": "في الطريق إلى الوجهة",
+  "towStatusDelivered": "تم التسليم",
+  "towStatusCompleted": "اكتمل",
+  "towStatusCancelled": "ملغى",
+  "towStatusFailed": "تعذّر التنفيذ",
+  "towEmptyTitle": "لا توجد طلبات سطحة",
+  "towEmptyBody": "اطلب سطحة عندما تحتاج نقل سيارتك.",
+  "ptCheapest": "الأرخص",
+  "ptFastest": "الأسرع",
+  "ptLongestWarranty": "أطول ضمان",
+  "ptWarrantiesEmptyTitle": "لا توجد ضمانات بعد",
+  "ptWarrantiesEmptyBody": "كل قطعة تُركّب لك عبر صناعية تصلك بضمان رقمي هنا.",
+  "ptWarrantyActive": "ساري",
+  "ptWarrantyIssuer": "الجهة الضامنة",
+  "ptWarrantyFrom": "يبدأ",
+  "ptWarrantyNumber": "رقم الضمان",
+  "diffTitle": "مقارنة حالة السيارة",
+  "diffSub": "قبل الإصلاح وبعده — بالصور",
+  "diffOpen": "قارن حالة السيارة",
+  "diffCleanTitle": "سيارتك كما استلمناها",
+  "diffWaiting": "بانتظار فحص التسليم للمقارنة.",
+  "diffAppeared": "ظهر بعد الاستلام",
+  "diffWorsened": "ازداد سوءاً",
+  "diffRepaired": "تم إصلاحه",
+  "diffUnchanged": "كما كان عند الاستلام",
+  "diffCheckIn": "صور الاستلام",
+  "diffCheckOut": "صور التسليم",
+  "diffAiSuggested": "رصد آلي",
+  "sevMinor": "بسيط",
+  "sevModerate": "متوسط",
+  "sevSevere": "شديد",
+  "diffFromTo": "من {from} إلى {to}",
+  "@diffFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "flToday": "أسطولك اليوم",
+  "flVehicles": "مركبة",
+  "flOpenRepairs": "إصلاح مفتوح",
+  "flAwaiting": "بانتظار قرارك",
+  "flMonthSpend": "التزام هذا الشهر",
+  "flBudgetLeft": "المتبقي من الميزانية {amount}",
+  "@flBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "flNoPolicy": "لا توجد سياسة صرف — كل إصلاح يحتاج اعتمادك.",
+  "flPolicyLine": "سياسة «{name}»: اعتماد تلقائي تحت {auto}",
+  "flPolicyLineNoAuto": "سياسة «{name}»: كل إصلاح يحتاج اعتمادك",
+  "@flPolicyLineNoAuto": {"placeholders": {"name": {"type": "String"}}},
+  "@flPolicyLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "auto": {
+        "type": "String"
+      }
+    }
+  },
+  "flInboxTitle": "بانتظار قرارك",
+  "flInboxEmpty": "لا يوجد ما ينتظر قرارك",
+  "flInboxEmptyBody": "كل الإصلاحات إما معتمدة أو تحت حد الاعتماد التلقائي.",
+  "flNeedsOne": "يحتاج اعتماداً واحداً",
+  "flNeedsTwo": "يحتاج اعتماد شخصين",
+  "flAutoOk": "تحت الحد — جاهز للتوقيع",
+  "flBlockedWorkshop": "الورشة خارج القائمة المعتمدة",
+  "flOverBudget": "يتجاوز ميزانية الشهر",
+  "flApprovedBy": "اعتمده {name}",
+  "@flApprovedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flRejectedBy": "رفضه {name}",
+  "@flRejectedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flApprove": "أوافق على الصرف",
+  "flReject": "أرفض",
+  "flDecisionNote": "ملاحظة (اختياري)",
+  "flDecisionHint": "قرارك يُسجَّل باسمك. التوقيع النهائي خطوة مستقلة عبر نفاذ أو رمز التحقق.",
+  "flReadyToSign": "اكتمل الاعتماد — وقّع الآن",
+  "flDecided": "سُجّل قرارك",
+  "flRejectedDone": "سُجّل الرفض — لن يبدأ العمل",
+  "accTitle": "تقرير الحادث",
+  "accSub": "ملف التأمين المرتبط بهذا الإصلاح",
+  "accOpen": "تقرير الحادث",
+  "accLookupLabel": "رقم بلاغ الحادث",
+  "accLookupHint": "مثال: ACC-2026-000123",
+  "accLookup": "استعلام",
+  "accNotLinked": "لا يوجد تقرير مرتبط",
+  "accNotLinkedBody": "استعلم برقم البلاغ لدى شركة التأمين ثم اربطه بهذا الأمر.",
+  "accLink": "اربط بهذا الأمر",
+  "accLinked": "رُبط التقرير بالأمر",
+  "accInsurer": "شركة التأمين",
+  "accClaimNo": "رقم المطالبة",
+  "accApproved": "اعتمده التأمين",
+  "accDeductible": "التحمّل",
+  "accFault": "نسبة الخطأ",
+  "accCustomerPays": "المتوقع على العميل",
+  "accDamages": "أضرار المُقيِّم",
+  "accSuggested": "بنود مقترحة لأمر العمل",
+  "accSuggestedHint": "من تقرير المُقيِّم — راجعها وسعّرها بنفسك ثم أضفها.",
+  "accNotPriced": "الملف قيد التقييم — لا مبالغ بعد. حدّث لاحقاً.",
+  "accSubmitRepair": "سجّل تقرير الإصلاح لدى الجهة",
+  "accSubmitted": "سُجّل تقرير الإصلاح",
+  "accSubmittedRef": "مرجع التسجيل {ref}",
+  "@accSubmittedRef": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
+  "accCoverage": "التأمين يغطي {amount}",
+  "@accCoverage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "accActRepair": "إصلاح",
+  "accActReplace": "استبدال",
+  "accActPaint": "سمكرة ودهان",
+  "towVatIncluded": "شامل الضريبة",
+  "dsTitle": "نزاع",
+  "dsOpen": "فتح نزاع",
+  "dsActive": "نزاع مفتوح على هذا الطلب",
+  "dsView": "عرض النزاع",
+  "dsMoneyHeld": "المبلغ محفوظ حتى يُحل النزاع",
+  "dsPlatformDecides": "تراجع المنصة الطرفين وتقرر — لا يلزمك إجراء آخر.",
+  "dsDescribe": "صف المشكلة",
+  "dsDescribeHint": "ما الذي حدث؟ وما الذي تطلبه؟",
+  "dsCategory": "نوع المشكلة",
+  "dsAttach": "أرفق صورة",
+  "dsOpenCta": "افتح النزاع",
+  "dsOpened": "فُتح النزاع — المبلغ محفوظ حتى يُحل",
+  "dsMessageHint": "اكتب رسالتك…",
+  "dsEvidence": "الصور والأدلة",
+  "dsConversation": "المحادثة",
+  "dsResolved": "قرار المنصة",
+  "dsCatScope": "نطاق العمل",
+  "dsCatQuality": "جودة التنفيذ",
+  "dsCatPrice": "السعر",
+  "dsCatDelay": "تأخير",
+  "dsCatDamage": "ضرر بالسيارة",
+  "dsCatPartDefect": "عيب في القطعة",
+  "dsCatNoShow": "عدم حضور",
+  "dsStOpen": "مفتوح",
+  "dsStUnderReview": "قيد المراجعة",
+  "dsStAwaiting": "بانتظار الأطراف",
+  "dsStEscalated": "مصعّد",
+  "dsStResolved": "صدر القرار",
+  "dsStClosed": "مغلق",
+  "abTitle": "مركبة لم تُستلم",
+  "abNotice": "إنذار {n}",
+  "@abNotice": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "abFormal": "رسمي",
+  "abDueAfter": "يُستحق بعد {days} يوماً من الجاهزية",
+  "@abDueAfter": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "abDaysReady": "جاهزة منذ {days} يوماً",
+  "@abDaysReady": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "abStorage": "رسوم التخزين",
+  "abFreeThen": "{free} أيام سماح ثم {perDay} يومياً",
+  "@abFreeThen": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "perDay": {
+        "type": "String"
+      }
+    }
+  },
+  "abDeclare": "إعلان مركبة مهجورة",
+  "abDeclareWarn": "إجراء نظامي لا رجعة فيه: تُسجَّل السيارة مهجورة وتُضاف رسوم التخزين إلى المطالبة تمهيداً للتنفيذ.",
+  "abDeclared": "أُعلنت المركبة مهجورة",
+  "abReason": "السبب (اختياري)",
+  "abCustomerReady": "سيارتك جاهزة — استلمها الآن. التأخر يرتب رسوم تخزين وقد تُعدّ السيارة مهجورة نظاماً.",
+  "abCustomerDeclared": "أُعلنت السيارة مهجورة لعدم الاستلام — تواصل مع الورشة فوراً لتسوية المستحقات.",
+  "accAddItems": "أضفها لأمر العمل",
+  "accAddItemsHint": "تُضاف كنسخة جديدة تحتاج إعادة اعتماد العميل.",
+  "accItemsAdded": "أُضيفت البنود — أرسلها للاعتماد",
+  "accPriceEach": "سعّر كل بند قبل الإضافة",
+  "flStatements": "الكشوف الشهرية",
+  "flStatementsBody": "ملخص شهري لفواتير أسطولك — جاهز للمحاسبة.",
+  "flStatementsEmpty": "لا كشوف بعد",
+  "flStatementsEmptyBody": "أنشئ كشف الشهر لتحصل على ملخص فواتير أسطولك في ملف واحد.",
+  "flGenerateStatement": "أنشئ كشف هذا الشهر",
+  "flStatementGenerated": "جُهّز كشف الشهر",
+  "flInvoicesCount": "{n} فاتورة",
+  "@flInvoicesCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "flCopyCsv": "نسخ CSV",
+  "flCsvCopied": "نُسخ الكشف — ألصقه في جداولك",
+  "srFix": "أصلح سيارتي",
+  "srFixBody": "صف المشكلة، وقارن عروض الورش القريبة.",
+  "srDescribe": "صف المشكلة",
+  "srDescribeHint": "ما الذي تسمعه أو تراه؟ الصورة تغني عن ألف كلمة.",
+  "srWhere": "موقعك",
+  "srWhereHint": "الصق رابط خرائط أو إحداثيات مثل 24.71, 46.67",
+  "srRadius": "نطاق البحث",
+  "srKm": "{n} كم",
+  "@srKm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWhen": "متى تريد الإصلاح؟",
+  "srNow": "الآن",
+  "srToday": "اليوم",
+  "srThisWeek": "هذا الأسبوع",
+  "srSend": "أرسل الطلب",
+  "srSent": "أُرسل طلبك — العروض ستظهر هنا",
+  "srMine": "طلبات الإصلاح",
+  "srOffers": "العروض",
+  "srNoOffers": "لا عروض بعد — الورش القريبة تدرس طلبك.",
+  "srWiden": "وسّع النطاق إلى {n} كم",
+  "srListView": "قائمة",
+  "srMapView": "على الخريطة",
+  "srMapNote": "سيارتك في المنتصف، وكل ورشة حيث هي فعلاً — اضغط دبّوساً لترى عرضها.",
+  "srMapNoPin": "{n} من العروض بلا موقعٍ مضبوط — تجدها في القائمة.",
+  "@srMapNoPin": { "placeholders": { "n": { "type": "int" } } },
+  "srMapFree": "فحص مجاني",
+  "srVoiceAttached": "تسجيلك الصوتي سيُرفق بالطلب فتسمعه الورشة بصوتك.",
+  "@srWiden": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWidened": "وُسّع نطاق البحث",
+  "srFreeInspection": "معاينة مجانية",
+  "srEstimate": "سعر تقديري",
+  "srPriceRange": "من {min} إلى {max}",
+  "@srPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "srFinalPriceNote": "السعر النهائي يُعتمد بعد الفحص وبتوقيعك — لا مفاجآت.",
+  "srAccepted": "قُبل العرض — أُنشئ أمر العمل",
+  "srNearestBadge": "الأقرب",
+  "srTopRatedBadge": "الأعلى تقييماً",
+  "srPrevUsedBadge": "سبق تعاملك معها",
+  "srNearby": "طلبات إصلاح قريبة",
+  "srNearbyCount": "{n} طلبات إصلاح قريبة",
+  "@srNearbyCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srRespond": "قدّم عرضك",
+  "srDiagnosis": "تحليلك للمشكلة",
+  "srDiagnosisHint": "سطر يشرح ما تظنه السبب — هو ما يميّز عرضك.",
+  "srPriceMin": "السعر من",
+  "srPriceMax": "إلى",
+  "srAvailability": "متى تستقبل السيارة؟",
+  "srOfferSent": "أُرسل عرضك",
+  "srCancelRequest": "ألغِ الطلب",
+  "srSpecialistBadge": "متخصصون في سيارتك",
+  "srRespondsIn": "يرد خلال ~{n} دقيقة",
+  "@srRespondsIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "voUnavailable": "الإملاء الصوتي غير متاح على هذا الجهاز.",
+  "voSpeak": "تكلم الآن",
+  "voListening": "أستمع…",
+  "voHeardNothing": "لم أسمع شيئاً — جرّب مرة أخرى",
+  "voAgain": "أعد",
+  "voDone": "تم",
+  "voDictateItems": "أملِ البنود صوتاً",
+  "voReviewTitle": "راجع ما سُمع",
+  "voHeard": "سُمع: {text}",
+  "@voHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "voNeedsPrice": "يحتاج سعراً",
+  "voApply": "أضف البنود المسعّرة",
+  "voApplied": "أُضيفت البنود — تحتاج إعادة اعتماد العميل",
+  "voDiscard": "تجاهل",
+  "voUploadFailed": "لم يُرفع التسجيل — نصك محفوظ، أعد المحاولة",
+  "voRetryUpload": "أعد الرفع",
+  "voDevTyped": "بيئة تطوير — الإملاء غير متاح على المحاكي",
+  "voDevTypedHint": "اكتب ما كنت ستقوله",
+  "voDevBroken": "بيئة تطوير — الإملاء لا يعمل على هذا المحاكي",
+  "voTypeInstead": "اكتب بدلاً",
+  "ptSendDelivery": "أرسلها بتوصيل المنصة",
+  "ptDeliverySent": "أُرسلت — نبحث عن سائق قريب",
+  "ptDeliveryTitle": "توصيل المنصة",
+  "ptManualShip": "شُحنت يدوياً (خارج توصيل المنصة)",
+  "ptDeliveryPickedUp": "القطعة مع السائق",
+  "srNoVehicle": "أضف سيارتك أولاً",
+  "srNoVehicleBody": "الورش تسعّر حسب نوع السيارة وموديلها — بدونها لا تستطيع تقدير التكلفة.",
+  "srAddVehicle": "أضف سيارة",
+  "ptEndedNoBids": "انتهى بلا عروض — أعد النشر بنطاق أوسع أو اشترِ من نتائج البحث",
+  "ptToolsTitle": "أدواتي",
+  "ptTradeRowSub": "حسابك الآجل مع المورّدين",
+  "wsQuickAdd": "أضف بنداً بسطر",
+  "wsQuickAddHint": "تغيير زيت وفلتر بمئتين وستين",
+  "wsQuickAddNeedsPrice": "أضف السعر ليكتمل البند",
+  "wsItemDetails": "تفاصيل أكثر (ضمان، حالة القطعة)",
+  "wsPaint": "سمكرة ودهان",
+  "wsDiagnostic": "فحص",
+  "wsTowing": "سطحة",
+  "sar": "ر.س",
+  "vinScan": "امسح رقم الهيكل",
+  "vinScanNotFound": "هذا الرمز ليس رقم هيكل — جرّب ملصق عمود الباب",
+  "wsInbox": "ما يحتاجك الآن",
+  "wsInboxCount": "{n} بند",
+  "wsInboxDisputes": "نزاعات مفتوحة — المبلغ مجمّد حتى القرار",
+  "wsInboxAbandonRisk": "سيارات جاهزة لم يستلمها أصحابها",
+  "wsInboxAwaitingApproval": "أوامر تنتظر اعتماد العميل",
+  "wsInboxReady": "جاهزة للتسليم",
+  "wsInboxCheckout": "تحتاج فحص تسليم",
+  "wsInboxServiceRequests": "طلبات إصلاح قريبة تنتظر عرضك",
+  "wsInboxPartBids": "طلبات قطع تنتظر عرضك",
+  "wsInboxUnpaid": "مسلَّمة بلا فاتورة",
+  "@wsInboxCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wsTitleOptional": "وصف مختصر (اختياري)",
+  "wsTitleAuto": "إن تركته فارغاً يُسمّى الأمر ببنوده.",
+  "wsNeedCar": "أضف لوحة السيارة أو رقم الهيكل.",
+  "wsNeedItem": "أضف بنداً واحداً على الأقل.",
+  "dueOnYou": "مستحقّ عليك",
+  "dueOverdueHint": "تأخّر السداد — يبدأ الإنذار الرسمي ثم التنفيذ.",
+  "dueCount": "{n, plural, =1{فاتورة واحدة بانتظار السداد} =2{فاتورتان بانتظار السداد} other{{n} بانتظار السداد}}",
+  "@dueCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loginPromise": "سيارتك من العطل إلى الطريق — في مكان واحد.",
+  "loginPromisePartner": "ورشتك: أوامر موقّعة، ومستحقّاتك محفوظة.",
+  "loginPromiseFleet": "أسطولك: لا إصلاح يُدفع قبل أن تعتمده.",
+  "loginTrustFleetApprove": "اعتماد قبل الدفع",
+  "loginTrustFleetBudget": "ميزانية مضبوطة",
+  "loginTrustFleetPassport": "سجل لكل سيارة",
+  "loginTrustPartnerOrders": "أوامر موقّعة",
+  "loginTrustPartnerMoney": "مستحقّاتك محفوظة",
+  "loginTrustPartnerParts": "قطع برقم الهيكل",
+  "loginTrustSign": "اعتماد موقّع",
+  "loginTrustEscrow": "المبلغ محفوظ",
+  "loginTrustInvoice": "فاتورة نظامية",
+  "loginNafathNote": "برقم جوالك تدخل، وبتوقيعك تعتمد.",
+  "drvOnline": "متصل — تصلك المهام",
+  "drvOffline": "غير متصل",
+  "drvNearby": "مهام قريبة منك",
+  "drvNeedOrg": "اربط حسابك بمنشأة النقل قبل قبول المهام — الفاتورة تصدر باسم المنشأة.",
+  "drvPickup": "الاستلام",
+  "drvDropoff": "التسليم",
+  "drvKm": "{km} كم",
+  "drvOfflineTitle": "أنت غير متصل",
+  "drvOfflineBody": "فعّل الاتصال أعلاه لترى المهام القريبة منك.",
+  "drvNoOffersTitle": "لا مهام قريبة الآن",
+  "drvLastDelivered": "آخر تسليم — سُلّمت",
+  "drvMoneyToWallet": "المبلغ يُضاف إلى محفظتك بعد الفاتورة",
+  "drvStatusAssigned": "مهمة مُسندة إليك",
+  "drvStatusEnRoutePickup": "في الطريق للاستلام",
+  "drvStatusPickedUp": "السيارة على سطحتك",
+  "drvStatusEnRouteDropoff": "في الطريق للتسليم",
+  "drvAcceptTitle": "تقبل هذه المهمة؟",
+  "drvAcceptBtn": "اقبل المهمة",
+  "drvNoOffersBody": "سنعرض لك أي طلب سطحة يصل قرب موقعك.",
+  "drvActStart": "في الطريق للاستلام",
+  "drvActLoaded": "حمّلت السيارة",
+  "drvActHeading": "في الطريق للتسليم",
+  "drvActDeliver": "تسليم وإثبات",
+  "drvActDone": "تمّت",
+  "truckFlatbed": "سطحة",
+  "truckWheelLift": "رافعة عجلات",
+  "truckPartsDelivery": "توصيل قطع",
+  "drvProofTitle": "إثبات التسليم",
+  "drvProofWhy": "صورة السيارة عند التسليم، ورمزٌ تقرؤه من المستلم. بهما تُغلق المهمة ويُصرف المبلغ.",
+  "drvPhotoStep": "صوّر السيارة في مكان التسليم",
+  "drvPhotoDone": "الصورة جاهزة",
+  "drvTakePhoto": "التقط صورة",
+  "drvRetakePhoto": "إعادة التصوير",
+  "drvCodeStep": "اطلب الرمز ليصل إلى جوال المستلم، ثم اقرأه منه.",
+  "drvCodeSent": "أُرسل الرمز إلى جوال المستلم.",
+  "drvSendCode": "أرسل الرمز",
+  "drvResendCode": "إعادة الإرسال",
+  "drvComplete": "إنهاء المهمة",
+  "tabDriverJobs": "مهامي",
+  "@drvKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "flPolicyTitle": "قواعد الصرف",
+  "flImportTitle": "استيراد قائمة المركبات",
+  "flImportEntry": "استيراد قائمة",
+  "flImportWhy": "الصق قائمة سياراتك — سطرٌ لكل سيارة: لوحة أو رقم هيكل. السطر الخاطئ لا يوقف الباقي.",
+  "flImportField": "القائمة",
+  "flImportAction": "استورد {n} مركبة",
+  "@flImportAction": {"placeholders": {"n": {"type": "int"}}},
+  "flImportCreated": "أُضيفت",
+  "flImportExists": "مسجّلة سابقاً",
+  "flImportFailed": "تعذّرت",
+  "flPolicyName": "سياسة الأسطول",
+  "flPolicyWhy": "ثلاثة أرقام تحكم كل أمر إصلاح: ما يمرّ بلا اعتماد، وما يحتاج شخصين، وسقف الشهر.",
+  "flPolicyAuto": "اعتماد تلقائي تحت",
+  "flPolicyAutoHint": "أقل من هذا المبلغ يمرّ بلا انتظار أحد.",
+  "flPolicyTwo": "يحتاج معتمدَين فوق",
+  "flPolicyTwoHint": "اتركه فارغاً إن كان اعتماد شخص واحد يكفي دائماً.",
+  "flPolicyBudget": "ميزانية الشهر",
+  "flPolicyBudgetHint": "يُرفض ما يتجاوزها. اتركه فارغاً بلا سقف.",
+  "flPolicyMeaning": "ماذا يعني ذلك",
+  "flPolicySave": "حفظ القواعد",
+  "flPolicyContradiction": "حدّ المعتمدَين أقل من حدّ الاعتماد التلقائي — لن يمرّ أي أمر باعتماد واحد.",
+  "flOutAuto": "يمرّ تلقائياً",
+  "flOutOne": "اعتماد واحد",
+  "flOutTwo": "اعتماد شخصين",
+  "flOutOverBudget": "يتجاوز الميزانية",
+  "flPolicyEntry": "قواعد الصرف",
+  "spAddPhoto": "صوّر القطعة",
+  "spAddMorePhotos": "صورة أخرى ({n} متبقية)",
+  "ptSeePart": "صور القطعة",
+  "@spAddMorePhotos": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "inNewService": "طلب إصلاح وصلك الآن",
+  "inNewPart": "طلب قطعة وصلك الآن",
+  "inMore": "+{n} آخر",
+  "inOpen": "شوف الطلب",
+  "inIgnore": "تجاهل",
+  "@inMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWhatYouNotice": "ما الذي تلاحظه؟",
+  "srPickMore": "اختر كل ما ينطبق — كلما وضّحت، جاء العرض أدقّ.",
+  "srNoteOptional": "تفاصيل تساعد الورشة (اختياري)",
+  "srNoteHint": "متى يحدث؟ ومنذ متى؟",
+  "srHere": "موقعك الحالي",
+  "srLocating": "نحدّد موقعك…",
+  "srLocateFailed": "تعذّر تحديد موقعك",
+  "srLocateManual": "أدخله يدوياً",
+  "srUseMyLocation": "استعمل موقعي",
+  "srWhenAsk": "متى يناسبك؟",
+  "srOffersComing": "ستصلك عروض الورش القريبة خلال دقائق — تقارنها وتختار.",
+  "reqFixHero": "سيارتك فيها مشكلة؟",
+  "reqFixHeroBody": "صف ما تلاحظه، وتصلك عروض الورش القريبة — تقارنها وتختار بلا أن تدور عليها.",
+  "reqNearby": "ورش قريبة منك",
+  "reqNearbySpecialised": "متخصّصة بسيارتك",
+  "reqNearbyNew": "جديدة",
+  "reqNearbyAsk": "اطلب منها",
+  "tabHome": "الرئيسية",
+  "tabMyOrders": "طلباتي",
+  "homeGreeting": "ما الذي تحتاجه لسيارتك؟",
+  "homeNothingLive": "لا يوجد شيء جارٍ الآن",
+  "myOrdersEmpty": "لا طلبات جارية",
+  "myOrdersEmptyBody": "كل ما تطلبه — إصلاح أو قطعة أو سطحة — يظهر هنا حتى ينتهي.",
+  "moRepairs": "الإصلاح",
+  "moParts": "القطع",
+  "moTow": "السطحة",
+  "moDue": "مستحقّ عليك",
+  "obTitle": "سجّل ورشتك",
+  "obBody": "دقائق، ثم تصلك طلبات العملاء حولك.",
+  "obName": "اسم الورشة",
+  "obNameHint": "كما في السجل التجاري",
+  "obCr": "رقم السجل التجاري",
+  "obCrHint": "10 أرقام",
+  "obCrOptional": "تستطيع إضافته لاحقاً",
+  "obType": "نوع النشاط",
+  "obTypeWorkshop": "ورشة",
+  "obTypeBody": "سمكرة ودهان",
+  "obTypeService": "مركز خدمة",
+  "obTypeScrap": "تشليح",
+  "obTypeParts": "قطع غيار",
+  "obLocation": "أين ورشتك؟",
+  "obLocationBody": "موقعك يحدّد من يصله طلبك — العملاء حولك يرونك أولاً.",
+  "obUseMyLocation": "استعمل موقعي الحالي",
+  "obCity": "المدينة",
+  "obDistrict": "الحي",
+  "obDocs": "وثيقتان للتحقّق",
+  "obDocsBody": "السجل التجاري وهوية المالك. لا يراهما إلا فريق المراجعة.",
+  "obDocCr": "السجل التجاري",
+  "obDocId": "هوية المالك",
+  "obUpload": "أرفق",
+  "obUploaded": "أُرفقت",
+  "obSubmit": "أرسل للمراجعة",
+  "obNext": "التالي",
+  "obCreate": "أنشئ الورشة",
+  "obPending": "ورشتك قيد المراجعة",
+  "obPendingBody": "يراجعها فريق المنصة عادةً خلال يوم عمل، ونُشعرك فور اعتمادها — عندها تبدأ طلبات العملاء بالوصول.",
+  "obDraft": "أكمل تسجيل ورشتك",
+  "obRejected": "المراجعة تحتاج تعديلاً",
+  "obStepInfo": "بيانات الورشة",
+  "obStepPlace": "الموقع",
+  "obStepDocs": "الوثائق",
+  "welcomeSkip": "تخطَّ",
+  "welcomeNext": "التالي",
+  "welcomeStart": "ابدأ",
+  "welcome1Title": "طلبٌ واحد.. وتجيك عروض الورش",
+  "welcome1Body": "وصّف العطل بكم نقرة، والعروض توصلك — قارن واختر.",
+  "welcome2Title": "فلوسك محفوظة بضمان",
+  "welcome2Body": "فلوسك في حساب ضامن، وما تنصرف إلا بعد الاستلام أو نهاية المهلة.",
+  "welcome3Title": "كل شي موثّق باسمك",
+  "welcome3Body": "سعر باعتمادك، وصور قبل وبعد، وفاتورة نظامية.",
+  "setupTitle": "جهّز حسابك",
+  "setupSubtitle": "دقيقة وحدة: اسمك وسيارتك",
+  "setupStepName": "اسمك",
+  "setupStepCar": "سيارتك",
+  "setupNameTitle": "وش نناديك؟",
+  "setupNameBody": "يطلع في اعتماداتك وفواتيرك.",
+  "setupNameLabel": "الاسم",
+  "setupNameHint": "مثال: مشعل العتيبي",
+  "setupNameShort": "اكتب اسماً من حرفين على الأقل",
+  "setupNext": "التالي",
+  "setupCarTitle": "أضف سيارتك",
+  "setupCarBody": "برقم الهيكل أو اللوحة — وسجلّها يمشي معها.",
+  "setupAddCar": "أضف سيارتي",
+  "setupLater": "لاحقاً",
+  "vcInService": "في الورشة الآن — تابعها",
+  "vcNoHistory": "سجلها يبدأ من أول صيانة",
+  "vcLastService": "آخر صيانة {date}",
+  "@vcLastService": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "vcWarranties": "{n} ضمان ساري",
+  "@vcWarranties": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "editProfile": "تعديل الملف",
+  "emailLabel": "البريد الإلكتروني (اختياري)",
+  "emailWhy": "لإرسال فواتيرك وإيصالاتك — لا نستخدمه لغير ذلك.",
+  "nameFromNafath": "الاسم موثّق عبر نفاذ",
+  "nameLockedUntil": "الاسم يوقّع اعتماداتك — يمكن تغييره بعد {date}",
+  "@nameLockedUntil": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "awaitingPricing": "بانتظار التسعير",
+  "aboutTitle": "عن صناعية",
+  "supportTitle": "الدعم",
+  "aboutPromise": "سيارتك من العطل إلى الطريق — في مكان واحد. كل اتفاق موقّع، وكل مبلغ محفوظ حتى تستلم، وكل شيء موثّق باسمك.",
+  "aboutVersion": "النسخة {v}",
+  "@aboutVersion": {
+    "placeholders": {
+      "v": {}
+    }
+  },
+  "supportBody": "واجهتك مشكلة أو عندك اقتراح؟ كلمنا وبنرد عليك بأسرع ما نقدر.",
+  "supportWhatsApp": "راسلنا على واتساب",
+  "supportCall": "اتصل بنا",
+  "termsNote": "باستخدامك صناعية أنت توافق على شروط الاستخدام وسياسة الخصوصية — تُنشر نسختها الكاملة قبل الإطلاق العام.",
+  "srCantMove": "سيارتك ما تتحرك؟",
+  "srOrderTow": "اطلب سطحة",
+  "poScheduled": "مجدول",
+  "poProcessing": "قيد التحويل",
+  "poPaid": "تم التحويل",
+  "poFailed": "تعذّر",
+  "rvTitle": "كيف كانت التجربة؟",
+  "rvBody": "تقييمك يظهر للعملاء بعدك — ويُحسب للورشة أو عليها.",
+  "rvCommentOptional": "كلمة تفيد غيرك (اختياري)",
+  "rvCommentHint": "مثال: شغل نظيف وسلّموني بالموعد",
+  "rvSubmit": "أرسل التقييم",
+  "rvThanks": "شكراً لك — وصل تقييمك",
+  "woPartGeneric": "قطعة الإصلاح",
+  "wpOrdered": "طُلبت",
+  "wpShipped": "في الطريق",
+  "wpArrived": "وصلت",
+  "wpCancelled": "أُلغيت",
+  "delAccount": "حذف الحساب",
+  "delAccountConfirm": "احذف حسابي نهائياً",
+  "delAccountBody": "يُحذف اسمك وجوالك وبريدك ولا يمكن استرجاعها، وتبقى فواتيرك وسجلاتك المالية محفوظةً باسم «حساب محذوف» كما يلزمنا النظام. لو عندك أمر إصلاح جارٍ أو سند لم يُسدَّد نكمله أولاً ثم نحذف.",
+  "avOn": "نستقبل طلبات السوق",
+  "avOnBody": "طلبات العملاء القريبة تصلكم أولاً بأول",
+  "avOff": "الاستقبال موقوف مؤقتاً",
+  "avOffBody": "لا تصلكم طلبات جديدة حتى تعيدوا التشغيل — أوامركم الجارية لا تتأثر",
+  "avResume": "أعد التشغيل",
+  "wsTeam": "فريق الورشة",
+  "wsServices": "خدماتي",
+  "avMenuOn": "استقبال الطلبات: يعمل — أوقفه",
+  "avMenuOff": "استقبال الطلبات: موقوف — شغّله",
+  "teamAdd": "أضف عضواً",
+  "teamAddBody": "يدخل بجواله ويرى ما يخص دوره فقط.",
+  "teamAddConfirm": "أضفه للفريق",
+  "teamEmpty": "الفريق أنت وحدك بعد",
+  "teamEmptyBody": "أضف فنّييك ليستلموا السيارات ويحدّثوا الحالات من جوالاتهم.",
+  "teamRemoveTitle": "إزالة {name}؟",
+  "@teamRemoveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "teamRemoveBody": "يفقد الدخول لهذه الورشة فوراً — سجلات أعماله السابقة تبقى.",
+  "teamRemoveConfirm": "أزِله",
+  "roleOwner": "المالك",
+  "roleManager": "مدير",
+  "roleTechnician": "فني",
+  "roleAccountant": "محاسب",
+  "svcAdd": "أضف خدمة",
+  "svcName": "اسم الخدمة",
+  "svcNameHint": "مثال: غيار زيت وفلتر",
+  "svcPrice": "السعر",
+  "svcWarrantyDays": "أيام الضمان",
+  "svcAddConfirm": "احفظ الخدمة",
+  "svcEmpty": "لا خدمات محفوظة بعد",
+  "svcEmptyBody": "احفظ خدماتك المتكررة — «غيار زيت 280» يُدرج في أي أمرٍ بنقرة.",
+  "itemLabor": "عمل",
+  "itemPart": "قطعة",
+  "itemDiagnostic": "فحص",
+  "scanCameraFailed": "تعذّر فتح الكاميرا. تأكد من السماح للتطبيق باستخدامها، أو اكتب الرقم يدوياً.",
+  "scanTypeInstead": "أكتبه يدوياً",
+  "istTitle": "صوّر الاستمارة",
+  "istWhy": "صورة واحدة تقرأ اللوحة ورقم الهيكل والسنة — بلا كتابة، وداخل جوالك لا على خادم.",
+  "istShoot": "التقط الصورة",
+  "istRead": "قرأتُ {n} من الاستمارة",
+  "istCheck": "راجع الحقول تحت — القراءة الضوئية تخطئ أحياناً.",
+  "istUnreadable": "لم أقرأ شيئاً من الصورة. صوّرها في ضوء أفضل، أو اكتب الحقول يدوياً.",
+  "@istRead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "exploreFirst": "أستكشف أولاً",
+  "exploreTitle": "حولك في الصناعية",
+  "exploreSubtitle": "ورش ومحلات موثقة — سجّل حين تجهز",
+  "exploreSearchHint": "ابحث عن ورشة أو محل قطع…",
+  "exploreCta": "سجّل وابدأ",
+  "exploreEmpty": "لا نتائج قريبة",
+  "exploreEmptyBody": "جرّب اسماً آخر — أو سجّل وانشر طلبك والعروض تجيك.",
+  "exploreOrgCta": "سجّل لتطلب منها",
+  "exploreNew": "جديدة",
+  "orgWorkshop": "ورشة سيارات",
+  "orgScrapyard": "تشليح",
+  "orgPartsDealer": "محل قطع غيار",
+  "orgPartsDistributor": "موزّع قطع",
+  "orgPartsBrandAgent": "وكيل قطع",
+  "orgOther": "منشأة",
+  "guestVerified": "موثّقة في صناعية",
+  "guestAccepting": "تستقبل الطلبات",
+  "guestBusy": "مشغولون حالياً",
+  "guestBranches": "الفروع",
+  "guestSpecialties": "التخصصات",
+  "guestRatingCount": "{n} تقييم",
+  "@guestRatingCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "guestMainBranch": "الرئيسي",
+  "wsCoverPhoto": "صورة الورشة",
+  "coverUpdated": "تم تحديث صورة الورشة — تظهر للعملاء في الاستكشاف",
+  "kmAway": "{n} كم",
+  "@kmAway": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "staleData": "تعذّر تحديث البيانات — ما تراه قد يكون قديماً",
+  "payInDoubtTitle": "دفعتك قيد التأكيد",
+  "payInDoubtBody": "بدأت العملية ولم يصلنا تأكيدها بعد. لا تُعد الدفع — تحقّق بعد لحظات، وإن لم تُخصم فلن يُخصم شيء.",
+  "payCheckNow": "تحقّق الآن",
+  "insPhotosPending": "{n} صورة لم تُرفع — المسها لإعادة الرفع قبل الحفظ",
+  "@insPhotosPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srvFix": "إصلاح",
+  "srvMore": "خدمات أخرى",
+  "srvMoreTitle": "ماذا تحتاج أيضاً؟",
+  "srvPart": "قطع غيار",
+  "srvTow": "سطحة",
+  "srvInspect": "فحص قبل الشراء",
+  "srvInspectBody": "ورشة محايدة تفحصها وتكتب لك تقريراً قبل ما تدفع",
+  "srvService": "صيانة دورية",
+  "srvServiceBody": "زيت وفلاتر وفحص شامل بسعر متفق عليه",
+  "srvRoadside": "بطارية وطريق",
+  "srvRoadsideBody": "ما تشتغل؟ أقرب ورشة تجيك مكانك",
+  "srvPresetInspect": "فحص شامل قبل الشراء — أريد تقرير حالة السيارة",
+  "srvPresetService": "صيانة دورية — زيت وفلاتر وفحص شامل",
+  "srvPresetRoadside": "السيارة ما تشتغل — أحتاج مساعدة في موقعي",
+  "cdEnded": "انتهت المهلة",
+  "cdMinutes": "يبقى {n} دقيقة",
+  "@cdMinutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cdHours": "يبقى {h} س {m} د",
+  "@cdHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMinSec": "يبقى {t}",
+  "@cdMinSec": {
+    "placeholders": {
+      "t": {
+        "type": "String"
+      }
+    }
+  },
+  "cdWorkshopsHave": "الورش عندها مهلة للرد",
+  "cdShopsHave": "المحلات عندها مهلة للعرض"
+}

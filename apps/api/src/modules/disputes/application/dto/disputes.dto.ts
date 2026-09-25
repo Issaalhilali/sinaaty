@@ -1,0 +1,13 @@
+import { z } from 'zod';
+import { DISPUTE_CATEGORIES } from '../../domain/dispute';
+const money = z.union([z.string(), z.number()]).transform(String).refine((s) => /^\d+(\.\d{1,2})?$/.test(s), 'money must be a decimal with ≤2 dp');
+export const OpenDisputeDto = z.object({ work_order_id: z.string().uuid().optional(), part_order_id: z.string().uuid().optional(), category: z.enum(DISPUTE_CATEGORIES), description_ar: z.string().min(10).max(4000), claimed_amount: money.optional(), media_ids: z.array(z.string().uuid()).max(20).default([]) }).refine((d) => !!d.work_order_id !== !!d.part_order_id, 'exactly one of work_order_id / part_order_id');
+export type OpenDisputeDto = z.infer<typeof OpenDisputeDto>;
+export const MessageDto = z.object({ body_ar: z.string().min(1).max(4000), is_internal: z.boolean().default(false), media_ids: z.array(z.string().uuid()).max(20).default([]) });
+export type MessageDto = z.infer<typeof MessageDto>;
+export const AssignDto = z.object({ assigned_to: z.string().uuid().nullable(), reason_ar: z.string().min(3).max(500) }); export type AssignDto = z.infer<typeof AssignDto>;
+export const StatusDto = z.object({ status: z.enum(['under_review', 'awaiting_parties', 'escalated', 'closed']), reason_ar: z.string().min(3).max(500) }); export type StatusDto = z.infer<typeof StatusDto>;
+export const ResolveDto = z.object({ resolution: z.enum(['release_to_provider', 'refund_customer', 'split', 'replace_part', 'no_action']), amount_to_customer: money.optional(), note_ar: z.string().min(5).max(2000) });
+export type ResolveDto = z.infer<typeof ResolveDto>;
+export const ReviewDto = z.object({ work_order_id: z.string().uuid().optional(), part_order_id: z.string().uuid().optional(), rating: z.number().int().min(1).max(5), dimensions: z.record(z.number().int().min(1).max(5)).default({}), comment_ar: z.string().max(1000).optional() }).refine((d) => !!d.work_order_id !== !!d.part_order_id, 'exactly one of work_order_id / part_order_id');
+export type ReviewDto = z.infer<typeof ReviewDto>;

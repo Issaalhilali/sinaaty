@@ -1,12 +1,17 @@
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("com.google.gms.google-services")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.example.sinaaty"
+    namespace = "com.issa.sinaaty"
     compileSdk = flutter.compileSdkVersion
+
+    // AGP 9 turns resValues off by default; our three flavors name the app through it
+    // (صناعية / للشركاء / للأساطيل), so it must be opted back in.
+    buildFeatures { resValues = true }
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -16,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.sinaaty"
+        applicationId = "com.issa.sinaaty"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -27,6 +32,13 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    flavorDimensions += "app"
+    productFlavors {
+        create("customer") { dimension = "app"; applicationIdSuffix = ".customer"; resValue("string", "app_name", "صناعية") }
+        create("partner") { dimension = "app"; applicationIdSuffix = ".partner"; resValue("string", "app_name", "صناعية للشركاء") }
+        create("fleet") { dimension = "app"; applicationIdSuffix = ".fleet"; resValue("string", "app_name", "صناعية للأساطيل") }
     }
 
     buildTypes {
@@ -46,4 +58,31 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// A flavourless `flutter run` (the command everyone types first, and every IDE's default green
+// arrow) asks Gradle for `assembleDebug`. With product flavours that task builds every variant and
+// writes app-customer-debug.apk / app-partner-debug.apk / app-fleet-debug.apk — never the plain
+// app-debug.apk Flutter then looks for, so the tool reports «built, but I couldn't find the file»
+// and the developer is left hunting a phantom. Rather than expect everyone to remember --flavor,
+// the customer build becomes the default: copied to the name Flutter expects. Naming a flavour
+// explicitly (or ./run.sh) still builds just that one and is much faster.
+androidComponents {
+    onVariants { variant ->
+        if (variant.flavorName == "customer" && variant.buildType == "debug") {
+            afterEvaluate {
+                tasks.named("assembleDebug") {
+                    doLast {
+                        val dir = File(rootProject.projectDir.parentFile, "build/app/outputs/flutter-apk")
+                        val built = File(dir, "app-customer-debug.apk")
+                        val expected = File(dir, "app-debug.apk")
+                        if (built.exists()) {
+                            built.copyTo(expected, overwrite = true)
+                            logger.lifecycle("▸ نسخة العميل هي الافتراضية: app-customer-debug.apk → app-debug.apk (لبناء نكهة واحدة فقط استعمل ./run.sh)")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

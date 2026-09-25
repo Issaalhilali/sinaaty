@@ -1,0 +1,68 @@
+/// One workshop's answer to «أصلح سيارتي»: a diagnosis line, a price range OR a free inspection,
+/// and when they can take the car. Badges and the distance line arrive READY from the API —
+/// the client never computes them (scope §1/قبول 4).
+class ServiceOffer {
+  final String id;
+  final String? workshopOrgId;
+  final String? workshopNameAr;
+  final String? rating;          // "4.7" — display only
+  final String? distanceText;    // «حي الصناعية — 4.2 كم» as the API says it
+  final String offerType;        // estimate | free_inspection
+  final String? diagnosisAr;
+  final String? priceMin;
+  final String? priceMax;
+  final String? availability;    // now | today | this_week
+  final DateTime? availableAt;
+  final String? etaNoteAr;
+  final List<String> badges;     // cheapest | fastest | nearest | top_rated | previously_used | specialist
+  final bool specialist;
+  final int? respondsInMinutes;  // null for a workshop with no history — never an invented number
+  /// إحداثيات الفرع الذي سيخدم — لخريطة العروض. null = بلا موقعٍ مضبوط، فيبقى في القائمة لا على الخريطة.
+  final double? lat, lng;
+  const ServiceOffer({required this.id, this.workshopOrgId, this.workshopNameAr, this.rating, this.distanceText, required this.offerType, this.diagnosisAr, this.priceMin, this.priceMax, this.availability, this.availableAt, this.etaNoteAr, this.badges = const [], this.specialist = false, this.respondsInMinutes, this.lat, this.lng});
+  bool get hasPin => lat != null && lng != null;
+  bool get freeInspection => offerType == 'free_inspection';
+}
+
+/// A repair request: the customer's problem, thrown to the nearby workshops within a radius
+/// the customer controls.
+class ServiceRequest {
+  final String id;
+  final String number;
+  final String status;           // open | accepted | expired | cancelled
+  final String titleAr;
+  final String? descriptionAr;
+  final String? vehicleId;
+  final int radiusKm;
+  final String? preferredTime;   // now | today | this_week
+  final String? distanceText;    // workshop view: how far the car is
+  final DateTime createdAt;
+  /// المهلة التي تملكها الورش للرد. كان الخادم يرسلها والتطبيق يهملها، فلا العميل يعرف
+  /// كم ينتظر ولا الورشة تعرف كم بقي لها — والسوق بلا مؤقّتٍ يبدو ساكناً.
+  final DateTime? expiresAt;
+  final List<String> mediaIds;
+  final List<ServiceOffer> offers;
+  /// The list view carries a count without the offers themselves — the badge never lies as zero.
+  final int? offersCountRaw;
+  /// موقع السيارة كما أرسله العميل — مركز خريطة العروض.
+  final double? lat, lng;
+  const ServiceRequest({required this.id, required this.number, required this.status, required this.titleAr, this.descriptionAr, this.vehicleId, required this.radiusKm, this.preferredTime, this.distanceText, required this.createdAt, this.expiresAt, this.lat, this.lng, this.mediaIds = const [], this.offers = const [], this.offersCountRaw});
+  bool get open => status == 'open';
+  /// ما بقي من المهلة — سالبٌ يعني انتهت.
+  Duration? get remaining => expiresAt?.difference(DateTime.now());
+  int get offersCount => offersCountRaw ?? offers.length;
+}
+
+
+/// ورشة قريبة كما تظهر على الصفحة الرئيسية — من نقطة الاكتشاف نفسها التي يستعملها البحث.
+class NearbyShop {
+  final String id, nameAr;
+  final String? city;
+  final double? distanceKm;
+  final double rating;
+  final int ratingCount;
+  /// تخصّصها يشمل صنع سيارة صاحب الحساب — تُقدَّم في الترتيب وتُوسَم على البطاقة.
+  final bool specialised;
+  const NearbyShop({required this.id, required this.nameAr, this.city, this.distanceKm, required this.rating, required this.ratingCount, required this.specialised});
+  bool get isRated => ratingCount > 0;
+}

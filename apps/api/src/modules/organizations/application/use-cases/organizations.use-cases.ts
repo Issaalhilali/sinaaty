@@ -1,0 +1,193 @@
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { OBJECT_STORAGE_PORT, type ObjectStoragePort } from '../../../media/application/storage.port';
+import type { KybDocStatus, KybDocType, OrgMemberRole, OrgStatus, OrgType } from '@sinaaty/shared-types';
+import { PilotService } from '../../../pilot/application/pilot.service';
+import { SEARCH_PORT, type SearchPort } from '../../../search/application/ports/search.port';
+import { AppError } from '../../../../common/errors';
+import { PiiCryptoService } from '../../../../common/crypto';
+import { AuditLogWriter } from '../../../../common/audit';
+import { UNIT_OF_WORK, type UnitOfWork } from '../../../../common/ports/unit-of-work.port';
+import { normalizeSaudiPhone } from '../../../identity/domain/otp';
+import { USER_REPOSITORY, type UserRepository } from '../../../identity/domain/repositories';
+import { isValidSaudiIban, KYB_REQUIRED_DOCS, ROLES_BY_ORG_TYPE } from '../../domain/organization';
+import { ORGANIZATION_REPOSITORY, type OrganizationRepository, SUBSCRIPTION_REPOSITORY, type SubscriptionRepository } from '../../domain/repositories';
+import { OrgTransitionService } from '../org-transition.service';
+import type { ServiceItemDto, AddBankAccountDto, AddKybDocDto, AddLocationDto, AddMemberDto, CreateOrgDto, SearchOrgsDto, SetBrandingDto, SetSpecialtiesDto, SubscribeDto, UpdateOrgDto } from '../dto/organizations.dto';
+
+type Actor = { userId: string; requestId?: string | null };
+
+@Injectable()
+export class OrganizationsUseCases {
+  constructor(
+    @Inject(ORGANIZATION_REPOSITORY) private readonly orgs: OrganizationRepository,
+    @Inject(SUBSCRIPTION_REPOSITORY) private readonly subs: SubscriptionRepository,
+    @Inject(USER_REPOSITORY) private readonly users: UserRepository,
+    private readonly transitions: OrgTransitionService,
+    private readonly pii: PiiCryptoService,
+    @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
+    private readonly audit: AuditLogWriter,
+    // Optional: organizations exist without the pilot module (tests, future deployments without zones).
+    @Optional() private readonly pilot?: PilotService,
+    @Optional() @Inject(SEARCH_PORT) private readonly searchPort?: SearchPort,
+    // صور الواجهات عامة بطبيعتها؛ التوقيع قصير العمر يحمي المخزن لا الصورة
+    @Optional() @Inject(OBJECT_STORAGE_PORT) private readonly storage?: ObjectStoragePort,
+  ) {}
+
+  /** رابط موقّع لصورةٍ عامة — وفشل التوقيع لا يُفشل النتيجة: بلا صورةٍ خيرٌ من بلا ورشة. */
+  private async signPublic(bucket: string | null, key: string | null): Promise<string | null> {
+    if (!bucket || !key || !this.storage) return null;
+    try { return await this.storage.presignDownload({ bucket, objectKey: key, ttlSeconds: 3600 }); } catch { return null; }
+  }
+  private hitOut = async (h: import('../../domain/repositories').OrgSearchHit) => {
+    const { coverBucket, coverKey, ...rest } = h;
+    return { ...rest, coverUrl: await this.signPublic(coverBucket, coverKey) };
+  };
+
+  // ---- public / discovery ----
+  /** Discovery. Typed text goes through the search port (typo-tolerant Arabic) and the hits are hydrated
+   *  from the database; anything else — and any search failure — is answered by SQL+PostGIS directly.
+   *  Finding a workshop slightly worse always beats finding nothing. */
+  async search(q: SearchOrgsDto) {
+    const sql = () => this.orgs.search({ type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, text: q.q, makeId: q.make_id, limit: q.limit }).then((rows) => Promise.all(rows.map(this.hitOut)));
+    if (!q.q?.trim() || !this.searchPort) return sql();
+    try {
+      const hits = await this.searchPort.searchOrgs({ text: q.q.trim(), type: q.type, city: q.city, limit: q.limit ?? 20 });
+      if (!hits.length) return sql();
+      // Hydrate BY ID — intersecting with a windowed listing silently dropped hits once active orgs
+      // outgrew the window (a search that "finds" a workshop the response then omits).
+      const rows = await this.orgs.search({ ids: hits.map((h) => h.id), type: q.type as OrgType | undefined, city: q.city, lat: q.lat, lng: q.lng, radiusKm: q.radius_km, makeId: q.make_id, limit: hits.length });
+      const rank = new Map(hits.map((h, i) => [h.id, i]));
+      const ranked = rows.sort((a, b) => rank.get(a.id)! - rank.get(b.id)!);
+      return ranked.length ? Promise.all(ranked.slice(0, q.limit ?? 20).map(this.hitOut)) : sql();
+    } catch {
+      return sql();
+    }
+  }
+  /// نقطة عامة = قائمة بيضاء لا كيانٌ يُرمى كله: النسخة الأولى سرّبت عمولة المنصة مع المنشأة
+  /// (commissionRateBps — سرّ تجاري) ومعرّف المنشئ. ما يظهر هنا هو ما يصح أن يقرأه ضيفٌ غريب.
+  async getPublic(id: string) {
+    const o = await this.orgs.findById(id);
+    if (!o || !['active', 'suspended'].includes(o.status)) throw new AppError('NOT_FOUND');
+    const [locations, specialties] = await Promise.all([this.orgs.listLocations(id), this.orgs.listSpecialtiesPublic(id)]);
+    const cover = o.coverMediaId ? await this.orgs.mediaRef(o.coverMediaId) : null;
+    return {
+      id: o.id, type: o.type, status: o.status,
+      tradeNameAr: o.tradeNameAr ?? o.legalNameAr, legalNameAr: o.legalNameAr,
+      descriptionAr: o.descriptionAr ?? null,
+      ratingAvg: o.ratingAvg, ratingCount: o.ratingCount,
+      acceptingRequests: o.acceptingRequests, vatRegistered: o.vatRegistered,
+      verifiedAt: o.verifiedAt, locations, specialties,
+      coverUrl: await this.signPublic(cover?.bucket ?? null, cover?.objectKey ?? null),
+    };
+  }
+
+  // ---- owner/manager ----
+  async create(actor: Actor, dto: CreateOrgDto) {
+    if (dto.cr_number && (await this.orgs.findByCr(dto.cr_number))) throw new AppError('CONFLICT', { messageAr: 'السجل التجاري مسجّل مسبقاً.', messageEn: 'Commercial registration already registered.' });
+    const org = await this.orgs.create({ type: dto.type as OrgType, legalNameAr: dto.legal_name_ar, legalNameEn: dto.legal_name_en, tradeNameAr: dto.trade_name_ar, crNumber: dto.cr_number, vatNumber: dto.vat_number, phone: dto.phone, email: dto.email, descriptionAr: dto.description_ar, createdBy: actor.userId });
+    await this.orgs.upsertMember(org.id, actor.userId, 'owner', actor.userId);
+    await this.uow.run((tx) => this.audit.write(tx, { action: 'organization.create', entityType: 'organization', entityId: org.id, orgId: org.id, actorUserId: actor.userId, after: { type: org.type, legalNameAr: org.legalNameAr }, requestId: actor.requestId ?? null }));
+    return org;
+  }
+  async get(id: string) { const o = await this.orgs.findById(id); if (!o) throw new AppError('NOT_FOUND'); return { ...o, locations: await this.orgs.listLocations(id), members: await this.orgs.listMembers(id), kyb_documents: await this.orgs.listKybDocs(id), subscription: await this.subs.current(id) }; }
+
+  /** منشآت العضو باسمها ونوعها وحالتها. التطبيق كان يأخذ «أول عضوية» بلا معرفة — ومن يملك منشأة
+   *  مسودة قديمة كان يفتح تطبيقاً ميتاً. النشِطة أولاً حتى يكون «الأول» هو الصحيح دائماً. */
+  async listMine(u: { orgs: Array<{ orgId: string; role: string }> }) {
+    const orgs = await this.orgs.listByIds(u.orgs.map((o) => o.orgId));
+    const roleOf = new Map(u.orgs.map((o) => [o.orgId, o.role]));
+    const rank = (s: string) => (s === 'active' ? 0 : s === 'suspended' ? 1 : 2);
+    return orgs
+      .map((o) => ({ id: o.id, role: roleOf.get(o.id) ?? null, name_ar: o.tradeNameAr ?? o.legalNameAr, type: o.type, status: o.status, accepting_requests: o.acceptingRequests }))
+      .sort((a, b) => rank(a.status) - rank(b.status));
+  }
+  listServiceItems(orgId: string) { return this.orgs.listServiceItems(orgId); }
+  addServiceItem(orgId: string, dto: ServiceItemDto) { return this.orgs.addServiceItem(orgId, { nameAr: dto.name_ar, itemType: dto.item_type, unitPrice: dto.unit_price, warrantyDays: dto.warranty_days }); }
+  async removeServiceItem(orgId: string, id: string) { const ok = await this.orgs.removeServiceItem(orgId, id); if (!ok) throw new AppError('NOT_FOUND'); return { removed: true }; }
+
+  /** صورة واجهة الورشة — وجهها أمام الضيف. الصورة يثبتها من رفعها (لا تثبيت وسائط الغير)،
+   *  وصورةً تكون: أول ما يظهر في الاستكشاف يجب ألا يكون ملف PDF تنكّر. */
+  async setBranding(actor: Actor, orgId: string, dto: SetBrandingDto) {
+    const m = await this.orgs.mediaRef(dto.cover_media_id);
+    if (!m) throw new AppError('NOT_FOUND', { messageAr: 'الصورة غير موجودة — ارفعها أولاً.', messageEn: 'Media not found; upload it first.' });
+    if (m.uploadedBy !== actor.userId) throw new AppError('FORBIDDEN', { messageAr: 'الصورة يثبتها من رفعها.', messageEn: 'Only the uploader can set this media.' });
+    if (!m.mimeType.startsWith('image/')) throw new AppError('VALIDATION', { messageAr: 'صورة الواجهة يجب أن تكون صورة.', messageEn: 'Cover must be an image.' });
+    await this.uow.run(async (tx) => {
+      await this.orgs.setBranding(orgId, { coverMediaId: dto.cover_media_id });
+      await this.audit.write(tx, { action: 'organization.set_branding', entityType: 'organization', entityId: orgId, orgId, actorUserId: actor.userId, after: { cover_media_id: dto.cover_media_id }, requestId: actor.requestId ?? null });
+    });
+    return { ok: true };
+  }
+
+  /** «مشغولون الآن» — قرارُ لحظةٍ يكتب أثره في التدقيق: من أطفأ الاستقبال ومتى. */
+  async setAvailability(u: { id: string }, orgId: string, accepting: boolean) {
+    await this.uow.run(async (tx) => {
+      await this.orgs.setAcceptingRequests(orgId, accepting);
+      await this.audit.write(tx, { action: accepting ? 'org.accepting_on' : 'org.accepting_off', entityType: 'organization', entityId: orgId, orgId, actorUserId: u.id, after: { accepting_requests: accepting } });
+    });
+    return { accepting_requests: accepting };
+  }
+
+  update(id: string, dto: UpdateOrgDto) { return this.orgs.update(id, { legalNameAr: dto.legal_name_ar, legalNameEn: dto.legal_name_en, tradeNameAr: dto.trade_name_ar, phone: dto.phone, email: dto.email, descriptionAr: dto.description_ar, vatNumber: dto.vat_number, vatRegistered: dto.vat_number ? true : undefined }); }
+  /** The industrial zone is derived from the point when the workshop does not name one — pilot cohorts
+   *  must not depend on someone typing «الصناعية الثانية» the same way twice (Step 25). */
+  async addLocation(id: string, dto: AddLocationDto) {
+    const zone = dto.industrial_zone ?? (await this.pilot?.zoneOf({ lat: dto.lat, lng: dto.lng }))?.code;
+    return this.orgs.addLocation(id, { nameAr: dto.name_ar, isPrimary: dto.is_primary, city: dto.city, district: dto.district, industrialZone: zone, addressLine: dto.address_line, lat: dto.lat, lng: dto.lng, serviceRadiusKm: dto.service_radius_km });
+  }
+  listLocations(id: string) { return this.orgs.listLocations(id); }
+  async setSpecialties(id: string, dto: SetSpecialtiesDto) { await this.orgs.setSpecialties(id, dto.items.map((i) => ({ makeId: i.make_id, categoryId: i.category_id }))); return { count: dto.items.length }; }
+
+  async addMember(actor: Actor, orgId: string, dto: AddMemberDto) {
+    const org = await this.orgs.findById(orgId); if (!org) throw new AppError('NOT_FOUND');
+    const role = dto.role as OrgMemberRole;
+    if (!ROLES_BY_ORG_TYPE[org.type].includes(role)) throw new AppError('VALIDATION', { details: [{ path: 'role', message: `role not allowed for ${org.type}` }] });
+    const phone = normalizeSaudiPhone(dto.phone); if (!phone) throw new AppError('VALIDATION', { details: [{ path: 'phone', message: 'invalid Saudi mobile' }] });
+    const user = (await this.users.findByPhone(phone)) ?? (await this.users.upsertByPhone(phone));
+    await this.orgs.upsertMember(orgId, user.id, role, actor.userId);
+    return { user_id: user.id, role };
+  }
+  listMembers(orgId: string) { return this.orgs.listMembers(orgId); }
+  async removeMember(orgId: string, userId: string) {
+    const members = await this.orgs.listMembers(orgId);
+    const target = members.find((m) => m.userId === userId);
+    if (!target) throw new AppError('NOT_FOUND');
+    if (target.role === 'owner' && (await this.orgs.countOwners(orgId)) <= 1) throw new AppError('CONFLICT', { messageAr: 'لا يمكن إزالة المالك الوحيد.', messageEn: 'Cannot remove the only owner.' });
+    return { removed: await this.orgs.removeMember(orgId, userId) };
+  }
+
+  addKybDoc(orgId: string, dto: AddKybDocDto) { return this.orgs.addKybDoc(orgId, dto.type as KybDocType, dto.media_id, dto.expires_at ? new Date(dto.expires_at) : undefined); }
+  listKybDocs(orgId: string) { return this.orgs.listKybDocs(orgId); }
+  /** Owner submits for review: requires CR + owner id docs and at least one location. */
+  async submitKyb(actor: Actor, orgId: string) {
+    const docs = await this.orgs.listKybDocs(orgId);
+    const missing = KYB_REQUIRED_DOCS.filter((t) => !docs.some((d) => d.type === t && d.status !== 'rejected'));
+    if (missing.length) throw new AppError('VALIDATION', { messageAr: 'أكمل الوثائق المطلوبة أولاً.', messageEn: 'Required documents are missing.', details: { missing } });
+    if ((await this.orgs.listLocations(orgId)).length === 0) throw new AppError('VALIDATION', { messageAr: 'أضف موقع المنشأة أولاً.', messageEn: 'Add the organization location first.', details: { missing: ['location'] } });
+    return this.transitions.transition(orgId, 'pending_kyb', actor);
+  }
+
+  async addBankAccount(orgId: string, dto: AddBankAccountDto) {
+    const iban = dto.iban.replace(/\s+/g, '').toUpperCase();
+    if (!isValidSaudiIban(iban)) throw new AppError('VALIDATION', { details: [{ path: 'iban', message: 'invalid Saudi IBAN' }] });
+    return this.orgs.addBankAccount(orgId, { bankName: dto.bank_name, ibanEnc: this.pii.encrypt(iban, `org:${orgId}`), ibanLast4: PiiCryptoService.last4(iban), holderName: dto.holder_name });
+  }
+  listBankAccounts(orgId: string) { return this.orgs.listBankAccounts(orgId); }
+
+  listPlans(type?: OrgType) { return this.subs.listPlans(type); }
+  async subscribe(orgId: string, dto: SubscribeDto) {
+    const org = await this.orgs.findById(orgId); if (!org) throw new AppError('NOT_FOUND');
+    const plan = await this.subs.findPlanByCode(dto.plan_code); if (!plan) throw new AppError('NOT_FOUND');
+    if (!plan.appliesTo.includes(org.type)) throw new AppError('VALIDATION', { details: [{ path: 'plan_code', message: `plan not available for ${org.type}` }] });
+    const sub = await this.subs.subscribe(orgId, plan.id, dto.cycle);
+    await this.orgs.setCommission(orgId, plan.commissionRateBps);
+    return { subscription_id: sub.id, plan_code: plan.code, commission_rate_bps: plan.commissionRateBps };
+  }
+
+  // ---- admin ----
+  listForAdmin(q: { status?: OrgStatus; type?: OrgType; limit?: number }) { return this.orgs.listForAdmin({ status: q.status, type: q.type, limit: q.limit ?? 50 }); }
+  async approve(actor: Actor, orgId: string, reason: string) { await this.orgs.reviewKybDocs(orgId, 'approved' satisfies KybDocStatus, actor.userId); return this.transitions.transition(orgId, 'active', { ...actor, type: 'admin' }, reason); }
+  async reject(actor: Actor, orgId: string, reason: string) { await this.orgs.reviewKybDocs(orgId, 'rejected', actor.userId, reason); return this.transitions.transition(orgId, 'draft', { ...actor, type: 'admin' }, reason); }
+  suspend(actor: Actor, orgId: string, reason: string) { return this.transitions.transition(orgId, 'suspended', { ...actor, type: 'admin' }, reason); }
+  reactivate(actor: Actor, orgId: string, reason: string) { return this.transitions.transition(orgId, 'active', { ...actor, type: 'admin' }, reason); }
+}

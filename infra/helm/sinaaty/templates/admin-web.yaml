@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: {{ .Release.Name }}-admin, labels: { {{- include "sinaaty.labels" . | nindent 4 }} } }
+spec:
+  replicas: {{ .Values.adminWeb.replicas }}
+  selector: { matchLabels: { app: {{ .Release.Name }}-admin } }
+  template:
+    metadata: { labels: { app: {{ .Release.Name }}-admin } }
+    spec:
+      containers:
+        - name: admin-web
+          image: "{{ .Values.image.registry }}/admin-web:{{ .Values.image.tag }}"
+          ports: [{ containerPort: {{ .Values.adminWeb.port }} }]
+          readinessProbe: { httpGet: { path: /login, port: {{ .Values.adminWeb.port }} }, initialDelaySeconds: 10, periodSeconds: 10 }
+          resources: {{- toYaml .Values.adminWeb.resources | nindent 12 }}
+          securityContext: { runAsNonRoot: true, allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: ["ALL"] } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: {{ .Release.Name }}-admin }
+spec:
+  selector: { app: {{ .Release.Name }}-admin }
+  ports: [{ port: 80, targetPort: {{ .Values.adminWeb.port }} }]

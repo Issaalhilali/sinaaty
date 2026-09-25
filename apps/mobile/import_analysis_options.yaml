@@ -1,0 +1,15 @@
+# Clean Architecture dependency rule for Flutter features (CLAUDE.md §5.5). Run: dart run import_lint
+# (import_lint 0.1.x matches whole `import` lines with RegExp.)
+rules:
+    domain_is_pure:
+        search_file_path_reg_exp: ".*/features/[^/]+/domain/.*\\.dart"
+        not_allow_import_reg_exps: ["import '(\\.\\./|.*/features/[^/]+/)(data|presentation)/", "import 'package:flutter/", "import 'package:dio/", "import 'package:flutter_riverpod/"]
+        ignore_import_reg_exps: []
+    presentation_no_data:
+        search_file_path_reg_exp: ".*/features/[^/]+/presentation/(?!providers\\.dart$).*\\.dart"
+        not_allow_import_reg_exps: ["import '(\\.\\./|.*/features/[^/]+/)data/", "import 'package:dio/"]
+        ignore_import_reg_exps: []
+    core_ui_isolated:
+        search_file_path_reg_exp: ".*/core/ui/.*\\.dart"
+        not_allow_import_reg_exps: ["import 'package:dio/", "import '.*features/"]
+        ignore_import_reg_exps: []

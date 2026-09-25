@@ -1,0 +1,15 @@
+import { z } from 'zod';
+import { TransportTypeValues } from '@sinaaty/shared-types';
+const geo = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) });
+const ttype = z.enum(TransportTypeValues as [string, ...string[]]);
+export const QuoteDto = z.object({ type: ttype.default('flatbed_tow'), pickup: geo, dropoff: geo }); export type QuoteDto = z.infer<typeof QuoteDto>;
+export const CreateJobDto = z.object({ type: ttype.default('flatbed_tow'), org_id: z.string().uuid().optional(), vehicle_id: z.string().uuid().optional(), work_order_id: z.string().uuid().optional(), part_order_id: z.string().uuid().optional(), pickup: geo, pickup_address: z.string().max(500).optional(), dropoff: geo, dropoff_address: z.string().max(500).optional(), scheduled_at: z.string().datetime().optional(), notes_ar: z.string().max(1000).optional() });
+export type CreateJobDto = z.infer<typeof CreateJobDto>;
+export const AcceptDto = z.object({ org_id: z.string().uuid().optional() }); export type AcceptDto = z.infer<typeof AcceptDto>;
+export const TransitionDto = z.object({ to: z.enum(['en_route_pickup', 'picked_up', 'en_route_dropoff', 'failed']), note_ar: z.string().max(500).optional() }); export type TransitionDto = z.infer<typeof TransitionDto>;
+export const TrackDto = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180), speed_kmh: z.number().min(0).max(300).optional(), heading: z.number().int().min(0).max(359).optional(), recorded_at: z.string().datetime().optional() });
+export type TrackDto = z.infer<typeof TrackDto>;
+export const ProofDto = z.object({ media_id: z.string().uuid(), code: z.string().regex(/^\d{6}$/) }); export type ProofDto = z.infer<typeof ProofDto>;
+export const CancelDto = z.object({ reason_ar: z.string().min(3).max(500) }); export type CancelDto = z.infer<typeof CancelDto>;
+export const DriverProfileDto = z.object({ org_id: z.string().uuid().optional(), truck_plate: z.string().max(12).optional(), truck_type: ttype.optional() }); export type DriverProfileDto = z.infer<typeof DriverProfileDto>;
+export const OnlineDto = z.object({ online: z.boolean(), lat: z.number().optional(), lng: z.number().optional() }); export type OnlineDto = z.infer<typeof OnlineDto>;

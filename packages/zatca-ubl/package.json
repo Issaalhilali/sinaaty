@@ -1,0 +1,11 @@
+{
+  "name": "@sinaaty/zatca-ubl",
+  "version": "0.0.1",
+  "private": true,
+  "description": "ZATCA e-invoicing helpers: Phase 1 QR TLV (base64) encode/decode, invoice hash, UBL 2.1 XML (Phase 2 in Step 20). Pure TypeScript.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": { "build": "tsc -p tsconfig.json", "typecheck": "tsc -p tsconfig.json --noEmit", "lint": "tsc -p tsconfig.json --noEmit", "test": "vitest run", "clean": "rm -rf dist" },
+  "devDependencies": { "@types/node": "^22.17.0", "typescript": "^5.9.2", "vitest": "^3.2.4" }
+}

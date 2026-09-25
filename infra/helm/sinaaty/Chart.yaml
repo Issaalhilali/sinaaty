@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sinaaty
+description: Sinaaty platform — API, admin back-office and the database migration job
+type: application
+version: 0.1.0
+appVersion: "0.0.1"

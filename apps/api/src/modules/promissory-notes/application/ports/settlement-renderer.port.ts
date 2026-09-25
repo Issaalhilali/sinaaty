@@ -1,0 +1,3 @@
+import type { PromissoryNote, Settlement } from '../../domain/note';
+export interface SettlementRendererPort { render(s: Settlement, n: PromissoryNote | null, parties: { creditorNameAr: string; debtorNameAr: string | null }): Promise<{ bytes: Buffer; mimeType: 'application/pdf' | 'text/html' }>; renderNote(n: PromissoryNote, parties: { creditorNameAr: string; debtorNameAr: string | null }, events: Array<{ toStatus: string; createdAt: Date; noteAr: string | null }>): Promise<{ bytes: Buffer; mimeType: 'application/pdf' | 'text/html' }> }
+export const SETTLEMENT_RENDERER_PORT = Symbol('SETTLEMENT_RENDERER_PORT');

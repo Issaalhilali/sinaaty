@@ -1,0 +1,91 @@
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/format/format.dart';
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/l10n/labels.dart';
+import '../../../core/theme/tokens.dart';
+import '../../../core/ui/ui.dart';
+import '../../workshop/presentation/providers.dart';
+import '../domain/parts.dart';
+import 'providers.dart';
+/// One screen, two roles: the requester sees all bids and accepts one; a supplier sees the request and submits/updates its bid.
+class PartRequestScreen extends ConsumerStatefulWidget { final String id; final Future<Uint8List?> Function()? pickImage; const PartRequestScreen({super.key, required this.id, this.pickImage}); @override ConsumerState<PartRequestScreen> createState() => _PartRequestScreenState(); }
+class _PartRequestScreenState extends ConsumerState<PartRequestScreen> {
+  bool _busy = false;
+  void _refresh() { ref.invalidate(partRequestProvider(widget.id)); ref.invalidate(myPartRequestsProvider); ref.invalidate(incomingRequestsProvider); }
+  Future<void> _accept(PartRequest r, PartBid b) async {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final tas = ref.read(buyerTradeAccountsProvider).value?.valueOrNull ?? []; final hasTrade = tas.any((a) => a.status == 'active' && a.sellerOrgId == b.supplierOrgId); var terms = hasTrade ? 'deferred' : 'prepaid';
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => Padding(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, 0, SinaatySpace.lg, SinaatySpace.xl), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [Text(l.ptAcceptBid, style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: 4), Text('${Fmt.money(b.unitPrice, locale: locale)} × ${b.quantity} · ${Labels.condition(l, b.condition)}${b.warrantyDays > 0 ? ' · ${l.warrantyDays(b.warrantyDays)}' : ''}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md), if (hasTrade) RadioGroup<String>(groupValue: terms, onChanged: (v) => setS(() => terms = v!), child: Column(children: [RadioListTile<String>(value: 'deferred', title: Text(l.ptTermsDeferred), contentPadding: EdgeInsets.zero), RadioListTile<String>(value: 'prepaid', title: Text(l.ptTermsPrepaid), contentPadding: EdgeInsets.zero)])) else Text(l.ptTermsPrepaid), const SizedBox(height: SinaatySpace.lg), PrimaryButton(label: l.ptAcceptBid, onPressed: () => Navigator.pop(ctx, true))]))));
+    if (ok != true || !mounted) return; setState(() => _busy = true);
+    final res = await ref.read(partsRepositoryProvider).accept(r.id, b.id, paymentTerms: terms); if (!mounted) return; setState(() => _busy = false);
+    res.when(ok: (o) { _refresh(); ref.invalidate(myPartOrdersProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.ptAccepted))); context.pushReplacement('/parts/orders/${o.id}'); }, err: (f) => showFailure(context, f));
+  }
+  Future<void> _bid(PartRequest r, PartBid? mine) async {
+    final l = L10n.of(context); final org = ref.read(currentOrgIdProvider); if (org == null) return;
+    final price = TextEditingController(text: mine?.unitPrice.replaceAll('.00', '') ?? ''); final eta = TextEditingController(text: mine?.etaHours?.toString() ?? '24'); final warranty = TextEditingController(text: mine?.warrantyDays.toString() ?? '30'); final notes = TextEditingController(text: mine?.notesAr ?? ''); var cond = mine?.condition ?? r.acceptedConditions.first;
+    final photos = <String>[...?mine?.mediaIds]; var uploading = false;
+    final ok = await showModalBottomSheet<bool>(context: context, showDragHandle: true, isScrollControlled: true, builder: (ctx) => StatefulBuilder(builder: (ctx, setS) => SheetBody(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(mine == null ? l.spBid : l.spUpdateBid, style: Theme.of(ctx).textTheme.titleLarge), Text('${r.partNameAr} · ${r.number}', style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)), const SizedBox(height: SinaatySpace.md),
+      Wrap(spacing: 8, children: [for (final c in r.acceptedConditions) ChoiceChip(label: Text(Labels.condition(l, c)), selected: cond == c, onSelected: (_) => setS(() => cond = c), showCheckmark: false)]), const SizedBox(height: SinaatySpace.md),
+      TextField(controller: price, autofocus: true, keyboardType: const TextInputType.numberWithOptions(decimal: true), textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spPrice, suffixText: 'ر.س')), const SizedBox(height: SinaatySpace.md),
+      Row(children: [Expanded(child: TextField(controller: eta, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spEta))), const SizedBox(width: SinaatySpace.md), Expanded(child: TextField(controller: warranty, keyboardType: TextInputType.number, textDirection: TextDirection.ltr, decoration: InputDecoration(labelText: l.spWarrantyDays)))]), const SizedBox(height: SinaatySpace.md),
+      TextField(controller: notes, decoration: InputDecoration(labelText: l.spNotes)), const SizedBox(height: SinaatySpace.md),
+      // «شوف القطعة قبل ما تشتري»: قطعةٌ مستعملة بلا صورة مقامرة، والخادم يقبل ستّاً منذ زمن.
+      if (photos.isNotEmpty) Padding(padding: const EdgeInsets.only(bottom: SinaatySpace.sm), child: MediaStrip(mediaIds: photos, size: 64)),
+      OutlinedButton.icon(
+        onPressed: uploading || photos.length >= 6 ? null : () async {
+          setS(() => uploading = true);
+          final id = await _shoot();
+          if (id != null) photos.add(id);
+          setS(() => uploading = false);
+        },
+        icon: const Icon(Icons.photo_camera_outlined),
+        label: Text(photos.isEmpty ? l.spAddPhoto : l.spAddMorePhotos(6 - photos.length)),
+      ),
+      const SizedBox(height: SinaatySpace.lg),
+      PrimaryButton(label: mine == null ? l.spBid : l.spUpdateBid, icon: Icons.send_outlined, onPressed: () { if (double.tryParse(price.text) == null) return; Navigator.pop(ctx, true); }),
+    ]))));
+    if (ok != true || !mounted) return; setState(() => _busy = true);
+    final res = await ref.read(partsRepositoryProvider).bid(r.id, orgId: org, condition: cond, unitPrice: price.text.trim(), etaHours: int.tryParse(eta.text), warrantyDays: int.tryParse(warranty.text) ?? 0, notesAr: notes.text.trim().isEmpty ? null : notes.text.trim(), mediaIds: photos); if (!mounted) return; setState(() => _busy = false);
+    res.when(ok: (_) { _refresh(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.spBidSent))); }, err: (f) => showFailure(context, f));
+  }
+  /// يصوّر ويرفع ويعيد معرّف الوسيط — أو null إن أُلغي أو فشل الرفع.
+  /// [pickImage] محقونة كي تعمل الاختبارات والمحاكيات بلا كاميرا (نفس نمط فحص الاستلام).
+  Future<String?> _shoot() async {
+    Uint8List? bytes;
+    if (widget.pickImage != null) {
+      bytes = await widget.pickImage!();
+    } else {
+      final x = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 80, maxWidth: 1600);
+      bytes = await x?.readAsBytes();
+    }
+    if (bytes == null || !mounted) return null;
+    final data = bytes;
+    final repo = ref.read(workshopRepositoryProvider);
+    final pre = await repo.presign(mimeType: 'image/jpeg', sizeBytes: data.length, sha256: sha256.convert(data).toString(), purpose: 'part_bid');
+    return pre.when(ok: (p) async => (await repo.upload(p, data, 'image/jpeg')).isOk ? p.mediaId : null, err: (_) async => null);
+  }
+
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final locale = Localizations.localeOf(context).languageCode; final t = Theme.of(context).textTheme; final v = ref.watch(partRequestProvider(widget.id)); final org = ref.watch(currentOrgIdProvider); final r = v.value?.valueOrNull;
+    // طلب العميل يأتي بلا منشأة طالبة — فكان كلُّ من يفتحه يُعامَل طالباً، حتى التشليح الذي وصله ليعرض.
+    // فرأى المورّد على الجهاز نسخة العميل بلا زرّ «قدّم عرضك». القاعدة: من لا منشأة له عميلٌ طالب، ومن له منشأة فهو طالبٌ فقط إن كانت منشأته هي الطالبة.
+    final isRequester = r != null && (org == null || r.requesterOrgId == org); final mine = r?.bids.where((b) => b.supplierOrgId == org).firstOrNull;
+    // Compare on the three axes a buyer weighs: price, arrival, warranty (charter §5.0 #1 — decide, don't read a table).
+    final highlights = bidHighlights(r?.bids ?? const <PartBid>[]);
+    Widget? primary; if (r != null && !isRequester && r.open) primary = PrimaryButton(label: mine == null ? l.spBid : l.spUpdateBid, icon: Icons.gavel_outlined, loading: _busy, onPressed: () => _bid(r, mine));
+    return AppScaffold(title: r?.number ?? l.ptBids, primaryAction: primary, body: AsyncResultView<PartRequest>(value: v, onRetry: _refresh, builder: (r) => RefreshIndicator(onRefresh: () async => _refresh(), child: ListView(padding: const EdgeInsets.fromLTRB(SinaatySpace.lg, SinaatySpace.sm, SinaatySpace.lg, 96), children: [
+      SealCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(r.partNameAr, style: t.titleLarge?.copyWith(color: Colors.white)), Text(Fmt.meta([r.number, if (r.vin != null) 'VIN ${r.vin!.substring(r.vin!.length - 6)}', if (r.quantity > 1) '× ${r.quantity}']), style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .75)))])), SealPill(r.open ? Labels.endsIn(l, r.remaining) : r.status == 'awarded' ? l.spWon : l.ptEnded, icon: r.open ? Icons.timer_outlined : null)]), const SizedBox(height: SinaatySpace.md), Row(crossAxisAlignment: CrossAxisAlignment.end, children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.ptLowest, style: t.bodySmall?.copyWith(color: Colors.white.withValues(alpha: .8))), (r.lowestBid == null && r.bids.isEmpty) ? Text(l.ptNoBidsShort, style: t.titleLarge?.copyWith(color: Colors.white.withValues(alpha: .92))) : MoneyText(Fmt.money(r.lowestBid ?? r.bids.first.unitPrice, locale: locale), hero: true, style: t.headlineMedium?.copyWith(color: Colors.white))])), SealPill(l.ptBidsCount(r.bidsCount), icon: Icons.local_offer_outlined)]), const SizedBox(height: SinaatySpace.sm), Wrap(spacing: 6, children: [for (final c in r.acceptedConditions) SealPill(Labels.condition(l, c))])])),
+      const SizedBox(height: SinaatySpace.xl), SectionTitle(isRequester ? l.ptBids : l.spYourBid),
+      if (isRequester) (r.bids.isEmpty ? SectionCard(child: Text(l.ptNoBidsYet, textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))) : SectionCard(padding: const EdgeInsets.symmetric(horizontal: SinaatySpace.sm, vertical: SinaatySpace.xs), child: Column(children: [for (final b in sortedForCompare(r.bids)) Padding(padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6), child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [Flexible(child: Text(Labels.condition(l, b.condition), style: t.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis)), const SizedBox(width: 8), if (b.status == 'accepted') StatusBadge(l.spWon, tone: BadgeTone.seal) else if (b.status == 'rejected' || b.status == 'expired') StatusBadge(l.spLost)]), Text(Fmt.meta([b.whereText, if (b.etaHours != null) l.ptLeadHours(b.etaHours!), if (b.warrantyDays > 0) l.warrantyDays(b.warrantyDays), if (b.notesAr != null) b.notesAr!]), style: t.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)), if ((highlights[b.id] ?? const <BidHighlight>{}).isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Wrap(spacing: 6, runSpacing: 4, children: [for (final h in highlights[b.id]!) StatusBadge(Labels.bidHighlight(l, h), tone: h == BidHighlight.cheapest ? BadgeTone.seal : BadgeTone.brass)])),
+        // القطعة المستعملة تُشترى بالعين لا بالجدول: الصور تحت العرض مباشرةً لا خلف نقرة.
+        if (b.mediaIds.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 6), child: MediaStrip(mediaIds: b.mediaIds, size: 56))])), Column(crossAxisAlignment: CrossAxisAlignment.end, children: [MoneyText(Fmt.money(b.unitPrice, locale: locale)), if (r.open && b.status == 'submitted') SizedBox(height: 34, child: FilledButton.tonal(style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12), minimumSize: Size.zero), onPressed: _busy ? null : () => _accept(r, b), child: Text(l.ptAcceptBid)))])]))])))
+      else (mine == null ? SectionCard(child: Text(r.open ? l.spBid : l.ptEnded, textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))) : SectionCard(child: Column(children: [KeyValueRow(l.spPrice, Fmt.money(mine.unitPrice, locale: locale), emphasized: true), KeyValueRow(l.wsSeverity == '' ? '' : Labels.condition(l, mine.condition), mine.status == 'accepted' ? l.spWon : mine.status == 'submitted' ? l.spBidSent : l.spLost), if (mine.warrantyDays > 0) KeyValueRow(l.spWarrantyDays, '${mine.warrantyDays}')]))),
+    ]))));
+  }
+}

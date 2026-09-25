@@ -1,0 +1,1394 @@
+{
+  "@@locale": "en",
+  "appName": "Sinaaty",
+  "tabMyCars": "My cars",
+  "tabRequest": "Request",
+  "tabWallet": "Wallet",
+  "tabAccount": "Account",
+  "tabToday": "Today",
+  "tabOrders": "Orders",
+  "tabParts": "Parts",
+  "tabRequests": "Requests",
+  "tabMySales": "My sales",
+  "loginTitle": "Sign in with your phone",
+  "loginSubtitle": "We will send you a one-time code",
+  "phoneLabel": "Mobile number",
+  "phoneHint": "05xxxxxxxx",
+  "sendCode": "Send code",
+  "otpTitle": "Enter the code",
+  "otpSubtitle": "We sent a 6-digit code to {phone}",
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "verify": "Verify",
+  "resendCode": "Resend",
+  "loginWithNafath": "Sign in with Nafath",
+  "logout": "Sign out",
+  "addYourName": "Add your name",
+  "editName": "Edit name",
+  "yourName": "Full name",
+  "save": "Save",
+  "errorGeneric": "Something went wrong, please try again.",
+  "errorNetwork": "No internet connection. Check your network and retry.",
+  "offlineBar": "Offline — we retry automatically when the network is back.",
+  "errorInvalidPhone": "Enter a valid Saudi mobile number.",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "continueLabel": "Continue",
+  "emptyCarsTitle": "No cars yet",
+  "emptyCarsBody": "Add your car by VIN or plate to get started.",
+  "addCar": "Add a car",
+  "welcomeBack": "Welcome back",
+  "todayEmpty": "No orders today — create your first repair order.",
+  "newWorkOrder": "New work order",
+  "comingSoon": "Coming soon",
+  "activeOrders": "Current repair orders",
+  "noActiveOrders": "No repair orders right now",
+  "servicesTitle": "What do you need?",
+  "homeHeroCta": "Request a repair",
+  "homeHeroTitle": "Car trouble?",
+  "homeHeroBody": "Describe the fault in a few words and a photo — nearby workshops send priced offers.",
+  "homeHeroNoCarTitle": "Add your car to start",
+  "homeHeroNoCarBody": "VIN or plate — one minute.",
+  "emptyCarsServices": "Here is what we can do for you:",
+  "myCars": "My cars",
+  "vinLabel": "VIN",
+  "plateLabel": "Plate number",
+  "addCarTitle": "Add your car",
+  "addCarSubtitle": "The VIN identifies the make and model. The plate alone is enough to start — in either order.",
+  "addCarSubmit": "Add car",
+  "addCarNeedOne": "Enter a VIN or a plate number.",
+  "carPassport": "Car passport",
+  "noPassportEvents": "Everything that happens to your car will show here: service, parts, inspections.",
+  "odometer": "Odometer",
+  "km": "km",
+  "shareCarPassport": "Share car passport",
+  "workOrder": "Repair order",
+  "workOrderNumber": "Repair order {number}",
+  "@workOrderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "timeline": "Progress",
+  "photos": "Photos",
+  "photosCount": "{count} photos",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "items": "Items",
+  "total": "Total",
+  "vat": "VAT 15%",
+  "subtotal": "Subtotal",
+  "approveNow": "Review & approve",
+  "approveTitle": "Approve repair order",
+  "approveMeaningTitle": "What your approval means",
+  "approveHint": "Your signature locks this price — any change reaches you as a new version.",
+  "approveWithNafath": "Approve with Nafath",
+  "approveWithOtp": "Approve with SMS code",
+  "nafathPickNumber": "Open the Nafath app and pick the number",
+  "nafathWaiting": "Waiting for your approval in Nafath…",
+  "approved": "Approved — the workshop starts now",
+  "declineOrder": "Decline",
+  "declineReason": "Reason",
+  "versionN": "Version {n}",
+  "@versionN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "changeReason": "Change reason: {reason}",
+  "@changeReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmReceipt": "I received my car",
+  "confirmReceiptHint": "Confirming releases the held amount to the workshop.",
+  "payNow": "Pay now",
+  "payInvoice": "Pay invoice",
+  "invoice": "Invoice",
+  "invoiceNumber": "Invoice {number}",
+  "@invoiceNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "Paid",
+  "due": "Due",
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "amountHeld": "Amount held",
+  "payWithMada": "mada",
+  "payWithApplePay": "Apple Pay",
+  "paymentDone": "Paid — thank you",
+  "paymentFailed": "Payment did not complete, try again.",
+  "paySheetTitle": "Choose payment method",
+  "invoices": "Invoices",
+  "notes": "Promissory notes",
+  "note": "Promissory note",
+  "noteNumber": "Note {number}",
+  "@noteNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "outstanding": "Outstanding",
+  "noteClosedHint": "Note closed and clearance issued",
+  "settlement": "Clearance",
+  "overdue": "Overdue",
+  "noteHint": "Electronic note via Nafez — closes automatically when you pay.",
+  "walletEmptyTitle": "No invoices or notes",
+  "walletEmptyBody": "Your invoices, payments, notes and clearances will show here.",
+  "notifications": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "notificationsEmptyBody": "Updates about your cars, invoices and warranties land here first.",
+  "markAllRead": "Mark all read",
+  "language": "Language",
+  "arabic": "العربية",
+  "english": "English",
+  "phone": "Phone",
+  "nafathVerifiedLabel": "Nafath verified",
+  "notVerified": "Not verified",
+  "requestSoonTitle": "Request a service or part",
+  "requestSoonBody": "Coming soon: request an inspection, a part via reverse auction, or a tow — from here.",
+  "viewDocument": "View document",
+  "viewInvoice": "View invoice",
+  "statusDraft": "Draft",
+  "statusReceived": "Received",
+  "statusInspecting": "Inspecting",
+  "statusAwaitingApproval": "Awaiting your approval",
+  "statusApproved": "Approved",
+  "statusAwaitingParts": "Awaiting parts",
+  "statusInProgress": "In progress",
+  "statusQualityCheck": "Quality check",
+  "statusReady": "Ready for pickup",
+  "statusDelivered": "Delivered",
+  "statusClosed": "Closed",
+  "statusCancelled": "Cancelled",
+  "statusDisputed": "Disputed",
+  "statusAbandoned": "Abandoned",
+  "invStatusIssued": "Due",
+  "invStatusPaid": "Paid",
+  "invStatusPartiallyPaid": "Partially paid",
+  "invStatusVoid": "Void",
+  "invStatusOverdue": "Overdue",
+  "invStatusRefunded": "Refunded",
+  "noteStatusIssued": "Active",
+  "noteStatusPartiallySettled": "Partially settled",
+  "noteStatusClosed": "Closed",
+  "noteStatusInEnforcement": "In enforcement",
+  "noteStatusCancelled": "Cancelled",
+  "noteStatusPending": "Pending issue",
+  "signedByNafath": "Signed with Nafath",
+  "signedByOtp": "Signed with SMS code",
+  "securedByNote": "Secured by note",
+  "termsPrepaid": "Prepaid",
+  "termsOnDelivery": "Pay on delivery",
+  "termsDeferred": "Deferred",
+  "termsInstallments": "Installments",
+  "termsFleetMonthly": "Monthly statement",
+  "loading": "Loading…",
+  "somethingWrong": "Could not load",
+  "noOrdersForCar": "No repair orders for this car",
+  "checkIn": "Check-in inspection",
+  "checkOut": "Check-out inspection",
+  "damages": "{count} notes",
+  "@damages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "codeLabel": "Verification code",
+  "invalidCode": "Enter the 6-digit code",
+  "payAmount": "Pay {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "warrantyDays": "{days}-day warranty",
+  "@warrantyDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "nafathNumber": "Nafath number",
+  "approveDone": "Done",
+  "approveNotPending": "Nothing here needs your approval right now — the current status is shown above.",
+  "payHint": "Secure payment — the amount stays held until you receive your car.",
+  "clearanceIssued": "Clearance {number} issued",
+  "@clearanceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmApproval": "Confirm approval",
+  "wsToday": "Today",
+  "wsInShop": "cars in the shop",
+  "wsAwaitingCustomer": "awaiting customer approval",
+  "wsReadyToPayout": "SAR ready to pay out",
+  "wsNeedsAction": "Needs your action now",
+  "wsTodayCars": "Today's cars",
+  "wsAll": "View all",
+  "wsNewOrder": "New order",
+  "wsNoOrders": "No orders yet",
+  "wsNoOrdersBody": "Create the first repair order: scan the plate or enter the VIN, add items, send to the customer.",
+  "wsStart": "Start work",
+  "wsReceive": "Receive car",
+  "wsInspect": "Check-in inspection",
+  "wsRequestApproval": "Send to customer for approval",
+  "wsQuality": "To quality check",
+  "wsReady": "Ready for pickup",
+  "wsDeliver": "Delivered",
+  "wsIssueInvoice": "Issue invoice",
+  "wsAddPhoto": "Add photo",
+  "wsWaitingCustomer": "Waiting for customer approval — work starts after they approve",
+  "wsCustomerPhone": "Customer phone",
+  "wsTitle": "Short description",
+  "wsTitleHint": "e.g. front fender bodywork",
+  "wsItems": "Items",
+  "wsAddItem": "Add item",
+  "wsItemDesc": "Description",
+  "wsItemPrice": "Price",
+  "wsItemQty": "Qty",
+  "wsLabor": "Labor",
+  "wsPart": "Part",
+  "wsWarranty": "Warranty (days)",
+  "wsPaymentTerms": "Payment terms",
+  "wsCreate": "Create order",
+  "wsEstimate": "Estimate",
+  "wsAngles": "8 angles",
+  "wsAngleOf": "{done} / {total}",
+  "@wsAngleOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wsShootNext": "Shoot next angle",
+  "wsSubmitInspection": "Save check-in",
+  "wsDamages": "Body notes",
+  "wsAddDamage": "Add note",
+  "wsNoDamages": "No body notes yet — record any scratch or dent before work starts; it protects you and the customer.",
+  "wsFuel": "Fuel %",
+  "wsZone": "Zone",
+  "wsSeverity": "Severity",
+  "wsMinor": "Minor",
+  "wsModerate": "Moderate",
+  "wsSevere": "Severe",
+  "wsOffline": "Offline — will send automatically when back online",
+  "wsPendingSync": "{count} actions pending sync",
+  "@wsPendingSync": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSynced": "Synced",
+  "wsWalletHeld": "Held until customers confirm",
+  "wsWalletAvailable": "Available to pay out",
+  "wsWalletTransit": "On its way to the bank",
+  "wsPayouts": "Payouts",
+  "wsNoPayouts": "No payouts yet — scheduled automatically when balance is available.",
+  "wsPartsSoon": "Parts for this car",
+  "wsPartsSearchHint": "Enter the VIN above to see live-priced parts for this car.",
+  "wsPartsSoonBody": "Coming soon: search by VIN, buy from distributors on a secured trade account, or open a scrapyard auction.",
+  "wsOrders": "Orders",
+  "wsActive": "Active",
+  "wsDone": "Done",
+  "wsAngleFront": "Front",
+  "wsAngleFrontRight": "Front right",
+  "wsAngleRight": "Right",
+  "wsAngleRearRight": "Rear right",
+  "wsAngleRear": "Rear",
+  "wsAngleRearLeft": "Rear left",
+  "wsAngleLeft": "Left",
+  "wsAngleFrontLeft": "Front left",
+  "wsCustomer": "Customer",
+  "wsPhotoAdded": "Photo added",
+  "wsInvoiceIssued": "Invoice {number} issued",
+  "@wsInvoiceIssued": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "wsCustomerApprovedHint": "Customer approved — start work and upload the first photo.",
+  "ptParts": "Parts",
+  "ptSearchByVin": "Search by VIN",
+  "ptVinHint": "17 characters",
+  "ptOffers": "Offers matching this car",
+  "ptNoOffers": "No matching parts right now — open an auction to get offers from nearby scrapyards and shops.",
+  "ptOpenAuction": "Request via reverse auction",
+  "ptBuyNow": "Buy now",
+  "ptTradePrice": "Trade price",
+  "ptRetailPrice": "Retail",
+  "ptGenuineQr": "Genuine QR",
+  "ptLeadHours": "Arrives in {h} h",
+  "@ptLeadHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptCondOem": "OEM new",
+  "ptCondAftermarket": "Aftermarket",
+  "ptCondUsed": "Used (scrapyard)",
+  "ptCondRefurb": "Refurbished",
+  "ptQty": "Qty",
+  "ptTermsPrepaid": "Pay now — held until you receive it",
+  "ptTermsDeferred": "Deferred on secured trade account — promissory note issued",
+  "ptOrderPlaced": "Order placed",
+  "ptMyRequests": "My auctions",
+  "ptMyOrders": "Part orders",
+  "ptPartName": "Part name",
+  "ptPartNameHint": "e.g. front brake discs",
+  "ptAcceptedConditions": "Accepted conditions",
+  "ptBiddingMinutes": "Auction length (min)",
+  "ptSend": "Send request",
+  "ptBids": "Bids",
+  "ptBidsCount": "{n} bids",
+  "@ptBidsCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ptLowest": "Lowest",
+  "ptNoBidsShort": "No offers yet",
+  "ptEndsIn": "Ends in {m} min",
+  "@ptEndsIn": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInHours": "Ends in {h} h",
+  "@ptEndsInHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEndsInDays": "Ends in {d} d",
+  "@ptEndsInDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
+  "ptEnded": "Ended",
+  "ptAcceptBid": "Accept this bid",
+  "ptAccepted": "Accepted — purchase order created",
+  "ptNoBidsYet": "No bids yet — nearby suppliers are being notified.",
+  "ptTradeAccount": "Secured trade account",
+  "ptTradeAvailable": "Available",
+  "ptTradeOutstanding": "Outstanding",
+  "ptTradeLimit": "Limit",
+  "ptRequestTrade": "Request a trade account",
+  "ptTradePending": "Awaiting supplier approval",
+  "ptScanQr": "Scan part QR",
+  "ptScanHint": "Point the camera at the QR label on the genuine part",
+  "ptVerifyGenuine": "Genuine, verified part",
+  "ptVerifyFake": "Not verified",
+  "ptVerifyAlert": "Alert: repeated scans",
+  "ptInstallOn": "Install on work order",
+  "ptChooseItem": "Choose the part item",
+  "ptInstalled": "Installed — part + labor warranty issued",
+  "ptLaborWarranty": "Labor warranty (days)",
+  "ptWarranties": "Warranties",
+  "ptWarrantyPart": "Part",
+  "ptWarrantyLabor": "Labor",
+  "ptWarrantyBoth": "Part + labor",
+  "ptValidUntil": "Valid until {date}",
+  "@ptValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "ptExpired": "Expired",
+  "spRequests": "Requests",
+  "spSales": "My sales",
+  "spIncoming": "Requests near you",
+  "spNoRequests": "No requests right now — you'll be notified when a nearby request matches your parts.",
+  "spHot": "Ending soonest",
+  "spBid": "Submit your bid",
+  "spYourBid": "Your bid",
+  "spUpdateBid": "Update bid",
+  "spPrice": "Your price",
+  "spEta": "Delivery within (hours)",
+  "spWarrantyDays": "Warranty (days)",
+  "spNotes": "Notes",
+  "spBidSent": "Bid sent — we'll tell you when accepted",
+  "spWon": "Accepted",
+  "spNoRequestsBody": "You will be notified the moment a nearby request matches your parts.",
+  "spLost": "Not accepted",
+  "spOrdersToFulfil": "Orders to fulfil",
+  "spPreparing": "Prepare",
+  "spShip": "Shipped",
+  "spDeliver": "Delivered",
+  "spDelivered": "Delivered",
+  "spTradeAccounts": "Trade accounts",
+  "spApprove": "Approve account",
+  "spCreditLimit": "Credit limit",
+  "spTermsDays": "Payment terms (days)",
+  "spInventory": "Inventory",
+  "spNoInventoryTitle": "Nothing in stock yet",
+  "spNoInventoryBody": "Add parts from the catalog, or start with QR labels for parts you have.",
+  "spItems": "{n} items",
+  "@spItems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "spSerials": "QR serials",
+  "spIssueSerials": "Issue QR batch",
+  "spLabels": "QR labels",
+  "spLabelsTitle": "Part labels",
+  "spShareLabels": "Share labels (PDF)",
+  "spLabelPartName": "Part name",
+  "spLabelCount": "Number of labels",
+  "spLabelsHint": "Each label carries a unique code — whoever scans it knows the part came from you.",
+  "spMakeLabels": "Create labels",
+  "spScanToVerify": "Scan to verify · Sinaaty",
+  "spLabelsEmpty": "No labels in this batch.",
+  "spLabelsCount": "{n} labels",
+  "@spLabelsCount": {"placeholders": {"n": {"type": "int"}}},
+  "spSerialsIssued": "{n} serials issued — batch {batch}",
+  "@spSerialsIssued": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "batch": {
+        "type": "String"
+      }
+    }
+  },
+  "spCatalogId": "Catalog part id",
+  "spCount": "Count",
+  "spAwaitingPayment": "Awaiting payment",
+  "spPaid": "Paid",
+  "spConfirmed": "Confirmed",
+  "spCancelled": "Cancelled",
+  "spDisputed": "Disputed",
+  "spReturned": "Returned",
+  "spNoOrders": "No orders yet",
+  "spNoTrade": "No trade accounts — workshop requests land here for approval.",
+  "spBeFirst": "No bids yet — be first",
+  "reqHubTitle": "How can we help?",
+  "reqHubBody": "Pick what you need now — we handle the rest.",
+  "reqPart": "Request a part",
+  "reqPartBody": "We send your request to workshops, scrapyards and dealers; you pick the best offer.",
+  "reqTow": "Request a tow truck",
+  "reqTowBody": "Move your car to the workshop at a price you know up front.",
+  "reqMyRequests": "Part requests",
+  "reqMyTows": "Tow requests",
+  "reqPartVehicle": "Vehicle",
+  "reqPartAnyVehicle": "No specific vehicle",
+  "reqPartSend": "Send request",
+  "towTitle": "Tow truck",
+  "towRequestAction": "Request the tow",
+  "towRequested": "Request sent — a driver will be with you shortly.",
+  "towNoHiddenFees": "Price known up front",
+  "towQuoteHint": "Set where your car is and where it goes to see the price.",
+  "towCalculating": "Calculating the price…",
+  "towQuoteLine": "{km} km · about {minutes} minutes away",
+  "@towQuoteLine": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towVehicle": "Your car",
+  "towNoVehicle": "No specific vehicle",
+  "towFrom": "From",
+  "towTo": "To",
+  "towPickupAddress": "Location description",
+  "towPickupHint": "e.g. King Fahd Road, after exit 12",
+  "towDropoffAddress": "Destination description",
+  "towDropoffHint": "e.g. Al Noor Workshop — Industrial 2",
+  "towLocationLink": "Location link or coordinates",
+  "towLinkHelp": "Paste the location link from Maps, or type the coordinates.",
+  "towLinkUnreadable": "We could not read that location — paste the full link or the coordinates.",
+  "towTruckType": "Truck type",
+  "towTypeFlatbed": "Flatbed",
+  "towTypeWheelLift": "Wheel lift",
+  "towTypeHeavy": "Heavy tow",
+  "towNotes": "Notes",
+  "towNotesHint": "e.g. the car will not start",
+  "towProgress": "Progress",
+  "towRoute": "Route",
+  "towDriver": "Driver",
+  "towEta": "{minutes} min",
+  "@towEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "towKm": "{km} km",
+  "@towKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "towRequestedAt": "Requested at",
+  "towCancelTitle": "Cancel the tow",
+  "towCancelBody": "Cancelling is possible only before the car is loaded.",
+  "towCancelReason": "Reason (optional)",
+  "towCancelAction": "Cancel request",
+  "towStatusRequested": "Waiting for a driver",
+  "towStatusSearching": "Finding the nearest truck",
+  "towStatusAssigned": "Driver assigned",
+  "towStatusEnRoutePickup": "Driver on the way to you",
+  "towStatusPickedUp": "Your car is on the truck",
+  "towStatusEnRouteDropoff": "On the way to the destination",
+  "towStatusDelivered": "Delivered",
+  "towStatusCompleted": "Completed",
+  "towStatusCancelled": "Cancelled",
+  "towStatusFailed": "Could not be completed",
+  "towEmptyTitle": "No tow requests",
+  "towEmptyBody": "Request a tow when your car needs moving.",
+  "ptCheapest": "Cheapest",
+  "ptFastest": "Fastest",
+  "ptLongestWarranty": "Longest warranty",
+  "ptWarrantiesEmptyTitle": "No warranties yet",
+  "ptWarrantiesEmptyBody": "Every part installed through Sinaaty arrives with a digital warranty here.",
+  "ptWarrantyActive": "Active",
+  "ptWarrantyIssuer": "Guaranteed by",
+  "ptWarrantyFrom": "Starts",
+  "ptWarrantyNumber": "Warranty no.",
+  "diffTitle": "Vehicle condition comparison",
+  "diffSub": "Before and after the repair — with photos",
+  "diffOpen": "Compare vehicle condition",
+  "diffCleanTitle": "Your car, as we received it",
+  "diffWaiting": "Waiting for the check-out inspection to compare.",
+  "diffAppeared": "Appeared after intake",
+  "diffWorsened": "Got worse",
+  "diffRepaired": "Repaired",
+  "diffUnchanged": "Same as at intake",
+  "diffCheckIn": "Intake photos",
+  "diffCheckOut": "Handover photos",
+  "diffAiSuggested": "System-detected",
+  "sevMinor": "Minor",
+  "sevModerate": "Moderate",
+  "sevSevere": "Severe",
+  "diffFromTo": "from {from} to {to}",
+  "@diffFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "flToday": "Your fleet today",
+  "flVehicles": "vehicles",
+  "flOpenRepairs": "open repairs",
+  "flAwaiting": "awaiting your decision",
+  "flMonthSpend": "committed this month",
+  "flBudgetLeft": "{amount} of the budget left",
+  "@flBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "flNoPolicy": "No spending policy — every repair needs your approval.",
+  "flPolicyLine": "Policy “{name}”: auto-approve below {auto}",
+  "flPolicyLineNoAuto": "Policy “{name}”: every repair needs your approval",
+  "@flPolicyLineNoAuto": {"placeholders": {"name": {"type": "String"}}},
+  "@flPolicyLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "auto": {
+        "type": "String"
+      }
+    }
+  },
+  "flInboxTitle": "Awaiting your decision",
+  "flInboxEmpty": "Nothing awaits your decision",
+  "flInboxEmptyBody": "Every repair is either approved or under the auto-approve limit.",
+  "flNeedsOne": "Needs one approval",
+  "flNeedsTwo": "Needs two approvers",
+  "flAutoOk": "Under the limit — ready to sign",
+  "flBlockedWorkshop": "Workshop is outside the approved list",
+  "flOverBudget": "Exceeds this month's budget",
+  "flApprovedBy": "Approved by {name}",
+  "@flApprovedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flRejectedBy": "Rejected by {name}",
+  "@flRejectedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flApprove": "Approve the spend",
+  "flReject": "Reject",
+  "flDecisionNote": "Note (optional)",
+  "flDecisionHint": "Your decision is recorded in your name. The final signature is a separate step via Nafath or OTP.",
+  "flReadyToSign": "Approvals complete — sign now",
+  "flDecided": "Your decision was recorded",
+  "flRejectedDone": "Rejection recorded — work will not start",
+  "accTitle": "Accident report",
+  "accSub": "The insurance file linked to this repair",
+  "accOpen": "Accident report",
+  "accLookupLabel": "Accident reference",
+  "accLookupHint": "e.g. ACC-2026-000123",
+  "accLookup": "Look up",
+  "accNotLinked": "No report linked",
+  "accNotLinkedBody": "Look up the insurer's reference, then link it to this order.",
+  "accLink": "Link to this order",
+  "accLinked": "Report linked to the order",
+  "accInsurer": "Insurer",
+  "accClaimNo": "Claim no.",
+  "accApproved": "Insurer approved",
+  "accDeductible": "Deductible",
+  "accFault": "Fault share",
+  "accCustomerPays": "Customer expected to pay",
+  "accDamages": "Assessor's damages",
+  "accSuggested": "Suggested work-order lines",
+  "accSuggestedHint": "From the assessor's report — review, price them yourself, then add.",
+  "accNotPriced": "Still under assessment — no figures yet. Refresh later.",
+  "accSubmitRepair": "Register the repair with the provider",
+  "accSubmitted": "Repair report registered",
+  "accSubmittedRef": "Registration ref {ref}",
+  "@accSubmittedRef": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
+  "accCoverage": "Insurance covers {amount}",
+  "@accCoverage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "accActRepair": "Repair",
+  "accActReplace": "Replace",
+  "accActPaint": "Bodywork & paint",
+  "towVatIncluded": "VAT included",
+  "dsTitle": "Dispute",
+  "dsOpen": "Open a dispute",
+  "dsActive": "An open dispute on this order",
+  "dsView": "View dispute",
+  "dsMoneyHeld": "The amount stays held until the dispute is resolved",
+  "dsPlatformDecides": "The platform reviews both sides and decides — nothing else is needed from you.",
+  "dsDescribe": "Describe the problem",
+  "dsDescribeHint": "What happened, and what are you asking for?",
+  "dsCategory": "Problem type",
+  "dsAttach": "Attach a photo",
+  "dsOpenCta": "Open the dispute",
+  "dsOpened": "Dispute opened — the amount is held until resolved",
+  "dsMessageHint": "Write your message…",
+  "dsEvidence": "Photos & evidence",
+  "dsConversation": "Conversation",
+  "dsResolved": "Platform decision",
+  "dsCatScope": "Scope of work",
+  "dsCatQuality": "Workmanship",
+  "dsCatPrice": "Price",
+  "dsCatDelay": "Delay",
+  "dsCatDamage": "Damage to the car",
+  "dsCatPartDefect": "Defective part",
+  "dsCatNoShow": "No-show",
+  "dsStOpen": "Open",
+  "dsStUnderReview": "Under review",
+  "dsStAwaiting": "Awaiting the parties",
+  "dsStEscalated": "Escalated",
+  "dsStResolved": "Decided",
+  "dsStClosed": "Closed",
+  "abTitle": "Uncollected vehicle",
+  "abNotice": "Notice {n}",
+  "@abNotice": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "abFormal": "formal",
+  "abDueAfter": "Due {days} days after ready",
+  "@abDueAfter": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "abDaysReady": "Ready for {days} days",
+  "@abDaysReady": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "abStorage": "Storage fees",
+  "abFreeThen": "{free} free days, then {perDay} per day",
+  "@abFreeThen": {
+    "placeholders": {
+      "free": {
+        "type": "int"
+      },
+      "perDay": {
+        "type": "String"
+      }
+    }
+  },
+  "abDeclare": "Declare vehicle abandoned",
+  "abDeclareWarn": "A legal, irreversible step: the car is recorded as abandoned and storage fees join the enforcement claim.",
+  "abDeclared": "Vehicle declared abandoned",
+  "abReason": "Reason (optional)",
+  "abCustomerReady": "Your car is ready — collect it now. Delays accrue storage fees and the car may legally be deemed abandoned.",
+  "abCustomerDeclared": "The car was declared abandoned for non-collection — contact the workshop immediately to settle and collect.",
+  "accAddItems": "Add to the work order",
+  "accAddItemsHint": "Added as a new version that needs the customer's re-approval.",
+  "accItemsAdded": "Items added — send for approval",
+  "accPriceEach": "Price each item before adding",
+  "flStatements": "Monthly statements",
+  "flStatementsBody": "A monthly summary of your fleet's invoices — accounting-ready.",
+  "flStatementsEmpty": "No statements yet",
+  "flStatementsEmptyBody": "Generate this month's statement to get your fleet's invoices in one file.",
+  "flGenerateStatement": "Generate this month",
+  "flStatementGenerated": "Statement ready",
+  "flInvoicesCount": "{n} invoices",
+  "@flInvoicesCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "flCopyCsv": "Copy CSV",
+  "flCsvCopied": "Statement copied — paste it into your sheets",
+  "srFix": "Fix my car",
+  "srFixBody": "Describe the problem, compare offers from nearby workshops.",
+  "srDescribe": "Describe the problem",
+  "srDescribeHint": "What do you hear or see? A photo says a thousand words.",
+  "srWhere": "Your location",
+  "srWhereHint": "Paste a maps link or coordinates like 24.71, 46.67",
+  "srRadius": "Search radius",
+  "srKm": "{n} km",
+  "@srKm": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWhen": "When do you want the repair?",
+  "srNow": "Now",
+  "srToday": "Today",
+  "srThisWeek": "This week",
+  "srSend": "Send request",
+  "srSent": "Request sent — offers will appear here",
+  "srMine": "Repair requests",
+  "srOffers": "Offers",
+  "srNoOffers": "No offers yet — nearby workshops are reviewing your request.",
+  "srWiden": "Widen to {n} km",
+  "srListView": "List",
+  "srMapView": "On the map",
+  "srMapNote": "Your car is in the middle; every workshop is where it really is — tap a pin to see its offer.",
+  "srMapNoPin": "{n} offers have no precise location — find them in the list.",
+  "@srMapNoPin": { "placeholders": { "n": { "type": "int" } } },
+  "srMapFree": "Free check",
+  "srVoiceAttached": "Your voice note will be attached so the workshop hears you in your own words.",
+  "@srWiden": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWidened": "Search radius widened",
+  "srFreeInspection": "Free inspection",
+  "srEstimate": "Estimate",
+  "srPriceRange": "{min} to {max}",
+  "@srPriceRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "srFinalPriceNote": "The final price is approved after inspection, with your signature — no surprises.",
+  "srAccepted": "Offer accepted — work order created",
+  "srNearestBadge": "Nearest",
+  "srTopRatedBadge": "Top rated",
+  "srPrevUsedBadge": "You have used them before",
+  "srNearby": "Nearby repair requests",
+  "srNearbyCount": "{n} nearby repair requests",
+  "@srNearbyCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srRespond": "Make your offer",
+  "srDiagnosis": "Your diagnosis",
+  "srDiagnosisHint": "One line on what you think it is — it is what sets your offer apart.",
+  "srPriceMin": "Price from",
+  "srPriceMax": "to",
+  "srAvailability": "When can you take the car?",
+  "srOfferSent": "Offer sent",
+  "srCancelRequest": "Cancel request",
+  "srSpecialistBadge": "Specialists in your car",
+  "srRespondsIn": "Replies in ~{n} min",
+  "@srRespondsIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "voUnavailable": "Voice input is not available on this device.",
+  "voSpeak": "Speak now",
+  "voListening": "Listening…",
+  "voHeardNothing": "Heard nothing — try again",
+  "voAgain": "Again",
+  "voDone": "Done",
+  "voDictateItems": "Dictate the items",
+  "voReviewTitle": "Review what was heard",
+  "voHeard": "Heard: {text}",
+  "@voHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "voNeedsPrice": "Needs a price",
+  "voApply": "Add the priced items",
+  "voApplied": "Items added — customer re-approval needed",
+  "voDiscard": "Discard",
+  "voUploadFailed": "The recording did not upload — your text is kept, try again",
+  "voRetryUpload": "Retry upload",
+  "voDevTyped": "Dev environment — dictation unavailable on the simulator",
+  "voDevTypedHint": "Type what you would have said",
+  "voDevBroken": "Dev environment — dictation does not work on this simulator",
+  "voTypeInstead": "Type instead",
+  "ptSendDelivery": "Send with platform delivery",
+  "ptDeliverySent": "Sent — finding a nearby driver",
+  "ptDeliveryTitle": "Platform delivery",
+  "ptManualShip": "Shipped manually (outside platform delivery)",
+  "ptDeliveryPickedUp": "With the driver",
+  "srNoVehicle": "Add your car first",
+  "srNoVehicleBody": "Workshops price by make and model — without it they cannot estimate a cost.",
+  "srAddVehicle": "Add a car",
+  "ptEndedNoBids": "Ended with no offers — repost wider, or buy from the search results",
+  "ptToolsTitle": "My tools",
+  "ptTradeRowSub": "Your credit account with suppliers",
+  "wsQuickAdd": "Add a line",
+  "wsQuickAddHint": "oil and filter change for two hundred sixty",
+  "wsQuickAddNeedsPrice": "Add a price to complete the line",
+  "wsItemDetails": "More detail (warranty, part condition)",
+  "wsPaint": "Paint",
+  "wsDiagnostic": "Diagnostic",
+  "wsTowing": "Towing",
+  "sar": "SAR",
+  "vinScan": "Scan the VIN",
+  "vinScanNotFound": "That code is not a VIN — try the door-pillar label",
+  "wsInbox": "What needs you now",
+  "wsInboxCount": "{n} item(s)",
+  "wsInboxDisputes": "Open disputes — money frozen until decided",
+  "wsInboxAbandonRisk": "Ready cars nobody collected",
+  "wsInboxAwaitingApproval": "Waiting for customer approval",
+  "wsInboxReady": "Ready to hand over",
+  "wsInboxCheckout": "Need a check-out inspection",
+  "wsInboxServiceRequests": "Nearby repair requests awaiting your offer",
+  "wsInboxPartBids": "Part requests awaiting your bid",
+  "wsInboxUnpaid": "Delivered without an invoice",
+  "@wsInboxCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wsTitleOptional": "Short description (optional)",
+  "wsTitleAuto": "Leave it empty and the order is named after its items.",
+  "wsNeedCar": "Add the plate number or the VIN.",
+  "wsNeedItem": "Add at least one item.",
+  "dueOnYou": "You owe",
+  "dueOverdueHint": "Payment is late — a formal notice, then enforcement.",
+  "dueCount": "{n, plural, =1{1 awaiting payment} other{{n} awaiting payment}}",
+  "@dueCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loginPromise": "Your car, from breakdown to back on the road — in one place.",
+  "loginPromisePartner": "Your workshop: signed orders, secured earnings.",
+  "loginPromiseFleet": "Your fleet: no repair is paid before you approve it.",
+  "loginTrustFleetApprove": "Approve before paying",
+  "loginTrustFleetBudget": "Budget under control",
+  "loginTrustFleetPassport": "A record per car",
+  "loginTrustPartnerOrders": "Signed orders",
+  "loginTrustPartnerMoney": "Earnings secured",
+  "loginTrustPartnerParts": "Parts by VIN",
+  "loginTrustSign": "Signed approvals",
+  "loginTrustEscrow": "Money held",
+  "loginTrustInvoice": "Tax invoice",
+  "loginNafathNote": "Sign in with your number, approve with your signature.",
+  "drvOnline": "Online — jobs reach you",
+  "drvOffline": "Offline",
+  "drvNearby": "Jobs near you",
+  "drvNeedOrg": "Link your account to a transport establishment before accepting jobs — the tax invoice is issued in its name.",
+  "drvPickup": "Pick-up",
+  "drvDropoff": "Drop-off",
+  "drvKm": "{km} km",
+  "drvOfflineTitle": "You are offline",
+  "drvOfflineBody": "Go online above to see jobs near you.",
+  "drvNoOffersTitle": "No jobs nearby",
+  "drvLastDelivered": "Last delivery — done",
+  "drvMoneyToWallet": "The amount is added to your wallet after the invoice",
+  "drvStatusAssigned": "Assigned to you",
+  "drvStatusEnRoutePickup": "Heading to pickup",
+  "drvStatusPickedUp": "Car on your truck",
+  "drvStatusEnRouteDropoff": "Heading to drop-off",
+  "drvAcceptTitle": "Take this job?",
+  "drvAcceptBtn": "Accept job",
+  "drvNoOffersBody": "We will show any tow request that arrives near you.",
+  "drvActStart": "Heading to pick-up",
+  "drvActLoaded": "Car loaded",
+  "drvActHeading": "Heading to drop-off",
+  "drvActDeliver": "Deliver with proof",
+  "drvActDone": "Done",
+  "truckFlatbed": "Flatbed",
+  "truckWheelLift": "Wheel lift",
+  "truckPartsDelivery": "Parts delivery",
+  "drvProofTitle": "Proof of delivery",
+  "drvProofWhy": "A photo at the drop-off and a code read from the receiver. Together they close the job and release the money.",
+  "drvPhotoStep": "Photograph the car at the drop-off",
+  "drvPhotoDone": "Photo ready",
+  "drvTakePhoto": "Take a photo",
+  "drvRetakePhoto": "Retake",
+  "drvCodeStep": "Send the code to the receiver's phone, then read it from them.",
+  "drvCodeSent": "Code sent to the receiver's phone.",
+  "drvSendCode": "Send the code",
+  "drvResendCode": "Resend",
+  "drvComplete": "Finish the job",
+  "tabDriverJobs": "My jobs",
+  "@drvKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "flPolicyTitle": "Spending rules",
+  "flImportTitle": "Import vehicle list",
+  "flImportEntry": "Import list",
+  "flImportWhy": "Paste your list — one car per line: plate or VIN. A bad line does not stop the rest.",
+  "flImportField": "List",
+  "flImportAction": "Import {n} vehicles",
+  "@flImportAction": {"placeholders": {"n": {"type": "int"}}},
+  "flImportCreated": "Added",
+  "flImportExists": "Already registered",
+  "flImportFailed": "Failed",
+  "flPolicyName": "Fleet policy",
+  "flPolicyWhy": "Three numbers govern every repair: what passes without approval, what needs two people, and the monthly cap.",
+  "flPolicyAuto": "Auto-approve below",
+  "flPolicyAutoHint": "Anything under this passes without waiting for anyone.",
+  "flPolicyTwo": "Two approvers above",
+  "flPolicyTwoHint": "Leave empty if one approver is always enough.",
+  "flPolicyBudget": "Monthly budget",
+  "flPolicyBudgetHint": "Anything over it is refused. Leave empty for no cap.",
+  "flPolicyMeaning": "What this means",
+  "flPolicySave": "Save rules",
+  "flPolicyContradiction": "The two-approver threshold is below the auto-approve threshold — nothing would ever need one approver.",
+  "flOutAuto": "Passes automatically",
+  "flOutOne": "One approver",
+  "flOutTwo": "Two approvers",
+  "flOutOverBudget": "Over budget",
+  "flPolicyEntry": "Spending rules",
+  "spAddPhoto": "Photograph the part",
+  "spAddMorePhotos": "Another photo ({n} left)",
+  "ptSeePart": "Part photos",
+  "@spAddMorePhotos": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "inNewService": "A repair request just arrived",
+  "inNewPart": "A part request just arrived",
+  "inMore": "+{n} more",
+  "inOpen": "See the request",
+  "inIgnore": "Ignore",
+  "@inMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srWhatYouNotice": "What are you noticing?",
+  "srPickMore": "Pick everything that applies — the clearer it is, the better the offers.",
+  "srNoteOptional": "Details that help the workshop (optional)",
+  "srNoteHint": "When does it happen? Since when?",
+  "srHere": "Your current location",
+  "srLocating": "Finding your location…",
+  "srLocateFailed": "Could not get your location",
+  "srLocateManual": "Enter it manually",
+  "srUseMyLocation": "Use my location",
+  "srWhenAsk": "When suits you?",
+  "srOffersComing": "Nearby workshops will send offers within minutes — compare and choose.",
+  "reqFixHero": "Something wrong with your car?",
+  "reqFixHeroBody": "Describe what you notice and nearby workshops send you offers — compare and choose without driving around.",
+  "reqNearby": "Workshops near you",
+  "reqNearbySpecialised": "Specialises in your car",
+  "reqNearbyNew": "New",
+  "reqNearbyAsk": "Ask them",
+  "tabHome": "Home",
+  "tabMyOrders": "My requests",
+  "homeGreeting": "What does your car need?",
+  "homeNothingLive": "Nothing in progress",
+  "myOrdersEmpty": "No active requests",
+  "myOrdersEmptyBody": "Everything you ask for — a repair, a part, a tow — stays here until it is done.",
+  "moRepairs": "Repairs",
+  "moParts": "Parts",
+  "moTow": "Tow",
+  "moDue": "Due from you",
+  "obTitle": "Register your workshop",
+  "obBody": "A few minutes, then customer requests start reaching you.",
+  "obName": "Workshop name",
+  "obNameHint": "As on the commercial registration",
+  "obCr": "Commercial registration",
+  "obCrHint": "10 digits",
+  "obCrOptional": "You can add it later",
+  "obType": "Business type",
+  "obTypeWorkshop": "Workshop",
+  "obTypeBody": "Body shop",
+  "obTypeService": "Service centre",
+  "obTypeScrap": "Scrapyard",
+  "obTypeParts": "Parts",
+  "obLocation": "Where is your workshop?",
+  "obLocationBody": "Your location decides who reaches you — customers nearby see you first.",
+  "obUseMyLocation": "Use my current location",
+  "obCity": "City",
+  "obDistrict": "District",
+  "obDocs": "Two documents",
+  "obDocsBody": "Commercial registration and owner ID. Only the review team sees them.",
+  "obDocCr": "Commercial registration",
+  "obDocId": "Owner ID",
+  "obUpload": "Attach",
+  "obUploaded": "Attached",
+  "obSubmit": "Submit for review",
+  "obNext": "Next",
+  "obCreate": "Create workshop",
+  "obPending": "Your workshop is under review",
+  "obPendingBody": "The team usually reviews within one business day, and we notify you the moment it is approved — then customer requests start arriving.",
+  "obDraft": "Finish registering your workshop",
+  "obRejected": "The review needs a change",
+  "obStepInfo": "Details",
+  "obStepPlace": "Location",
+  "obStepDocs": "Documents",
+  "welcomeSkip": "Skip",
+  "welcomeNext": "Next",
+  "welcomeStart": "Get started",
+  "welcome1Title": "One problem, one request",
+  "welcome1Body": "Describe the fault in a few taps — offers come to you. Compare and choose.",
+  "welcome2Title": "Your money, safely held",
+  "welcome2Body": "Your money sits in escrow, released only after receipt or when the window ends.",
+  "welcome3Title": "Everything signed and documented",
+  "welcome3Body": "Prices you approve, photos before and after, an official invoice.",
+  "setupTitle": "Set up your account",
+  "setupSubtitle": "One minute: your name and your car",
+  "setupStepName": "Your name",
+  "setupStepCar": "Your car",
+  "setupNameTitle": "What's your name?",
+  "setupNameBody": "Shown on your approvals and invoices.",
+  "setupNameLabel": "Name",
+  "setupNameHint": "e.g. Meshal Alotaibi",
+  "setupNameShort": "Enter at least two characters",
+  "setupNext": "Next",
+  "setupCarTitle": "Add your car",
+  "setupCarBody": "By VIN or plate — its record travels with it.",
+  "setupAddCar": "Add my car",
+  "setupLater": "Later",
+  "vcInService": "In the workshop — track it",
+  "vcNoHistory": "Its record starts with the first service",
+  "vcLastService": "Last service {date}",
+  "@vcLastService": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "vcWarranties": "{n} active warranties",
+  "@vcWarranties": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "editProfile": "Edit profile",
+  "emailLabel": "Email (optional)",
+  "emailWhy": "For your invoices and receipts — nothing else.",
+  "nameFromNafath": "Name verified via Nafath",
+  "nameLockedUntil": "Your name signs your approvals — changeable after {date}",
+  "@nameLockedUntil": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "awaitingPricing": "Awaiting pricing",
+  "aboutTitle": "About Sinaaty",
+  "supportTitle": "Support",
+  "aboutPromise": "Your car, from breakdown to back on the road — in one place. Every agreement signed, every payment held until you receive, everything documented in your name.",
+  "aboutVersion": "Version {v}",
+  "@aboutVersion": {
+    "placeholders": {
+      "v": {}
+    }
+  },
+  "supportBody": "Hit a problem or have a suggestion? Message us and we will get back to you fast.",
+  "supportWhatsApp": "Message us on WhatsApp",
+  "supportCall": "Call us",
+  "termsNote": "By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch.",
+  "srCantMove": "Car won't move?",
+  "srOrderTow": "Request a tow",
+  "poScheduled": "Scheduled",
+  "poProcessing": "Processing",
+  "poPaid": "Transferred",
+  "poFailed": "Failed",
+  "rvTitle": "How was the experience?",
+  "rvBody": "Your rating shows to customers after you — it counts for or against the workshop.",
+  "rvCommentOptional": "A word that helps others (optional)",
+  "rvCommentHint": "e.g. Clean work, delivered on time",
+  "rvSubmit": "Send rating",
+  "rvThanks": "Thank you — your rating is in",
+  "woPartGeneric": "Repair part",
+  "wpOrdered": "Ordered",
+  "wpShipped": "On the way",
+  "wpArrived": "Arrived",
+  "wpCancelled": "Cancelled",
+  "delAccount": "Delete account",
+  "delAccountConfirm": "Delete my account permanently",
+  "delAccountBody": "Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under 'Deleted account'. Open repair orders or unsettled notes must be completed first.",
+  "avOn": "Accepting market requests",
+  "avOnBody": "Nearby customer requests reach you as they come",
+  "avOff": "Intake paused",
+  "avOffBody": "No new requests until you switch back on — ongoing orders are unaffected",
+  "avResume": "Resume",
+  "wsTeam": "Workshop team",
+  "wsServices": "My services",
+  "avMenuOn": "Request intake: on — pause it",
+  "avMenuOff": "Request intake: paused — resume",
+  "teamAdd": "Add member",
+  "teamAddBody": "Signs in with their phone; sees only what their role allows.",
+  "teamAddConfirm": "Add to team",
+  "teamEmpty": "It's just you so far",
+  "teamEmptyBody": "Add your technicians so they can receive cars and update statuses from their phones.",
+  "teamRemoveTitle": "Remove {name}?",
+  "@teamRemoveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "teamRemoveBody": "They lose access to this workshop immediately — their past work records remain.",
+  "teamRemoveConfirm": "Remove",
+  "roleOwner": "Owner",
+  "roleManager": "Manager",
+  "roleTechnician": "Technician",
+  "roleAccountant": "Accountant",
+  "svcAdd": "Add service",
+  "svcName": "Service name",
+  "svcNameHint": "e.g. Oil & filter change",
+  "svcPrice": "Price",
+  "svcWarrantyDays": "Warranty days",
+  "svcAddConfirm": "Save service",
+  "svcEmpty": "No saved services yet",
+  "svcEmptyBody": "Save your recurring services — add them to any order with one tap.",
+  "itemLabor": "Labor",
+  "itemPart": "Part",
+  "itemDiagnostic": "Diagnostic",
+  "scanCameraFailed": "Could not open the camera. Allow camera access, or type the number instead.",
+  "scanTypeInstead": "Type it instead",
+  "istTitle": "Photograph the registration",
+  "istWhy": "One photo reads the plate, VIN and year — no typing, and it happens inside your phone, not on a server.",
+  "istShoot": "Take the photo",
+  "istRead": "Read {n} fields from the card",
+  "istCheck": "Check the fields below — OCR sometimes misreads.",
+  "istUnreadable": "Nothing was readable in that photo. Try better light, or type the fields yourself.",
+  "@istRead": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "exploreFirst": "Explore first",
+  "exploreTitle": "Around you",
+  "exploreSubtitle": "Verified workshops and parts shops — sign up when ready",
+  "exploreSearchHint": "Search workshops or parts shops…",
+  "exploreCta": "Sign up & start",
+  "exploreEmpty": "Nothing nearby",
+  "exploreEmptyBody": "Try another name — or sign up, post your request and offers come to you.",
+  "exploreOrgCta": "Sign up to order here",
+  "exploreNew": "New",
+  "orgWorkshop": "Workshop",
+  "orgScrapyard": "Scrapyard",
+  "orgPartsDealer": "Parts shop",
+  "orgPartsDistributor": "Parts distributor",
+  "orgPartsBrandAgent": "Brand agent",
+  "orgOther": "Business",
+  "guestVerified": "Verified on Sinaaty",
+  "guestAccepting": "Accepting requests",
+  "guestBusy": "Busy right now",
+  "guestBranches": "Branches",
+  "guestSpecialties": "Specialties",
+  "guestRatingCount": "{n} ratings",
+  "@guestRatingCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "guestMainBranch": "Main",
+  "wsCoverPhoto": "Workshop photo",
+  "coverUpdated": "Photo updated — customers see it in Explore",
+  "kmAway": "{n} km",
+  "@kmAway": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "staleData": "Couldn't refresh — what you see may be out of date",
+  "payInDoubtTitle": "Your payment is being confirmed",
+  "payInDoubtBody": "The payment started but we haven't received confirmation yet. Don't pay again — check in a moment; if it didn't go through, nothing is charged.",
+  "payCheckNow": "Check now",
+  "insPhotosPending": "{n} photo(s) didn't upload — tap to retry before saving",
+  "@insPhotosPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "srvFix": "Repair",
+  "srvMore": "Other services",
+  "srvMoreTitle": "What else do you need?",
+  "srvPart": "Parts",
+  "srvTow": "Tow",
+  "srvInspect": "Pre-purchase check",
+  "srvInspectBody": "A neutral workshop inspects it and writes you a report before you pay",
+  "srvService": "Scheduled service",
+  "srvServiceBody": "Oil, filters and a full check at an agreed price",
+  "srvRoadside": "Battery & roadside",
+  "srvRoadsideBody": "Won't start? The nearest workshop comes to you",
+  "srvPresetInspect": "Full pre-purchase inspection — I want a condition report",
+  "srvPresetService": "Scheduled service — oil, filters and a full check",
+  "srvPresetRoadside": "My car won't start — I need help at my location",
+  "cdEnded": "Time is up",
+  "cdMinutes": "{n} min left",
+  "@cdMinutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cdHours": "{h}h {m}m left",
+  "@cdHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMinSec": "{t} left",
+  "@cdMinSec": {
+    "placeholders": {
+      "t": {
+        "type": "String"
+      }
+    }
+  },
+  "cdWorkshopsHave": "Workshops have time to reply",
+  "cdShopsHave": "Shops have time to bid"
+}

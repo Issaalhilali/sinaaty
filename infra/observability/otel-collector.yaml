@@ -1,0 +1,20 @@
+# Minimal OTLP collector: apps → collector → Tempo (traces) + Prometheus (metrics).
+receivers:
+  otlp: { protocols: { http: { endpoint: 0.0.0.0:4318 }, grpc: { endpoint: 0.0.0.0:4317 } } }
+processors:
+  batch: { timeout: 5s }
+  # Never let PII reach the traces: drop the attributes that could carry it.
+  attributes/scrub:
+    actions:
+      - { key: http.request.header.authorization, action: delete }
+      - { key: db.statement.parameters, action: delete }
+      - { key: user.phone, action: delete }
+      - { key: national_id, action: delete }
+  memory_limiter: { check_interval: 1s, limit_percentage: 80, spike_limit_percentage: 20 }
+exporters:
+  otlphttp/tempo: { endpoint: http://tempo:4318 }
+  prometheus: { endpoint: 0.0.0.0:8889 }
+service:
+  pipelines:
+    traces:  { receivers: [otlp], processors: [memory_limiter, attributes/scrub, batch], exporters: [otlphttp/tempo] }
+    metrics: { receivers: [otlp], processors: [memory_limiter, batch], exporters: [prometheus] }

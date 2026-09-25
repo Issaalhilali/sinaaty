@@ -1,0 +1,19 @@
+import '../../../core/result/result.dart';
+import 'fleet.dart';
+
+abstract interface class FleetRepository {
+  Future<Result<FleetOverview>> overview(String orgId);
+  Future<Result<List<FleetPending>>> pending(String orgId);
+  Future<Result<List<FleetPolicy>>> policies(String orgId);
+  /// ينشئ سياسة أو يحدّث القائمة — الأسطول يملك قاعدته بلا وسيط.
+  Future<Result<FleetPolicy>> savePolicy(String orgId, FleetPolicy p);
+  /// One approver's decision on one repair version. The signature itself stays a separate, personal act.
+  Future<Result<FleetDecision>> decide(String workOrderId, {required String decision, String? noteAr});
+  Future<Result<List<FleetStatement>>> statements(String orgId);
+  Future<Result<FleetStatement>> statement(String id);
+  /// Idempotent per month on the API (YYYY-MM).
+  Future<Result<FleetStatement>> generateStatement(String orgId, String month);
+  Future<Result<String>> statementCsv(String id);
+  /// استيراد قائمة مركبات: الخادم يمرّ صفّاً صفّاً ويعيد مصير كلٍّ منها.
+  Future<Result<List<FleetImportRow>>> importVehicles(String orgId, List<({String? vin, String? plate})> rows);
+}

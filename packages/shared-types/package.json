@@ -1,0 +1,22 @@
+{
+  "name": "@sinaaty/shared-types",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Enums and DTO types shared across api / admin-web; enums are generated from apps/api/prisma/schema.prisma",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "openapi.json"],
+  "scripts": {
+    "gen": "node tools/gen-enums.mjs",
+    "gen:check": "node tools/gen-enums.mjs --check",
+    "build": "pnpm gen:check && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "pnpm gen:check",
+    "test": "node --test",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.0",
+    "typescript": "^5.9.2"
+  }
+}

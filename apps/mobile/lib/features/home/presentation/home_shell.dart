@@ -1,0 +1,220 @@
+import 'dart:async';
+import 'package:crypto/crypto.dart' show sha256;
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/config/app_config.dart';
+import '../../../core/di/core_providers.dart';
+import '../../../core/flags/feature_flags.dart';
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/result/result.dart';
+import '../../../core/theme/tokens.dart';
+import '../../../core/ui/ui.dart';
+import 'package:go_router/go_router.dart';
+import '../domain/effective_flavor.dart';
+import '../../account/presentation/account_screen.dart';
+import '../../auth/presentation/providers.dart';
+import '../../billing/presentation/providers.dart' show invoicesProvider;
+import '../../billing/presentation/wallet_screen.dart';
+import '../../notifications/presentation/providers.dart';
+import '../../vehicles/presentation/providers.dart';
+import '../../vehicles/presentation/vehicles_screen.dart';
+import '../../work_orders/presentation/providers.dart' show workOrdersProvider;
+import '../../workshop/presentation/orders_screen.dart';
+import '../../workshop/presentation/org_wallet_screen.dart';
+import '../../workshop/presentation/onboard_screen.dart';
+import '../../workshop/presentation/providers.dart';
+import '../../transport/presentation/driver_home_screen.dart';
+import '../../transport/presentation/providers.dart';
+import '../../workshop/presentation/incoming_banner.dart';
+import '../../workshop/presentation/today_screen.dart';
+import '../../parts/presentation/supplier_screens.dart';
+import 'home_screen.dart';
+import 'setup_screen.dart';
+import 'my_orders_screen.dart';
+import '../../fleet/presentation/fleet_today_screen.dart';
+import '../../parts/presentation/workshop_parts_screen.dart';
+/// Flavor-driven tab shell: 3–4 tabs, never more (charter §5.0 #2). Real screens land in Steps 13/14/22.
+class HomeShell extends ConsumerStatefulWidget { const HomeShell({super.key}); @override ConsumerState<HomeShell> createState() => _HomeShellState(); }
+class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserver {
+  Timer? _poll;
+  @override void initState() {
+    super.initState(); WidgetsBinding.instance.addObserver(this);
+    // Resume is not enough: a tab left open all day never refreshes at all. A customer watched his
+    // home screen carry orders that had been closed half an hour earlier, «راجع واعتمد» still on them
+    // (owner walk 2026-08-23). Whatever is on screen gets refetched quietly — invalidating a provider
+    // nobody is watching is a no-op, so this costs exactly one request for the visible list.
+    _poll = Timer.periodic(const Duration(seconds: 45), (_) => _refreshLive());
+  }
+  @override void dispose() { _poll?.cancel(); WidgetsBinding.instance.removeObserver(this); super.dispose(); }
+
+  void _refreshLive() {
+    if (!mounted) return;
+    ref.invalidate(orgOrdersProvider);
+    ref.invalidate(orgWalletProvider);
+    ref.invalidate(workOrdersProvider);
+    ref.invalidate(invoicesProvider);
+    ref.invalidate(unreadCountProvider);
+  }
+
+  /// A workshop keeps the app open all day; without this it reads yesterday's numbers as today's
+  /// (owner review 2026-08-23 §1 — the most dangerous defect because it is silent).
+  @override void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshLive();
+  }
+
+  int _index = 0;
+  @override Widget build(BuildContext context) {
+    final l = L10n.of(context); final me = ref.watch(authControllerProvider).me;
+    final orgType = ref.watch(currentOrgInfoProvider).value?.type;
+    // **الدور من الحساب لا من البناء.**
+    //
+    // النكهات الثلاث موجودة لأن المتاجر تطلب تطبيقات منفصلة. أما على الوِب فلا معنى لثلاثة
+    // روابط: من يفتح الرابط ويدخل بحسابه، عضويّته في منشأة هي التي تقول من هو. رابطٌ واحد
+    // يخدم العميل وصاحب الورشة والتاجر — وهذا ما يجعله منتجاً واحداً لا ثلاثة تتشابه.
+    final hasOrg = me?.orgs.isNotEmpty ?? false;
+    final flavor = effectiveFlavor(built: ref.watch(appConfigProvider).flavor, hasOrg: hasOrg);
+    final isSupplier = flavor == AppFlavor.partner && supplierOrgTypes.contains(orgType);
+    final isDriver = flavor == AppFlavor.partner && (ref.watch(driverProfileProvider).value?.isOk ?? false);
+    // Feature flags decide which entry points exist at all (charter §5.0 #3); a failed load hides nothing.
+    final flags = ref.watch(featureFlagsProvider(ref.watch(currentOrgIdProvider))).value ?? FeatureFlags.allVisible;
+    // صاحب ورشة بلا منشأة كان يفتح تطبيقاً فارغاً لا يستطيع فعل شيء فيه: لا مسار تسجيل إطلاقاً،
+    // والمنشآت تُنشأ من لوحة التحكم وحدها. وسوقٌ لا ينضمّ إليه المزوّدون بأنفسهم لا ينمو.
+    // والحكم من `me` وحده: هي المجلوبة لهذا الحساب الآن، والقائمة المحفوظة قد تكون لحسابٍ سبقه.
+    if (shouldOnboard(flavor: flavor, signedIn: me != null, hasOrg: hasOrg)) {
+      return const OnboardScreen();
+    }
+    // العميل الجديد تماماً — بلا اسمٍ وبلا سيارة — يُقاد دقيقةً واحدة: اسمه ثم سيارته،
+    // وكلاهما يُكتب في حسابه في قاعدة البيانات لا في ذاكرة الجهاز. و«لاحقاً» تُحترم.
+    final cars = ref.watch(vehiclesProvider);
+    if (shouldGuideSetup(flavor: flavor, signedIn: me != null,
+        // «حُمِّلت» تعني **نجحت**: قائمةٌ فشل جلبها تصل كقيمةٍ ناجحة تحمل خطأً، فكان صاحب
+        // ثلاث سيارات يُدفع إلى «جهّز حسابك» لمجرد تعثّر الشبكة — أسوأ صور الكذب على المستخدم.
+        carsLoaded: cars.value?.isOk ?? false, hasCars: (cars.value?.valueOrNull ?? const []).isNotEmpty,
+        dismissed: ref.watch(setupDismissedProvider))) {
+      return const SetupScreen();
+    }
+    final tabs = isSupplier ? <(String, BrandGlyph, Widget)>[
+      (l.spRequests, BrandGlyph.auction, const SupplierRequestsScreen()),
+      (l.spSales, BrandGlyph.store, const SupplierSalesScreen()),
+      (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
+    ] : switch (flavor) {
+      // ثلاثة لا أربعة (قرار المالك ٢٦ أغسطس ٢٠٢٦): «سياراتي» كانت تحمل «ماذا تحتاج؟» و«اطلب»
+      // تبويبٌ كامل لنفس الشيء — تبويبان لوظيفة واحدة. و«محفظتي» و«حسابي» كلاهما «أنا». ومنتجٌ
+      // مهمّته واحدة (سيارتي معطّلة) لا يُطلب من صاحبها أن يختار تبويباً قبل أن يقولها.
+      AppFlavor.customer => <(String, BrandGlyph, Widget)>[
+        (l.tabHome, BrandGlyph.home, const HomeScreen()),
+        (l.tabMyOrders, BrandGlyph.orders, const MyOrdersScreen()),
+        (l.tabAccount, BrandGlyph.person, const AccountScreen()),
+      ],
+      // السائق يُعرف بملفّه لا بنوع منشأته: قد يعمل تحت شركة نقل أو ورشة لها سطحة، والحقيقة
+      // الوحيدة أنه يقود. تبويبٌ واحد يسبق الباقي لأنه كل عمله.
+      // شركة نقل صِرف (logistics): سائقها لا يملك ورشةً — «اليوم» و«الأوامر» و«القطع» شاشاتٌ
+      // فارغة تُشتّته (ميثاق §5.0/2: ثلاثة تبويبات لا خمسة). ورشةٌ لها سطحة تحتفظ بالكل.
+      AppFlavor.partner when isDriver && orgType == 'logistics' => <(String, BrandGlyph, Widget)>[
+        (l.tabDriverJobs, BrandGlyph.towTruck, const DriverHomeScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
+      ],
+      AppFlavor.partner => <(String, BrandGlyph, Widget)>[
+        if (isDriver) (l.tabDriverJobs, BrandGlyph.towTruck, const DriverHomeScreen()),
+        (l.tabToday, BrandGlyph.today, const TodayScreen()),
+        (l.tabOrders, BrandGlyph.orders, const OrdersScreen()),
+        if (flags.enabled(Flags.partsMarketplace)) (l.tabParts, BrandGlyph.gear, const WorkshopPartsScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const OrgWalletScreen()),
+      ],
+      AppFlavor.fleet => <(String, BrandGlyph, Widget)>[
+        (l.tabToday, BrandGlyph.today, const FleetTodayScreen()),
+        (l.tabMyCars, BrandGlyph.car, const VehiclesScreen()),
+        (l.tabWallet, BrandGlyph.wallet, const WalletScreen()),
+        (l.tabAccount, BrandGlyph.person, const AccountScreen()),
+      ],
+    };
+    if (_index >= tabs.length) _index = 0; final title = tabs[_index].$1; final name = me?.fullNameAr ?? '';
+    final body = tabs[_index].$3;
+    final unread = flavor == AppFlavor.customer ? (ref.watch(unreadCountProvider).value ?? 0) : 0;
+    final partner = flavor == AppFlavor.partner;
+    // ترويسة الصفحة الأولى بأسلوب التطبيقات الحديثة: اسم صاحبها هو العنوان — لا كلمة
+    // «الرئيسية» فوق كل شيء (كلمة المالك: أزلها). وبقية التبويبات تحتفظ بعناوينها لأن
+    // العنوان فيها يدلّ على مكانٍ لا يعرفه المستخدم بالضرورة.
+    final homeTab = _index == 0;
+    // في تطبيق الشريك العنوان هو **اسم المنشأة** لا اسم الشخص: صاحب الورشة يعرف نفسه، ويحتاج أن
+    // يعرف أيّ ورشةٍ يشغّلها الآن (وقد يملك أكثر من واحدة). وكان يُعرض «أبو محمد — مالك و…» —
+    // اسمٌ ودورٌ مبتوران معاً، لا يقولان شيئاً. الاسم ينزل سطراً ثانياً حيث يكفيه مكانه.
+    final orgName = partner ? (ref.watch(currentOrgInfoProvider).value?.nameAr ?? '') : '';
+    final headTitle = partner && orgName.isNotEmpty ? orgName : name;
+    return AppScaffold(
+      title: homeTab && headTitle.isNotEmpty ? headTitle : title,
+      subtitle: homeTab && headTitle.isNotEmpty ? (partner && name.isNotEmpty ? name : l.welcomeBack) : null,
+      leading: const Padding(padding: EdgeInsetsDirectional.only(start: 16), child: Center(child: BrandMark(size: 30))), body: body,
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        // الإشعار المستمر «مثل التوصيل» لا يُخبَّأ خلف قائمة: جرسٌ في الرأس بعدّاده (القرار D7).
+        if (flavor == AppFlavor.customer) IconButton(tooltip: l.notifications, onPressed: () => unawaited(context.push('/notifications')), icon: Badge(isLabelVisible: unread > 0, backgroundColor: SinaatyColors.brass, textColor: Colors.white, label: Text('$unread'), child: const Icon(Icons.notifications_none_outlined))),
+        if (partner && !isSupplier && orgType != 'logistics') Padding(padding: const EdgeInsetsDirectional.only(end: 4), child: FilledButton.tonalIcon(style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 14), backgroundColor: Theme.of(context).colorScheme.onSurface, foregroundColor: Theme.of(context).colorScheme.surface, shape: const StadiumBorder()), onPressed: () => context.push('/ws/new'), icon: const Icon(Icons.add, size: 18), label: Text(l.wsNewOrder))),
+      ]),
+      // «الرهيبة تختصر» (كلمة المالك): أدوات الورشة النادرة الاستعمال تسكن هنا لا في الصفحة —
+      // المفتاح والفريق والخدمات خلف ⋯، والصفحة لوجه اليوم وحده.
+      moreItems: [
+        if (flavor != AppFlavor.customer) PopupMenuItem(value: 'inbox', child: Text(unread > 0 ? '${l.notifications} ($unread)' : l.notifications)),
+        if (partner && !isSupplier) ...[
+          PopupMenuItem(value: 'availability', child: Text((ref.watch(myOrgsProvider).value?.firstOrNull?.acceptingRequests ?? true) ? l.avMenuOn : l.avMenuOff)),
+          PopupMenuItem(value: 'team', child: Text(l.wsTeam)),
+          PopupMenuItem(value: 'services', child: Text(l.wsServices)),
+          PopupMenuItem(value: 'cover', child: Text(l.wsCoverPhoto)),
+        ],
+        PopupMenuItem(value: 'logout', child: Text(l.logout)),
+      ],
+      onMore: (v) {
+        if (v == 'logout') ref.read(authControllerProvider.notifier).signOut();
+        if (v == 'inbox') unawaited(context.push('/notifications'));
+        if (v == 'team') unawaited(context.push('/ws/team'));
+        if (v == 'services') unawaited(context.push('/ws/services'));
+        if (v == 'availability') unawaited(_toggleAvailability());
+        if (v == 'cover') unawaited(_setCoverPhoto());
+      },
+      // البطاقة تعلو أي تبويب لأن الطلب لا يعرف أين صاحب الورشة الآن — وأول من يردّ يأخذ العمل.
+      // الميكروفون نزل من الرأس إلى فوق الشريط السفلي: الإبهام يبلغه، والرأس يتنفّس (كلمة المالك).
+      bottom: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (partner) const IncomingBanner(),
+        FloatingNav(index: _index, onChanged: (i) => setState(() => _index = i),
+          items: [for (final t in tabs) (icon: t.$2, label: t.$1)],
+          ),
+      ]));
+  }
+
+
+
+  /// صورة الورشة — وجهها أمام الضيف في الاستكشاف وملفها العام. من المعرض لا الكاميرا:
+  /// صاحبها يختار أفضل لقطة لواجهته، لا ما تصادف أمام العدسة الآن.
+  Future<void> _setCoverPhoto() async {
+    final org = ref.read(myOrgsProvider).value?.firstOrNull;
+    if (org == null) return;
+    final x = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 1600);
+    if (x == null || !mounted) return;
+    final bytes = await x.readAsBytes();
+    final repo = ref.read(workshopRepositoryProvider);
+    void fail(Failure f) { if (mounted) showFailure(context, f); }
+    final p = await repo.presign(mimeType: 'image/jpeg', sizeBytes: bytes.length, sha256: sha256.convert(bytes).toString(), purpose: 'org_logo');
+    final pre = p.valueOrNull; if (pre == null) { p.when(ok: (_) {}, err: fail); return; }
+    final up = await repo.upload(pre, bytes, 'image/jpeg');
+    if (!up.isOk) { up.when(ok: (_) {}, err: fail); return; }
+    final r = await repo.setCover(org.id, pre.mediaId);
+    if (!mounted) return;
+    r.when(
+      ok: (_) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).coverUpdated))),
+      err: fail,
+    );
+  }
+
+  /// تبديل «مشغولون الآن» من قائمة ⋯ — الحالة تُقرأ من الخادم وتُرد الرسالة بأمانة عند الفشل.
+  Future<void> _toggleAvailability() async {
+    final org = ref.read(myOrgsProvider).value?.firstOrNull;
+    if (org == null) return;
+    final r = await ref.read(workshopRepositoryProvider).setAvailability(org.id, accepting: !org.acceptingRequests);
+    if (!mounted) return;
+    r.when(
+      ok: (accepting) { ref.invalidate(myOrgsProvider); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(accepting ? L10n.of(context).avOn : L10n.of(context).avOff))); },
+      err: (f) => showFailure(context, f),
+    );
+  }
+}
+

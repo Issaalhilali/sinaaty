@@ -1,0 +1,3100 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class L10nEn extends L10n {
+  L10nEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appName => 'Sinaaty';
+
+  @override
+  String get tabMyCars => 'My cars';
+
+  @override
+  String get tabRequest => 'Request';
+
+  @override
+  String get tabWallet => 'Wallet';
+
+  @override
+  String get tabAccount => 'Account';
+
+  @override
+  String get tabToday => 'Today';
+
+  @override
+  String get tabOrders => 'Orders';
+
+  @override
+  String get tabParts => 'Parts';
+
+  @override
+  String get tabRequests => 'Requests';
+
+  @override
+  String get tabMySales => 'My sales';
+
+  @override
+  String get loginTitle => 'Sign in with your phone';
+
+  @override
+  String get loginSubtitle => 'We will send you a one-time code';
+
+  @override
+  String get phoneLabel => 'Mobile number';
+
+  @override
+  String get phoneHint => '05xxxxxxxx';
+
+  @override
+  String get sendCode => 'Send code';
+
+  @override
+  String get otpTitle => 'Enter the code';
+
+  @override
+  String otpSubtitle(String phone) {
+    return 'We sent a 6-digit code to $phone';
+  }
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get resendCode => 'Resend';
+
+  @override
+  String get loginWithNafath => 'Sign in with Nafath';
+
+  @override
+  String get logout => 'Sign out';
+
+  @override
+  String get addYourName => 'Add your name';
+
+  @override
+  String get editName => 'Edit name';
+
+  @override
+  String get yourName => 'Full name';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get errorGeneric => 'Something went wrong, please try again.';
+
+  @override
+  String get errorNetwork =>
+      'No internet connection. Check your network and retry.';
+
+  @override
+  String get offlineBar =>
+      'Offline — we retry automatically when the network is back.';
+
+  @override
+  String get errorInvalidPhone => 'Enter a valid Saudi mobile number.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get emptyCarsTitle => 'No cars yet';
+
+  @override
+  String get emptyCarsBody => 'Add your car by VIN or plate to get started.';
+
+  @override
+  String get addCar => 'Add a car';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get todayEmpty => 'No orders today — create your first repair order.';
+
+  @override
+  String get newWorkOrder => 'New work order';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get activeOrders => 'Current repair orders';
+
+  @override
+  String get noActiveOrders => 'No repair orders right now';
+
+  @override
+  String get servicesTitle => 'What do you need?';
+
+  @override
+  String get homeHeroCta => 'Request a repair';
+
+  @override
+  String get homeHeroTitle => 'Car trouble?';
+
+  @override
+  String get homeHeroBody =>
+      'Describe the fault in a few words and a photo — nearby workshops send priced offers.';
+
+  @override
+  String get homeHeroNoCarTitle => 'Add your car to start';
+
+  @override
+  String get homeHeroNoCarBody => 'VIN or plate — one minute.';
+
+  @override
+  String get emptyCarsServices => 'Here is what we can do for you:';
+
+  @override
+  String get myCars => 'My cars';
+
+  @override
+  String get vinLabel => 'VIN';
+
+  @override
+  String get plateLabel => 'Plate number';
+
+  @override
+  String get addCarTitle => 'Add your car';
+
+  @override
+  String get addCarSubtitle =>
+      'The VIN identifies the make and model. The plate alone is enough to start — in either order.';
+
+  @override
+  String get addCarSubmit => 'Add car';
+
+  @override
+  String get addCarNeedOne => 'Enter a VIN or a plate number.';
+
+  @override
+  String get carPassport => 'Car passport';
+
+  @override
+  String get noPassportEvents =>
+      'Everything that happens to your car will show here: service, parts, inspections.';
+
+  @override
+  String get odometer => 'Odometer';
+
+  @override
+  String get km => 'km';
+
+  @override
+  String get shareCarPassport => 'Share car passport';
+
+  @override
+  String get workOrder => 'Repair order';
+
+  @override
+  String workOrderNumber(String number) {
+    return 'Repair order $number';
+  }
+
+  @override
+  String get timeline => 'Progress';
+
+  @override
+  String get photos => 'Photos';
+
+  @override
+  String photosCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get vat => 'VAT 15%';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get approveNow => 'Review & approve';
+
+  @override
+  String get approveTitle => 'Approve repair order';
+
+  @override
+  String get approveMeaningTitle => 'What your approval means';
+
+  @override
+  String get approveHint =>
+      'Your signature locks this price — any change reaches you as a new version.';
+
+  @override
+  String get approveWithNafath => 'Approve with Nafath';
+
+  @override
+  String get approveWithOtp => 'Approve with SMS code';
+
+  @override
+  String get nafathPickNumber => 'Open the Nafath app and pick the number';
+
+  @override
+  String get nafathWaiting => 'Waiting for your approval in Nafath…';
+
+  @override
+  String get approved => 'Approved — the workshop starts now';
+
+  @override
+  String get declineOrder => 'Decline';
+
+  @override
+  String get declineReason => 'Reason';
+
+  @override
+  String versionN(int n) {
+    return 'Version $n';
+  }
+
+  @override
+  String changeReason(String reason) {
+    return 'Change reason: $reason';
+  }
+
+  @override
+  String get confirmReceipt => 'I received my car';
+
+  @override
+  String get confirmReceiptHint =>
+      'Confirming releases the held amount to the workshop.';
+
+  @override
+  String get payNow => 'Pay now';
+
+  @override
+  String get payInvoice => 'Pay invoice';
+
+  @override
+  String get invoice => 'Invoice';
+
+  @override
+  String invoiceNumber(String number) {
+    return 'Invoice $number';
+  }
+
+  @override
+  String get paid => 'Paid';
+
+  @override
+  String get due => 'Due';
+
+  @override
+  String dueOn(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String get amountHeld => 'Amount held';
+
+  @override
+  String get payWithMada => 'mada';
+
+  @override
+  String get payWithApplePay => 'Apple Pay';
+
+  @override
+  String get paymentDone => 'Paid — thank you';
+
+  @override
+  String get paymentFailed => 'Payment did not complete, try again.';
+
+  @override
+  String get paySheetTitle => 'Choose payment method';
+
+  @override
+  String get invoices => 'Invoices';
+
+  @override
+  String get notes => 'Promissory notes';
+
+  @override
+  String get note => 'Promissory note';
+
+  @override
+  String noteNumber(String number) {
+    return 'Note $number';
+  }
+
+  @override
+  String get outstanding => 'Outstanding';
+
+  @override
+  String get noteClosedHint => 'Note closed and clearance issued';
+
+  @override
+  String get settlement => 'Clearance';
+
+  @override
+  String get overdue => 'Overdue';
+
+  @override
+  String get noteHint =>
+      'Electronic note via Nafez — closes automatically when you pay.';
+
+  @override
+  String get walletEmptyTitle => 'No invoices or notes';
+
+  @override
+  String get walletEmptyBody =>
+      'Your invoices, payments, notes and clearances will show here.';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get notificationsEmpty => 'No notifications yet';
+
+  @override
+  String get notificationsEmptyBody =>
+      'Updates about your cars, invoices and warranties land here first.';
+
+  @override
+  String get markAllRead => 'Mark all read';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get arabic => 'العربية';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get nafathVerifiedLabel => 'Nafath verified';
+
+  @override
+  String get notVerified => 'Not verified';
+
+  @override
+  String get requestSoonTitle => 'Request a service or part';
+
+  @override
+  String get requestSoonBody =>
+      'Coming soon: request an inspection, a part via reverse auction, or a tow — from here.';
+
+  @override
+  String get viewDocument => 'View document';
+
+  @override
+  String get viewInvoice => 'View invoice';
+
+  @override
+  String get statusDraft => 'Draft';
+
+  @override
+  String get statusReceived => 'Received';
+
+  @override
+  String get statusInspecting => 'Inspecting';
+
+  @override
+  String get statusAwaitingApproval => 'Awaiting your approval';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusAwaitingParts => 'Awaiting parts';
+
+  @override
+  String get statusInProgress => 'In progress';
+
+  @override
+  String get statusQualityCheck => 'Quality check';
+
+  @override
+  String get statusReady => 'Ready for pickup';
+
+  @override
+  String get statusDelivered => 'Delivered';
+
+  @override
+  String get statusClosed => 'Closed';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get statusDisputed => 'Disputed';
+
+  @override
+  String get statusAbandoned => 'Abandoned';
+
+  @override
+  String get invStatusIssued => 'Due';
+
+  @override
+  String get invStatusPaid => 'Paid';
+
+  @override
+  String get invStatusPartiallyPaid => 'Partially paid';
+
+  @override
+  String get invStatusVoid => 'Void';
+
+  @override
+  String get invStatusOverdue => 'Overdue';
+
+  @override
+  String get invStatusRefunded => 'Refunded';
+
+  @override
+  String get noteStatusIssued => 'Active';
+
+  @override
+  String get noteStatusPartiallySettled => 'Partially settled';
+
+  @override
+  String get noteStatusClosed => 'Closed';
+
+  @override
+  String get noteStatusInEnforcement => 'In enforcement';
+
+  @override
+  String get noteStatusCancelled => 'Cancelled';
+
+  @override
+  String get noteStatusPending => 'Pending issue';
+
+  @override
+  String get signedByNafath => 'Signed with Nafath';
+
+  @override
+  String get signedByOtp => 'Signed with SMS code';
+
+  @override
+  String get securedByNote => 'Secured by note';
+
+  @override
+  String get termsPrepaid => 'Prepaid';
+
+  @override
+  String get termsOnDelivery => 'Pay on delivery';
+
+  @override
+  String get termsDeferred => 'Deferred';
+
+  @override
+  String get termsInstallments => 'Installments';
+
+  @override
+  String get termsFleetMonthly => 'Monthly statement';
+
+  @override
+  String get loading => 'Loading…';
+
+  @override
+  String get somethingWrong => 'Could not load';
+
+  @override
+  String get noOrdersForCar => 'No repair orders for this car';
+
+  @override
+  String get checkIn => 'Check-in inspection';
+
+  @override
+  String get checkOut => 'Check-out inspection';
+
+  @override
+  String damages(int count) {
+    return '$count notes';
+  }
+
+  @override
+  String get codeLabel => 'Verification code';
+
+  @override
+  String get invalidCode => 'Enter the 6-digit code';
+
+  @override
+  String payAmount(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String warrantyDays(int days) {
+    return '$days-day warranty';
+  }
+
+  @override
+  String get nafathNumber => 'Nafath number';
+
+  @override
+  String get approveDone => 'Done';
+
+  @override
+  String get approveNotPending =>
+      'Nothing here needs your approval right now — the current status is shown above.';
+
+  @override
+  String get payHint =>
+      'Secure payment — the amount stays held until you receive your car.';
+
+  @override
+  String clearanceIssued(String number) {
+    return 'Clearance $number issued';
+  }
+
+  @override
+  String get confirmApproval => 'Confirm approval';
+
+  @override
+  String get wsToday => 'Today';
+
+  @override
+  String get wsInShop => 'cars in the shop';
+
+  @override
+  String get wsAwaitingCustomer => 'awaiting customer approval';
+
+  @override
+  String get wsReadyToPayout => 'SAR ready to pay out';
+
+  @override
+  String get wsNeedsAction => 'Needs your action now';
+
+  @override
+  String get wsTodayCars => 'Today\'s cars';
+
+  @override
+  String get wsAll => 'View all';
+
+  @override
+  String get wsNewOrder => 'New order';
+
+  @override
+  String get wsNoOrders => 'No orders yet';
+
+  @override
+  String get wsNoOrdersBody =>
+      'Create the first repair order: scan the plate or enter the VIN, add items, send to the customer.';
+
+  @override
+  String get wsStart => 'Start work';
+
+  @override
+  String get wsReceive => 'Receive car';
+
+  @override
+  String get wsInspect => 'Check-in inspection';
+
+  @override
+  String get wsRequestApproval => 'Send to customer for approval';
+
+  @override
+  String get wsQuality => 'To quality check';
+
+  @override
+  String get wsReady => 'Ready for pickup';
+
+  @override
+  String get wsDeliver => 'Delivered';
+
+  @override
+  String get wsIssueInvoice => 'Issue invoice';
+
+  @override
+  String get wsAddPhoto => 'Add photo';
+
+  @override
+  String get wsWaitingCustomer =>
+      'Waiting for customer approval — work starts after they approve';
+
+  @override
+  String get wsCustomerPhone => 'Customer phone';
+
+  @override
+  String get wsTitle => 'Short description';
+
+  @override
+  String get wsTitleHint => 'e.g. front fender bodywork';
+
+  @override
+  String get wsItems => 'Items';
+
+  @override
+  String get wsAddItem => 'Add item';
+
+  @override
+  String get wsItemDesc => 'Description';
+
+  @override
+  String get wsItemPrice => 'Price';
+
+  @override
+  String get wsItemQty => 'Qty';
+
+  @override
+  String get wsLabor => 'Labor';
+
+  @override
+  String get wsPart => 'Part';
+
+  @override
+  String get wsWarranty => 'Warranty (days)';
+
+  @override
+  String get wsPaymentTerms => 'Payment terms';
+
+  @override
+  String get wsCreate => 'Create order';
+
+  @override
+  String get wsEstimate => 'Estimate';
+
+  @override
+  String get wsAngles => '8 angles';
+
+  @override
+  String wsAngleOf(int done, int total) {
+    return '$done / $total';
+  }
+
+  @override
+  String get wsShootNext => 'Shoot next angle';
+
+  @override
+  String get wsSubmitInspection => 'Save check-in';
+
+  @override
+  String get wsDamages => 'Body notes';
+
+  @override
+  String get wsAddDamage => 'Add note';
+
+  @override
+  String get wsNoDamages =>
+      'No body notes yet — record any scratch or dent before work starts; it protects you and the customer.';
+
+  @override
+  String get wsFuel => 'Fuel %';
+
+  @override
+  String get wsZone => 'Zone';
+
+  @override
+  String get wsSeverity => 'Severity';
+
+  @override
+  String get wsMinor => 'Minor';
+
+  @override
+  String get wsModerate => 'Moderate';
+
+  @override
+  String get wsSevere => 'Severe';
+
+  @override
+  String get wsOffline => 'Offline — will send automatically when back online';
+
+  @override
+  String wsPendingSync(int count) {
+    return '$count actions pending sync';
+  }
+
+  @override
+  String get wsSynced => 'Synced';
+
+  @override
+  String get wsWalletHeld => 'Held until customers confirm';
+
+  @override
+  String get wsWalletAvailable => 'Available to pay out';
+
+  @override
+  String get wsWalletTransit => 'On its way to the bank';
+
+  @override
+  String get wsPayouts => 'Payouts';
+
+  @override
+  String get wsNoPayouts =>
+      'No payouts yet — scheduled automatically when balance is available.';
+
+  @override
+  String get wsPartsSoon => 'Parts for this car';
+
+  @override
+  String get wsPartsSearchHint =>
+      'Enter the VIN above to see live-priced parts for this car.';
+
+  @override
+  String get wsPartsSoonBody =>
+      'Coming soon: search by VIN, buy from distributors on a secured trade account, or open a scrapyard auction.';
+
+  @override
+  String get wsOrders => 'Orders';
+
+  @override
+  String get wsActive => 'Active';
+
+  @override
+  String get wsDone => 'Done';
+
+  @override
+  String get wsAngleFront => 'Front';
+
+  @override
+  String get wsAngleFrontRight => 'Front right';
+
+  @override
+  String get wsAngleRight => 'Right';
+
+  @override
+  String get wsAngleRearRight => 'Rear right';
+
+  @override
+  String get wsAngleRear => 'Rear';
+
+  @override
+  String get wsAngleRearLeft => 'Rear left';
+
+  @override
+  String get wsAngleLeft => 'Left';
+
+  @override
+  String get wsAngleFrontLeft => 'Front left';
+
+  @override
+  String get wsCustomer => 'Customer';
+
+  @override
+  String get wsPhotoAdded => 'Photo added';
+
+  @override
+  String wsInvoiceIssued(String number) {
+    return 'Invoice $number issued';
+  }
+
+  @override
+  String get wsCustomerApprovedHint =>
+      'Customer approved — start work and upload the first photo.';
+
+  @override
+  String get ptParts => 'Parts';
+
+  @override
+  String get ptSearchByVin => 'Search by VIN';
+
+  @override
+  String get ptVinHint => '17 characters';
+
+  @override
+  String get ptOffers => 'Offers matching this car';
+
+  @override
+  String get ptNoOffers =>
+      'No matching parts right now — open an auction to get offers from nearby scrapyards and shops.';
+
+  @override
+  String get ptOpenAuction => 'Request via reverse auction';
+
+  @override
+  String get ptBuyNow => 'Buy now';
+
+  @override
+  String get ptTradePrice => 'Trade price';
+
+  @override
+  String get ptRetailPrice => 'Retail';
+
+  @override
+  String get ptGenuineQr => 'Genuine QR';
+
+  @override
+  String ptLeadHours(int h) {
+    return 'Arrives in $h h';
+  }
+
+  @override
+  String get ptCondOem => 'OEM new';
+
+  @override
+  String get ptCondAftermarket => 'Aftermarket';
+
+  @override
+  String get ptCondUsed => 'Used (scrapyard)';
+
+  @override
+  String get ptCondRefurb => 'Refurbished';
+
+  @override
+  String get ptQty => 'Qty';
+
+  @override
+  String get ptTermsPrepaid => 'Pay now — held until you receive it';
+
+  @override
+  String get ptTermsDeferred =>
+      'Deferred on secured trade account — promissory note issued';
+
+  @override
+  String get ptOrderPlaced => 'Order placed';
+
+  @override
+  String get ptMyRequests => 'My auctions';
+
+  @override
+  String get ptMyOrders => 'Part orders';
+
+  @override
+  String get ptPartName => 'Part name';
+
+  @override
+  String get ptPartNameHint => 'e.g. front brake discs';
+
+  @override
+  String get ptAcceptedConditions => 'Accepted conditions';
+
+  @override
+  String get ptBiddingMinutes => 'Auction length (min)';
+
+  @override
+  String get ptSend => 'Send request';
+
+  @override
+  String get ptBids => 'Bids';
+
+  @override
+  String ptBidsCount(int n) {
+    return '$n bids';
+  }
+
+  @override
+  String get ptLowest => 'Lowest';
+
+  @override
+  String get ptNoBidsShort => 'No offers yet';
+
+  @override
+  String ptEndsIn(int m) {
+    return 'Ends in $m min';
+  }
+
+  @override
+  String ptEndsInHours(int h) {
+    return 'Ends in $h h';
+  }
+
+  @override
+  String ptEndsInDays(int d) {
+    return 'Ends in $d d';
+  }
+
+  @override
+  String get ptEnded => 'Ended';
+
+  @override
+  String get ptAcceptBid => 'Accept this bid';
+
+  @override
+  String get ptAccepted => 'Accepted — purchase order created';
+
+  @override
+  String get ptNoBidsYet =>
+      'No bids yet — nearby suppliers are being notified.';
+
+  @override
+  String get ptTradeAccount => 'Secured trade account';
+
+  @override
+  String get ptTradeAvailable => 'Available';
+
+  @override
+  String get ptTradeOutstanding => 'Outstanding';
+
+  @override
+  String get ptTradeLimit => 'Limit';
+
+  @override
+  String get ptRequestTrade => 'Request a trade account';
+
+  @override
+  String get ptTradePending => 'Awaiting supplier approval';
+
+  @override
+  String get ptScanQr => 'Scan part QR';
+
+  @override
+  String get ptScanHint =>
+      'Point the camera at the QR label on the genuine part';
+
+  @override
+  String get ptVerifyGenuine => 'Genuine, verified part';
+
+  @override
+  String get ptVerifyFake => 'Not verified';
+
+  @override
+  String get ptVerifyAlert => 'Alert: repeated scans';
+
+  @override
+  String get ptInstallOn => 'Install on work order';
+
+  @override
+  String get ptChooseItem => 'Choose the part item';
+
+  @override
+  String get ptInstalled => 'Installed — part + labor warranty issued';
+
+  @override
+  String get ptLaborWarranty => 'Labor warranty (days)';
+
+  @override
+  String get ptWarranties => 'Warranties';
+
+  @override
+  String get ptWarrantyPart => 'Part';
+
+  @override
+  String get ptWarrantyLabor => 'Labor';
+
+  @override
+  String get ptWarrantyBoth => 'Part + labor';
+
+  @override
+  String ptValidUntil(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String get ptExpired => 'Expired';
+
+  @override
+  String get spRequests => 'Requests';
+
+  @override
+  String get spSales => 'My sales';
+
+  @override
+  String get spIncoming => 'Requests near you';
+
+  @override
+  String get spNoRequests =>
+      'No requests right now — you\'ll be notified when a nearby request matches your parts.';
+
+  @override
+  String get spHot => 'Ending soonest';
+
+  @override
+  String get spBid => 'Submit your bid';
+
+  @override
+  String get spYourBid => 'Your bid';
+
+  @override
+  String get spUpdateBid => 'Update bid';
+
+  @override
+  String get spPrice => 'Your price';
+
+  @override
+  String get spEta => 'Delivery within (hours)';
+
+  @override
+  String get spWarrantyDays => 'Warranty (days)';
+
+  @override
+  String get spNotes => 'Notes';
+
+  @override
+  String get spBidSent => 'Bid sent — we\'ll tell you when accepted';
+
+  @override
+  String get spWon => 'Accepted';
+
+  @override
+  String get spNoRequestsBody =>
+      'You will be notified the moment a nearby request matches your parts.';
+
+  @override
+  String get spLost => 'Not accepted';
+
+  @override
+  String get spOrdersToFulfil => 'Orders to fulfil';
+
+  @override
+  String get spPreparing => 'Prepare';
+
+  @override
+  String get spShip => 'Shipped';
+
+  @override
+  String get spDeliver => 'Delivered';
+
+  @override
+  String get spDelivered => 'Delivered';
+
+  @override
+  String get spTradeAccounts => 'Trade accounts';
+
+  @override
+  String get spApprove => 'Approve account';
+
+  @override
+  String get spCreditLimit => 'Credit limit';
+
+  @override
+  String get spTermsDays => 'Payment terms (days)';
+
+  @override
+  String get spInventory => 'Inventory';
+
+  @override
+  String get spNoInventoryTitle => 'Nothing in stock yet';
+
+  @override
+  String get spNoInventoryBody =>
+      'Add parts from the catalog, or start with QR labels for parts you have.';
+
+  @override
+  String spItems(int n) {
+    return '$n items';
+  }
+
+  @override
+  String get spSerials => 'QR serials';
+
+  @override
+  String get spIssueSerials => 'Issue QR batch';
+
+  @override
+  String get spLabels => 'QR labels';
+
+  @override
+  String get spLabelsTitle => 'Part labels';
+
+  @override
+  String get spShareLabels => 'Share labels (PDF)';
+
+  @override
+  String get spLabelPartName => 'Part name';
+
+  @override
+  String get spLabelCount => 'Number of labels';
+
+  @override
+  String get spLabelsHint =>
+      'Each label carries a unique code — whoever scans it knows the part came from you.';
+
+  @override
+  String get spMakeLabels => 'Create labels';
+
+  @override
+  String get spScanToVerify => 'Scan to verify · Sinaaty';
+
+  @override
+  String get spLabelsEmpty => 'No labels in this batch.';
+
+  @override
+  String spLabelsCount(int n) {
+    return '$n labels';
+  }
+
+  @override
+  String spSerialsIssued(int n, String batch) {
+    return '$n serials issued — batch $batch';
+  }
+
+  @override
+  String get spCatalogId => 'Catalog part id';
+
+  @override
+  String get spCount => 'Count';
+
+  @override
+  String get spAwaitingPayment => 'Awaiting payment';
+
+  @override
+  String get spPaid => 'Paid';
+
+  @override
+  String get spConfirmed => 'Confirmed';
+
+  @override
+  String get spCancelled => 'Cancelled';
+
+  @override
+  String get spDisputed => 'Disputed';
+
+  @override
+  String get spReturned => 'Returned';
+
+  @override
+  String get spNoOrders => 'No orders yet';
+
+  @override
+  String get spNoTrade =>
+      'No trade accounts — workshop requests land here for approval.';
+
+  @override
+  String get spBeFirst => 'No bids yet — be first';
+
+  @override
+  String get reqHubTitle => 'How can we help?';
+
+  @override
+  String get reqHubBody => 'Pick what you need now — we handle the rest.';
+
+  @override
+  String get reqPart => 'Request a part';
+
+  @override
+  String get reqPartBody =>
+      'We send your request to workshops, scrapyards and dealers; you pick the best offer.';
+
+  @override
+  String get reqTow => 'Request a tow truck';
+
+  @override
+  String get reqTowBody =>
+      'Move your car to the workshop at a price you know up front.';
+
+  @override
+  String get reqMyRequests => 'Part requests';
+
+  @override
+  String get reqMyTows => 'Tow requests';
+
+  @override
+  String get reqPartVehicle => 'Vehicle';
+
+  @override
+  String get reqPartAnyVehicle => 'No specific vehicle';
+
+  @override
+  String get reqPartSend => 'Send request';
+
+  @override
+  String get towTitle => 'Tow truck';
+
+  @override
+  String get towRequestAction => 'Request the tow';
+
+  @override
+  String get towRequested =>
+      'Request sent — a driver will be with you shortly.';
+
+  @override
+  String get towNoHiddenFees => 'Price known up front';
+
+  @override
+  String get towQuoteHint =>
+      'Set where your car is and where it goes to see the price.';
+
+  @override
+  String get towCalculating => 'Calculating the price…';
+
+  @override
+  String towQuoteLine(String km, int minutes) {
+    return '$km km · about $minutes minutes away';
+  }
+
+  @override
+  String get towVehicle => 'Your car';
+
+  @override
+  String get towNoVehicle => 'No specific vehicle';
+
+  @override
+  String get towFrom => 'From';
+
+  @override
+  String get towTo => 'To';
+
+  @override
+  String get towPickupAddress => 'Location description';
+
+  @override
+  String get towPickupHint => 'e.g. King Fahd Road, after exit 12';
+
+  @override
+  String get towDropoffAddress => 'Destination description';
+
+  @override
+  String get towDropoffHint => 'e.g. Al Noor Workshop — Industrial 2';
+
+  @override
+  String get towLocationLink => 'Location link or coordinates';
+
+  @override
+  String get towLinkHelp =>
+      'Paste the location link from Maps, or type the coordinates.';
+
+  @override
+  String get towLinkUnreadable =>
+      'We could not read that location — paste the full link or the coordinates.';
+
+  @override
+  String get towTruckType => 'Truck type';
+
+  @override
+  String get towTypeFlatbed => 'Flatbed';
+
+  @override
+  String get towTypeWheelLift => 'Wheel lift';
+
+  @override
+  String get towTypeHeavy => 'Heavy tow';
+
+  @override
+  String get towNotes => 'Notes';
+
+  @override
+  String get towNotesHint => 'e.g. the car will not start';
+
+  @override
+  String get towProgress => 'Progress';
+
+  @override
+  String get towRoute => 'Route';
+
+  @override
+  String get towDriver => 'Driver';
+
+  @override
+  String towEta(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String towKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get towRequestedAt => 'Requested at';
+
+  @override
+  String get towCancelTitle => 'Cancel the tow';
+
+  @override
+  String get towCancelBody =>
+      'Cancelling is possible only before the car is loaded.';
+
+  @override
+  String get towCancelReason => 'Reason (optional)';
+
+  @override
+  String get towCancelAction => 'Cancel request';
+
+  @override
+  String get towStatusRequested => 'Waiting for a driver';
+
+  @override
+  String get towStatusSearching => 'Finding the nearest truck';
+
+  @override
+  String get towStatusAssigned => 'Driver assigned';
+
+  @override
+  String get towStatusEnRoutePickup => 'Driver on the way to you';
+
+  @override
+  String get towStatusPickedUp => 'Your car is on the truck';
+
+  @override
+  String get towStatusEnRouteDropoff => 'On the way to the destination';
+
+  @override
+  String get towStatusDelivered => 'Delivered';
+
+  @override
+  String get towStatusCompleted => 'Completed';
+
+  @override
+  String get towStatusCancelled => 'Cancelled';
+
+  @override
+  String get towStatusFailed => 'Could not be completed';
+
+  @override
+  String get towEmptyTitle => 'No tow requests';
+
+  @override
+  String get towEmptyBody => 'Request a tow when your car needs moving.';
+
+  @override
+  String get ptCheapest => 'Cheapest';
+
+  @override
+  String get ptFastest => 'Fastest';
+
+  @override
+  String get ptLongestWarranty => 'Longest warranty';
+
+  @override
+  String get ptWarrantiesEmptyTitle => 'No warranties yet';
+
+  @override
+  String get ptWarrantiesEmptyBody =>
+      'Every part installed through Sinaaty arrives with a digital warranty here.';
+
+  @override
+  String get ptWarrantyActive => 'Active';
+
+  @override
+  String get ptWarrantyIssuer => 'Guaranteed by';
+
+  @override
+  String get ptWarrantyFrom => 'Starts';
+
+  @override
+  String get ptWarrantyNumber => 'Warranty no.';
+
+  @override
+  String get diffTitle => 'Vehicle condition comparison';
+
+  @override
+  String get diffSub => 'Before and after the repair — with photos';
+
+  @override
+  String get diffOpen => 'Compare vehicle condition';
+
+  @override
+  String get diffCleanTitle => 'Your car, as we received it';
+
+  @override
+  String get diffWaiting => 'Waiting for the check-out inspection to compare.';
+
+  @override
+  String get diffAppeared => 'Appeared after intake';
+
+  @override
+  String get diffWorsened => 'Got worse';
+
+  @override
+  String get diffRepaired => 'Repaired';
+
+  @override
+  String get diffUnchanged => 'Same as at intake';
+
+  @override
+  String get diffCheckIn => 'Intake photos';
+
+  @override
+  String get diffCheckOut => 'Handover photos';
+
+  @override
+  String get diffAiSuggested => 'System-detected';
+
+  @override
+  String get sevMinor => 'Minor';
+
+  @override
+  String get sevModerate => 'Moderate';
+
+  @override
+  String get sevSevere => 'Severe';
+
+  @override
+  String diffFromTo(String from, String to) {
+    return 'from $from to $to';
+  }
+
+  @override
+  String get flToday => 'Your fleet today';
+
+  @override
+  String get flVehicles => 'vehicles';
+
+  @override
+  String get flOpenRepairs => 'open repairs';
+
+  @override
+  String get flAwaiting => 'awaiting your decision';
+
+  @override
+  String get flMonthSpend => 'committed this month';
+
+  @override
+  String flBudgetLeft(String amount) {
+    return '$amount of the budget left';
+  }
+
+  @override
+  String get flNoPolicy =>
+      'No spending policy — every repair needs your approval.';
+
+  @override
+  String flPolicyLine(String name, String auto) {
+    return 'Policy “$name”: auto-approve below $auto';
+  }
+
+  @override
+  String flPolicyLineNoAuto(String name) {
+    return 'Policy “$name”: every repair needs your approval';
+  }
+
+  @override
+  String get flInboxTitle => 'Awaiting your decision';
+
+  @override
+  String get flInboxEmpty => 'Nothing awaits your decision';
+
+  @override
+  String get flInboxEmptyBody =>
+      'Every repair is either approved or under the auto-approve limit.';
+
+  @override
+  String get flNeedsOne => 'Needs one approval';
+
+  @override
+  String get flNeedsTwo => 'Needs two approvers';
+
+  @override
+  String get flAutoOk => 'Under the limit — ready to sign';
+
+  @override
+  String get flBlockedWorkshop => 'Workshop is outside the approved list';
+
+  @override
+  String get flOverBudget => 'Exceeds this month\'s budget';
+
+  @override
+  String flApprovedBy(String name) {
+    return 'Approved by $name';
+  }
+
+  @override
+  String flRejectedBy(String name) {
+    return 'Rejected by $name';
+  }
+
+  @override
+  String get flApprove => 'Approve the spend';
+
+  @override
+  String get flReject => 'Reject';
+
+  @override
+  String get flDecisionNote => 'Note (optional)';
+
+  @override
+  String get flDecisionHint =>
+      'Your decision is recorded in your name. The final signature is a separate step via Nafath or OTP.';
+
+  @override
+  String get flReadyToSign => 'Approvals complete — sign now';
+
+  @override
+  String get flDecided => 'Your decision was recorded';
+
+  @override
+  String get flRejectedDone => 'Rejection recorded — work will not start';
+
+  @override
+  String get accTitle => 'Accident report';
+
+  @override
+  String get accSub => 'The insurance file linked to this repair';
+
+  @override
+  String get accOpen => 'Accident report';
+
+  @override
+  String get accLookupLabel => 'Accident reference';
+
+  @override
+  String get accLookupHint => 'e.g. ACC-2026-000123';
+
+  @override
+  String get accLookup => 'Look up';
+
+  @override
+  String get accNotLinked => 'No report linked';
+
+  @override
+  String get accNotLinkedBody =>
+      'Look up the insurer\'s reference, then link it to this order.';
+
+  @override
+  String get accLink => 'Link to this order';
+
+  @override
+  String get accLinked => 'Report linked to the order';
+
+  @override
+  String get accInsurer => 'Insurer';
+
+  @override
+  String get accClaimNo => 'Claim no.';
+
+  @override
+  String get accApproved => 'Insurer approved';
+
+  @override
+  String get accDeductible => 'Deductible';
+
+  @override
+  String get accFault => 'Fault share';
+
+  @override
+  String get accCustomerPays => 'Customer expected to pay';
+
+  @override
+  String get accDamages => 'Assessor\'s damages';
+
+  @override
+  String get accSuggested => 'Suggested work-order lines';
+
+  @override
+  String get accSuggestedHint =>
+      'From the assessor\'s report — review, price them yourself, then add.';
+
+  @override
+  String get accNotPriced =>
+      'Still under assessment — no figures yet. Refresh later.';
+
+  @override
+  String get accSubmitRepair => 'Register the repair with the provider';
+
+  @override
+  String get accSubmitted => 'Repair report registered';
+
+  @override
+  String accSubmittedRef(String ref) {
+    return 'Registration ref $ref';
+  }
+
+  @override
+  String accCoverage(String amount) {
+    return 'Insurance covers $amount';
+  }
+
+  @override
+  String get accActRepair => 'Repair';
+
+  @override
+  String get accActReplace => 'Replace';
+
+  @override
+  String get accActPaint => 'Bodywork & paint';
+
+  @override
+  String get towVatIncluded => 'VAT included';
+
+  @override
+  String get dsTitle => 'Dispute';
+
+  @override
+  String get dsOpen => 'Open a dispute';
+
+  @override
+  String get dsActive => 'An open dispute on this order';
+
+  @override
+  String get dsView => 'View dispute';
+
+  @override
+  String get dsMoneyHeld =>
+      'The amount stays held until the dispute is resolved';
+
+  @override
+  String get dsPlatformDecides =>
+      'The platform reviews both sides and decides — nothing else is needed from you.';
+
+  @override
+  String get dsDescribe => 'Describe the problem';
+
+  @override
+  String get dsDescribeHint => 'What happened, and what are you asking for?';
+
+  @override
+  String get dsCategory => 'Problem type';
+
+  @override
+  String get dsAttach => 'Attach a photo';
+
+  @override
+  String get dsOpenCta => 'Open the dispute';
+
+  @override
+  String get dsOpened => 'Dispute opened — the amount is held until resolved';
+
+  @override
+  String get dsMessageHint => 'Write your message…';
+
+  @override
+  String get dsEvidence => 'Photos & evidence';
+
+  @override
+  String get dsConversation => 'Conversation';
+
+  @override
+  String get dsResolved => 'Platform decision';
+
+  @override
+  String get dsCatScope => 'Scope of work';
+
+  @override
+  String get dsCatQuality => 'Workmanship';
+
+  @override
+  String get dsCatPrice => 'Price';
+
+  @override
+  String get dsCatDelay => 'Delay';
+
+  @override
+  String get dsCatDamage => 'Damage to the car';
+
+  @override
+  String get dsCatPartDefect => 'Defective part';
+
+  @override
+  String get dsCatNoShow => 'No-show';
+
+  @override
+  String get dsStOpen => 'Open';
+
+  @override
+  String get dsStUnderReview => 'Under review';
+
+  @override
+  String get dsStAwaiting => 'Awaiting the parties';
+
+  @override
+  String get dsStEscalated => 'Escalated';
+
+  @override
+  String get dsStResolved => 'Decided';
+
+  @override
+  String get dsStClosed => 'Closed';
+
+  @override
+  String get abTitle => 'Uncollected vehicle';
+
+  @override
+  String abNotice(int n) {
+    return 'Notice $n';
+  }
+
+  @override
+  String get abFormal => 'formal';
+
+  @override
+  String abDueAfter(int days) {
+    return 'Due $days days after ready';
+  }
+
+  @override
+  String abDaysReady(int days) {
+    return 'Ready for $days days';
+  }
+
+  @override
+  String get abStorage => 'Storage fees';
+
+  @override
+  String abFreeThen(int free, String perDay) {
+    return '$free free days, then $perDay per day';
+  }
+
+  @override
+  String get abDeclare => 'Declare vehicle abandoned';
+
+  @override
+  String get abDeclareWarn =>
+      'A legal, irreversible step: the car is recorded as abandoned and storage fees join the enforcement claim.';
+
+  @override
+  String get abDeclared => 'Vehicle declared abandoned';
+
+  @override
+  String get abReason => 'Reason (optional)';
+
+  @override
+  String get abCustomerReady =>
+      'Your car is ready — collect it now. Delays accrue storage fees and the car may legally be deemed abandoned.';
+
+  @override
+  String get abCustomerDeclared =>
+      'The car was declared abandoned for non-collection — contact the workshop immediately to settle and collect.';
+
+  @override
+  String get accAddItems => 'Add to the work order';
+
+  @override
+  String get accAddItemsHint =>
+      'Added as a new version that needs the customer\'s re-approval.';
+
+  @override
+  String get accItemsAdded => 'Items added — send for approval';
+
+  @override
+  String get accPriceEach => 'Price each item before adding';
+
+  @override
+  String get flStatements => 'Monthly statements';
+
+  @override
+  String get flStatementsBody =>
+      'A monthly summary of your fleet\'s invoices — accounting-ready.';
+
+  @override
+  String get flStatementsEmpty => 'No statements yet';
+
+  @override
+  String get flStatementsEmptyBody =>
+      'Generate this month\'s statement to get your fleet\'s invoices in one file.';
+
+  @override
+  String get flGenerateStatement => 'Generate this month';
+
+  @override
+  String get flStatementGenerated => 'Statement ready';
+
+  @override
+  String flInvoicesCount(int n) {
+    return '$n invoices';
+  }
+
+  @override
+  String get flCopyCsv => 'Copy CSV';
+
+  @override
+  String get flCsvCopied => 'Statement copied — paste it into your sheets';
+
+  @override
+  String get srFix => 'Fix my car';
+
+  @override
+  String get srFixBody =>
+      'Describe the problem, compare offers from nearby workshops.';
+
+  @override
+  String get srDescribe => 'Describe the problem';
+
+  @override
+  String get srDescribeHint =>
+      'What do you hear or see? A photo says a thousand words.';
+
+  @override
+  String get srWhere => 'Your location';
+
+  @override
+  String get srWhereHint =>
+      'Paste a maps link or coordinates like 24.71, 46.67';
+
+  @override
+  String get srRadius => 'Search radius';
+
+  @override
+  String srKm(int n) {
+    return '$n km';
+  }
+
+  @override
+  String get srWhen => 'When do you want the repair?';
+
+  @override
+  String get srNow => 'Now';
+
+  @override
+  String get srToday => 'Today';
+
+  @override
+  String get srThisWeek => 'This week';
+
+  @override
+  String get srSend => 'Send request';
+
+  @override
+  String get srSent => 'Request sent — offers will appear here';
+
+  @override
+  String get srMine => 'Repair requests';
+
+  @override
+  String get srOffers => 'Offers';
+
+  @override
+  String get srNoOffers =>
+      'No offers yet — nearby workshops are reviewing your request.';
+
+  @override
+  String srWiden(int n) {
+    return 'Widen to $n km';
+  }
+
+  @override
+  String get srListView => 'List';
+
+  @override
+  String get srMapView => 'On the map';
+
+  @override
+  String get srMapNote =>
+      'Your car is in the middle; every workshop is where it really is — tap a pin to see its offer.';
+
+  @override
+  String srMapNoPin(int n) {
+    return '$n offers have no precise location — find them in the list.';
+  }
+
+  @override
+  String get srMapFree => 'Free check';
+
+  @override
+  String get srVoiceAttached =>
+      'Your voice note will be attached so the workshop hears you in your own words.';
+
+  @override
+  String get srWidened => 'Search radius widened';
+
+  @override
+  String get srFreeInspection => 'Free inspection';
+
+  @override
+  String get srEstimate => 'Estimate';
+
+  @override
+  String srPriceRange(String min, String max) {
+    return '$min to $max';
+  }
+
+  @override
+  String get srFinalPriceNote =>
+      'The final price is approved after inspection, with your signature — no surprises.';
+
+  @override
+  String get srAccepted => 'Offer accepted — work order created';
+
+  @override
+  String get srNearestBadge => 'Nearest';
+
+  @override
+  String get srTopRatedBadge => 'Top rated';
+
+  @override
+  String get srPrevUsedBadge => 'You have used them before';
+
+  @override
+  String get srNearby => 'Nearby repair requests';
+
+  @override
+  String srNearbyCount(int n) {
+    return '$n nearby repair requests';
+  }
+
+  @override
+  String get srRespond => 'Make your offer';
+
+  @override
+  String get srDiagnosis => 'Your diagnosis';
+
+  @override
+  String get srDiagnosisHint =>
+      'One line on what you think it is — it is what sets your offer apart.';
+
+  @override
+  String get srPriceMin => 'Price from';
+
+  @override
+  String get srPriceMax => 'to';
+
+  @override
+  String get srAvailability => 'When can you take the car?';
+
+  @override
+  String get srOfferSent => 'Offer sent';
+
+  @override
+  String get srCancelRequest => 'Cancel request';
+
+  @override
+  String get srSpecialistBadge => 'Specialists in your car';
+
+  @override
+  String srRespondsIn(int n) {
+    return 'Replies in ~$n min';
+  }
+
+  @override
+  String get voUnavailable => 'Voice input is not available on this device.';
+
+  @override
+  String get voSpeak => 'Speak now';
+
+  @override
+  String get voListening => 'Listening…';
+
+  @override
+  String get voHeardNothing => 'Heard nothing — try again';
+
+  @override
+  String get voAgain => 'Again';
+
+  @override
+  String get voDone => 'Done';
+
+  @override
+  String get voDictateItems => 'Dictate the items';
+
+  @override
+  String get voReviewTitle => 'Review what was heard';
+
+  @override
+  String voHeard(String text) {
+    return 'Heard: $text';
+  }
+
+  @override
+  String get voNeedsPrice => 'Needs a price';
+
+  @override
+  String get voApply => 'Add the priced items';
+
+  @override
+  String get voApplied => 'Items added — customer re-approval needed';
+
+  @override
+  String get voDiscard => 'Discard';
+
+  @override
+  String get voUploadFailed =>
+      'The recording did not upload — your text is kept, try again';
+
+  @override
+  String get voRetryUpload => 'Retry upload';
+
+  @override
+  String get voDevTyped =>
+      'Dev environment — dictation unavailable on the simulator';
+
+  @override
+  String get voDevTypedHint => 'Type what you would have said';
+
+  @override
+  String get voDevBroken =>
+      'Dev environment — dictation does not work on this simulator';
+
+  @override
+  String get voTypeInstead => 'Type instead';
+
+  @override
+  String get ptSendDelivery => 'Send with platform delivery';
+
+  @override
+  String get ptDeliverySent => 'Sent — finding a nearby driver';
+
+  @override
+  String get ptDeliveryTitle => 'Platform delivery';
+
+  @override
+  String get ptManualShip => 'Shipped manually (outside platform delivery)';
+
+  @override
+  String get ptDeliveryPickedUp => 'With the driver';
+
+  @override
+  String get srNoVehicle => 'Add your car first';
+
+  @override
+  String get srNoVehicleBody =>
+      'Workshops price by make and model — without it they cannot estimate a cost.';
+
+  @override
+  String get srAddVehicle => 'Add a car';
+
+  @override
+  String get ptEndedNoBids =>
+      'Ended with no offers — repost wider, or buy from the search results';
+
+  @override
+  String get ptToolsTitle => 'My tools';
+
+  @override
+  String get ptTradeRowSub => 'Your credit account with suppliers';
+
+  @override
+  String get wsQuickAdd => 'Add a line';
+
+  @override
+  String get wsQuickAddHint => 'oil and filter change for two hundred sixty';
+
+  @override
+  String get wsQuickAddNeedsPrice => 'Add a price to complete the line';
+
+  @override
+  String get wsItemDetails => 'More detail (warranty, part condition)';
+
+  @override
+  String get wsPaint => 'Paint';
+
+  @override
+  String get wsDiagnostic => 'Diagnostic';
+
+  @override
+  String get wsTowing => 'Towing';
+
+  @override
+  String get sar => 'SAR';
+
+  @override
+  String get vinScan => 'Scan the VIN';
+
+  @override
+  String get vinScanNotFound =>
+      'That code is not a VIN — try the door-pillar label';
+
+  @override
+  String get wsInbox => 'What needs you now';
+
+  @override
+  String wsInboxCount(int n) {
+    return '$n item(s)';
+  }
+
+  @override
+  String get wsInboxDisputes => 'Open disputes — money frozen until decided';
+
+  @override
+  String get wsInboxAbandonRisk => 'Ready cars nobody collected';
+
+  @override
+  String get wsInboxAwaitingApproval => 'Waiting for customer approval';
+
+  @override
+  String get wsInboxReady => 'Ready to hand over';
+
+  @override
+  String get wsInboxCheckout => 'Need a check-out inspection';
+
+  @override
+  String get wsInboxServiceRequests =>
+      'Nearby repair requests awaiting your offer';
+
+  @override
+  String get wsInboxPartBids => 'Part requests awaiting your bid';
+
+  @override
+  String get wsInboxUnpaid => 'Delivered without an invoice';
+
+  @override
+  String get wsTitleOptional => 'Short description (optional)';
+
+  @override
+  String get wsTitleAuto =>
+      'Leave it empty and the order is named after its items.';
+
+  @override
+  String get wsNeedCar => 'Add the plate number or the VIN.';
+
+  @override
+  String get wsNeedItem => 'Add at least one item.';
+
+  @override
+  String get dueOnYou => 'You owe';
+
+  @override
+  String get dueOverdueHint =>
+      'Payment is late — a formal notice, then enforcement.';
+
+  @override
+  String dueCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n awaiting payment',
+      one: '1 awaiting payment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loginPromise =>
+      'Your car, from breakdown to back on the road — in one place.';
+
+  @override
+  String get loginPromisePartner =>
+      'Your workshop: signed orders, secured earnings.';
+
+  @override
+  String get loginPromiseFleet =>
+      'Your fleet: no repair is paid before you approve it.';
+
+  @override
+  String get loginTrustFleetApprove => 'Approve before paying';
+
+  @override
+  String get loginTrustFleetBudget => 'Budget under control';
+
+  @override
+  String get loginTrustFleetPassport => 'A record per car';
+
+  @override
+  String get loginTrustPartnerOrders => 'Signed orders';
+
+  @override
+  String get loginTrustPartnerMoney => 'Earnings secured';
+
+  @override
+  String get loginTrustPartnerParts => 'Parts by VIN';
+
+  @override
+  String get loginTrustSign => 'Signed approvals';
+
+  @override
+  String get loginTrustEscrow => 'Money held';
+
+  @override
+  String get loginTrustInvoice => 'Tax invoice';
+
+  @override
+  String get loginNafathNote =>
+      'Sign in with your number, approve with your signature.';
+
+  @override
+  String get drvOnline => 'Online — jobs reach you';
+
+  @override
+  String get drvOffline => 'Offline';
+
+  @override
+  String get drvNearby => 'Jobs near you';
+
+  @override
+  String get drvNeedOrg =>
+      'Link your account to a transport establishment before accepting jobs — the tax invoice is issued in its name.';
+
+  @override
+  String get drvPickup => 'Pick-up';
+
+  @override
+  String get drvDropoff => 'Drop-off';
+
+  @override
+  String drvKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String get drvOfflineTitle => 'You are offline';
+
+  @override
+  String get drvOfflineBody => 'Go online above to see jobs near you.';
+
+  @override
+  String get drvNoOffersTitle => 'No jobs nearby';
+
+  @override
+  String get drvLastDelivered => 'Last delivery — done';
+
+  @override
+  String get drvMoneyToWallet =>
+      'The amount is added to your wallet after the invoice';
+
+  @override
+  String get drvStatusAssigned => 'Assigned to you';
+
+  @override
+  String get drvStatusEnRoutePickup => 'Heading to pickup';
+
+  @override
+  String get drvStatusPickedUp => 'Car on your truck';
+
+  @override
+  String get drvStatusEnRouteDropoff => 'Heading to drop-off';
+
+  @override
+  String get drvAcceptTitle => 'Take this job?';
+
+  @override
+  String get drvAcceptBtn => 'Accept job';
+
+  @override
+  String get drvNoOffersBody =>
+      'We will show any tow request that arrives near you.';
+
+  @override
+  String get drvActStart => 'Heading to pick-up';
+
+  @override
+  String get drvActLoaded => 'Car loaded';
+
+  @override
+  String get drvActHeading => 'Heading to drop-off';
+
+  @override
+  String get drvActDeliver => 'Deliver with proof';
+
+  @override
+  String get drvActDone => 'Done';
+
+  @override
+  String get truckFlatbed => 'Flatbed';
+
+  @override
+  String get truckWheelLift => 'Wheel lift';
+
+  @override
+  String get truckPartsDelivery => 'Parts delivery';
+
+  @override
+  String get drvProofTitle => 'Proof of delivery';
+
+  @override
+  String get drvProofWhy =>
+      'A photo at the drop-off and a code read from the receiver. Together they close the job and release the money.';
+
+  @override
+  String get drvPhotoStep => 'Photograph the car at the drop-off';
+
+  @override
+  String get drvPhotoDone => 'Photo ready';
+
+  @override
+  String get drvTakePhoto => 'Take a photo';
+
+  @override
+  String get drvRetakePhoto => 'Retake';
+
+  @override
+  String get drvCodeStep =>
+      'Send the code to the receiver\'s phone, then read it from them.';
+
+  @override
+  String get drvCodeSent => 'Code sent to the receiver\'s phone.';
+
+  @override
+  String get drvSendCode => 'Send the code';
+
+  @override
+  String get drvResendCode => 'Resend';
+
+  @override
+  String get drvComplete => 'Finish the job';
+
+  @override
+  String get tabDriverJobs => 'My jobs';
+
+  @override
+  String get flPolicyTitle => 'Spending rules';
+
+  @override
+  String get flImportTitle => 'Import vehicle list';
+
+  @override
+  String get flImportEntry => 'Import list';
+
+  @override
+  String get flImportWhy =>
+      'Paste your list — one car per line: plate or VIN. A bad line does not stop the rest.';
+
+  @override
+  String get flImportField => 'List';
+
+  @override
+  String flImportAction(int n) {
+    return 'Import $n vehicles';
+  }
+
+  @override
+  String get flImportCreated => 'Added';
+
+  @override
+  String get flImportExists => 'Already registered';
+
+  @override
+  String get flImportFailed => 'Failed';
+
+  @override
+  String get flPolicyName => 'Fleet policy';
+
+  @override
+  String get flPolicyWhy =>
+      'Three numbers govern every repair: what passes without approval, what needs two people, and the monthly cap.';
+
+  @override
+  String get flPolicyAuto => 'Auto-approve below';
+
+  @override
+  String get flPolicyAutoHint =>
+      'Anything under this passes without waiting for anyone.';
+
+  @override
+  String get flPolicyTwo => 'Two approvers above';
+
+  @override
+  String get flPolicyTwoHint => 'Leave empty if one approver is always enough.';
+
+  @override
+  String get flPolicyBudget => 'Monthly budget';
+
+  @override
+  String get flPolicyBudgetHint =>
+      'Anything over it is refused. Leave empty for no cap.';
+
+  @override
+  String get flPolicyMeaning => 'What this means';
+
+  @override
+  String get flPolicySave => 'Save rules';
+
+  @override
+  String get flPolicyContradiction =>
+      'The two-approver threshold is below the auto-approve threshold — nothing would ever need one approver.';
+
+  @override
+  String get flOutAuto => 'Passes automatically';
+
+  @override
+  String get flOutOne => 'One approver';
+
+  @override
+  String get flOutTwo => 'Two approvers';
+
+  @override
+  String get flOutOverBudget => 'Over budget';
+
+  @override
+  String get flPolicyEntry => 'Spending rules';
+
+  @override
+  String get spAddPhoto => 'Photograph the part';
+
+  @override
+  String spAddMorePhotos(int n) {
+    return 'Another photo ($n left)';
+  }
+
+  @override
+  String get ptSeePart => 'Part photos';
+
+  @override
+  String get inNewService => 'A repair request just arrived';
+
+  @override
+  String get inNewPart => 'A part request just arrived';
+
+  @override
+  String inMore(int n) {
+    return '+$n more';
+  }
+
+  @override
+  String get inOpen => 'See the request';
+
+  @override
+  String get inIgnore => 'Ignore';
+
+  @override
+  String get srWhatYouNotice => 'What are you noticing?';
+
+  @override
+  String get srPickMore =>
+      'Pick everything that applies — the clearer it is, the better the offers.';
+
+  @override
+  String get srNoteOptional => 'Details that help the workshop (optional)';
+
+  @override
+  String get srNoteHint => 'When does it happen? Since when?';
+
+  @override
+  String get srHere => 'Your current location';
+
+  @override
+  String get srLocating => 'Finding your location…';
+
+  @override
+  String get srLocateFailed => 'Could not get your location';
+
+  @override
+  String get srLocateManual => 'Enter it manually';
+
+  @override
+  String get srUseMyLocation => 'Use my location';
+
+  @override
+  String get srWhenAsk => 'When suits you?';
+
+  @override
+  String get srOffersComing =>
+      'Nearby workshops will send offers within minutes — compare and choose.';
+
+  @override
+  String get reqFixHero => 'Something wrong with your car?';
+
+  @override
+  String get reqFixHeroBody =>
+      'Describe what you notice and nearby workshops send you offers — compare and choose without driving around.';
+
+  @override
+  String get reqNearby => 'Workshops near you';
+
+  @override
+  String get reqNearbySpecialised => 'Specialises in your car';
+
+  @override
+  String get reqNearbyNew => 'New';
+
+  @override
+  String get reqNearbyAsk => 'Ask them';
+
+  @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabMyOrders => 'My requests';
+
+  @override
+  String get homeGreeting => 'What does your car need?';
+
+  @override
+  String get homeNothingLive => 'Nothing in progress';
+
+  @override
+  String get myOrdersEmpty => 'No active requests';
+
+  @override
+  String get myOrdersEmptyBody =>
+      'Everything you ask for — a repair, a part, a tow — stays here until it is done.';
+
+  @override
+  String get moRepairs => 'Repairs';
+
+  @override
+  String get moParts => 'Parts';
+
+  @override
+  String get moTow => 'Tow';
+
+  @override
+  String get moDue => 'Due from you';
+
+  @override
+  String get obTitle => 'Register your workshop';
+
+  @override
+  String get obBody =>
+      'A few minutes, then customer requests start reaching you.';
+
+  @override
+  String get obName => 'Workshop name';
+
+  @override
+  String get obNameHint => 'As on the commercial registration';
+
+  @override
+  String get obCr => 'Commercial registration';
+
+  @override
+  String get obCrHint => '10 digits';
+
+  @override
+  String get obCrOptional => 'You can add it later';
+
+  @override
+  String get obType => 'Business type';
+
+  @override
+  String get obTypeWorkshop => 'Workshop';
+
+  @override
+  String get obTypeBody => 'Body shop';
+
+  @override
+  String get obTypeService => 'Service centre';
+
+  @override
+  String get obTypeScrap => 'Scrapyard';
+
+  @override
+  String get obTypeParts => 'Parts';
+
+  @override
+  String get obLocation => 'Where is your workshop?';
+
+  @override
+  String get obLocationBody =>
+      'Your location decides who reaches you — customers nearby see you first.';
+
+  @override
+  String get obUseMyLocation => 'Use my current location';
+
+  @override
+  String get obCity => 'City';
+
+  @override
+  String get obDistrict => 'District';
+
+  @override
+  String get obDocs => 'Two documents';
+
+  @override
+  String get obDocsBody =>
+      'Commercial registration and owner ID. Only the review team sees them.';
+
+  @override
+  String get obDocCr => 'Commercial registration';
+
+  @override
+  String get obDocId => 'Owner ID';
+
+  @override
+  String get obUpload => 'Attach';
+
+  @override
+  String get obUploaded => 'Attached';
+
+  @override
+  String get obSubmit => 'Submit for review';
+
+  @override
+  String get obNext => 'Next';
+
+  @override
+  String get obCreate => 'Create workshop';
+
+  @override
+  String get obPending => 'Your workshop is under review';
+
+  @override
+  String get obPendingBody =>
+      'The team usually reviews within one business day, and we notify you the moment it is approved — then customer requests start arriving.';
+
+  @override
+  String get obDraft => 'Finish registering your workshop';
+
+  @override
+  String get obRejected => 'The review needs a change';
+
+  @override
+  String get obStepInfo => 'Details';
+
+  @override
+  String get obStepPlace => 'Location';
+
+  @override
+  String get obStepDocs => 'Documents';
+
+  @override
+  String get welcomeSkip => 'Skip';
+
+  @override
+  String get welcomeNext => 'Next';
+
+  @override
+  String get welcomeStart => 'Get started';
+
+  @override
+  String get welcome1Title => 'One problem, one request';
+
+  @override
+  String get welcome1Body =>
+      'Describe the fault in a few taps — offers come to you. Compare and choose.';
+
+  @override
+  String get welcome2Title => 'Your money, safely held';
+
+  @override
+  String get welcome2Body =>
+      'Your money sits in escrow, released only after receipt or when the window ends.';
+
+  @override
+  String get welcome3Title => 'Everything signed and documented';
+
+  @override
+  String get welcome3Body =>
+      'Prices you approve, photos before and after, an official invoice.';
+
+  @override
+  String get setupTitle => 'Set up your account';
+
+  @override
+  String get setupSubtitle => 'One minute: your name and your car';
+
+  @override
+  String get setupStepName => 'Your name';
+
+  @override
+  String get setupStepCar => 'Your car';
+
+  @override
+  String get setupNameTitle => 'What\'s your name?';
+
+  @override
+  String get setupNameBody => 'Shown on your approvals and invoices.';
+
+  @override
+  String get setupNameLabel => 'Name';
+
+  @override
+  String get setupNameHint => 'e.g. Meshal Alotaibi';
+
+  @override
+  String get setupNameShort => 'Enter at least two characters';
+
+  @override
+  String get setupNext => 'Next';
+
+  @override
+  String get setupCarTitle => 'Add your car';
+
+  @override
+  String get setupCarBody => 'By VIN or plate — its record travels with it.';
+
+  @override
+  String get setupAddCar => 'Add my car';
+
+  @override
+  String get setupLater => 'Later';
+
+  @override
+  String get vcInService => 'In the workshop — track it';
+
+  @override
+  String get vcNoHistory => 'Its record starts with the first service';
+
+  @override
+  String vcLastService(Object date) {
+    return 'Last service $date';
+  }
+
+  @override
+  String vcWarranties(Object n) {
+    return '$n active warranties';
+  }
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get emailLabel => 'Email (optional)';
+
+  @override
+  String get emailWhy => 'For your invoices and receipts — nothing else.';
+
+  @override
+  String get nameFromNafath => 'Name verified via Nafath';
+
+  @override
+  String nameLockedUntil(Object date) {
+    return 'Your name signs your approvals — changeable after $date';
+  }
+
+  @override
+  String get awaitingPricing => 'Awaiting pricing';
+
+  @override
+  String get aboutTitle => 'About Sinaaty';
+
+  @override
+  String get supportTitle => 'Support';
+
+  @override
+  String get aboutPromise =>
+      'Your car, from breakdown to back on the road — in one place. Every agreement signed, every payment held until you receive, everything documented in your name.';
+
+  @override
+  String aboutVersion(Object v) {
+    return 'Version $v';
+  }
+
+  @override
+  String get supportBody =>
+      'Hit a problem or have a suggestion? Message us and we will get back to you fast.';
+
+  @override
+  String get supportWhatsApp => 'Message us on WhatsApp';
+
+  @override
+  String get supportCall => 'Call us';
+
+  @override
+  String get termsNote =>
+      'By using Sinaaty you agree to the Terms of Use and Privacy Policy — the full text will be published before public launch.';
+
+  @override
+  String get srCantMove => 'Car won\'t move?';
+
+  @override
+  String get srOrderTow => 'Request a tow';
+
+  @override
+  String get poScheduled => 'Scheduled';
+
+  @override
+  String get poProcessing => 'Processing';
+
+  @override
+  String get poPaid => 'Transferred';
+
+  @override
+  String get poFailed => 'Failed';
+
+  @override
+  String get rvTitle => 'How was the experience?';
+
+  @override
+  String get rvBody =>
+      'Your rating shows to customers after you — it counts for or against the workshop.';
+
+  @override
+  String get rvCommentOptional => 'A word that helps others (optional)';
+
+  @override
+  String get rvCommentHint => 'e.g. Clean work, delivered on time';
+
+  @override
+  String get rvSubmit => 'Send rating';
+
+  @override
+  String get rvThanks => 'Thank you — your rating is in';
+
+  @override
+  String get woPartGeneric => 'Repair part';
+
+  @override
+  String get wpOrdered => 'Ordered';
+
+  @override
+  String get wpShipped => 'On the way';
+
+  @override
+  String get wpArrived => 'Arrived';
+
+  @override
+  String get wpCancelled => 'Cancelled';
+
+  @override
+  String get delAccount => 'Delete account';
+
+  @override
+  String get delAccountConfirm => 'Delete my account permanently';
+
+  @override
+  String get delAccountBody =>
+      'Your name, phone and email are erased and cannot be recovered. Invoices and financial records remain, as required by law, under \'Deleted account\'. Open repair orders or unsettled notes must be completed first.';
+
+  @override
+  String get avOn => 'Accepting market requests';
+
+  @override
+  String get avOnBody => 'Nearby customer requests reach you as they come';
+
+  @override
+  String get avOff => 'Intake paused';
+
+  @override
+  String get avOffBody =>
+      'No new requests until you switch back on — ongoing orders are unaffected';
+
+  @override
+  String get avResume => 'Resume';
+
+  @override
+  String get wsTeam => 'Workshop team';
+
+  @override
+  String get wsServices => 'My services';
+
+  @override
+  String get avMenuOn => 'Request intake: on — pause it';
+
+  @override
+  String get avMenuOff => 'Request intake: paused — resume';
+
+  @override
+  String get teamAdd => 'Add member';
+
+  @override
+  String get teamAddBody =>
+      'Signs in with their phone; sees only what their role allows.';
+
+  @override
+  String get teamAddConfirm => 'Add to team';
+
+  @override
+  String get teamEmpty => 'It\'s just you so far';
+
+  @override
+  String get teamEmptyBody =>
+      'Add your technicians so they can receive cars and update statuses from their phones.';
+
+  @override
+  String teamRemoveTitle(Object name) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get teamRemoveBody =>
+      'They lose access to this workshop immediately — their past work records remain.';
+
+  @override
+  String get teamRemoveConfirm => 'Remove';
+
+  @override
+  String get roleOwner => 'Owner';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleTechnician => 'Technician';
+
+  @override
+  String get roleAccountant => 'Accountant';
+
+  @override
+  String get svcAdd => 'Add service';
+
+  @override
+  String get svcName => 'Service name';
+
+  @override
+  String get svcNameHint => 'e.g. Oil & filter change';
+
+  @override
+  String get svcPrice => 'Price';
+
+  @override
+  String get svcWarrantyDays => 'Warranty days';
+
+  @override
+  String get svcAddConfirm => 'Save service';
+
+  @override
+  String get svcEmpty => 'No saved services yet';
+
+  @override
+  String get svcEmptyBody =>
+      'Save your recurring services — add them to any order with one tap.';
+
+  @override
+  String get itemLabor => 'Labor';
+
+  @override
+  String get itemPart => 'Part';
+
+  @override
+  String get itemDiagnostic => 'Diagnostic';
+
+  @override
+  String get scanCameraFailed =>
+      'Could not open the camera. Allow camera access, or type the number instead.';
+
+  @override
+  String get scanTypeInstead => 'Type it instead';
+
+  @override
+  String get istTitle => 'Photograph the registration';
+
+  @override
+  String get istWhy =>
+      'One photo reads the plate, VIN and year — no typing, and it happens inside your phone, not on a server.';
+
+  @override
+  String get istShoot => 'Take the photo';
+
+  @override
+  String istRead(int n) {
+    return 'Read $n fields from the card';
+  }
+
+  @override
+  String get istCheck => 'Check the fields below — OCR sometimes misreads.';
+
+  @override
+  String get istUnreadable =>
+      'Nothing was readable in that photo. Try better light, or type the fields yourself.';
+
+  @override
+  String get exploreFirst => 'Explore first';
+
+  @override
+  String get exploreTitle => 'Around you';
+
+  @override
+  String get exploreSubtitle =>
+      'Verified workshops and parts shops — sign up when ready';
+
+  @override
+  String get exploreSearchHint => 'Search workshops or parts shops…';
+
+  @override
+  String get exploreCta => 'Sign up & start';
+
+  @override
+  String get exploreEmpty => 'Nothing nearby';
+
+  @override
+  String get exploreEmptyBody =>
+      'Try another name — or sign up, post your request and offers come to you.';
+
+  @override
+  String get exploreOrgCta => 'Sign up to order here';
+
+  @override
+  String get exploreNew => 'New';
+
+  @override
+  String get orgWorkshop => 'Workshop';
+
+  @override
+  String get orgScrapyard => 'Scrapyard';
+
+  @override
+  String get orgPartsDealer => 'Parts shop';
+
+  @override
+  String get orgPartsDistributor => 'Parts distributor';
+
+  @override
+  String get orgPartsBrandAgent => 'Brand agent';
+
+  @override
+  String get orgOther => 'Business';
+
+  @override
+  String get guestVerified => 'Verified on Sinaaty';
+
+  @override
+  String get guestAccepting => 'Accepting requests';
+
+  @override
+  String get guestBusy => 'Busy right now';
+
+  @override
+  String get guestBranches => 'Branches';
+
+  @override
+  String get guestSpecialties => 'Specialties';
+
+  @override
+  String guestRatingCount(int n) {
+    return '$n ratings';
+  }
+
+  @override
+  String get guestMainBranch => 'Main';
+
+  @override
+  String get wsCoverPhoto => 'Workshop photo';
+
+  @override
+  String get coverUpdated => 'Photo updated — customers see it in Explore';
+
+  @override
+  String kmAway(String n) {
+    return '$n km';
+  }
+
+  @override
+  String get staleData => 'Couldn\'t refresh — what you see may be out of date';
+
+  @override
+  String get payInDoubtTitle => 'Your payment is being confirmed';
+
+  @override
+  String get payInDoubtBody =>
+      'The payment started but we haven\'t received confirmation yet. Don\'t pay again — check in a moment; if it didn\'t go through, nothing is charged.';
+
+  @override
+  String get payCheckNow => 'Check now';
+
+  @override
+  String insPhotosPending(int n) {
+    return '$n photo(s) didn\'t upload — tap to retry before saving';
+  }
+
+  @override
+  String get srvFix => 'Repair';
+
+  @override
+  String get srvMore => 'Other services';
+
+  @override
+  String get srvMoreTitle => 'What else do you need?';
+
+  @override
+  String get srvPart => 'Parts';
+
+  @override
+  String get srvTow => 'Tow';
+
+  @override
+  String get srvInspect => 'Pre-purchase check';
+
+  @override
+  String get srvInspectBody =>
+      'A neutral workshop inspects it and writes you a report before you pay';
+
+  @override
+  String get srvService => 'Scheduled service';
+
+  @override
+  String get srvServiceBody =>
+      'Oil, filters and a full check at an agreed price';
+
+  @override
+  String get srvRoadside => 'Battery & roadside';
+
+  @override
+  String get srvRoadsideBody =>
+      'Won\'t start? The nearest workshop comes to you';
+
+  @override
+  String get srvPresetInspect =>
+      'Full pre-purchase inspection — I want a condition report';
+
+  @override
+  String get srvPresetService =>
+      'Scheduled service — oil, filters and a full check';
+
+  @override
+  String get srvPresetRoadside =>
+      'My car won\'t start — I need help at my location';
+
+  @override
+  String get cdEnded => 'Time is up';
+
+  @override
+  String cdMinutes(int n) {
+    return '$n min left';
+  }
+
+  @override
+  String cdHours(int h, int m) {
+    return '${h}h ${m}m left';
+  }
+
+  @override
+  String cdMinSec(String t) {
+    return '$t left';
+  }
+
+  @override
+  String get cdWorkshopsHave => 'Workshops have time to reply';
+
+  @override
+  String get cdShopsHave => 'Shops have time to bid';
+}

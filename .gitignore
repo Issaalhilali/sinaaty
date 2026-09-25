@@ -85,3 +85,17 @@ infra/k8s/**/charts/
 tmp/
 .tmp/
 .cache/
+
+# Next.js / admin-web
+apps/admin-web/.next/
+apps/admin-web/out/
+apps/admin-web/test-results/
+apps/admin-web/playwright-report/
+.vscode/
+
+# عنوان شبكة الجهاز — يولّده tool/api-host.sh ويختلف بكل شبكة
+apps/mobile/lib/core/config/dev_host.dart
+
+# أسرار Firebase لكل نكهة — تُنزَّل بـ tool/firebase-setup.sh، ولا تُثبَّت في المستودع.
+apps/mobile/android/app/google-services.json
+apps/mobile/ios/config/*/GoogleService-Info.plist

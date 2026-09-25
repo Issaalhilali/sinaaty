@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sinaaty/core/config/app_config.dart';
+import 'package:sinaaty/core/di/core_providers.dart';
+import 'package:sinaaty/core/l10n/app_localizations.dart';
+import 'package:sinaaty/core/result/result.dart';
+import 'package:sinaaty/core/theme/app_theme.dart';
+import 'package:sinaaty/features/auth/domain/auth_entities.dart';
+import 'package:sinaaty/features/auth/domain/auth_repository.dart';
+import 'package:sinaaty/features/auth/presentation/login_screen.dart';
+import 'package:sinaaty/features/auth/presentation/otp_screen.dart';
+import 'package:sinaaty/features/auth/presentation/providers.dart';
+
+import 'fleet_flow_test.dart' show loadArabicFont;
+
+class FakeAuthRepo implements AuthRepository {
+  @override Future<Result<void>> deleteAccount() async => const Result.ok(null);
+  String? requested;
+  @override Future<Result<({String phone, int expiresIn, String? debugCode})>> requestOtp(String phone) async { requested = phone; return Result.ok((phone: phone, expiresIn: 300, debugCode: '123456')); }
+  @override Future<Result<AuthSession>> verifyOtp({required String phone, required String code, required String platform, required String flavor}) async => const Result.ok(AuthSession(accessToken: 'a', refreshToken: 'r', userId: 'u'));
+  @override Future<Result<void>> registerPushToken(String token, {required String platform, required String flavor}) async => const Result.ok(null);
+  @override Future<Result<Me>> updateProfile({String? fullNameAr, String? email, bool clearEmail = false}) async => me();
+  @override Future<Result<Me>> me() async => const Result.ok(Me(id: 'u', platformRole: 'none', nafathVerified: false, orgs: []));
+  @override Future<Result<void>> logout() async => const Result.ok(null);
+}
+void main() {
+  setUpAll(loadArabicFont);
+  testWidgets('login screen validates phone locally, then requests OTP with E.164 and navigates', (tester) async {
+    final repo = FakeAuthRepo();
+    final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const LoginScreen()), GoRoute(path: '/login/otp', builder: (_, _) => const Scaffold(body: Text('otp-screen')))]);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(repo)],
+      child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales, localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate], routerConfig: router),
+    ));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '0111');
+    await tester.tap(find.text('أرسل الرمز')); await tester.pump();
+    expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsOneWidget); expect(repo.requested, isNull);
+    await tester.enterText(find.byType(TextField), '0501234567');
+    await tester.tap(find.text('أرسل الرمز')); await tester.pumpAndSettle();
+    expect(repo.requested, '+966501234567'); expect(find.text('otp-screen'), findsOneWidget);
+  });
+
+  testWidgets('login: أول شاشة يراها إنسان — لقطة ذهبية فاتحة وداكنة', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    for (final (name, theme) in [('light', AppTheme.light()), ('dark', AppTheme.dark())]) {
+      await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+        overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+        child: MaterialApp(theme: theme, locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+          localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+          home: const LoginScreen())));
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/login_$name.png'));
+    }
+  });
+
+  testWidgets('otp: الشاشة الثانية بنفس اللغة — لا سقوط إلى شكل آخر', (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3; addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp.router(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        routerConfig: GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const OtpScreen(phone: '+966501234567'))]))));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/otp_light.png'));
+  });
+
+  testWidgets('الخطأ لا يعيش بعد سببه: أول تعديل يمسحه', (tester) async {
+    // ظهر في مشية أندرويد: رقم صحيح مكتوب في الحقل، و«أدخل رقم جوال سعودي صحيح» باقية والحقل
+    // أحمر — يصحّح المستخدم ولا يرى أثراً لتصحيحه، فيظن أن التطبيق لا يستجيب.
+    tester.view.physicalSize = const Size(1170, 2532); tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        home: const LoginScreen())));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('أرسل الرمز')); await tester.pumpAndSettle();
+    expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '0');   // أول حرف يُصحّح
+    await tester.pumpAndSettle();
+    expect(find.text('أدخل رقم جوال سعودي صحيح.'), findsNothing);
+  });
+
+  testWidgets('لوحة المفاتيح مفتوحة على شاشة قصيرة: لا فيضان في التخطيط', (tester) async {
+    // جهاز حقيقي بلوحة مفاتيح مفتوحة = ارتفاعٌ مرئي أقل بنحو الثلث. الترويسة مرنة واللوح يعلو،
+    // فإن لم يُختبر هذا ظهر «RenderFlex overflowed» على جهاز المالك لا في الاختبارات.
+    tester.view.physicalSize = const Size(1080, 1920); tester.view.devicePixelRatio = 3;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900); // لوحة مفاتيح
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(key: UniqueKey(),
+      overrides: [appConfigProvider.overrideWithValue(const AppConfig(flavor: AppFlavor.customer, apiBaseUrl: 'http://x', appEnv: 'test', sentryDsn: '')), authRepositoryProvider.overrideWithValue(FakeAuthRepo())],
+      child: MaterialApp(theme: AppTheme.light(), locale: const Locale('ar'), supportedLocales: L10n.supportedLocales,
+        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        home: const LoginScreen())));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull, reason: 'لا فيضان مع لوحة المفاتيح');
+    expect(find.text('أرسل الرمز'), findsOneWidget, reason: 'الزرّ يبقى في متناول الإصبع');
+  });
+}

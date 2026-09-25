@@ -1,0 +1,109 @@
+/**
+ * سوق طلبات الإصلاح — the customer posts the problem, nearby workshops answer (owner directive
+ * 2026-08-22). Pure domain: entities, the offer-comparison logic, and the access rules.
+ */
+export type ServiceRequestStatus = 'open' | 'accepted' | 'cancelled' | 'expired';
+export type OfferStatus = 'submitted' | 'withdrawn' | 'accepted' | 'lost';
+export type OfferType = 'estimate' | 'free_inspection';
+export type Availability = 'now' | 'today' | 'scheduled';
+
+export interface ServiceRequest {
+  id: string; number: string; customerUserId: string; vehicleId: string | null;
+  titleAr: string; descriptionAr: string | null;
+  lat: number; lng: number; addressHint: string | null; radiusKm: number;
+  preferredTime: 'now' | 'today' | 'this_week'; status: ServiceRequestStatus;
+  acceptedOfferId: string | null; workOrderId: string | null; expiresAt: Date; createdAt: Date;
+}
+
+export interface ServiceOffer {
+  id: string; requestId: string; orgId: string; offerType: OfferType;
+  diagnosisAr: string | null; priceMin: string | null; priceMax: string | null;
+  availability: Availability; availableAt: Date | null; etaNoteAr: string | null;
+  status: OfferStatus; createdBy: string | null; createdAt: Date; updatedAt: Date;
+}
+
+/** What the customer compares offers WITH — resolved by the repository, computed here. */
+export interface OfferView extends ServiceOffer {
+  orgNameAr: string; ratingAvg: string; ratingCount: number;
+  city: string | null; district: string | null; distanceKm: number | null;
+  /** إحداثيات الفرع الذي سيخدم — لخريطة العروض عند العميل. null لمنشأةٍ بلا موقعٍ مضبوط (تُرسم قائمةً لا دبّوساً). */
+  lat: number | null; lng: number | null;
+  /** «سبق تعاملك معها» — from THIS customer's own work-order history. */
+  previouslyUsed: boolean;
+  /** «متخصصون في سيارتك» — the org declares a specialty in this vehicle's make (Step 5 data, finally earning). */
+  specialist: boolean;
+  /** Median historical minutes between receiving a request and answering it — honesty in numbers. */
+  respondsInMinutes: number | null;
+  /** Jobs this workshop actually FINISHED on the platform — reputation earned, never claimed. */
+  completedJobs: number;
+}
+
+const price = (o: OfferView) => (o.priceMin == null ? Number.POSITIVE_INFINITY : Number(o.priceMin));
+const AVAIL_RANK: Record<Availability, number> = { now: 0, today: 1, scheduled: 2 };
+
+/** Cheapest first among priced offers; free inspections ride on availability then distance. */
+export function sortOffers(offers: OfferView[]): OfferView[] {
+  return [...offers].sort((a, b) => price(a) - price(b) || AVAIL_RANK[a.availability] - AVAIL_RANK[b.availability] || (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
+}
+
+/** WHY an offer wins — the same honesty rule as the parts bid compare (Step 23). */
+export function offerBadges(offers: OfferView[]): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  const live = offers.filter((o) => o.status === 'submitted');
+  if (!live.length) return out;
+  const cheapest = live.filter((o) => o.priceMin != null).sort((a, b) => price(a) - price(b))[0];
+  const fastest = [...live].sort((a, b) => AVAIL_RANK[a.availability] - AVAIL_RANK[b.availability] || (a.distanceKm ?? 999) - (b.distanceKm ?? 999))[0];
+  const nearest = live.filter((o) => o.distanceKm != null).sort((a, b) => a.distanceKm! - b.distanceKm!)[0];
+  const add = (id: string, b: string) => out.set(id, [...(out.get(id) ?? []), b]);
+  if (cheapest) add(cheapest.id, 'الأرخص');
+  if (fastest && fastest.availability !== 'scheduled') add(fastest.id, 'الأسرع');
+  if (nearest) add(nearest.id, 'الأقرب');
+  for (const o of live) {
+    if (o.offerType === 'free_inspection') add(o.id, 'معاينة مجانية');
+    if (o.previouslyUsed) add(o.id, 'سبق تعاملك معها');
+    if (o.specialist) add(o.id, 'متخصصون في سيارتك');
+    if (o.completedJobs >= 10) add(o.id, `أنجزت ${o.completedJobs} عملاً عبر المنصة`);
+    else if (o.completedJobs === 0 && o.ratingCount === 0) add(o.id, 'ورشة جديدة على المنصة');   // الصدق يشمل قلة الخبرة
+  }
+  return out;
+}
+
+/** «حي الصناعية — 4.2 كم» — the distance arrives from the API as ready text (scope doc). */
+export function whereText(o: Pick<OfferView, 'city' | 'district' | 'distanceKm'>): string {
+  const place = o.district ?? o.city ?? '';
+  const dist = o.distanceKm == null ? '' : `${o.distanceKm.toFixed(1)} كم`;
+  return [place, dist].filter(Boolean).join(' — ') || '—';
+}
+
+export const isRequestOpen = (r: Pick<ServiceRequest, 'status' | 'expiresAt'>, now = new Date()) => r.status === 'open' && r.expiresAt > now;
+export const isRequester = (r: Pick<ServiceRequest, 'customerUserId'>, userId: string) => r.customerUserId === userId;
+
+/** مرشّح للمطابقة: المسافة، ومتى آخر مرة وصله طلبٌ من المنصة (null = لم يصله شيء قط). */
+export interface MatchCandidate { orgId: string; distanceKm: number | null; lastNotifiedAt: Date | null }
+
+/**
+ * من يصله الطلب حين يكون المرشّحون أكثر من الحدّ.
+ *
+ * «الأقرب فالأقرب» وحدها تُجوّع السوق: في حيٍّ كثيف تأخذ الأربعون الأولى كل طلب، فورشةٌ على بعد
+ * ثلاثة كيلومترات لا يصلها طلبٌ واحد أبداً ولا تعرف السبب — فتترك المنصة. والعشوائية تُفسد
+ * الملاءمة: لا معنى لأن يصل الطلبُ ورشةً على ١٤ كم وتُترك واحدة على ١ كم.
+ *
+ * فالقسمة: **الأقرب مضمون** (العميل يصل إليه أقرب الناس دائماً)، والبقية **بالدور** — من طال
+ * انتظاره يسبق. الترتيب حتميّ لا عشوائي، فيمكن شرحه لصاحب ورشة سأل: «لماذا لا يصلني شيء؟».
+ */
+export function pickRecipients(
+  candidates: MatchCandidate[],
+  opts: { cap: number; guaranteedNearest: number },
+): { chosen: MatchCandidate[]; excluded: number } {
+  const byDistance = [...candidates].sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+  if (byDistance.length <= opts.cap) return { chosen: byDistance, excluded: 0 };
+  const nearest = byDistance.slice(0, Math.min(opts.guaranteedNearest, opts.cap));
+  const waiting = byDistance.slice(nearest.length).sort((a, b) => {
+    const at = a.lastNotifiedAt?.getTime() ?? -1;      // من لم يصله شيء قط يسبق الجميع
+    const bt = b.lastNotifiedAt?.getTime() ?? -1;
+    if (at !== bt) return at - bt;
+    return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);   // ثم الأقرب عند التساوي
+  });
+  const chosen = [...nearest, ...waiting.slice(0, opts.cap - nearest.length)];
+  return { chosen, excluded: byDistance.length - chosen.length };
+}

@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "960690022426",
+    "project_id": "snayah-5f07b",
+    "storage_bucket": "snayah-5f07b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960690022426:android:61d9b3fa0f039bd94149a3",
+        "android_client_info": {
+          "package_name": "com.example.sinaaty.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSPoUCBudoY5MoOjmTyj7ENE8iQNm-aX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960690022426:android:f720344a076b80884149a3",
+        "android_client_info": {
+          "package_name": "com.example.sinaaty.fleet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSPoUCBudoY5MoOjmTyj7ENE8iQNm-aX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960690022426:android:bddacc89c81c79e14149a3",
+        "android_client_info": {
+          "package_name": "com.example.sinaaty.partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSPoUCBudoY5MoOjmTyj7ENE8iQNm-aX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960690022426:android:3b1fd3d83179e1064149a3",
+        "android_client_info": {
+          "package_name": "com.issa.sinaaty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSPoUCBudoY5MoOjmTyj7ENE8iQNm-aX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960690022426:android:4cb5e3f6ec5a84104149a3",
+        "android_client_info": {
+          "package_name": "com.issa.sinaaty.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSPoUCBudoY5MoOjmTyj7ENE8iQNm-aX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
